@@ -8,7 +8,20 @@ The design, schema and roadmap are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.m
 
 ## Status
 
-**Phase 0 is done.** Working now:
+**Phases 0 and 1 are done.**
+
+Phase 1, the word engine and Level Lab:
+
+- **Read** (paste mode): paste any German, Spanish or Japanese text. Words are coloured as likely new or learning, and every word is clickable. Shows how much of the text you probably know.
+- **Lookup panel**: dictionary form (*rufe … an* → *anrufen*, *muss* → *müssen*, *dámelo* → *dar*, 間に合わない → 間に合う), readings, glosses, German gender/plural/conjugation notes, frequency rank and browser pronunciation. Set a word to new, learning, known or ignored, or save it with its sentence.
+- **Words**: everything you saved or looked up, with sentences and notes. A browser, not flashcards.
+- **Level Lab**:
+  - Adaptive vocabulary test, about 5 minutes. Meanings are verified and made-up words catch guessing. The result is a vocabulary range and approximate CEFR (and JLPT) band.
+  - C-test reading check for German and Spanish.
+  - Results recolour your texts.
+- **Dictionaries**: Jitendex (ja) and Wiktionary-derived de/es dictionaries, imported with `npm run lingo -- dict import`.
+
+Phase 0, the foundation:
 
 - Glass app shell for desktop and phone widths, with a DE / ES / JA switcher that re-themes the app
 - Today dashboard on your real history: daily goal, last 7 days, tracked hours by month, all languages, recent sessions
@@ -36,6 +49,11 @@ Windows with Node 18+ and [uv](https://docs.astral.sh/uv/). uv installs Python 3
 | `npm run status` | Hours, today vs goal and starting level per language (add `-- --json` for JSON) |
 | `npm run import-tracker` | Import or re-sync the Immersion Tracker CSVs |
 | `npm run doctor` | Check Python, data folder, databases, build, ffmpeg and API keys |
+| `npm run lingo -- dict import` | Import every Yomitan dictionary zip in `data/dictionaries` (re-importing replaces) |
+| `npm run lingo -- dict list` | Show installed dictionaries |
+
+`npm run dev` starts the API through `backend/app/devserver.py`. On Windows, uvicorn's auto-reload sends Ctrl+C to the
+whole console, which would also stop Vite. The launcher keeps the API on its own hidden console.
 
 ## In an AI terminal
 

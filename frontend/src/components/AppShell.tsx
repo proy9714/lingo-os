@@ -2,8 +2,10 @@ import { Link, Outlet } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import { useActiveLanguage, useToday, useUpdateSettings } from "../api/hooks";
+import { useLookupStore } from "../state/lookup";
 import { useUi } from "../state/ui";
 import { Icon } from "./Icon";
+import { LookupPanel } from "./LookupPanel";
 import { NAV } from "./nav";
 import { QuickLogModal } from "./QuickLogModal";
 import { Toast } from "./Toast";
@@ -12,10 +14,13 @@ import { Button, cx } from "./ui";
 export function AppShell() {
   const { code } = useActiveLanguage();
   const openQuickLog = useUi((s) => s.openQuickLog);
+  const lookupOpen = useLookupStore((s) => s.selection !== null);
+  const closeLookup = useLookupStore((s) => s.close);
 
   useEffect(() => {
     document.documentElement.dataset.lang = code;
-  }, [code]);
+    closeLookup(); // a lookup belongs to the language it was opened in
+  }, [code, closeLookup]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -39,7 +44,7 @@ export function AppShell() {
       </a>
       <div className="relative mx-auto flex max-w-[1480px] gap-4 p-3 pb-28 md:p-4 md:pb-6">
         <SideRail />
-        <div className="flex min-w-0 flex-1 flex-col gap-4">
+        <div className={cx("flex min-w-0 flex-1 flex-col gap-4 transition-[margin]", lookupOpen && "md:mr-[396px]")}>
           <TopBar />
           <main id="main" className="min-w-0">
             <Outlet />
@@ -48,6 +53,7 @@ export function AppShell() {
       </div>
       <BottomNav />
       <QuickLogModal />
+      <LookupPanel />
       <Toast />
     </div>
   );

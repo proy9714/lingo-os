@@ -10,11 +10,12 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import Engine
 
 from app import __version__
-from app.api import activity, imports, settings, stats, system
+from app.api import activity, imports, level, nlp, settings, stats, system, vocab
 from app.config import AppConfig, load_config
 from app.db import migrate
 from app.db.engine import make_engine
 from app.db.seed import seed
+from app.engine.profile import sync_baselines
 
 
 def bootstrap(cfg: AppConfig) -> Engine:
@@ -25,6 +26,7 @@ def bootstrap(cfg: AppConfig) -> Engine:
     engine = make_engine(cfg.db_path)
     with engine.begin() as conn:
         seed(conn, cfg)
+        sync_baselines(conn, cfg)
     return engine
 
 
@@ -33,8 +35,9 @@ def create_app(cfg: AppConfig | None = None) -> FastAPI:
     app = FastAPI(title="Lingo OS", version=__version__)
     app.state.cfg = cfg
     app.state.engine = bootstrap(cfg)
+    app.state.dict_engine = make_engine(cfg.dict_db_path)
 
-    for module in (system, settings, stats, activity, imports):
+    for module in (system, settings, stats, activity, imports, nlp, vocab, level):
         app.include_router(module.router)
 
     _serve_frontend(app, cfg.frontend_dist)

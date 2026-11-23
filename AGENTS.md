@@ -30,6 +30,9 @@ The router is `modes/_shared.md`; each mode's playbook is `modes/<mode>.md`.
 
 If asked for a mode that is not ready, say which phase delivers it and offer what is available now.
 
+Useful read-only commands for any mode: `uv run --project backend lingo dict list --json` (installed dictionaries).
+Never start a Level Lab test on the user's behalf. Tests are answered by the user in the app.
+
 ## Running the app
 
 - `npm run dev`: API on http://127.0.0.1:8787 plus the web app on http://localhost:5173

@@ -18,6 +18,12 @@ def get_conn(request: Request) -> Iterator[Connection]:
         yield conn
 
 
+def get_dict_conn(request: Request) -> Iterator[Connection]:
+    """Connection to dictionaries.db (separate file, read-mostly)."""
+    with request.app.state.dict_engine.begin() as conn:
+        yield conn
+
+
 def require_language(conn: Connection, code: str) -> str:
     if not conn.execute(text("SELECT 1 FROM languages WHERE code = :c AND enabled = 1"), {"c": code}).first():
         raise HTTPException(status_code=404, detail=f"unknown language '{code}'")

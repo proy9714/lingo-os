@@ -19,16 +19,6 @@ export const PREVIEWS: Record<string, FeaturePreview> = {
       "Watching time is tracked automatically, only while the video is actually playing",
     ],
   },
-  read: {
-    title: "Read",
-    phase: "Phase 3",
-    intro: "Books, PDFs and web articles on a calm, solid page, with every word clickable.",
-    points: [
-      "EPUB (including vertical Japanese), PDF with a text layer, and any article by pasting its URL",
-      "New and learning words highlighted; drag across words to look up a whole phrase",
-      "Each item gets a real coverage score from its own text, so the library is ranked by your level",
-    ],
-  },
   manga: {
     title: "Manga",
     phase: "Phase 5",
@@ -48,26 +38,6 @@ export const PREVIEWS: Record<string, FeaturePreview> = {
       "Voice conversation with a Gemini tutor that knows your level, weak grammar and this week's words",
       "Replies are checked against your vocabulary and simplified when they get too hard",
       "Shadowing: loop a line, record yourself, compare waveforms and intonation",
-    ],
-  },
-  words: {
-    title: "Words",
-    phase: "Phase 1",
-    intro: "Every word you save, with the sentence and the moment you met it. A browser, not flashcards.",
-    points: [
-      "Jump back to the exact spot in the video, page or manga panel",
-      "Set a word to learning, known or ignored; add your own note",
-      "No reviews or due counts: saved words come back through content picked for you",
-    ],
-  },
-  level: {
-    title: "Level Lab",
-    phase: "Phases 1–6",
-    intro: "Your level measured skill by skill, always as a range with a confidence value.",
-    points: [
-      "Starting range from your hours (shown on Today) and the subtitles of the 170 videos you logged",
-      "Short adaptive tests: vocabulary (with meaning checks), dictation, C-test reading, speaking",
-      "Add an official exam result (Goethe, DELE, JLPT…) to calibrate the scale",
     ],
   },
 };

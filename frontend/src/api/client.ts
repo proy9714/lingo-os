@@ -1,6 +1,16 @@
 import type {
+  Annotation,
+  CTestResult,
+  CTestStart,
   Language,
+  LevelOverview,
+  LookupResult,
   ManualLogInput,
+  VocabStep,
+  WordDetail,
+  WordListItem,
+  WordState,
+  WordStatus,
   Overview,
   RecentSession,
   Settings,
@@ -64,4 +74,42 @@ export const api = {
     request<{ counted: string }>(`/api/imports/tracker/flags/${encodeURIComponent(entryId)}/count`, {
       method: "POST",
     }),
+
+  // Phase 1
+  annotate: (lang: string, text: string) =>
+    request<Annotation>("/api/nlp/tokenize", { method: "POST", body: json({ lang, text }) }),
+  lookup: (input: { lang: string; lemma: string; reading?: string; pos?: string; forms?: string[]; record?: boolean }) =>
+    request<LookupResult>("/api/nlp/lookup", { method: "POST", body: json(input) }),
+  setStatus: (input: {
+    lang: string;
+    lemma: string;
+    reading?: string;
+    pos?: string;
+    status: WordStatus;
+    save?: boolean;
+    context?: { sentence: string; surface?: string; locator?: string };
+  }) => request<WordState>("/api/vocab/status", { method: "POST", body: json(input) }),
+  words: (params: { lang: string; status?: string; q?: string; limit?: number; offset?: number }) => {
+    const query = new URLSearchParams(
+      Object.entries(params)
+        .filter(([, value]) => value !== undefined && value !== "")
+        .map(([key, value]) => [key, String(value)]),
+    );
+    return request<{ total: number; items: WordListItem[] }>(`/api/vocab/words?${query}`);
+  },
+  word: (id: number) => request<WordDetail>(`/api/vocab/words/${id}`),
+  patchWord: (id: number, patch: { status?: WordStatus; note?: string; gloss?: string }) =>
+    request<WordState>(`/api/vocab/words/${id}`, { method: "PATCH", body: json(patch) }),
+  vocabSummary: (lang: string) => request<Record<string, number>>(`/api/vocab/summary?lang=${encodeURIComponent(lang)}`),
+  levelOverview: (lang: string) => request<LevelOverview>(`/api/level/${encodeURIComponent(lang)}/overview`),
+  vocabTestStart: (lang: string) =>
+    request<VocabStep & { assessment_id: number }>(`/api/level/${encodeURIComponent(lang)}/vocab/start`, { method: "POST" }),
+  vocabTestAnswer: (id: number, itemId: number, known: boolean) =>
+    request<VocabStep>(`/api/level/vocab/${id}/answer`, { method: "POST", body: json({ item_id: itemId, known }) }),
+  vocabTestMeaning: (id: number, itemId: number, choice: number | null) =>
+    request<VocabStep>(`/api/level/vocab/${id}/meaning`, { method: "POST", body: json({ item_id: itemId, choice }) }),
+  vocabTestFinish: (id: number) => request<VocabStep>(`/api/level/vocab/${id}/finish`, { method: "POST" }),
+  ctestStart: (lang: string) => request<CTestStart>(`/api/level/${encodeURIComponent(lang)}/ctest/start`, { method: "POST" }),
+  ctestSubmit: (id: number, answers: Record<number, string>) =>
+    request<CTestResult>(`/api/level/ctest/${id}/submit`, { method: "POST", body: json({ answers }) }),
 };

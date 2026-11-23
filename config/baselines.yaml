@@ -11,6 +11,12 @@ roadmap:
   - { level: 6, hours: 1000, words: 7000,  label: "You are comfortable with daily conversation" }
   - { level: 7, hours: 1500, words: 12000, label: "You can use the language for all practical purposes" }
 
+# Approximate bands for a *receptive* vocabulary size (lemmas known from the frequency list).
+# Rough published ranges; the Level Lab shows them with a confidence value, never as exact.
+vocab_bands:
+  cefr: [[0, "A1"], [1000, "A2"], [2000, "B1"], [3500, "B2"], [6000, "C1"], [10000, "C2"]]
+  jlpt: [[0, "pre-N5"], [800, "N5"], [1500, "N4"], [3750, "N3"], [6000, "N2"], [10000, "N1"]]
+
 # Hours are divided by these to get "Spanish-equivalent hours".
 # Ratios of FSI course lengths for English speakers; edit them if your
 # native language makes one of these easier or harder for you.

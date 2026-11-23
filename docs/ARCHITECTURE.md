@@ -487,7 +487,7 @@ No single "exact level" exists. CEFR describes separate skills, and someone with
 
 **What the app reports:** one line per skill, for example *"Listening B1, 90% likely between A2+ and B1+"*, plus vocabulary size with an interval. It never reports a single unexplained label.
 
-**Target precision** after one full Level Lab session: about ±10–15% on vocabulary size, and the skills placed within one sub-band (A2+ vs B1), assuming honest answers. Precision improves with each test and with every anchor you add.
+**Measured precision (Phase 1 simulations).** One vocabulary test of about 38 words plus 7 pseudo-words recovered a simulated learner's true vocabulary within about 5%. Its 90% range is roughly ±35% (for example 1,980–4,310 around an estimate of 2,990). The range narrows with every retest, with lookup and reading evidence in the app, and with each official exam you add. The app always shows the range, not just the point estimate.
 
 ---
 
@@ -711,7 +711,7 @@ Each phase ends with something you can use.
 | Phase | Scope | Usable result |
 |---|---|---|
 | **0** ✅ | Scaffold, config, SQL migrations from `schema.sql`, glass app shell (desktop and phone layouts), language switcher, `npm run dev/start`, sync-ready IDs and clocks from day one. **Pulled forward from Phases 1–2:** the Immersion Tracker importer, manual time logging, the Today dashboard on real data, and `/lingo status`, `import` and `doctor`. | Done 2026-11-23 |
-| **1** | Language packs, Yomitan dictionary import, InteractiveText + Lookup panel, vocabulary store, **Immersion Tracker import + baseline estimate + Level Lab (vocabulary test, C-test)** | Paste text → click words → save. Your history is imported, and your vocabulary and reading level are measured. |
+| **1** ✅ | Language packs (spaCy de/es with separable-verb and clitic handling; fugashi + UniDic-lite ja with verb grouping), Yomitan dictionary import (Jitendex, Wiktionary de/es: 2.5 M entries stored as compact glosses), InteractiveText + global Lookup panel, vocabulary store with saved sentences, starting profile from hours, **Level Lab: adaptive vocabulary test (meaning-verified, pseudo-words) and C-test (de/es)**. Deferred: Japanese C-test variant, furigana, German compound splitting, exam-anchor entry. | Done 2026-11-23 |
 | **2** | Media player (YouTube + local), subtitle sources, Whisper job, auto and manual tracking, timer pill, stats, **content evidence from your watched videos, Level Lab listening (dictation)** | Watch with clickable transcripts, time is tracked, and listening is measured |
 | **3** | Reader (EPUB, PDF, articles), content analysis, coverage scoring, i+1 shelf | Library ranked by your level |
 | **4** | AI gateway: contextual lookups, grammar breakdowns, sentence TTS | Full lookup experience with any provider |

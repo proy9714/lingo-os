@@ -9,6 +9,7 @@ from sqlalchemy import Connection
 
 from app.api.deps import get_cfg, get_conn
 from app.config import AppConfig
+from app.engine.profile import sync_baselines
 from app.ingest import immersion_tracker as tracker
 
 router = APIRouter(prefix="/api/imports", tags=["imports"])
@@ -26,7 +27,9 @@ def import_tracker(
     if folder is None:
         raise HTTPException(status_code=422, detail="No Immersion Tracker folder configured in config/app.yaml")
     try:
-        return tracker.import_tracker_folder(conn, cfg.data_dir, folder, cfg.language_codes)
+        summary = tracker.import_tracker_folder(conn, cfg.data_dir, folder, cfg.language_codes)
+        sync_baselines(conn, cfg)  # new hours can move an untested starting estimate
+        return summary
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except tracker.NotATrackerFile as exc:

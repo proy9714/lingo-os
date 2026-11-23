@@ -2,8 +2,11 @@ import { createRootRoute, createRoute, createRouter } from "@tanstack/react-rout
 
 import { AppShell } from "./components/AppShell";
 import { ComingSoonPage, PREVIEWS } from "./pages/ComingSoonPage";
+import { LevelPage } from "./pages/LevelPage";
+import { ReadPage } from "./pages/ReadPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { TodayPage } from "./pages/TodayPage";
+import { WordsPage } from "./pages/WordsPage";
 
 const rootRoute = createRootRoute({ component: AppShell });
 
@@ -15,11 +18,11 @@ const preview = (key: keyof typeof PREVIEWS) => () => <ComingSoonPage preview={P
 const routeTree = rootRoute.addChildren([
   page("/", TodayPage),
   page("/watch", preview("watch")),
-  page("/read", preview("read")),
+  page("/read", ReadPage),
   page("/manga", preview("manga")),
   page("/speak", preview("speak")),
-  page("/words", preview("words")),
-  page("/level", preview("level")),
+  page("/words", WordsPage),
+  page("/level", LevelPage),
   page("/settings", SettingsPage),
 ]);
 

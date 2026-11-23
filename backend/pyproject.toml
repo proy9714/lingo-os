@@ -12,6 +12,12 @@ dependencies = [
   "python-dotenv>=1.0",
   "typer>=0.15",
   "rich>=13.9",
+  "spacy>=3.8,<3.9",
+  "fugashi>=1.5",
+  "unidic-lite>=1.0.8",
+  "wordfreq>=3.1",
+  "de-core-news-sm",
+  "es-core-news-sm",
 ]
 
 [project.scripts]
@@ -29,3 +35,7 @@ packages = ["app"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.uv.sources]
+de-core-news-sm = { url = "https://github.com/explosion/spacy-models/releases/download/de_core_news_sm-3.8.0/de_core_news_sm-3.8.0-py3-none-any.whl" }
+es-core-news-sm = { url = "https://github.com/explosion/spacy-models/releases/download/es_core_news_sm-3.8.0/es_core_news_sm-3.8.0-py3-none-any.whl" }

@@ -1,6 +1,14 @@
 import { Link } from "@tanstack/react-router";
 
-import { useActiveLanguage, useImportTracker, useOverview, useRecent, useToday, useUpdateSettings } from "../api/hooks";
+import {
+  useActiveLanguage,
+  useImportTracker,
+  useLevelOverview,
+  useOverview,
+  useRecent,
+  useToday,
+  useUpdateSettings,
+} from "../api/hooks";
 import type { LanguageOverview, RecentSession, TodayStats } from "../api/types";
 import { Chip, Panel, PanelTitle, ProgressBar, Skeleton, cx } from "../components/ui";
 import {
@@ -52,7 +60,7 @@ export function TodayPage() {
 
       <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))]">
         <GoalCard data={today.data} />
-        <LevelCard data={current} languageName={language?.name} />
+        <LevelCard data={current} languageName={language?.name} lang={code} />
         <LanguagesCard
           entries={all}
           active={code}
@@ -161,8 +169,39 @@ function GoalCard({ data }: { data: TodayStats | undefined }) {
   );
 }
 
-function LevelCard({ data, languageName }: { data: LanguageOverview | undefined; languageName: string | undefined }) {
+function LevelCard({ data, languageName, lang }: { data: LanguageOverview | undefined; languageName: string | undefined; lang: string }) {
+  const level = useLevelOverview(lang).data;
   if (!data) return <Skeleton className="h-[300px] rounded-[20px]" />;
+  const vocab = level?.skills.vocabulary?.result;
+  if (level?.profile?.measured && vocab?.vocabulary) {
+    const reading = level.skills.reading;
+    return (
+      <Panel aria-labelledby="t-level">
+        <PanelTitle id="t-level" aside={<Chip tone="good">measured</Chip>}>
+          Your {languageName} level
+        </PanelTitle>
+        <div className="text-xl font-bold">≈ {vocab.vocabulary.toLocaleString("en")} words</div>
+        <p className="mt-1 text-sm text-ink-2">
+          90% likely {vocab.low?.toLocaleString("en")}–{vocab.high?.toLocaleString("en")}
+          {vocab.band && ` · vocabulary band ≈ ${vocab.band}`}
+          {vocab.jlpt && ` · JLPT ≈ ${vocab.jlpt}`}
+        </p>
+        <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+          <div className="well rounded-xl p-3">
+            <dt className="text-xs text-ink-3">Reading</dt>
+            <dd className="mt-1 font-semibold">{reading?.band ?? "not measured"}</dd>
+          </div>
+          <div className="well rounded-xl p-3">
+            <dt className="text-xs text-ink-3">Total immersion</dt>
+            <dd className="mt-1 font-semibold">{formatHours(data.total_hours)}</dd>
+          </div>
+        </dl>
+        <Link to="/level" className="mt-4 inline-block text-sm font-semibold text-accent hover:underline">
+          Open Level Lab →
+        </Link>
+      </Panel>
+    );
+  }
   const est = data.estimate;
   return (
     <Panel aria-labelledby="t-level">
@@ -193,7 +232,7 @@ function LevelCard({ data, languageName }: { data: LanguageOverview | undefined;
         </div>
       )}
       <Link to="/level" className="mt-4 inline-block text-sm font-semibold text-accent hover:underline">
-        How this gets more accurate →
+        Measure it in Level Lab (about 5 minutes) →
       </Link>
     </Panel>
   );

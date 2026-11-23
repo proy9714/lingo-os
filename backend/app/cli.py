@@ -47,6 +47,67 @@ def db_migrate() -> None:
     console.print(f"dictionaries.db: applied {pending_dict or 'nothing (up to date)'}")
 
 
+dict_app = typer.Typer(help="Dictionary commands.", no_args_is_help=True)
+app.add_typer(dict_app, name="dict")
+
+
+@dict_app.command("import")
+def dict_import(
+    paths: Optional[list[Path]] = typer.Argument(None, help="Yomitan zips. Default: every zip in data/dictionaries."),
+    language: Optional[str] = typer.Option(None, help="Override the language from index.json."),
+) -> None:
+    """Import Yomitan dictionaries (re-importing replaces the old copy)."""
+    import time
+
+    from app.db.engine import make_engine
+    from app.dictionary.yomitan import import_dictionary
+    from app.main import bootstrap
+
+    cfg = load_config()
+    bootstrap(cfg)
+    files = paths or sorted((cfg.data_dir / "dictionaries").glob("*.zip"))
+    if not files:
+        console.print(f"No dictionary zips found in {cfg.data_dir / 'dictionaries'}")
+        raise typer.Exit(code=1)
+    engine = make_engine(cfg.dict_db_path)
+    for path in files:
+        started = time.time()
+        console.print(f"Importing {path.name} …")
+        with engine.begin() as conn:
+            result = import_dictionary(
+                conn,
+                path,
+                language=language,
+                progress=lambda done, total: console.print(f"  bank {done}/{total}", end="\r"),
+            )
+        console.print(
+            f"  {result['dictionary']} ({result['language']}): {result['entries']:,} entries "
+            f"({result['inflected_forms']:,} inflected forms) in {time.time() - started:.0f} s"
+        )
+
+
+@dict_app.command("list")
+def dict_list(as_json: bool = typer.Option(False, "--json", help="Machine-readable output.")) -> None:
+    """Show installed dictionaries."""
+    from app.db.engine import make_engine
+    from app.dictionary.yomitan import list_dictionaries
+    from app.main import bootstrap
+
+    cfg = load_config()
+    bootstrap(cfg)
+    with make_engine(cfg.dict_db_path).begin() as conn:
+        rows = list_dictionaries(conn)
+    if as_json:
+        _emit_json(rows)
+        return
+    table = Table(title="Dictionaries")
+    for column in ("Lang", "Name", "Revision", "Entries", "File"):
+        table.add_column(column)
+    for row in rows:
+        table.add_row(row["language"], row["name"], row["revision"], f"{row['entries']:,}", row["file"])
+    console.print(table)
+
+
 @app.command()
 def serve(
     host: Optional[str] = typer.Option(None, help="Defaults to config/app.yaml (127.0.0.1)."),

@@ -78,6 +78,46 @@ function useActivityMutation<TVars, TData>(fn: (vars: TVars) => Promise<TData>) 
   });
 }
 
+// ---------------------------------------------------------------- Phase 1
+
+/** Everything that shows word statuses. */
+const WORD_KEYS = [["annotate"], ["words"], ["word"], ["vocab-summary"], ["level"]];
+
+export const useAnnotation = (lang: string, text: string) =>
+  useQuery({
+    queryKey: ["annotate", lang, text],
+    queryFn: () => api.annotate(lang, text),
+    enabled: Boolean(lang && text.trim()),
+    staleTime: Infinity,
+  });
+
+export const useWords = (lang: string, status: string, q: string, limit: number) =>
+  useQuery({ queryKey: ["words", lang, status, q, limit], queryFn: () => api.words({ lang, status, q, limit }) });
+
+export const useWord = (id: number | null) =>
+  useQuery({ queryKey: ["word", id], queryFn: () => api.word(id as number), enabled: id !== null });
+
+export const useVocabSummary = (lang: string) =>
+  useQuery({ queryKey: ["vocab-summary", lang], queryFn: () => api.vocabSummary(lang) });
+
+export const useLevelOverview = (lang: string) =>
+  useQuery({ queryKey: ["level", lang], queryFn: () => api.levelOverview(lang) });
+
+function useWordMutation<TVars, TData>(fn: (vars: TVars) => Promise<TData>) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: fn,
+    onSuccess: () => {
+      for (const key of WORD_KEYS) void qc.invalidateQueries({ queryKey: key });
+    },
+  });
+}
+
+export const useSetStatus = () => useWordMutation(api.setStatus);
+export const usePatchWord = () =>
+  useWordMutation((v: { id: number; patch: Parameters<typeof api.patchWord>[1] }) => api.patchWord(v.id, v.patch));
+export const useLevelMutation = <TVars, TData>(fn: (vars: TVars) => Promise<TData>) => useWordMutation(fn);
+
 export const useLogManual = () => useActivityMutation(api.logManual);
 export const useImportTracker = () => useActivityMutation((path?: string) => api.importTracker(path));
 export const useCountFlag = () => useActivityMutation(api.countFlag);
