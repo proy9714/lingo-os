@@ -12,7 +12,9 @@
     "lingo": "uv run --project backend lingo",
     "status": "uv run --project backend lingo status",
     "doctor": "uv run --project backend lingo doctor",
-    "import-tracker": "uv run --project backend lingo import-tracker"
+    "import-tracker": "uv run --project backend lingo import-tracker",
+    "update-content": "uv run --project backend lingo update-content",
+    "evolve-profile": "uv run --project backend lingo evolve-profile"
   },
   "devDependencies": {
     "concurrently": "^10.0.7"

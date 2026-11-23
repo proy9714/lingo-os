@@ -13,6 +13,7 @@ import { Button, Chip, Panel, PanelTitle, Skeleton, cx } from "../components/ui"
 import { formatDay, formatMinutes } from "../lib/format";
 import { useUi } from "../state/ui";
 import { AiPanel } from "../components/AiPanel";
+import { SourcesPanel } from "../components/SourcesPanel";
 
 export function SettingsPage() {
   return (
@@ -25,6 +26,7 @@ export function SettingsPage() {
         <GoalsPanel />
         <TrackerPanel />
         <AiPanel />
+        <SourcesSection />
         <SystemPanel />
         <DevicesPanel />
       </div>
@@ -202,4 +204,9 @@ function DevicesPanel() {
       </p>
     </Panel>
   );
+}
+
+function SourcesSection() {
+  const { code, language } = useActiveLanguage();
+  return <SourcesPanel lang={code} languageName={language?.name ?? code} />;
 }

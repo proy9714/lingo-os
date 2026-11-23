@@ -9,6 +9,7 @@ import {
   useOverview,
   useRecent,
   useRecommend,
+  useReports,
   useToday,
   useUpdateSettings,
 } from "../api/hooks";
@@ -70,6 +71,7 @@ export function TodayPage() {
           names={Object.fromEntries(languages.map((l) => [l.code, l.name]))}
         />
         <UpNextCard lang={code} />
+        <WeeklyCard />
         <RecentCard sessions={recent.data} />
         <MonthlyCard data={current} />
       </div>
@@ -450,6 +452,31 @@ function MonthlyCard({ data }: { data: LanguageOverview | undefined }) {
           </p>
         </>
       )}
+    </Panel>
+  );
+}
+
+function WeeklyCard() {
+  const reports = useReports().data;
+  const latest = reports?.[0];
+  return (
+    <Panel aria-labelledby="t-weekly">
+      <PanelTitle id="t-weekly" aside={latest && <Chip tone="accent">{latest.minutes} min</Chip>}>
+        Weekly report
+      </PanelTitle>
+      {latest ? (
+        <p className="text-sm text-ink-2">
+          {formatDay(latest.start)} – {formatDay(latest.end)}: what you did, what changed in your picks, and the tutor's brief
+          for next week.
+        </p>
+      ) : (
+        <p className="text-sm text-ink-2">
+          The first weekly review measures your week, adjusts your picks a little and briefs the tutor.
+        </p>
+      )}
+      <Link to="/reports" className="mt-3 inline-flex min-h-10 items-center text-sm font-semibold text-accent hover:underline">
+        {latest ? "Open the report →" : "Run the first review →"}
+      </Link>
     </Panel>
   );
 }

@@ -1,0 +1,38 @@
+# Content discovery (`lingo update-content`, ARCHITECTURE §7). Edit freely; everything is optional.
+# YouTube channels also come from the Comprehensible Input Wiki (`lingo sources sync-wiki`, at most weekly).
+
+defaults:
+  per_run: 10          # new videos to check per language per run (each one is a request to YouTube)
+  articles_per_run: 4  # new articles per language per run
+  min_minutes: 3
+  max_minutes: 45
+  prune_days: 30       # unopened candidates older than this are removed
+  keep_bands: [stretch, i_plus_1, comfortable]
+
+languages:
+  de:
+    searches:          # {level} is your current level (for example B1), {topic} one of the topics below
+      - "Deutsch lernen {level} {topic}"
+      - "comprehensible input Deutsch {topic}"
+      - "Easy German {topic}"
+    topics: [Alltag, Reisen, Essen, Geschichte, Wissenschaft, Arbeit, Musik]
+    feeds:
+      - { name: nachrichtenleicht (einfache Sprache), url: "https://www.nachrichtenleicht.de/nachrichtenleicht-nachrichten-100.rss" }
+      - { name: tagesschau, url: "https://www.tagesschau.de/index~rss2.xml" }
+  es:
+    searches:
+      - "español comprensible {level} {topic}"
+      - "aprender español {level} {topic}"
+      - "Dreaming Spanish {topic}"
+    topics: [viajes, comida, historia, cultura, ciencia, música, vida diaria]
+    feeds:
+      - { name: BBC Mundo, url: "https://feeds.bbci.co.uk/mundo/rss.xml" }
+      - { name: El País, url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada" }
+  ja:
+    searches:
+      - "日本語 聴解 {level} {topic}"
+      - "comprehensible japanese {topic}"
+      - "やさしい日本語 {topic}"
+    topics: [旅行, 料理, 日常生活, 歴史, 文化, アニメ, 仕事]
+    feeds:
+      - { name: NHKニュース, url: "https://www3.nhk.or.jp/rss/news/cat0.xml" }

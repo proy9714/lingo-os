@@ -24,9 +24,9 @@ The router is `modes/_shared.md`; each mode's playbook is `modes/<mode>.md`.
 | `import` | ready | Re-sync the Immersion Tracker CSVs |
 | `doctor` | ready | Check the environment and explain any problem |
 | `recommend [de\|es\|ja]` | ready | Top i+1 picks with reasons |
-| `update-content` | Phase 8 | Discover new videos, podcasts and articles at your level |
-| `evolve` | Phase 8 | Weekly recalibration and progress report |
-| `plan-week`, `tutor-brief` | Phase 8 | Plan the week; edit next week's tutor brief |
+| `update-content [de\|es\|ja]` | ready | Discover new videos and articles at your level |
+| `evolve` | ready | Weekly recalibration and progress report (you propose, the app validates) |
+| `plan-week`, `tutor-brief` | ready | Plan the week; edit next week's tutor brief |
 
 If asked for a mode that is not ready, say which phase delivers it and offer what is available now.
 

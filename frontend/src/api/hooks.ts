@@ -193,3 +193,26 @@ export const useTutorGrammar = (lang: string) => useQuery({ queryKey: ["tutor-gr
 export const useShadowClips = (lang: string) => useQuery({ queryKey: ["shadow-clips", lang], queryFn: () => api.shadowClips(lang) });
 export const useShadowClip = (id: number | null) =>
   useQuery({ queryKey: ["shadow-clip", id], queryFn: () => api.shadowClip(id as number), enabled: id !== null });
+
+// ---------------------------------------------------------------- Phase 8
+
+const busy = (status?: string) => status === "queued" || status === "running";
+
+export const useDiscoverStatus = () =>
+  useQuery({
+    queryKey: ["discover-status"],
+    queryFn: api.discoverStatus,
+    refetchInterval: (query) => (busy(query.state.data?.job?.status) ? 2500 : false),
+  });
+
+export const useEvolveStatus = () =>
+  useQuery({
+    queryKey: ["evolve-status"],
+    queryFn: api.evolveStatus,
+    refetchInterval: (query) => (busy(query.state.data?.job?.status) ? 2500 : false),
+  });
+
+export const useReports = () => useQuery({ queryKey: ["reports"], queryFn: api.reports });
+export const useReportText = (path: string | null) =>
+  useQuery({ queryKey: ["report", path], queryFn: () => api.reportText(path as string), enabled: Boolean(path), staleTime: Infinity });
+export const useSources = (lang: string) => useQuery({ queryKey: ["sources", lang], queryFn: () => api.sources(lang) });

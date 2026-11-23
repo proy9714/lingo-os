@@ -197,6 +197,172 @@ def content_scan() -> None:
         console.print(scan_media(conn, cfg))
 
 
+@app.command("update-content")
+def update_content_cmd(
+    lang: Optional[str] = typer.Option(None, "--lang", help="de, es or ja. Default: all."),
+    limit: Optional[int] = typer.Option(None, "--limit", help="New videos to check per language (default from config/sources.yaml)."),
+    dry_run: bool = typer.Option(False, "--dry-run", help="List what would be checked; write nothing."),
+    as_json: bool = typer.Option(False, "--json", help="Machine-readable output."),
+) -> None:
+    """Find new videos and articles near your level (YouTube, RSS feeds, Comprehensible Input Wiki sources)."""
+    from app.main import bootstrap
+    from app.services.discover import update_content
+
+    cfg = load_config()
+    engine = bootstrap(cfg)
+    result = update_content(
+        engine, cfg, lang, per_run=limit, dry_run=dry_run,
+        progress=None if as_json else (lambda message: console.print(f"  {message}"[:110])),
+    )
+    if as_json:
+        _emit_json(result)
+        return
+    for code, row in result.items():
+        wiki = row.get("wiki") or {}
+        console.print(
+            f"{code.upper()}: {row['listed']} new listed · {row['checked']} checked · {row['added']} videos and "
+            f"{row['articles_added']} articles kept · {row['off_level']} off-level · {row['no_captions']} without captions"
+            + (" · stopped early (YouTube refused)" if row["stopped_early"] else "")
+        )
+        if wiki.get("skipped") or wiki.get("error"):
+            console.print(f"    wiki: {wiki.get('skipped') or wiki.get('error')}")
+        elif wiki:
+            console.print(f"    wiki: {wiki.get('resources', 0)} resources, {wiki.get('added', 0)} new")
+        for title in row["added_titles"][:8]:
+            console.print(f"    + {title[:90]}")
+        for error in row["errors"][:3]:
+            console.print(f"    ! {error[:100]}")
+
+
+sources_app = typer.Typer(help="Content sources (Comprehensible Input Wiki and config/sources.yaml).", no_args_is_help=True)
+app.add_typer(sources_app, name="sources")
+
+
+@sources_app.command("list")
+def sources_list(
+    lang: str = typer.Option(..., "--lang", help="de, es or ja."),
+    as_json: bool = typer.Option(False, "--json", help="Machine-readable output."),
+) -> None:
+    """Sources known for a language, with level labels and whether they are fetched."""
+    from app.main import bootstrap
+    from app.services.discover import list_sources
+
+    cfg = load_config()
+    with bootstrap(cfg).begin() as conn:
+        rows = list_sources(conn, lang)
+    if as_json:
+        _emit_json(rows)
+        return
+    table = Table(title=f"Sources ({lang}) · {len(rows)}")
+    for column in ("Name", "Kind", "Level", "Fetched", "Flags"):
+        table.add_column(column)
+    for row in rows:
+        table.add_row(row["name"][:40], row["kind"], row["level_label"] or "", "yes" if row["enabled"] else "link only",
+                      ", ".join(row["config"].get("flags", [])))
+    console.print(table)
+
+
+@sources_app.command("sync-wiki")
+def sources_sync_wiki(lang: Optional[str] = typer.Option(None, "--lang", help="de, es or ja. Default: all.")) -> None:
+    """Read the language pages of comprehensibleinputwiki.org (at most once a week, as robots.txt allows)."""
+    from app.ingest.ci_wiki import WikiError
+    from app.main import bootstrap
+    from app.services.discover import sync_wiki
+
+    cfg = load_config()
+    engine = bootstrap(cfg)
+    for code in cfg.language_codes:
+        if lang not in (None, code):
+            continue
+        try:
+            console.print(sync_wiki(engine, cfg, code))
+        except WikiError as exc:
+            console.print(f"{code}: {exc}")
+
+
+@app.command("evolve-profile")
+def evolve_profile_cmd(
+    days: int = typer.Option(7, "--days", min=1, max=31, help="Length of the window."),
+    no_llm: bool = typer.Option(False, "--no-llm", help="Metrics and deterministic adjustments only."),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Print metrics and context; write nothing."),
+    apply: Optional[Path] = typer.Option(None, "--apply", help="A proposal JSON written by the agent terminal."),
+    as_json: bool = typer.Option(False, "--json", help="Machine-readable output."),
+) -> None:
+    """Weekly review: metrics, band calibration with guardrails, tutor brief and report (data/reports/)."""
+    import json as json_lib
+
+    from app.ai.config import load_ai_config
+    from app.ai.gateway import Gateway
+    from app.main import bootstrap
+    from app.services.evolve import evolve
+
+    cfg = load_config()
+    engine = bootstrap(cfg)
+    proposals = None
+    if apply is not None:
+        data = json_lib.loads(apply.read_text(encoding="utf-8"))
+        proposals = data.get("languages", data)
+    gateway = None if no_llm or apply else Gateway(load_ai_config(cfg.root), engine)
+    result = evolve(engine, cfg, gateway, days=days, use_llm=not no_llm, proposals=proposals, dry_run=dry_run)
+    if as_json:
+        _emit_json(result)
+        return
+    console.print(f"Week {result['period']} ({result['start']} to {result['end']})")
+    for code, row in result["languages"].items():
+        if dry_run:
+            console.print(f"  {code.upper()}: {row['metrics']['minutes_total']:.0f} min")
+            continue
+        changes = "; ".join(a["reason"] for a in row["adjustments"]) or "no band change"
+        console.print(f"  {code.upper()}: {row['minutes']:.0f} min · {changes}" + (" · tutor brief updated" if row["tutor_brief_updated"] else ""))
+        for note in row["notes"]:
+            console.print(f"     {note}")
+    if result.get("markdown"):
+        console.print(f"Report: data/{result['markdown']}")
+
+
+brief_app = typer.Typer(help="The tutor's weekly brief.", no_args_is_help=True)
+app.add_typer(brief_app, name="tutor-brief")
+
+
+@brief_app.command("show")
+def tutor_brief_show(
+    lang: str = typer.Option(..., "--lang", help="de, es or ja."),
+    as_json: bool = typer.Option(False, "--json", help="Machine-readable output."),
+) -> None:
+    """The active brief the tutor follows."""
+    from app.main import bootstrap
+    from app.services.tutor import active_instructions
+
+    cfg = load_config()
+    with bootstrap(cfg).begin() as conn:
+        brief = active_instructions(conn, lang)
+    if as_json:
+        _emit_json(brief)
+        return
+    console.print(brief["instructions_md"])
+    console.print(f"style: {brief['style']}")
+
+
+@brief_app.command("set")
+def tutor_brief_set(
+    lang: str = typer.Option(..., "--lang", help="de, es or ja."),
+    file: Path = typer.Option(..., "--file", help="JSON: {tutor_instructions_md, focus_words, focus_grammar, style}."),
+) -> None:
+    """Replace the brief from a proposal file (validated with the same guardrails as the weekly review)."""
+    import json as json_lib
+
+    from app.main import bootstrap
+    from app.services.evolve import Proposal, _write_instructions, context_for, validate
+
+    cfg = load_config()
+    proposal = Proposal.model_validate(json_lib.loads(file.read_text(encoding="utf-8")))
+    with bootstrap(cfg).begin() as conn:
+        ctx = context_for(conn, lang)
+        proposal, notes = validate(proposal, ctx)
+        new_id = _write_instructions(conn, lang, proposal, ctx, None)
+    console.print(f"Brief {'saved' if new_id else 'unchanged (empty proposal)'}." + (f" Guardrails: {'; '.join(notes)}" if notes else ""))
+
+
 manga_app = typer.Typer(help="Manga library.", no_args_is_help=True)
 app.add_typer(manga_app, name="manga")
 

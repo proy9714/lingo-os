@@ -638,3 +638,40 @@ export interface ShadowClip {
   last_practised: string | null;
   attempts?: ShadowAttempt[];
 }
+
+// ---------------------------------------------------------------- Phase 8: discovery, weekly review
+
+export interface ReportRow {
+  path: string;
+  start: string;
+  end: string;
+  created_at: string;
+  languages: string[];
+  minutes: number;
+}
+
+export interface ScrapeRun {
+  id: number;
+  language: string;
+  status: string;
+  listed: number;
+  added: number;
+  started_at: string;
+  finished_at: string | null;
+  errors: string[];
+  added_titles: string[];
+  stopped_early: boolean;
+}
+
+export interface ContentSource {
+  id: number;
+  kind: string;
+  name: string;
+  target: string;
+  origin: string;
+  level_label: string | null;
+  enabled: boolean;
+  last_fetched_at: string | null;
+  last_status: string | null;
+  config: { section?: string; note?: string; flags?: string[]; site?: string; youtube?: string | null };
+}

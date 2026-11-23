@@ -13,6 +13,7 @@ from typing import Any
 from sqlalchemy import Connection, bindparam, text
 
 from app.config import AppConfig
+from app.db import settings_store
 from app.engine.evidence import sample_running_words
 from app.engine.knowledge import knowledge_p
 from app.engine.profile import get_profile
@@ -460,6 +461,8 @@ def score_item(conn: Connection, item_id: int) -> dict[str, Any] | None:
         expected_unknown += 1 - p
     coverage = known / (content_tokens + others)
     lo, hi = (0.88, 0.97) if item["type"] in {"youtube", "video", "audio", "podcast_episode"} else (0.85, 0.95)
+    shift = float(settings_store.get(conn, f"band_shift.{item['language']}", 0.0) or 0.0)  # weekly calibration
+    lo, hi = lo + shift, hi + shift
     centre, width = (lo + hi) / 2, (hi - lo)
     band = (
         "too_hard" if coverage < lo - 0.1 else "stretch" if coverage < lo else "i_plus_1" if coverage <= hi

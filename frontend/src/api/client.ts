@@ -7,6 +7,10 @@ import type {
   Evidence,
   TranscriptData,
   AddedDocument,
+  ContentSource,
+  Job,
+  ReportRow,
+  ScrapeRun,
   GrammarRow,
   ShadowAttempt,
   ShadowClip,
@@ -252,6 +256,22 @@ export const api = {
       throw new ApiError(response.status, typeof body.detail === "string" ? body.detail : response.statusText);
     }
     return (await response.json()) as ShadowAttempt;
+  },
+
+  // Phase 8
+  discoverRun: (lang?: string) =>
+    request<{ job_id: number }>("/api/discover/run", { method: "POST", body: json(lang ? { lang } : {}) }),
+  discoverStatus: () => request<{ job: Job | null; runs: ScrapeRun[] }>("/api/discover/status"),
+  sources: (lang: string) => request<ContentSource[]>(`/api/sources?lang=${encodeURIComponent(lang)}`),
+  setSource: (id: number, enabled: boolean) =>
+    request<{ enabled: boolean }>(`/api/sources/${id}`, { method: "PATCH", body: json({ enabled }) }),
+  evolveRun: (noLlm = false) => request<{ job_id: number }>("/api/evolve/run", { method: "POST", body: json({ no_llm: noLlm }) }),
+  evolveStatus: () => request<{ job: Job | null }>("/api/evolve/status"),
+  reports: () => request<ReportRow[]>("/api/reports"),
+  reportText: async (path: string) => {
+    const response = await fetch(`/api/reports/file?path=${encodeURIComponent(path)}`);
+    if (!response.ok) throw new ApiError(response.status, "Could not load the report");
+    return response.text();
   },
 };
 

@@ -8,7 +8,14 @@ The design, schema and roadmap are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.m
 
 ## Status
 
-**Phases 0–7 are done.**
+**Phases 0–8 are done.**
+
+Phase 8, the system adapts itself:
+
+- **Find new content** (Settings → New content, `npm run update-content`, or `/lingo update-content`): YouTube channels listed on the Comprehensible Input Wiki for your language, searches at your level, and news articles from RSS feeds. Only videos with real captions in the language are checked, and only items near your level are kept; they appear in Up Next. Unopened finds are removed after 30 days. If YouTube starts asking for a sign-in, the run stops and you can try later.
+- **Weekly review** (Reports, `npm run evolve-profile`, or `/lingo evolve`): measures your week, moves the difficulty of your picks by at most two points with the reason written down, updates the tutor's brief and writes `data\reports\<year>-W<week>.md`. With a Gemini key the report includes a short coaching note; `/lingo evolve` lets your terminal AI write it instead, and the app validates whatever is proposed.
+- **Schedule both** (optional): `powershell -ExecutionPolicy Bypass -File scripts\schedule-windows.ps1` registers a daily content search (06:00) and the Sunday review (21:00). `-Remove` takes them out again.
+- Sources live in `config/sources.yaml` (searches, topics, feeds); wiki channels can be switched off in Settings.
 
 Phases 6–7, speaking:
 
@@ -100,6 +107,10 @@ Windows with Node 18+ and [uv](https://docs.astral.sh/uv/). uv installs Python 3
 | `npm run lingo -- content rescore` | Refresh the starting estimate and re-score the library |
 | `npm run lingo -- recommend` | Up Next picks with reasons (`--lang es`, `--json`) |
 | `npm run lingo -- manga scan` | Import volumes from `data\inbox\manga\` |
+| `npm run update-content` | Find new videos and articles near your level (`-- --lang es --dry-run`) |
+| `npm run evolve-profile` | Weekly review and report (`-- --no-llm`, `-- --dry-run --json`, `-- --apply proposal.json`) |
+| `npm run lingo -- sources list --lang de` | Content sources and whether they're fetched |
+| `npm run lingo -- tutor-brief show --lang de` | The tutor's current brief (`set --file` to change it) |
 | `npm run lingo -- ai status` / `ai test` / `ai models` | Which model each task uses; check the key; list the Gemini models your key can use |
 
 `npm run dev` starts the API through `backend/app/devserver.py`. On Windows, uvicorn's auto-reload sends Ctrl+C to the

@@ -43,7 +43,7 @@ def parse_video_id(value: str) -> str | None:
     return match.group(1) if match else None
 
 
-def _ydl():  # imported lazily: yt-dlp is slow to import
+def _ydl(**extra: Any):  # imported lazily: yt-dlp is slow to import
     from yt_dlp import YoutubeDL
 
     return YoutubeDL(
@@ -54,8 +54,54 @@ def _ydl():  # imported lazily: yt-dlp is slow to import
             "noplaylist": True,
             "js_runtimes": {"node": {}},
             "socket_timeout": 20,
+            **extra,
         }
     )
+
+
+@dataclass
+class Listing:
+    """One entry of a search or channel listing (flat: no per-video request)."""
+
+    video_id: str
+    title: str
+    channel: str | None
+    duration: int | None
+
+
+def _flat(url: str, limit: int) -> list[Listing]:
+    try:
+        with _ydl(extract_flat="in_playlist", playlistend=limit, noplaylist=False) as ydl:
+            info = ydl.extract_info(url, download=False)
+    except Exception as exc:
+        raise YouTubeError(_short(exc)) from exc
+    out = []
+    for entry in (info or {}).get("entries") or []:
+        video_id = entry.get("id")
+        if not video_id or len(video_id) != 11:
+            continue
+        out.append(
+            Listing(
+                video_id=video_id,
+                title=entry.get("title") or video_id,
+                channel=entry.get("channel") or entry.get("uploader") or info.get("channel") or info.get("uploader"),
+                duration=int(entry["duration"]) if entry.get("duration") else None,
+            )
+        )
+    return out[:limit]
+
+
+def search(query: str, limit: int = 10) -> list[Listing]:
+    """YouTube search results for `query` (yt-dlp's ytsearch, no API key)."""
+    return _flat(f"ytsearch{limit}:{query}", limit)
+
+
+def channel_uploads(channel_url: str, limit: int = 10) -> list[Listing]:
+    """The most recent uploads of a channel, from its /videos tab."""
+    url = channel_url.rstrip("/")
+    if not url.endswith("/videos"):
+        url += "/videos"
+    return _flat(url, limit)
 
 
 def fetch_info(video_id: str) -> VideoInfo:
@@ -87,23 +133,31 @@ def _pick(tracks: dict[str, list[dict[str, Any]]], keys: list[str]) -> tuple[str
     return None
 
 
-def choose_track(info: dict[str, Any], lang: str) -> tuple[str, str, dict[str, Any]] | None:
-    """Uploaded subtitles first, then YouTube's own-language automatic captions."""
+def choose_track(info: dict[str, Any], lang: str, strict: bool = False) -> tuple[str, str, dict[str, Any]] | None:
+    """Uploaded subtitles first, then YouTube's own-language automatic captions.
+
+    `strict` (used for discovery) refuses YouTube's machine-translated tracks: an automatic track only counts when it
+    is the video's original language, so an English video with auto-translated German captions is not "German".
+    """
+    spoken = (info.get("language") or "").split("-")[0]
+    if strict and spoken and spoken != lang:
+        return None  # e.g. an English lesson with Spanish subtitles: the subtitles are a translation
     manual = info.get("subtitles") or {}
     manual_keys = [lang] + sorted(k for k in manual if k.startswith(f"{lang}-"))
     picked = _pick(manual, manual_keys)
     if picked:
         return "manual", picked[0], picked[1]
     auto = info.get("automatic_captions") or {}
-    picked = _pick(auto, [f"{lang}-orig", lang])
+    keys = [f"{lang}-orig"] + ([lang] if not strict or spoken == lang else [])
+    picked = _pick(auto, keys)
     if picked:
         return "auto_caption", picked[0], picked[1]
     return None
 
 
-def fetch_captions(video_id: str, lang: str, info: VideoInfo | None = None) -> Captions | None:
+def fetch_captions(video_id: str, lang: str, info: VideoInfo | None = None, strict: bool = False) -> Captions | None:
     info = info or fetch_info(video_id)
-    choice = choose_track(info.raw, lang)
+    choice = choose_track(info.raw, lang, strict)
     if choice is None:
         return None
     kind, track_lang, fmt = choice
