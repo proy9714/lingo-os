@@ -81,7 +81,7 @@ function useActivityMutation<TVars, TData>(fn: (vars: TVars) => Promise<TData>) 
 // ---------------------------------------------------------------- Phase 1
 
 /** Everything that shows word statuses. */
-const WORD_KEYS = [["annotate"], ["words"], ["word"], ["vocab-summary"], ["level"], ["reader"], ["transcript"]];
+const WORD_KEYS = [["annotate"], ["words"], ["word"], ["vocab-summary"], ["level"], ["reader"], ["transcript"], ["manga-page"], ["manga-vocab"]];
 
 export const useAnnotation = (lang: string, text: string) =>
   useQuery({
@@ -120,7 +120,7 @@ export const useLevelMutation = <TVars, TData>(fn: (vars: TVars) => Promise<TDat
 
 // ---------------------------------------------------------------- Phase 2
 
-export const useContentList = (lang: string, q: string, shelf: "watch" | "read" = "watch") =>
+export const useContentList = (lang: string, q: string, shelf: "watch" | "read" | "manga" = "watch") =>
   useQuery({
     queryKey: ["content", lang, q, shelf],
     queryFn: () => api.content(lang, q, shelf),
@@ -174,3 +174,13 @@ export const usePageList = (id: number) => useQuery({ queryKey: ["pages", id], q
 
 export const useAiStatus = () => useQuery({ queryKey: ["ai-status"], queryFn: api.aiStatus, staleTime: 5 * 60_000 });
 export const useAiUsage = () => useQuery({ queryKey: ["ai-usage"], queryFn: api.aiUsage });
+
+// ---------------------------------------------------------------- Phase 5
+
+export const useMangaInbox = () => useQuery({ queryKey: ["manga-inbox"], queryFn: api.mangaInbox, staleTime: Infinity });
+
+export const useMangaPage = (id: number, page: number) =>
+  useQuery({ queryKey: ["manga-page", id, page], queryFn: () => api.mangaPage(id, page), placeholderData: (previous) => previous });
+
+export const useMangaVocab = (id: number, enabled: boolean) =>
+  useQuery({ queryKey: ["manga-vocab", id], queryFn: () => api.mangaVocab(id), enabled, staleTime: 60_000 });

@@ -401,7 +401,7 @@ export interface SystemStatus {
 export interface UpNextPick {
   id: number;
   type: string;
-  kind: "video" | "reading";
+  kind: "video" | "reading" | "manga";
   title: string;
   creator: string | null;
   source: string;
@@ -427,7 +427,6 @@ export interface UpNext {
 }
 
 export interface ReaderParagraph {
-  id: number;
   seq: number;
   locator: string;
   text: string;
@@ -485,4 +484,48 @@ export interface AiUsage {
   cost: number | null;
   cache_hits: number;
   tasks: { task: string; calls: number; ok: number; tokens_in: number; tokens_out: number; cost: number | null; avg_ms: number }[];
+}
+
+// ---------------------------------------------------------------- Phase 5: manga
+
+export interface MangaBlock {
+  id: number;
+  seq: number;
+  box: [number, number, number, number];
+  vertical: boolean;
+  font_size: number | null;
+  lines: { text: string; start: number }[];
+  text: string;
+  corrected: boolean;
+  tokens: AnnotatedToken[];
+}
+
+export interface MangaPageData {
+  item: ContentItem;
+  page: number;
+  pages: number;
+  width: number;
+  height: number;
+  ocr: "pending" | "done" | "failed" | "skipped";
+  blocks: MangaBlock[];
+  summary: Annotation["summary"] | null;
+}
+
+export interface MangaScanResult {
+  folder: string;
+  imported: number;
+  results: { title: string; status: string; item_id?: number; pages?: number }[];
+}
+
+export interface MangaVocabWord {
+  lemma: string;
+  reading: string;
+  display: string;
+  pos: string;
+  status: TokenStatus;
+  rank: number | null;
+  count: number;
+  first_page: number;
+  pages: number;
+  example: string;
 }

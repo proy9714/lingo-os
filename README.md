@@ -8,7 +8,14 @@ The design, schema and roadmap are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.m
 
 ## Status
 
-**Phases 0–4 are done.**
+**Phases 0–5 are done.**
+
+Phase 5, manga:
+
+- Drop volumes into `data\inbox\manga\` (Japanese; use a `de` or `es` subfolder for other languages): a `.mokuro` file with its image folder, a folder of page images, or a `.zip`/`.cbz`. They're imported when you open Manga (or run `npm run lingo -- manga scan`). Nothing is deleted: volumes move into the library, zips into `_imported`.
+- The viewer fits pages to the screen, one or two at a time, right to left for Japanese. Hover a speech bubble to see its text, click a word to look it up. **Fix OCR text** corrects a bubble; **Volume words** lists the likely-new words with the page they first appear on.
+- **Mokuro Bunko**: the Manga screen links to catalog.mokuro.moe. Lingo OS never crawls it.
+- Volumes without mokuro text can be read as images. Running OCR here needs mokuro, which isn't installed (a large download, like Whisper).
 
 Phase 4, AI explanations (optional; everything else works without them):
 
@@ -85,6 +92,7 @@ Windows with Node 18+ and [uv](https://docs.astral.sh/uv/). uv installs Python 3
 | `npm run lingo -- content fetch-history` | Fetch and analyse captions of the videos you've watched (resumes where it stopped) |
 | `npm run lingo -- content rescore` | Refresh the starting estimate and re-score the library |
 | `npm run lingo -- recommend` | Up Next picks with reasons (`--lang es`, `--json`) |
+| `npm run lingo -- manga scan` | Import volumes from `data\inbox\manga\` |
 | `npm run lingo -- ai status` / `ai test` / `ai models` | Which model each task uses; check the key; list the Gemini models your key can use |
 
 `npm run dev` starts the API through `backend/app/devserver.py`. On Windows, uvicorn's auto-reload sends Ctrl+C to the

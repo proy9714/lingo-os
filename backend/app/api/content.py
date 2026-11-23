@@ -54,7 +54,7 @@ def list_content(
     lang: str = Query(..., min_length=2, max_length=8),
     q: str | None = Query(None, max_length=100),
     kind: str | None = Query(None, pattern="^(youtube|local)$"),
-    shelf: str = Query("watch", pattern="^(watch|read)$"),
+    shelf: str = Query("watch", pattern="^(watch|read|manga)$"),
     limit: int = Query(60, ge=1, le=300),
     offset: int = Query(0, ge=0),
     conn: Connection = Depends(get_conn),

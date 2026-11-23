@@ -197,6 +197,29 @@ def content_scan() -> None:
         console.print(scan_media(conn, cfg))
 
 
+manga_app = typer.Typer(help="Manga library.", no_args_is_help=True)
+app.add_typer(manga_app, name="manga")
+
+
+@manga_app.command("scan")
+def manga_scan(as_json: bool = typer.Option(False, "--json", help="Machine-readable output.")) -> None:
+    """Import volumes dropped into data/inbox/manga/ (.mokuro + images, image folders, .zip/.cbz)."""
+    from app.main import bootstrap
+    from app.services.manga import scan_inbox
+
+    cfg = load_config()
+    with bootstrap(cfg).begin() as conn:
+        result = scan_inbox(conn, cfg)
+    if as_json:
+        _emit_json(result)
+        return
+    console.print(f"Inbox: {result['folder']}")
+    for row in result["results"]:
+        console.print(f"  {row['title']}: {row['status']}")
+    if not result["results"]:
+        console.print("  Nothing new.")
+
+
 ai_app = typer.Typer(help="AI gateway (config/llm.yaml).", no_args_is_help=True)
 app.add_typer(ai_app, name="ai")
 

@@ -7,6 +7,7 @@ import type { ReaderParagraph } from "../api/types";
 import { TokenLine } from "../components/TokenLine";
 import { Button, Chip, Panel, Skeleton, cx } from "../components/ui";
 import { splitSentences } from "../lib/sentences";
+import { useEngagement } from "../lib/useEngagement";
 import { useTracker } from "../lib/useTracker";
 import { useLookupStore } from "../state/lookup";
 
@@ -67,7 +68,7 @@ export function ReaderPage() {
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  const engaged = useEngagement();
+  const engaged = useEngagement(IDLE_AFTER_MS);
   const lang = item.data?.language ?? "de";
   useTracker({
     lang,
@@ -156,7 +157,7 @@ export function ReaderPage() {
             )}
             {data.paragraphs.map((paragraph) =>
               data.title && paragraph.text === data.title ? null : (
-                <Paragraph key={paragraph.id} lang={lang} paragraph={paragraph} contentItemId={id} />
+                <Paragraph key={paragraph.seq} lang={lang} paragraph={paragraph} contentItemId={id} />
               ),
             )}
           </div>
@@ -237,23 +238,4 @@ function PagePicker({
       </select>
     </label>
   );
-}
-
-/** True while there has been input (scroll, pointer, keys) in the last few minutes. */
-function useEngagement(): boolean {
-  const last = useRef(Date.now());
-  const [engaged, setEngaged] = useState(true);
-  useEffect(() => {
-    const touch = () => {
-      last.current = Date.now();
-    };
-    const events = ["scroll", "wheel", "pointerdown", "pointermove", "keydown", "touchstart"] as const;
-    for (const name of events) window.addEventListener(name, touch, { passive: true });
-    const timer = window.setInterval(() => setEngaged(Date.now() - last.current < IDLE_AFTER_MS), 5000);
-    return () => {
-      for (const name of events) window.removeEventListener(name, touch);
-      window.clearInterval(timer);
-    };
-  }, []);
-  return engaged;
 }

@@ -7,6 +7,9 @@ import type {
   Evidence,
   TranscriptData,
   AddedDocument,
+  MangaPageData,
+  MangaScanResult,
+  MangaVocabWord,
   AiStatus,
   AiUsage,
   ContextGloss,
@@ -125,7 +128,7 @@ export const api = {
     request<CTestResult>(`/api/level/ctest/${id}/submit`, { method: "POST", body: json({ answers }) }),
 
   // Phase 2
-  content: (lang: string, q = "", shelf: "watch" | "read" = "watch") =>
+  content: (lang: string, q = "", shelf: "watch" | "read" | "manga" = "watch") =>
     request<{ total: number; items: ContentItem[] }>(
       `/api/content?lang=${encodeURIComponent(lang)}&shelf=${shelf}&limit=120${q ? `&q=${encodeURIComponent(q)}` : ""}`,
     ),
@@ -186,4 +189,27 @@ export const api = {
     request<ContextGloss>("/api/ai/gloss", { method: "POST", body: json(body) }),
   aiGrammar: (lang: string, sentence: string) =>
     request<GrammarBreakdown>("/api/ai/grammar", { method: "POST", body: json({ lang, sentence }) }),
+
+  // Phase 5
+  mangaInbox: () => request<{ folder: string; ocr_available: boolean }>("/api/manga/inbox"),
+  mangaScan: () => request<MangaScanResult>("/api/manga/scan", { method: "POST" }),
+  mangaUpload: async (lang: string, file: File) => {
+    const form = new FormData();
+    form.append("lang", lang);
+    form.append("file", file);
+    const response = await fetch("/api/manga/upload", { method: "POST", body: form });
+    if (!response.ok) {
+      const body = (await response.json().catch(() => ({}))) as { detail?: unknown };
+      throw new ApiError(response.status, typeof body.detail === "string" ? body.detail : response.statusText);
+    }
+    return (await response.json()) as MangaScanResult;
+  },
+  mangaPage: (id: number, page: number) => request<MangaPageData>(`/api/manga/${id}/page/${page}`),
+  mangaVocab: (id: number) =>
+    request<{ item_id: number; total_unknown: number; words: MangaVocabWord[] }>(`/api/manga/${id}/vocab?limit=120`),
+  fixBlock: (blockId: number, lines: string[]) =>
+    request<{ id: number; text: string }>(`/api/manga/blocks/${blockId}`, { method: "PUT", body: json({ lines }) }),
+  mangaOcr: (id: number) => request<{ job_id: number }>(`/api/manga/${id}/ocr`, { method: "POST" }),
 };
+
+export const mangaImage = (id: number, page: number) => `/api/manga/${id}/image/${page}`;

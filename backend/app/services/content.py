@@ -118,6 +118,8 @@ def get_item(conn: Connection, item_id: int) -> dict[str, Any]:
 
 WATCH_TYPES = ("youtube", "video", "audio", "podcast_episode")
 READ_TYPES = ("epub", "pdf", "article", "text")
+MANGA_TYPES = ("manga_volume",)
+SHELVES = {"watch": WATCH_TYPES, "read": READ_TYPES, "manga": MANGA_TYPES}
 
 
 def list_items(
@@ -130,7 +132,7 @@ def list_items(
     limit: int = 60,
     offset: int = 0,
 ) -> dict[str, Any]:
-    types = ", ".join(f"'{t}'" for t in (READ_TYPES if shelf == "read" else WATCH_TYPES))
+    types = ", ".join(f"'{t}'" for t in SHELVES.get(shelf, WATCH_TYPES))
     where = ["ci.language_code = :l", f"ci.type IN ({types})", "ci.status NOT IN ('dismissed', 'archived')"]
     params: dict[str, Any] = {"l": lang, "limit": limit, "offset": offset}
     if q:

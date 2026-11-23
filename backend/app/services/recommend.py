@@ -13,7 +13,7 @@ from typing import Any
 
 from sqlalchemy import Connection, text
 
-from app.services.content import READ_TYPES
+from app.services.content import MANGA_TYPES, READ_TYPES
 
 KIND_LIMIT, CREATOR_LIMIT = 4, 2
 
@@ -68,6 +68,8 @@ def up_next(conn: Connection, lang: str, n: int = 12) -> dict[str, Any]:
     creators: Counter[str] = Counter()
 
     def kind_of(item: dict[str, Any]) -> str:
+        if item["type"] in MANGA_TYPES:
+            return "manga"
         return "reading" if item["type"] in READ_TYPES else "video"
 
     def take(item: dict[str, Any]) -> None:

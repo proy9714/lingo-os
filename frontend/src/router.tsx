@@ -3,6 +3,8 @@ import { createRootRoute, createRoute, createRouter } from "@tanstack/react-rout
 import { AppShell } from "./components/AppShell";
 import { ComingSoonPage, PREVIEWS } from "./pages/ComingSoonPage";
 import { LevelPage } from "./pages/LevelPage";
+import { MangaPage } from "./pages/MangaPage";
+import { MangaViewerPage } from "./pages/MangaViewerPage";
 import { PlayerPage } from "./pages/PlayerPage";
 import { WatchPage } from "./pages/WatchPage";
 import { ReadPage } from "./pages/ReadPage";
@@ -24,7 +26,8 @@ const routeTree = rootRoute.addChildren([
   page("/watch/$itemId", PlayerPage),
   page("/read", ReadPage),
   page("/read/$itemId", ReaderPage),
-  page("/manga", preview("manga")),
+  page("/manga", MangaPage),
+  page("/manga/$itemId", MangaViewerPage),
   page("/speak", preview("speak")),
   page("/words", WordsPage),
   page("/level", LevelPage),

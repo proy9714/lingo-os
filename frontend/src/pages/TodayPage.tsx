@@ -341,21 +341,25 @@ const BAND_LABELS: Record<string, string> = {
 function PickRow({ pick, onDismiss }: { pick: UpNextPick; onDismiss: () => void }) {
   const thumb = pick.source === "youtube" && pick.external_id ? `https://i.ytimg.com/vi/${pick.external_id}/default.jpg` : null;
   const length =
-    pick.kind === "video"
+    pick.kind === "manga"
+      ? null
+      : pick.kind === "video"
       ? pick.duration_sec
         ? `${Math.round(pick.duration_sec / 60)} min`
         : null
       : pick.word_count
         ? `${pick.word_count.toLocaleString("en")} words`
         : null;
-  const target = pick.kind === "reading" ? "/read/$itemId" : "/watch/$itemId";
+  const target = pick.kind === "reading" ? "/read/$itemId" : pick.kind === "manga" ? "/manga/$itemId" : "/watch/$itemId";
   return (
     <li className="well group relative flex gap-3 rounded-xl p-2.5 pr-9">
       <div aria-hidden="true" className="flex h-[54px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-lg bg-black/40">
         {thumb ? (
           <img src={thumb} alt="" loading="lazy" className="h-full w-full object-cover" />
         ) : (
-          <span className="text-[10px] font-bold tracking-wider text-ink-3 uppercase">{pick.kind === "reading" ? "Read" : "Media"}</span>
+          <span className="text-[10px] font-bold tracking-wider text-ink-3 uppercase">
+            {pick.kind === "reading" ? "Read" : pick.kind === "manga" ? "Manga" : "Media"}
+          </span>
         )}
       </div>
       <div className="min-w-0 flex-1">
