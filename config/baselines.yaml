@@ -1,0 +1,20 @@
+# Hours → starting level (ARCHITECTURE §6.11, layer 1).
+# This is only a prior with low confidence; content analysis and the Level Lab refine it.
+
+# The 7-step roadmap your Immersion Tracker uses (a Spanish-for-English-speakers scale).
+roadmap:
+  - { level: 1, hours: 0,    words: 0,     label: "Starting from zero" }
+  - { level: 2, hours: 50,   words: 300,   label: "You know some common words" }
+  - { level: 3, hours: 150,  words: 1500,  label: "You can follow topics adapted for learners" }
+  - { level: 4, hours: 300,  words: 3000,  label: "You understand someone speaking to you patiently" }
+  - { level: 5, hours: 600,  words: 5000,  label: "You understand native speakers speaking to you normally" }
+  - { level: 6, hours: 1000, words: 7000,  label: "You are comfortable with daily conversation" }
+  - { level: 7, hours: 1500, words: 12000, label: "You can use the language for all practical purposes" }
+
+# Hours are divided by these to get "Spanish-equivalent hours".
+# Ratios of FSI course lengths for English speakers; edit them if your
+# native language makes one of these easier or harder for you.
+difficulty_divisor:
+  es: 1.0
+  de: 1.33
+  ja: 3.0

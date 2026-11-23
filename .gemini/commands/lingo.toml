@@ -1,0 +1,11 @@
+description = "Lingo OS: run a mode. Usage: /lingo <mode> [args]  (status, import, doctor, …)"
+
+prompt = """
+You are operating Lingo OS from its project folder. Follow AGENTS.md.
+
+Requested: /lingo {{args}}
+
+1. Read modes/_shared.md (the router).
+2. Pick the mode from the first word of the request (no mode given: show the menu from modes/_shared.md).
+3. Read modes/<mode>.md and follow it exactly. Use only the `lingo` CLI for data, never the SQLite files.
+"""

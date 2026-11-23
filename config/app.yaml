@@ -1,0 +1,39 @@
+# Lingo OS: app settings. Relative paths are resolved from the project root.
+
+# All personal data: database, library, recordings, reports.
+# Override with the LINGO_DATA_DIR environment variable.
+data_dir: data
+
+server:
+  host: 127.0.0.1   # the laptop only; phone sync gets its own listener in Phase 9
+  port: 8787
+
+languages:
+  - code: de
+    name: German
+    native_name: Deutsch
+    accent: "#f5b443"
+    writing_mode: horizontal-tb
+  - code: es
+    name: Spanish
+    native_name: Español
+    accent: "#ff8a73"
+    writing_mode: horizontal-tb
+  - code: ja
+    name: Japanese
+    native_name: 日本語
+    accent: "#a5b4fc"
+    writing_mode: vertical-rl
+
+defaults:
+  active_language: de
+  daily_goal_minutes: 60
+
+# Your existing tracker. `lingo import-tracker` (or Settings → Sync now)
+# reads immersion_log_{de,es,ja}.csv and settings.json from this folder.
+immersion_tracker:
+  path: D:/Language-Immersion/data
+
+tracking:
+  heartbeat_seconds: 15
+  idle_seconds: 90

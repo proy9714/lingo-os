@@ -1,0 +1,24 @@
+# AI routing (ARCHITECTURE §8). Feature code names a task, never a provider.
+# API keys come from .env. Model names are yours to choose; Gemini is the default.
+# Not used yet in Phase 0 — the AI gateway arrives in Phase 4.
+
+providers:
+  cloud: { kind: gemini, api_key_env: GEMINI_API_KEY }
+  # local: { kind: ollama, base_url: http://localhost:11434 }   # optional, for offline use
+
+# A Flash-class model for fast tasks, a Pro-class model for weekly analysis.
+tasks:
+  lookup.context_gloss:  { use: cloud, model: "<fast model>", temperature: 0.2 }
+  lookup.grammar:        { use: cloud, model: "<fast model>" }
+  tutor.chat:            { use: cloud, model: "<conversational model>", temperature: 0.7 }
+  tutor.postprocess:     { use: cloud, model: "<fast model>" }
+  content.query_gen:     { use: cloud, model: "<fast model>" }
+  content.tagging:       { use: cloud, model: "<fast model>" }
+  level.speaking_rubric: { use: cloud, model: "<strongest model>", temperature: 0 }
+  profile.evolve:        { use: cloud, model: "<strongest model>" }
+
+stt:
+  default: { kind: faster_whisper, model: large-v3-turbo, device: cuda, compute_type: int8_float16 }
+
+tts:
+  fallback: { kind: browser }   # Web Speech API, zero setup

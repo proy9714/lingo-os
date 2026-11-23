@@ -1,0 +1,8 @@
+entry_id,kind,category,date,url,video_id,title,channel,duration_seconds,duration_hm,logged_at
+a1,baseline,,,,,Immersion before tracking started,,36000,10h 0m,2026-08-03 17:51:39
+a2,session,youtube,2026-08-03,https://www.youtube.com/watch?v=vid00000001,vid00000001,Video one,Easy German,600,10m,2026-08-03 16:42:53
+a3,session,youtube,2026-08-03,https://www.youtube.com/watch?v=vid00000001,vid00000001,Video one,Easy German,600,10m,2026-08-03 16:43:02
+a4,session,youtube,2026-08-05,https://www.youtube.com/watch?v=vid00000001,vid00000001,Video one,Easy German,600,10m,2026-08-05 10:00:00
+a5,session,listening,2026-08-05,,,https://www.youtube.com/watch_videos?video_ids=abc%2Cdef,,1200,20m,2026-08-05 14:00:00
+a6,session,youtube,2026-08-24,https://www.youtube.com/watch?v=vid00000002,vid00000002,"Video, two",Other Channel,957,16m,2026-08-24 00:04:12
+a7,session,watching,2026-08-26,,,Class,,1800,30m,2026-08-30 10:00:00

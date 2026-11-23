@@ -1,0 +1,20 @@
+{
+  "name": "lingo-os",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Local-first language immersion OS for German, Spanish and Japanese",
+  "scripts": {
+    "setup": "uv sync --project backend && npm install --prefix frontend && uv run --project backend lingo db migrate",
+    "dev": "concurrently -k -n api,web -c yellow,cyan \"uv run --project backend uvicorn app.main:create_app --factory --reload --reload-dir backend/app --port 8787\" \"npm --prefix frontend run dev\"",
+    "build": "npm --prefix frontend run build",
+    "start": "npm run build && uv run --project backend lingo serve",
+    "test": "uv run --project backend pytest -q backend/tests && npm --prefix frontend run typecheck",
+    "lingo": "uv run --project backend lingo",
+    "status": "uv run --project backend lingo status",
+    "doctor": "uv run --project backend lingo doctor",
+    "import-tracker": "uv run --project backend lingo import-tracker"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7"
+  }
+}
