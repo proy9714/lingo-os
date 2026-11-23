@@ -446,3 +446,43 @@ export interface ReaderPage {
 export interface AddedDocument extends ContentItem {
   analysing_in_background: boolean;
 }
+
+// ---------------------------------------------------------------- Phase 4: AI explanations
+
+export type AiTaskStatus =
+  | { enabled: true; provider: string; kind: string; model: string; local_only: boolean }
+  | { enabled: false; reason: string; local_only: boolean };
+
+export interface AiStatus {
+  context: AiTaskStatus;
+  grammar: AiTaskStatus;
+}
+
+export interface AiMeta {
+  provider: string;
+  model: string;
+  cached: boolean;
+}
+
+export interface ContextGloss extends AiMeta {
+  meaning: string;
+  sense: number;
+  note: string;
+  translation: string;
+  fitting_sense: string | null;
+}
+
+export interface GrammarBreakdown extends AiMeta {
+  translation: string;
+  literal: string;
+  parts: { text: string; gloss: string; role: string }[];
+  points: { name: string; explanation: string; level: string }[];
+}
+
+export interface AiUsage {
+  days: number;
+  calls: number;
+  cost: number | null;
+  cache_hits: number;
+  tasks: { task: string; calls: number; ok: number; tokens_in: number; tokens_out: number; cost: number | null; avg_ms: number }[];
+}

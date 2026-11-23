@@ -8,7 +8,14 @@ The design, schema and roadmap are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.m
 
 ## Status
 
-**Phases 0–3 are done.**
+**Phases 0–4 are done.**
+
+Phase 4, AI explanations (optional; everything else works without them):
+
+- Click a word and the lookup panel says what it means **in that sentence**, marks the dictionary sense that fits, and adds a usage note. Translation and a grammar breakdown are one click away; the sentence can be played aloud.
+- Gemini by default: put `GEMINI_API_KEY=…` in `.env` (copy `.env.example`), restart, then press **Test connection** in Settings or run `npm run lingo -- ai test`.
+- Any OpenAI-compatible server works too (Ollama on this laptop, OpenRouter, LM Studio); see `config/llm.yaml`. `local_only: true` keeps every request on this computer.
+- Answers are cached, and every call is logged with its token count (Settings shows the totals). Only the sentence you ask about is sent.
 
 Phase 3, read and Up Next:
 
@@ -77,6 +84,8 @@ Windows with Node 18+ and [uv](https://docs.astral.sh/uv/). uv installs Python 3
 | `npm run lingo -- dict list` | Show installed dictionaries |
 | `npm run lingo -- content fetch-history` | Fetch and analyse captions of the videos you've watched (resumes where it stopped) |
 | `npm run lingo -- content rescore` | Refresh the starting estimate and re-score the library |
+| `npm run lingo -- recommend` | Up Next picks with reasons (`--lang es`, `--json`) |
+| `npm run lingo -- ai status` / `ai test` / `ai models` | Which model each task uses; check the key; list the Gemini models your key can use |
 
 `npm run dev` starts the API through `backend/app/devserver.py`. On Windows, uvicorn's auto-reload sends Ctrl+C to the
 whole console, which would also stop Vite. The launcher keeps the API on its own hidden console.
@@ -91,7 +100,7 @@ only through the `lingo` CLI, never by touching the database files.
 
 - `config/app.yaml`: data folder, languages, default goal, Immersion Tracker path
 - `config/baselines.yaml`: hours → level roadmap and per-language difficulty divisors
-- `config/llm.yaml`: AI task routing (Gemini by default; used from Phase 4)
+- `config/llm.yaml`: AI providers and task routing (Gemini by default)
 - `.env`: API keys only (copy `.env.example`)
 
 ## Layout

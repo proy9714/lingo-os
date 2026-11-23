@@ -169,3 +169,8 @@ export const useReaderPage = (id: number, page: number) =>
   useQuery({ queryKey: ["reader", id, page], queryFn: () => api.readerPage(id, page), placeholderData: (previous) => previous });
 
 export const usePageList = (id: number) => useQuery({ queryKey: ["pages", id], queryFn: () => api.pageList(id), staleTime: Infinity });
+
+// ---------------------------------------------------------------- Phase 4
+
+export const useAiStatus = () => useQuery({ queryKey: ["ai-status"], queryFn: api.aiStatus, staleTime: 5 * 60_000 });
+export const useAiUsage = () => useQuery({ queryKey: ["ai-usage"], queryFn: api.aiUsage });

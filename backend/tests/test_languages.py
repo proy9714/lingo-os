@@ -16,6 +16,11 @@ def test_german_separable_verbs_and_modal_fixes() -> None:
     assert words["dich"][2] is False  # pronouns are never highlighted
 
 
+def test_german_quantifiers_get_dictionary_lemmas() -> None:
+    words = _words("de", "Viele Leute und alle Kinder, einige Nachbarn.")
+    assert (words["Viele"][0], words["alle"][0], words["einige"][0]) == ("viel", "all", "einig")
+
+
 def test_german_sentences_have_offsets() -> None:
     text = "Die Mieten sind gestiegen. Wir suchen eine WG."
     tokens, sentences = analyze("de", text)

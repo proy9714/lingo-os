@@ -12,17 +12,19 @@ import type { TrackerImportSummary } from "../api/types";
 import { Button, Chip, Panel, PanelTitle, Skeleton, cx } from "../components/ui";
 import { formatDay, formatMinutes } from "../lib/format";
 import { useUi } from "../state/ui";
+import { AiPanel } from "../components/AiPanel";
 
 export function SettingsPage() {
   return (
     <div className="flex flex-col gap-4">
       <header className="px-1 pt-1">
         <h1 className="text-[28px] font-bold tracking-tight">Settings</h1>
-        <p className="mt-1.5 text-sm text-ink-2">Goals, your Immersion Tracker history, and what this laptop can do.</p>
+        <p className="mt-1.5 text-sm text-ink-2">Goals, your Immersion Tracker history, AI explanations, and what this laptop can do.</p>
       </header>
       <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr))]">
         <GoalsPanel />
         <TrackerPanel />
+        <AiPanel />
         <SystemPanel />
         <DevicesPanel />
       </div>

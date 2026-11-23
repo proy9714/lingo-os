@@ -7,6 +7,10 @@ import type {
   Evidence,
   TranscriptData,
   AddedDocument,
+  AiStatus,
+  AiUsage,
+  ContextGloss,
+  GrammarBreakdown,
   ReaderPage,
   UpNext,
   Language,
@@ -173,4 +177,13 @@ export const api = {
   readProgress: (id: number, page: number, total: number) =>
     request<{ ok: boolean }>(`/api/content/${id}/read-progress`, { method: "POST", body: json({ page, total }) }),
   dismiss: (id: number) => request<{ ok: boolean }>(`/api/content/${id}/dismiss`, { method: "POST" }),
+
+  // Phase 4
+  aiStatus: () => request<AiStatus>("/api/ai/status"),
+  aiUsage: () => request<AiUsage>("/api/ai/usage"),
+  aiTest: () => request<{ ok: boolean; provider: string; model: string }>("/api/ai/test", { method: "POST" }),
+  aiGloss: (body: { lang: string; sentence: string; surface: string; lemma: string; pos?: string; reading?: string }) =>
+    request<ContextGloss>("/api/ai/gloss", { method: "POST", body: json(body) }),
+  aiGrammar: (lang: string, sentence: string) =>
+    request<GrammarBreakdown>("/api/ai/grammar", { method: "POST", body: json({ lang, sentence }) }),
 };

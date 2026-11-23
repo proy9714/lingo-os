@@ -197,6 +197,70 @@ def content_scan() -> None:
         console.print(scan_media(conn, cfg))
 
 
+ai_app = typer.Typer(help="AI gateway (config/llm.yaml).", no_args_is_help=True)
+app.add_typer(ai_app, name="ai")
+
+
+def _gateway():
+    from app.ai.config import load_ai_config
+    from app.ai.gateway import Gateway
+    from app.main import bootstrap
+
+    cfg = load_config()
+    return Gateway(load_ai_config(cfg.root), bootstrap(cfg))
+
+
+@ai_app.command("status")
+def ai_status(as_json: bool = typer.Option(False, "--json", help="Machine-readable output.")) -> None:
+    """Which provider and model each task would use, or why AI is off."""
+    gateway = _gateway()
+    out = {task: gateway.status(task) for task in gateway.cfg.tasks}
+    out["usage_30_days"] = gateway.usage(30)
+    if as_json:
+        _emit_json(out)
+        return
+    for task, row in out.items():
+        if task == "usage_30_days":
+            continue
+        console.print(f"{task:24} " + (f"{row['provider']} / {row['model']}" if row["enabled"] else f"off: {row['reason']}"))
+    usage = out["usage_30_days"]
+    console.print(f"Last 30 days: {usage['calls']} calls, {usage['cache_hits']} answered from cache.")
+
+
+@ai_app.command("test")
+def ai_test() -> None:
+    """Make one tiny call to check the key and model."""
+    from pydantic import BaseModel
+
+    from app.ai.gateway import AIUnavailable
+
+    class Ping(BaseModel):
+        ok: bool
+
+    try:
+        result, meta = _gateway().structured("lookup.context_gloss", "ping", {"word": "Hallo"}, Ping, cache=False)
+    except AIUnavailable as exc:
+        console.print(f"[red]AI is off:[/red] {exc}")
+        raise typer.Exit(1) from exc
+    console.print(f"[green]OK[/green] {meta['provider']} / {meta['model']} answered: {result.ok}")
+
+
+@ai_app.command("models")
+def ai_models() -> None:
+    """List the Gemini models your key can use (to pin one in config/llm.yaml)."""
+    from app.ai.providers import GeminiProvider, ProviderError
+
+    gateway = _gateway()
+    for name, provider in gateway.providers.items():
+        if isinstance(provider, GeminiProvider):
+            try:
+                models = provider.list_models()
+            except ProviderError as exc:
+                console.print(f"{name}: {exc}")
+                continue
+            console.print(f"{name}: " + ", ".join(sorted(models)))
+
+
 @app.command()
 def serve(
     host: Optional[str] = typer.Option(None, help="Defaults to config/app.yaml (127.0.0.1)."),

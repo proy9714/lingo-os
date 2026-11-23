@@ -11,7 +11,9 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import Engine
 
 from app import __version__
-from app.api import activity, content, imports, level, nlp, settings, stats, system, vocab
+from app.ai.config import load_ai_config
+from app.ai.gateway import Gateway
+from app.api import activity, ai, content, imports, level, nlp, settings, stats, system, vocab
 from app.jobs.runner import Runner
 from app.config import AppConfig, load_config
 from app.db import migrate
@@ -49,8 +51,9 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
     app.state.cfg = cfg
     app.state.engine = engine
     app.state.dict_engine = make_engine(cfg.dict_db_path)
+    app.state.ai = Gateway(load_ai_config(cfg.root), engine)
 
-    for module in (system, settings, stats, activity, imports, nlp, vocab, level, content):
+    for module in (system, settings, stats, activity, imports, nlp, vocab, level, content, ai):
         app.include_router(module.router)
 
     _serve_frontend(app, cfg.frontend_dist)

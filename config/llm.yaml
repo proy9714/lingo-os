@@ -1,24 +1,35 @@
 # AI routing (ARCHITECTURE §8). Feature code names a task, never a provider.
 # API keys come from .env. Model names are yours to choose; Gemini is the default.
-# Not used yet in Phase 0 — the AI gateway arrives in Phase 4.
+# `npm run lingo -- ai models` lists the Gemini models your key can use; `npm run lingo -- ai test` checks the setup.
+
+# true: every task uses local providers only (for example Ollama); nothing is sent out.
+local_only: false
 
 providers:
-  cloud: { kind: gemini, api_key_env: GEMINI_API_KEY }
-  # local: { kind: ollama, base_url: http://localhost:11434 }   # optional, for offline use
+  cloud:
+    kind: gemini
+    api_key_env: GEMINI_API_KEY
+    default_model: gemini-flash-latest   # used if a model below doesn't exist on your account
+    # prices:                              # optional, USD per million tokens, for the usage estimate in Settings
+    #   gemini-flash-latest: { in: 0.0, out: 0.0 }   # fill in from Google's pricing page
+  # local:                                 # optional: any OpenAI-compatible server
+  #   kind: ollama                         # or openai_compatible (OpenRouter, Groq, LM Studio…) with base_url + api_key_env
+  #   base_url: http://localhost:11434/v1
+  #   default_model: qwen3:8b
 
-# A Flash-class model for fast tasks, a Pro-class model for weekly analysis.
+# "-latest" aliases follow Google's current models. Pin a version (for example from `ai models`) to freeze behaviour.
 tasks:
-  lookup.context_gloss:  { use: cloud, model: "<fast model>", temperature: 0.2 }
-  lookup.grammar:        { use: cloud, model: "<fast model>" }
-  tutor.chat:            { use: cloud, model: "<conversational model>", temperature: 0.7 }
-  tutor.postprocess:     { use: cloud, model: "<fast model>" }
-  content.query_gen:     { use: cloud, model: "<fast model>" }
-  content.tagging:       { use: cloud, model: "<fast model>" }
-  level.speaking_rubric: { use: cloud, model: "<strongest model>", temperature: 0 }
-  profile.evolve:        { use: cloud, model: "<strongest model>" }
+  lookup.context_gloss:  { use: cloud, model: gemini-flash-latest, temperature: 0.2, thinking: "off", timeout: 25 }
+  lookup.grammar:        { use: cloud, model: gemini-flash-latest, temperature: 0.2, timeout: 40 }
+  tutor.chat:            { use: cloud, model: gemini-flash-latest, temperature: 0.7 }
+  tutor.postprocess:     { use: cloud, model: gemini-flash-latest }
+  content.query_gen:     { use: cloud, model: gemini-flash-latest }
+  content.tagging:       { use: cloud, model: gemini-flash-latest }
+  level.speaking_rubric: { use: cloud, model: gemini-pro-latest, temperature: 0 }
+  profile.evolve:        { use: cloud, model: gemini-pro-latest }
 
 stt:
-  default: { kind: faster_whisper, model: large-v3-turbo, device: cuda, compute_type: int8_float16 }
+  default: { kind: browser }   # Web Speech API recognition; faster-whisper is optional (skipped for now)
 
 tts:
   fallback: { kind: browser }   # Web Speech API, zero setup

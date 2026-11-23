@@ -16,6 +16,10 @@ LEMMA_FIXES = {
     "wolln": "wollen",
     "mögen": "mögen",
 }
+# The small model gives quantifiers their masculine form ('viele' -> 'vieler'); dictionaries list the base word.
+# Applied only to determiners/pronouns, so the comparative 'weniger' (less) is left alone.
+DET_LEMMA_FIXES = {"vieler": "viel", "aller": "all", "mancher": "manch", "einiger": "einig", "weniger": "wenig"}
+DET_POS = {"DET", "PRON"}
 PARTICLE_POS = {"ADP", "ADV", "PART", "ADJ"}
 
 
@@ -36,6 +40,8 @@ class GermanPack:
                 continue
             is_word = any(ch.isalpha() for ch in tok.text)
             lemma = LEMMA_FIXES.get(tok.lemma_, tok.lemma_) if is_word else tok.text
+            if tok.pos_ in DET_POS:
+                lemma = DET_LEMMA_FIXES.get(lemma, lemma)
             if tok.pos_ in {"NOUN"} and lemma[:1].islower():
                 lemma = lemma[:1].upper() + lemma[1:]
             pos = tok.pos_
