@@ -184,3 +184,12 @@ export const useMangaPage = (id: number, page: number) =>
 
 export const useMangaVocab = (id: number, enabled: boolean) =>
   useQuery({ queryKey: ["manga-vocab", id], queryFn: () => api.mangaVocab(id), enabled, staleTime: 60_000 });
+
+// ---------------------------------------------------------------- Phases 6–7
+
+export const useTutorOptions = (lang: string) => useQuery({ queryKey: ["tutor-options", lang], queryFn: () => api.tutorOptions(lang) });
+export const useTutorSessions = (lang: string) => useQuery({ queryKey: ["tutor-sessions", lang], queryFn: () => api.tutorSessions(lang) });
+export const useTutorGrammar = (lang: string) => useQuery({ queryKey: ["tutor-grammar", lang], queryFn: () => api.tutorGrammar(lang) });
+export const useShadowClips = (lang: string) => useQuery({ queryKey: ["shadow-clips", lang], queryFn: () => api.shadowClips(lang) });
+export const useShadowClip = (id: number | null) =>
+  useQuery({ queryKey: ["shadow-clip", id], queryFn: () => api.shadowClip(id as number), enabled: id !== null });

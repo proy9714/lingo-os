@@ -8,7 +8,14 @@ The design, schema and roadmap are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.m
 
 ## Status
 
-**Phases 0–5 are done.**
+**Phases 0–7 are done.**
+
+Phases 6–7, speaking:
+
+- **Tutor** (Speak → Tutor; needs an AI provider): chat by typing or with the microphone, replies read aloud. It writes at your level, reuses words you're learning, and simplifies any reply with too many unknown words. Modes: conversation, role-play cards, talk about something you watched or read, grammar practice. **End and review** adds corrections to your turns and a summary, and records grammar slips, which feed the next conversation.
+- **Shadowing** (Speak → Shadowing): press **Shadow this line** in the video player, or type any sentence. Listen once or loop with a pause for your turn, at 0.5–1× speed, record yourself, and see which words were recognised. Recordings stay in `dataecordings\`.
+- **Level Lab → Speaking**: hear a sentence, say it back; ten sentences from A1 to C1.
+- Voice input uses the browser's speech recognition (Chrome and Edge send the audio to their speech service); spoken replies use the browser's voices.
 
 Phase 5, manga:
 

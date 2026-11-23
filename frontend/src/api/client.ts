@@ -7,6 +7,14 @@ import type {
   Evidence,
   TranscriptData,
   AddedDocument,
+  GrammarRow,
+  ShadowAttempt,
+  ShadowClip,
+  TutorMessage,
+  TutorMode,
+  TutorOptions,
+  TutorSession,
+  TutorSessionRow,
   MangaPageData,
   MangaScanResult,
   MangaVocabWord,
@@ -210,6 +218,42 @@ export const api = {
   fixBlock: (blockId: number, lines: string[]) =>
     request<{ id: number; text: string }>(`/api/manga/blocks/${blockId}`, { method: "PUT", body: json({ lines }) }),
   mangaOcr: (id: number) => request<{ job_id: number }>(`/api/manga/${id}/ocr`, { method: "POST" }),
+
+  // Phases 6–7
+  speakingStart: (lang: string) => request<DictationStep>(`/api/level/${encodeURIComponent(lang)}/speaking/start`, { method: "POST" }),
+  tutorOptions: (lang: string) => request<TutorOptions>(`/api/tutor/options?lang=${encodeURIComponent(lang)}`),
+  tutorSessions: (lang: string) => request<TutorSessionRow[]>(`/api/tutor/sessions?lang=${encodeURIComponent(lang)}`),
+  tutorSession: (id: number) => request<TutorSession>(`/api/tutor/sessions/${id}`),
+  tutorStart: (body: { lang: string; mode: TutorMode; scenario?: string; content_item_id?: number }) =>
+    request<TutorSession>("/api/tutor/sessions", { method: "POST", body: json(body) }),
+  tutorSay: (id: number, text: string, inputMode: "text" | "voice") =>
+    request<{ user: TutorMessage; assistant: TutorMessage; simplified: boolean }>(`/api/tutor/sessions/${id}/messages`, {
+      method: "POST",
+      body: json({ text, input_mode: inputMode }),
+    }),
+  tutorEnd: (id: number) => request<{ ended: boolean; review_job: number | null }>(`/api/tutor/sessions/${id}/end`, { method: "POST" }),
+  tutorGrammar: (lang: string) => request<GrammarRow[]>(`/api/tutor/grammar?lang=${encodeURIComponent(lang)}`),
+  shadowClips: (lang: string) => request<ShadowClip[]>(`/api/shadow/clips?lang=${encodeURIComponent(lang)}`),
+  shadowClip: (id: number) => request<ShadowClip>(`/api/shadow/clips/${id}`),
+  shadowCreate: (body: { lang: string; text: string; content_item_id?: number; cue_id?: number; start_ms?: number; end_ms?: number }) =>
+    request<ShadowClip>("/api/shadow/clips", { method: "POST", body: json(body) }),
+  shadowFavorite: (id: number, favorite: boolean) =>
+    request<ShadowClip>(`/api/shadow/clips/${id}`, { method: "PATCH", body: json({ favorite }) }),
+  shadowDelete: (id: number) => request<{ deleted: boolean }>(`/api/shadow/clips/${id}`, { method: "DELETE" }),
+  shadowAttempt: async (id: number, audio: Blob, durationMs: number, heard: string) => {
+    const form = new FormData();
+    const type = audio.type.split(";")[0] || "audio/webm";
+    form.append("audio", new File([audio], `attempt.${type.split("/")[1] ?? "webm"}`, { type }));
+    form.append("duration_ms", String(durationMs));
+    form.append("heard", heard);
+    const response = await fetch(`/api/shadow/clips/${id}/attempts`, { method: "POST", body: form });
+    if (!response.ok) {
+      const body = (await response.json().catch(() => ({}))) as { detail?: unknown };
+      throw new ApiError(response.status, typeof body.detail === "string" ? body.detail : response.statusText);
+    }
+    return (await response.json()) as ShadowAttempt;
+  },
 };
 
 export const mangaImage = (id: number, page: number) => `/api/manga/${id}/image/${page}`;
+export const attemptAudio = (id: number) => `/api/shadow/attempts/${id}/audio`;

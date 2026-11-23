@@ -45,6 +45,16 @@ def dictation_start(lang: str, conn: Connection = Depends(get_conn)) -> dict[str
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
+@router.post("/{lang}/speaking/start")
+def speaking_start(lang: str, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
+    """Elicited imitation: the same graded sentences, said back instead of typed."""
+    require_language(conn, lang)
+    try:
+        return dictation.start(conn, lang, "imitation")
+    except dictation.DictationError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
 @router.post("/dictation/{assessment_id}/answer")
 def dictation_answer(assessment_id: int, body: DictationAnswer, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
     try:

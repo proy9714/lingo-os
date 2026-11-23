@@ -162,6 +162,38 @@ class Gateway:
             return result, {"provider": name, "model": used_model, "cached": False}
         raise AIUnavailable("; ".join(errors) or "no provider answered")
 
+    def chat(
+        self, task: str, system: str, history: list[tuple[str, str]], message: str
+    ) -> tuple[str, dict[str, Any]]:
+        """Free-text, multi-turn reply (the tutor). Not cached: conversations don't repeat."""
+        errors: list[str] = []
+        for name, route in self.route(task):
+            provider_cfg = self.cfg.providers[name]
+            request = LLMRequest(
+                system, message, route.model or provider_cfg.default_model or "", route.temperature, None, route.thinking,
+                route.timeout, history,
+            )
+            provider = self.providers[name]
+            started = time.perf_counter()
+            try:
+                try:
+                    response = self._call(task, name, provider_cfg, provider, request)
+                except ProviderError as exc:
+                    if exc.model_missing and provider_cfg.default_model and provider_cfg.default_model != request.model:
+                        request.model = provider_cfg.default_model
+                        response = self._call(task, name, provider_cfg, provider, request)
+                    else:
+                        raise
+            except ProviderError as exc:
+                errors.append(str(exc))
+                continue
+            meta = {
+                "provider": name, "model": request.model, "tokens_in": response.tokens_in, "tokens_out": response.tokens_out,
+                "latency_ms": int((time.perf_counter() - started) * 1000),
+            }
+            return response.text.strip(), meta
+        raise AIUnavailable("; ".join(errors) or "no provider answered")
+
     def _ask(
         self, task: str, name: str, provider_cfg: ProviderConfig, request: LLMRequest, schema: type[T]
     ) -> tuple[T, str]:

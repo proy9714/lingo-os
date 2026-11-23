@@ -755,7 +755,8 @@ CREATE TABLE jobs (
   id            INTEGER PRIMARY KEY,
   kind          TEXT NOT NULL CHECK (kind IN
                 ('analyze_content','fetch_subtitles','transcribe','ocr_manga','extract_text',
-                 'extract_clip','import_dictionary','rescore','tutor_postprocess','backup')),
+                 'extract_clip','import_dictionary','rescore','tutor_postprocess','backup',
+                 'fetch_history_captions','update_content','evolve_profile','build_offline_pack')),
   lane          TEXT NOT NULL DEFAULT 'cpu' CHECK (lane IN ('cpu','gpu')),
   status        TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued','running','done','failed','cancelled')),
   priority      INTEGER NOT NULL DEFAULT 5,              -- lower runs first

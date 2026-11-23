@@ -21,6 +21,7 @@ class LLMRequest:
     schema: dict[str, Any] | None = None  # ask for JSON matching this JSON schema
     thinking: str | None = None
     timeout: float = 40.0
+    history: list[tuple[str, str]] | None = None  # earlier turns as (role 'user'|'assistant', text); `prompt` is the newest
 
 
 @dataclass
@@ -78,7 +79,10 @@ class GeminiProvider(_HTTPProvider):
         self.base_url = cfg.base_url or self.BASE
 
     def _body(self, req: LLMRequest, *, extras: bool) -> dict[str, Any]:
-        body: dict[str, Any] = {"contents": [{"role": "user", "parts": [{"text": req.prompt}]}]}
+        turns = [
+            {"role": "model" if role == "assistant" else "user", "parts": [{"text": text}]} for role, text in (req.history or [])
+        ]
+        body: dict[str, Any] = {"contents": [*turns, {"role": "user", "parts": [{"text": req.prompt}]}]}
         if req.system:
             body["systemInstruction"] = {"parts": [{"text": req.system}]}
         gen: dict[str, Any] = {}
@@ -148,7 +152,11 @@ class OpenAICompatibleProvider(_HTTPProvider):
         self.base_url = base.rstrip("/")
 
     def complete(self, req: LLMRequest) -> LLMResponse:
-        messages = ([{"role": "system", "content": req.system}] if req.system else []) + [{"role": "user", "content": req.prompt}]
+        messages = (
+            ([{"role": "system", "content": req.system}] if req.system else [])
+            + [{"role": role, "content": text} for role, text in (req.history or [])]
+            + [{"role": "user", "content": req.prompt}]
+        )
         body: dict[str, Any] = {"model": req.model, "messages": messages}
         if req.temperature is not None:
             body["temperature"] = req.temperature

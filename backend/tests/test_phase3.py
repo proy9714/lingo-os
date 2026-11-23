@@ -117,3 +117,8 @@ def test_recommend_endpoint(client) -> None:
 
 def test_article_needs_a_url(client) -> None:
     assert client.post("/api/content/article", json={"lang": "de", "url": "not a url"}).status_code == 422
+
+
+def test_history_fetch_can_be_queued(client) -> None:
+    response = client.post("/api/content/history/fetch", json={})
+    assert response.status_code == 202 and response.json()["job_id"] > 0

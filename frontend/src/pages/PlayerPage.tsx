@@ -1,4 +1,5 @@
-import { Link, useParams } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
+import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { api } from "../api/client";
@@ -9,6 +10,7 @@ import { TokenLine } from "../components/TokenLine";
 import { Button, Chip, Panel, Skeleton, cx } from "../components/ui";
 import { useTracker } from "../lib/useTracker";
 import { useLookupStore } from "../state/lookup";
+import { useShadowTarget } from "../state/shadow";
 
 const SPEEDS = [0.75, 0.9, 1, 1.25];
 
@@ -37,6 +39,17 @@ export function PlayerPage() {
   const listRef = useRef<HTMLOListElement>(null);
   const lookupOpen = useLookupStore((s) => s.selection !== null);
 
+  const navigate = useNavigate();
+  const openClip = useShadowTarget((s) => s.open);
+  const shadow = useMutation({
+    mutationFn: (cue: TranscriptCue) =>
+      api.shadowCreate({ lang: item.data?.language ?? "de", text: cue.text, content_item_id: id, cue_id: cue.id }),
+    onSuccess: (clip) => {
+      controls.current?.pause();
+      openClip(clip.id);
+      void navigate({ to: "/speak" });
+    },
+  });
   const cues = transcript.data?.cues ?? [];
   const activeIndex = useMemo(() => {
     let found = -1;
@@ -171,6 +184,13 @@ export function PlayerPage() {
             </Button>
             <Button onClick={() => jump(1)} title="Next line (→)">
               Line →
+            </Button>
+            <Button
+              onClick={() => activeIndex >= 0 && shadow.mutate(cues[activeIndex])}
+              disabled={activeIndex < 0 || shadow.isPending}
+              title="Practise saying the current line"
+            >
+              Shadow this line
             </Button>
             <label className="flex items-center gap-2 text-sm text-ink-2">
               Speed

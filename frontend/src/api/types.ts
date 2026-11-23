@@ -529,3 +529,112 @@ export interface MangaVocabWord {
   pages: number;
   example: string;
 }
+
+// ---------------------------------------------------------------- Phases 6–7: tutor, shadowing
+
+export type TutorMode = "conversation" | "roleplay" | "content_discussion" | "correction_drill";
+
+export interface TutorScenario {
+  id: string;
+  title: string;
+  setting: string;
+  you: string;
+  learner: string;
+}
+
+export interface TutorOptions {
+  status: AiTaskStatus;
+  scenarios: TutorScenario[];
+  weak_grammar: string[];
+  focus_words: string[];
+  speech_rate: number;
+}
+
+export interface TutorCorrection {
+  turn: number;
+  original: string;
+  corrected: string;
+  explanation: string;
+  grammar: string;
+}
+
+export interface TutorMessage {
+  id: number;
+  seq: number;
+  role: "user" | "assistant";
+  input_mode: "voice" | "text" | null;
+  text: string;
+  coverage: number | null;
+  corrections: TutorCorrection[] | null;
+  tokens?: AnnotatedToken[];
+  created_at: string;
+}
+
+export interface TutorSession {
+  id: number;
+  language_code: string;
+  mode: TutorMode;
+  scenario: string | null;
+  content_item_id: number | null;
+  summary_md: string | null;
+  postprocessed: number;
+  started_at: string;
+  ended_at: string | null;
+  messages: TutorMessage[];
+  speech_rate?: number;
+}
+
+export interface TutorSessionRow {
+  id: number;
+  mode: TutorMode;
+  scenario: string | null;
+  started_at: string;
+  ended_at: string | null;
+  postprocessed: number;
+  summary_md: string | null;
+  turns: number;
+  title: string | null;
+}
+
+export interface GrammarRow {
+  key: string;
+  title: string;
+  level: string | null;
+  status: string;
+  errors: number;
+  successes: number;
+  mastery: number;
+  last_error_at: string | null;
+  example: string | null;
+}
+
+export interface ShadowAttempt {
+  id: number;
+  duration_ms: number;
+  heard: string | null;
+  similarity: number | null;
+  diff: { text: string; ok: boolean }[];
+  self_rating: number | null;
+  created_at: string;
+}
+
+export interface ShadowClip {
+  id: number;
+  language: string;
+  content_item_id: number | null;
+  cue_id: number | null;
+  start_ms: number;
+  end_ms: number;
+  text: string;
+  reference_kind: "media" | "tts";
+  favorite: boolean;
+  practice_count: number;
+  created_at: string;
+  item_title: string | null;
+  item_source: string | null;
+  external_id: string | null;
+  item_type: string | null;
+  best: number | null;
+  last_practised: string | null;
+  attempts?: ShadowAttempt[];
+}

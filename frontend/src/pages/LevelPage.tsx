@@ -5,13 +5,14 @@ import { useActiveLanguage, useLevelMutation, useLevelOverview } from "../api/ho
 import type { CTestResult, CTestStart, DictationStep, LevelOverview, VocabResult, VocabStep } from "../api/types";
 import { Button, Chip, Panel, PanelTitle, ProgressBar, Skeleton, cx } from "../components/ui";
 import { formatDay, localDayOf } from "../lib/format";
-import { canSpeak, speak } from "../lib/speech";
+import { canRecognize, canSpeak, speak, useSpeechInput } from "../lib/speech";
 
 type Mode =
   | { kind: "overview" }
   | { kind: "vocab"; id: number; step: VocabStep }
   | { kind: "ctest"; start: CTestStart }
-  | { kind: "dictation"; id: number; step: DictationStep };
+  | { kind: "dictation"; id: number; step: DictationStep }
+  | { kind: "speaking"; id: number; step: DictationStep };
 
 export function LevelPage() {
   const { code, language } = useActiveLanguage();
@@ -20,9 +21,13 @@ export function LevelPage() {
   const startVocab = useLevelMutation(api.vocabTestStart);
   const startCTest = useLevelMutation(api.ctestStart);
   const startDictation = useLevelMutation(api.dictationStart);
+  const startSpeaking = useLevelMutation(api.speakingStart);
 
   useEffect(() => setMode({ kind: "overview" }), [code]);
 
+  if (mode.kind === "speaking") {
+    return <SpeakingRunner lang={code} id={mode.id} initial={mode.step} onExit={() => setMode({ kind: "overview" })} />;
+  }
   if (mode.kind === "dictation") {
     return <DictationRunner lang={code} id={mode.id} initial={mode.step} onExit={() => setMode({ kind: "overview" })} />;
   }
@@ -128,16 +133,40 @@ export function LevelPage() {
               {canSpeak() ? (overview.data.skills.listening ? "Retake the listening check" : "Start the listening check") : "No browser voice available"}
             </Button>
           </Panel>
-          <Panel aria-labelledby="t-later">
-            <PanelTitle id="t-later">Coming next</PanelTitle>
-            <ul className="flex flex-col gap-2 text-sm text-ink-2">
-              <li className="well rounded-xl p-3">
-                <strong className="text-ink">Speaking</strong> · repeat-after-me and a short conversation (Phase 6)
-              </li>
-              <li className="well rounded-xl p-3">
-                <strong className="text-ink">Official results</strong> · add a Goethe, DELE or JLPT score to calibrate everything
-              </li>
-            </ul>
+          <Panel aria-labelledby="t-speak">
+            <PanelTitle id="t-speak" aside={<Chip>about 5 minutes</Chip>}>
+              Speaking (repeat after me)
+            </PanelTitle>
+            {overview.data.skills.speaking?.band ? (
+              <p className="text-sm text-ink-2">
+                Last result: <strong className="text-ink">{overview.data.skills.speaking.band}</strong>
+                {overview.data.skills.speaking.band_low !== overview.data.skills.speaking.band_high &&
+                  ` (likely ${overview.data.skills.speaking.band_low}–${overview.data.skills.speaking.band_high})`}
+              </p>
+            ) : (
+              <p className="text-sm text-ink-3">Not measured yet.</p>
+            )}
+            <p className="mt-3 text-sm leading-relaxed text-ink-2">
+              Hear a sentence, then say it back. Longer sentences can only be repeated when you understand and can rebuild
+              them, which makes this a good quick measure of speaking. Your browser's speech recognition scores it.
+            </p>
+            {startSpeaking.isError && <p role="alert" className="mt-2 text-sm text-red-200">{startSpeaking.error.message}</p>}
+            <Button
+              variant="primary"
+              className="mt-4 w-full"
+              disabled={startSpeaking.isPending || !canSpeak() || !canRecognize()}
+              onClick={() =>
+                startSpeaking.mutate(code, {
+                  onSuccess: (step) => step.assessment_id && setMode({ kind: "speaking", id: step.assessment_id, step }),
+                })
+              }
+            >
+              {!canRecognize()
+                ? "Needs speech recognition (Chrome or Edge)"
+                : overview.data.skills.speaking
+                  ? "Retake the speaking check"
+                  : "Start the speaking check"}
+            </Button>
           </Panel>
         </div>
       )}
@@ -559,6 +588,113 @@ function CTestRunner({ lang, start, onExit }: { lang: string; start: CTestStart;
             {submit.isPending ? "Scoring…" : "Submit and see my level"}
           </Button>
         </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------- speaking (elicited imitation)
+
+function SpeakingRunner({ lang, id, initial, onExit }: { lang: string; id: number; initial: DictationStep; onExit: () => void }) {
+  const [step, setStep] = useState<DictationStep>(initial);
+  const [plays, setPlays] = useState(0);
+  const [said, setSaid] = useState<string | null>(null);
+  const voice = useSpeechInput(lang);
+  const answer = useLevelMutation((v: { itemId: number; typed: string; plays: number }) => api.dictationAnswer(id, v.itemId, v.typed, v.plays));
+  const item = step.item;
+
+  const play = () => {
+    if (!item || plays >= item.max_plays || voice.listening) return;
+    speak(item.speak, lang, 0.95);
+    setPlays(plays + 1);
+  };
+
+  const toggle = async () => {
+    if (voice.listening) setSaid(await voice.stop());
+    else {
+      setSaid(null);
+      voice.start();
+    }
+  };
+
+  return (
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+      <div className="flex items-center justify-between px-1">
+        <h1 className="text-xl font-bold">Speaking check</h1>
+        <Button variant="ghost" onClick={onExit}>
+          {step.done ? "Back to Level Lab" : "Leave (not saved)"}
+        </Button>
+      </div>
+      {step.feedback && (
+        <Panel className="py-4">
+          <p className="text-xs text-ink-3">Previous sentence · {Math.round(step.feedback.accuracy * 100)}% repeated</p>
+          <p lang={lang} className="mt-1 text-base">
+            {step.feedback.sentence}
+          </p>
+        </Panel>
+      )}
+      {step.done && step.result ? (
+        <Panel className="glass-strong">
+          <PanelTitle aside={<Chip tone="good">saved to your profile</Chip>}>Your result</PanelTitle>
+          <div className="text-3xl font-bold">Speaking ≈ {step.result.band}</div>
+          <p className="mt-1 text-sm text-ink-2">
+            {step.result.band_low === step.result.band_high ? "Stable band" : `Likely ${step.result.band_low}–${step.result.band_high}`} ·{" "}
+            {Math.round(step.result.overall * 100)}% repeated overall
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2 text-xs">
+            {Object.entries(step.result.averages).map(([level, avg]) => (
+              <span key={level} className="well rounded-lg px-3 py-2">
+                {level}: <strong className="text-ink">{Math.round(avg * 100)}%</strong>
+              </span>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-ink-3">
+            Repetition measures how much you can hold and rebuild, not free conversation; the tutor's reviews add that side.
+            Recognition errors can lower a score slightly.
+          </p>
+          <Button className="mt-4" onClick={onExit}>
+            Back to Level Lab
+          </Button>
+        </Panel>
+      ) : (
+        item && (
+          <Panel className="glass-strong flex flex-col items-center gap-5 py-8 text-center">
+            <div className="w-full max-w-sm">
+              <ProgressBar value={(item.seq - 1) / item.total} label="Speaking check progress" />
+              <p className="mt-2 text-xs text-ink-3">
+                Sentence {item.seq} of {item.total}
+              </p>
+            </div>
+            <Button onClick={play} disabled={plays >= item.max_plays || voice.listening} className="min-w-48">
+              {plays === 0 ? "▶ Hear the sentence" : plays < item.max_plays ? `Hear again (${item.max_plays - plays} left)` : "No plays left"}
+            </Button>
+            <Button variant="primary" className="min-w-48" disabled={plays === 0 || answer.isPending} onClick={toggle} aria-pressed={voice.listening}>
+              {voice.listening ? "■ Done" : said !== null ? "● Say it again" : "● Say it back"}
+            </Button>
+            <p lang={lang} className="min-h-6 text-base text-ink-2">
+              {voice.listening ? voice.text || "Listening…" : said ?? ""}
+            </p>
+            {voice.error && <p role="alert" className="text-sm text-red-200">{voice.error}</p>}
+            <Button
+              disabled={said === null || voice.listening || answer.isPending}
+              onClick={() =>
+                answer.mutate(
+                  { itemId: item.id, typed: said ?? "", plays },
+                  {
+                    onSuccess: (next) => {
+                      setStep(next);
+                      setSaid(null);
+                      setPlays(0);
+                    },
+                  },
+                )
+              }
+            >
+              {answer.isPending ? "Checking…" : "Check and continue"}
+            </Button>
+            {answer.isError && <p role="alert" className="text-sm text-red-200">{answer.error.message}</p>}
+          </Panel>
+        )
       )}
     </div>
   );
