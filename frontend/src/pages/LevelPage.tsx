@@ -2,11 +2,16 @@ import { useEffect, useState } from "react";
 
 import { api } from "../api/client";
 import { useActiveLanguage, useLevelMutation, useLevelOverview } from "../api/hooks";
-import type { CTestResult, CTestStart, LevelOverview, VocabResult, VocabStep } from "../api/types";
+import type { CTestResult, CTestStart, DictationStep, LevelOverview, VocabResult, VocabStep } from "../api/types";
 import { Button, Chip, Panel, PanelTitle, ProgressBar, Skeleton, cx } from "../components/ui";
 import { formatDay, localDayOf } from "../lib/format";
+import { canSpeak, speak } from "../lib/speech";
 
-type Mode = { kind: "overview" } | { kind: "vocab"; id: number; step: VocabStep } | { kind: "ctest"; start: CTestStart };
+type Mode =
+  | { kind: "overview" }
+  | { kind: "vocab"; id: number; step: VocabStep }
+  | { kind: "ctest"; start: CTestStart }
+  | { kind: "dictation"; id: number; step: DictationStep };
 
 export function LevelPage() {
   const { code, language } = useActiveLanguage();
@@ -14,8 +19,13 @@ export function LevelPage() {
   const [mode, setMode] = useState<Mode>({ kind: "overview" });
   const startVocab = useLevelMutation(api.vocabTestStart);
   const startCTest = useLevelMutation(api.ctestStart);
+  const startDictation = useLevelMutation(api.dictationStart);
 
   useEffect(() => setMode({ kind: "overview" }), [code]);
+
+  if (mode.kind === "dictation") {
+    return <DictationRunner lang={code} id={mode.id} initial={mode.step} onExit={() => setMode({ kind: "overview" })} />;
+  }
 
   if (mode.kind === "vocab") {
     return <VocabTestRunner lang={code} id={mode.id} initial={mode.step} onExit={() => setMode({ kind: "overview" })} />;
@@ -87,12 +97,40 @@ export function LevelPage() {
               </p>
             )}
           </Panel>
+          <Panel aria-labelledby="t-listen">
+            <PanelTitle id="t-listen" aside={<Chip>about 6 minutes</Chip>}>
+              Listening (dictation)
+            </PanelTitle>
+            {overview.data.skills.listening?.band ? (
+              <p className="text-sm text-ink-2">
+                Last result: <strong className="text-ink">{overview.data.skills.listening.band}</strong>
+                {overview.data.skills.listening.band_low !== overview.data.skills.listening.band_high &&
+                  ` (likely ${overview.data.skills.listening.band_low}–${overview.data.skills.listening.band_high})`}
+              </p>
+            ) : (
+              <p className="text-sm text-ink-3">Not measured yet.</p>
+            )}
+            <p className="mt-3 text-sm leading-relaxed text-ink-2">
+              Ten sentences read aloud by your browser's voice; type what you hear. Sentences get harder after a clean answer.
+              Spelling, accents and punctuation don't count.
+            </p>
+            {startDictation.isError && <p role="alert" className="mt-2 text-sm text-red-200">{startDictation.error.message}</p>}
+            <Button
+              variant="primary"
+              className="mt-4 w-full"
+              disabled={startDictation.isPending || !canSpeak()}
+              onClick={() =>
+                startDictation.mutate(code, {
+                  onSuccess: (step) => step.assessment_id && setMode({ kind: "dictation", id: step.assessment_id, step }),
+                })
+              }
+            >
+              {canSpeak() ? (overview.data.skills.listening ? "Retake the listening check" : "Start the listening check") : "No browser voice available"}
+            </Button>
+          </Panel>
           <Panel aria-labelledby="t-later">
             <PanelTitle id="t-later">Coming next</PanelTitle>
             <ul className="flex flex-col gap-2 text-sm text-ink-2">
-              <li className="well rounded-xl p-3">
-                <strong className="text-ink">Listening</strong> · dictation at rising speed, with the player (Phase 2)
-              </li>
               <li className="well rounded-xl p-3">
                 <strong className="text-ink">Speaking</strong> · repeat-after-me and a short conversation (Phase 6)
               </li>
@@ -325,6 +363,111 @@ function VocabResultCard({ step, onExit }: { step: Extract<VocabStep, { done: tr
         Back to Level Lab
       </Button>
     </Panel>
+  );
+}
+
+// ---------------------------------------------------------------- dictation
+
+function DictationRunner({ lang, id, initial, onExit }: { lang: string; id: number; initial: DictationStep; onExit: () => void }) {
+  const [step, setStep] = useState<DictationStep>(initial);
+  const [typed, setTyped] = useState("");
+  const [plays, setPlays] = useState(0);
+  const answer = useLevelMutation((v: { itemId: number; typed: string; plays: number }) => api.dictationAnswer(id, v.itemId, v.typed, v.plays));
+  const item = step.item;
+
+  const play = () => {
+    if (!item || plays >= item.max_plays) return;
+    speak(item.speak, lang, 0.95);
+    setPlays(plays + 1);
+  };
+
+  return (
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+      <div className="flex items-center justify-between px-1">
+        <h1 className="text-xl font-bold">Listening check</h1>
+        <Button variant="ghost" onClick={onExit}>
+          {step.done ? "Back to Level Lab" : "Leave (not saved)"}
+        </Button>
+      </div>
+      {step.feedback && (
+        <Panel className="py-4">
+          <p className="text-xs text-ink-3">Previous sentence · {Math.round(step.feedback.accuracy * 100)}% of words heard</p>
+          <p lang={lang} className="mt-1 text-base">
+            {step.feedback.sentence}
+          </p>
+        </Panel>
+      )}
+      {step.done && step.result ? (
+        <Panel className="glass-strong">
+          <PanelTitle aside={<Chip tone="good">saved to your profile</Chip>}>Your result</PanelTitle>
+          <div className="text-3xl font-bold">Listening ≈ {step.result.band}</div>
+          <p className="mt-1 text-sm text-ink-2">
+            {step.result.band_low === step.result.band_high ? "Stable band" : `Likely ${step.result.band_low}–${step.result.band_high}`} ·{" "}
+            {Math.round(step.result.overall * 100)}% of words heard overall
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2 text-xs">
+            {Object.entries(step.result.averages).map(([level, avg]) => (
+              <span key={level} className="well rounded-lg px-3 py-2">
+                {level}: <strong className="text-ink">{Math.round(avg * 100)}%</strong>
+              </span>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-ink-3">
+            Measured with a synthetic voice at normal speed. Real speakers are harder; the player shows how fast your usual videos are.
+          </p>
+          <Button className="mt-4" onClick={onExit}>
+            Back to Level Lab
+          </Button>
+        </Panel>
+      ) : (
+        item && (
+          <Panel className="glass-strong flex flex-col items-center gap-5 py-8 text-center">
+            <div className="w-full max-w-sm">
+              <ProgressBar value={(item.seq - 1) / item.total} label="Listening check progress" />
+              <p className="mt-2 text-xs text-ink-3">
+                Sentence {item.seq} of {item.total}
+              </p>
+            </div>
+            <Button variant="primary" onClick={play} disabled={plays >= item.max_plays} className="min-w-48">
+              {plays === 0 ? "▶ Play the sentence" : plays < item.max_plays ? `Play again (${item.max_plays - plays} left)` : "No plays left"}
+            </Button>
+            <form
+              className="flex w-full flex-col gap-3"
+              onSubmit={(event) => {
+                event.preventDefault();
+                answer.mutate(
+                  { itemId: item.id, typed, plays },
+                  {
+                    onSuccess: (next) => {
+                      setStep(next);
+                      setTyped("");
+                      setPlays(0);
+                    },
+                  },
+                );
+              }}
+            >
+              <label className="sr-only" htmlFor="dictation-input">
+                What you heard
+              </label>
+              <textarea
+                id="dictation-input"
+                lang={lang}
+                value={typed}
+                onChange={(e) => setTyped(e.target.value)}
+                rows={2}
+                placeholder="Type what you heard…"
+                className="w-full rounded-xl border border-white/14 bg-surface p-3 text-base text-ink placeholder:text-ink-3"
+              />
+              <Button type="submit" variant="primary" disabled={answer.isPending || plays === 0}>
+                {answer.isPending ? "Checking…" : "Check and continue"}
+              </Button>
+              {answer.isError && <p role="alert" className="text-sm text-red-200">{answer.error.message}</p>}
+            </form>
+          </Panel>
+        )
+      )}
+    </div>
   );
 }
 

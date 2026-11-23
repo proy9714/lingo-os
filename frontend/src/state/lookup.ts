@@ -8,6 +8,7 @@ export interface Selection {
   surface: string; // the word exactly as it appears in the text ('rufe', '間に合わない')
   sentence: string;
   locator?: string;
+  contentItemId?: number;
   /** Bumped on every click so clicking the same word again re-opens the panel. */
   nonce: number;
 }

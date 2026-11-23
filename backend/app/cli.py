@@ -108,6 +108,58 @@ def dict_list(as_json: bool = typer.Option(False, "--json", help="Machine-readab
     console.print(table)
 
 
+content_app = typer.Typer(help="Library commands.", no_args_is_help=True)
+app.add_typer(content_app, name="content")
+
+
+@content_app.command("fetch-history")
+def content_fetch_history(
+    lang: Optional[str] = typer.Option(None, "--lang", help="de, es or ja. Default: all."),
+    limit: Optional[int] = typer.Option(None, help="Stop after this many videos."),
+    as_json: bool = typer.Option(False, "--json", help="Machine-readable output."),
+) -> None:
+    """Fetch YouTube captions for videos you've watched, analyse them, refresh your starting estimate."""
+    from app.engine.evidence import content_evidence
+    from app.jobs.history import fetch_history_captions, pending_videos
+    from app.jobs.runner import JobContext
+    from app.main import bootstrap
+
+    cfg = load_config()
+    engine = bootstrap(cfg)
+    with engine.begin() as conn:
+        todo = len(pending_videos(conn, lang, limit))
+    if not as_json:
+        console.print(f"{todo} videos to fetch (about {todo * 4 // 60 + 1} min; pauses between requests are deliberate).")
+    ctx = JobContext(
+        engine, cfg, None, {"lang": lang, "limit": limit},
+        on_progress=None if as_json else (lambda f, m: console.print(f"  {round(f * 100):3d}%  {m}"[:110])),
+    )
+    result = fetch_history_captions(ctx)
+    with engine.begin() as conn:
+        evidence = {code: content_evidence(conn, code) for code in cfg.language_codes if lang in (None, code)}
+    if as_json:
+        _emit_json({"result": result, "evidence": evidence})
+        return
+    console.print(result)
+    for code, ev in evidence.items():
+        console.print(
+            f"{code.upper()}: {ev['videos_analysed']}/{ev['videos_watched']} videos analysed · "
+            f"{ev['content_words_heard']:,} content words heard · {ev['lemmas_heard_10_plus']:,} words heard 10+ times · "
+            f"typical video needs ~{ev['vocabulary_for_90_percent']} words for 90% coverage"
+        )
+
+
+@content_app.command("scan")
+def content_scan() -> None:
+    """Register media files in data/library/media/<lang>/ (same-named .srt/.vtt become transcripts)."""
+    from app.main import bootstrap
+    from app.services.content import scan_media
+
+    cfg = load_config()
+    with bootstrap(cfg).begin() as conn:
+        console.print(scan_media(conn, cfg))
+
+
 @app.command()
 def serve(
     host: Optional[str] = typer.Option(None, help="Defaults to config/app.yaml (127.0.0.1)."),

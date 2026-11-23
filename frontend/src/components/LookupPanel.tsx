@@ -51,7 +51,10 @@ export function LookupPanel() {
         pos: token.pos,
         status,
         save,
-        context: save && sentence ? { sentence, surface: selection.surface, locator: selection.locator } : undefined,
+        context:
+          save && sentence
+            ? { sentence, surface: selection.surface, locator: selection.locator, content_item_id: selection.contentItemId }
+            : undefined,
       },
       { onSuccess: (newState) => setResult((prev) => (prev ? { ...prev, state: newState } : prev)) },
     );

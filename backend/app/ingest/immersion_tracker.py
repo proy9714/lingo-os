@@ -311,44 +311,19 @@ def _insert_session(conn: Connection, row: dict[str, str], language: str, batch_
 
 
 def _content_item(conn: Connection, row: dict[str, str], language: str, title: str, seconds: int) -> int:
-    video_id = row["video_id"].strip()
-    channel = (row.get("channel") or "").strip() or None
-    collection_id = _channel_collection(conn, language, channel) if channel else None
-    conn.execute(
-        text(
-            "INSERT OR IGNORE INTO content_items (language_code, type, title, creator, collection_id, origin, source, "
-            "source_url, external_id, duration_sec, status, finished_at) VALUES (:lang, 'youtube', :title, :creator, "
-            ":coll, 'csv_import', 'youtube', :url, :vid, :dur, 'finished', :finished)"
-        ),
-        {
-            "lang": language,
-            "title": title,
-            "creator": channel,
-            "coll": collection_id,
-            "url": (row.get("url") or "").strip() or f"https://www.youtube.com/watch?v={video_id}",
-            "vid": video_id,
-            "dur": seconds,
-            "finished": row.get("date"),
-        },
+    from app.services.content import upsert_youtube  # local import: content pulls in the NLP stack
+
+    return upsert_youtube(
+        conn,
+        language,
+        row["video_id"].strip(),
+        title=title,
+        channel=(row.get("channel") or "").strip() or None,
+        duration=seconds,
+        origin="csv_import",
+        status="finished",
+        finished=row.get("date"),
     )
-    return conn.execute(
-        text("SELECT id FROM content_items WHERE source = 'youtube' AND external_id = :vid"), {"vid": video_id}
-    ).scalar_one()
-
-
-def _channel_collection(conn: Connection, language: str, channel: str) -> int:
-    existing = conn.execute(
-        text(
-            "SELECT id FROM collections WHERE language_code = :lang AND kind = 'youtube_channel' AND title = :t LIMIT 1"
-        ),
-        {"lang": language, "t": channel},
-    ).scalar()
-    if existing:
-        return existing
-    return conn.execute(
-        text("INSERT INTO collections (language_code, kind, title) VALUES (:lang, 'youtube_channel', :t)"),
-        {"lang": language, "t": channel},
-    ).lastrowid
 
 
 def _import_goals(conn: Connection, settings_path: Path, languages: list[str]) -> dict[str, int] | None:

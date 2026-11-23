@@ -132,7 +132,7 @@ export interface Annotation {
   language: string;
   tokens: AnnotatedToken[];
   sentences: { start: number; end: number }[];
-  summary: { words: number; known_share: number | null; new_words: number; profile_measured: boolean };
+  summary: { words: number; running_words?: number; known_share: number | null; new_words: number; profile_measured: boolean };
 }
 
 export interface WordState {
@@ -287,6 +287,96 @@ export interface CTestStart {
 export interface CTestResult {
   result: CTestScores;
   review: { id: number; expected: string; given: string; score: number }[];
+}
+
+// ---------------------------------------------------------------- Phase 2: library, player, listening
+
+export interface ContentItem {
+  id: number;
+  language: string;
+  type: string;
+  title: string;
+  creator: string | null;
+  source: string;
+  url: string | null;
+  external_id: string | null;
+  local_path: string | null;
+  duration_sec: number | null;
+  status: string;
+  progress: number;
+  position_ref: string | null;
+  analysis_status: string;
+  last_opened_at: string | null;
+  metadata: Record<string, unknown>;
+  times_watched: number;
+  last_watched_at: string | null;
+  transcript_kind: string | null;
+  coverage: number | null;
+  expected_unknown: number | null;
+  band: string | null;
+  speech_wpm: number | null;
+}
+
+export interface TranscriptCue {
+  id: number;
+  seq: number;
+  start_ms: number;
+  end_ms: number;
+  text: string;
+  tokens: AnnotatedToken[];
+}
+
+export interface TranscriptData {
+  item: ContentItem;
+  cues: TranscriptCue[];
+  summary: Annotation["summary"] | null;
+}
+
+export interface Job {
+  id: number;
+  kind: string;
+  status: "queued" | "running" | "done" | "failed" | "cancelled";
+  progress: number;
+  result: Record<string, unknown> | null;
+  error: string | null;
+}
+
+export interface Evidence {
+  videos_watched: number;
+  videos_analysed: number;
+  content_words_heard: number;
+  lemmas_heard: number;
+  lemmas_heard_10_plus: number;
+  lemmas_heard_3_to_9: number;
+  vocabulary_for_90_percent: number | null;
+  coverage_target: number;
+  job: Job | null;
+}
+
+export interface DictationItem {
+  id: number;
+  seq: number;
+  level: string;
+  speak: string;
+  total: number;
+  max_plays: number;
+}
+
+export interface DictationResult {
+  band: string;
+  band_low: string;
+  band_high: string;
+  averages: Record<string, number>;
+  overall: number;
+  sentences: number;
+}
+
+export interface DictationStep {
+  done: boolean;
+  assessment_id?: number;
+  item?: DictationItem;
+  feedback?: { sentence: string; accuracy: number; level: string };
+  result?: DictationResult;
 }
 
 export interface SystemCheck {

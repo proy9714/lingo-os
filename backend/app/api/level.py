@@ -10,7 +10,7 @@ from sqlalchemy import Connection, text
 from app.api.deps import get_cfg, get_conn, get_dict_conn, require_language
 from app.config import AppConfig
 from app.engine.profile import get_profile, total_seconds
-from app.level import ctest, vocab_test
+from app.level import ctest, dictation, vocab_test
 from app.services.estimate import hours_estimate
 
 router = APIRouter(prefix="/api/level", tags=["level"])
@@ -28,6 +28,29 @@ class MeaningAnswer(BaseModel):
 
 class CTestAnswers(BaseModel):
     answers: dict[int, str] = Field(default_factory=dict)
+
+
+class DictationAnswer(BaseModel):
+    item_id: int
+    typed: str = Field(default="", max_length=500)
+    plays: int = Field(default=1, ge=0, le=10)
+
+
+@router.post("/{lang}/dictation/start")
+def dictation_start(lang: str, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
+    require_language(conn, lang)
+    try:
+        return dictation.start(conn, lang)
+    except dictation.DictationError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.post("/dictation/{assessment_id}/answer")
+def dictation_answer(assessment_id: int, body: DictationAnswer, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
+    try:
+        return dictation.answer(conn, assessment_id, body.item_id, body.typed, body.plays)
+    except dictation.DictationError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @router.get("/{lang}/overview")
@@ -60,6 +83,7 @@ def overview(lang: str, conn: Connection = Depends(get_conn), cfg: AppConfig = D
         "skills": skills,
         "history": history,
         "ctest_available": ctest.available(lang),
+        "dictation_available": dictation.available(lang),
     }
 
 

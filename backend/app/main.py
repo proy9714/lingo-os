@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -10,7 +11,8 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import Engine
 
 from app import __version__
-from app.api import activity, imports, level, nlp, settings, stats, system, vocab
+from app.api import activity, content, imports, level, nlp, settings, stats, system, vocab
+from app.jobs.runner import Runner
 from app.config import AppConfig, load_config
 from app.db import migrate
 from app.db.engine import make_engine
@@ -30,14 +32,25 @@ def bootstrap(cfg: AppConfig) -> Engine:
     return engine
 
 
-def create_app(cfg: AppConfig | None = None) -> FastAPI:
+def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAPI:
     cfg = cfg or load_config()
-    app = FastAPI(title="Lingo OS", version=__version__)
+    engine = bootstrap(cfg)
+
+    @asynccontextmanager
+    async def lifespan(_app: FastAPI):
+        runner = Runner(engine, cfg) if run_jobs else None
+        if runner:
+            runner.start()
+        yield
+        if runner:
+            runner.stop()
+
+    app = FastAPI(title="Lingo OS", version=__version__, lifespan=lifespan)
     app.state.cfg = cfg
-    app.state.engine = bootstrap(cfg)
+    app.state.engine = engine
     app.state.dict_engine = make_engine(cfg.dict_db_path)
 
-    for module in (system, settings, stats, activity, imports, nlp, vocab, level):
+    for module in (system, settings, stats, activity, imports, nlp, vocab, level, content):
         app.include_router(module.router)
 
     _serve_frontend(app, cfg.frontend_dist)

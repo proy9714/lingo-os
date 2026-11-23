@@ -20,5 +20,5 @@ def cfg(tmp_path: Path) -> AppConfig:
 
 @pytest.fixture
 def client(cfg: AppConfig):
-    with TestClient(create_app(cfg)) as test_client:
+    with TestClient(create_app(cfg, run_jobs=False)) as test_client:
         yield test_client

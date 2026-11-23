@@ -3,6 +3,7 @@ import { useEffect } from "react";
 
 import { useActiveLanguage, useToday, useUpdateSettings } from "../api/hooks";
 import { useLookupStore } from "../state/lookup";
+import { useTrackerStore } from "../state/tracker";
 import { useUi } from "../state/ui";
 import { Icon } from "./Icon";
 import { LookupPanel } from "./LookupPanel";
@@ -153,12 +154,30 @@ function LanguageSwitcher() {
 function TimerPill() {
   const { code } = useActiveLanguage();
   const today = useToday(code).data;
+  const tracker = useTrackerStore();
   const done = today ? today.today_minutes : 0;
   const goal = today?.goal_minutes ?? 60;
-  const dot = done >= goal ? "bg-emerald-400" : done > 0 ? "bg-accent" : "bg-gray-500";
+  const dot = tracker.active
+    ? "bg-emerald-400 shadow-[0_0_0_4px_rgb(52_211_153/0.2)]"
+    : done >= goal
+      ? "bg-emerald-400"
+      : done > 0
+        ? "bg-accent"
+        : "bg-gray-500";
+  const mm = String(Math.floor(tracker.seconds / 60)).padStart(2, "0");
+  const ss = String(tracker.seconds % 60).padStart(2, "0");
   return (
-    <div className="flex h-11 items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3.5 text-[13px] text-ink-2">
+    <div
+      role="status"
+      aria-live="off"
+      className="flex h-11 items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3.5 text-[13px] text-ink-2"
+    >
       <span aria-hidden="true" className={cx("size-2 rounded-full", dot)} />
+      {tracker.label && (tracker.active || tracker.seconds > 0) && (
+        <span className="hidden sm:inline">
+          {tracker.label} <strong className="text-ink tabular-nums">{mm}:{ss}</strong> ·
+        </span>
+      )}
       <span>
         Today <strong className="text-ink">{done}</strong> / {goal} min
       </span>

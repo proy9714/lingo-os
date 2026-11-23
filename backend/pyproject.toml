@@ -18,6 +18,7 @@ dependencies = [
   "wordfreq>=3.1",
   "de-core-news-sm",
   "es-core-news-sm",
+  "yt-dlp[default]>=2026.10.26",
 ]
 
 [project.scripts]

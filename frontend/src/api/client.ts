@@ -1,7 +1,11 @@
 import type {
   Annotation,
+  ContentItem,
   CTestResult,
   CTestStart,
+  DictationStep,
+  Evidence,
+  TranscriptData,
   Language,
   LevelOverview,
   LookupResult,
@@ -87,7 +91,7 @@ export const api = {
     pos?: string;
     status: WordStatus;
     save?: boolean;
-    context?: { sentence: string; surface?: string; locator?: string };
+    context?: { sentence: string; surface?: string; locator?: string; content_item_id?: number };
   }) => request<WordState>("/api/vocab/status", { method: "POST", body: json(input) }),
   words: (params: { lang: string; status?: string; q?: string; limit?: number; offset?: number }) => {
     const query = new URLSearchParams(
@@ -112,4 +116,35 @@ export const api = {
   ctestStart: (lang: string) => request<CTestStart>(`/api/level/${encodeURIComponent(lang)}/ctest/start`, { method: "POST" }),
   ctestSubmit: (id: number, answers: Record<number, string>) =>
     request<CTestResult>(`/api/level/ctest/${id}/submit`, { method: "POST", body: json({ answers }) }),
+
+  // Phase 2
+  content: (lang: string, q = "") =>
+    request<{ total: number; items: ContentItem[] }>(
+      `/api/content?lang=${encodeURIComponent(lang)}&limit=120${q ? `&q=${encodeURIComponent(q)}` : ""}`,
+    ),
+  contentItem: (id: number) => request<ContentItem>(`/api/content/${id}`),
+  addYouTube: (lang: string, url: string) =>
+    request<ContentItem>("/api/content/youtube", { method: "POST", body: json({ lang, url }) }),
+  scanMedia: () => request<{ added: string[]; with_subtitles: number; problems: string[]; folder: string }>("/api/content/scan", { method: "POST" }),
+  transcript: (id: number) => request<TranscriptData>(`/api/content/${id}/transcript`),
+  fetchCaptions: (id: number) => request<ContentItem>(`/api/content/${id}/captions`, { method: "POST" }),
+  evidence: (lang: string) => request<Evidence>(`/api/content/evidence?lang=${encodeURIComponent(lang)}`),
+  startHistory: (lang?: string) =>
+    request<{ job_id: number }>("/api/content/history/fetch", { method: "POST", body: json(lang ? { lang } : {}) }),
+  heartbeat: (body: {
+    lang: string;
+    activity: string;
+    session: string;
+    seconds: number;
+    content_item_id?: number;
+    position_ms?: number;
+    duration_ms?: number;
+  }) => request<{ session_id: number; active_seconds: number }>("/api/activity/heartbeat", { method: "POST", body: json(body) }),
+  stopSession: (session: string) => request<{ stopped: boolean }>("/api/activity/stop", { method: "POST", body: json({ session }) }),
+  dictationStart: (lang: string) => request<DictationStep>(`/api/level/${encodeURIComponent(lang)}/dictation/start`, { method: "POST" }),
+  dictationAnswer: (id: number, itemId: number, typed: string, plays: number) =>
+    request<DictationStep>(`/api/level/dictation/${id}/answer`, {
+      method: "POST",
+      body: json({ item_id: itemId, typed, plays }),
+    }),
 };

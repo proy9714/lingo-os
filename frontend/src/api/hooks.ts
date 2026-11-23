@@ -118,6 +118,38 @@ export const usePatchWord = () =>
   useWordMutation((v: { id: number; patch: Parameters<typeof api.patchWord>[1] }) => api.patchWord(v.id, v.patch));
 export const useLevelMutation = <TVars, TData>(fn: (vars: TVars) => Promise<TData>) => useWordMutation(fn);
 
+// ---------------------------------------------------------------- Phase 2
+
+export const useContentList = (lang: string, q: string) =>
+  useQuery({ queryKey: ["content", lang, q], queryFn: () => api.content(lang, q) });
+
+export const useContentItem = (id: number) => useQuery({ queryKey: ["content-item", id], queryFn: () => api.contentItem(id) });
+
+export const useTranscript = (id: number) =>
+  useQuery({ queryKey: ["transcript", id], queryFn: () => api.transcript(id), staleTime: 60_000 });
+
+export const useEvidence = (lang: string) =>
+  useQuery({
+    queryKey: ["evidence", lang],
+    queryFn: () => api.evidence(lang),
+    refetchInterval: (query) => {
+      const status = query.state.data?.job?.status;
+      return status === "queued" || status === "running" ? 2000 : false;
+    },
+  });
+
+export function useContentMutation<TVars, TData>(fn: (vars: TVars) => Promise<TData>) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: fn,
+    onSuccess: () => {
+      for (const key of [["content"], ["content-item"], ["transcript"], ["evidence"], ["level"], ["annotate"]]) {
+        void qc.invalidateQueries({ queryKey: key });
+      }
+    },
+  });
+}
+
 export const useLogManual = () => useActivityMutation(api.logManual);
 export const useImportTracker = () => useActivityMutation((path?: string) => api.importTracker(path));
 export const useCountFlag = () => useActivityMutation(api.countFlag);

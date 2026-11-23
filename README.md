@@ -8,7 +8,19 @@ The design, schema and roadmap are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.m
 
 ## Status
 
-**Phases 0 and 1 are done.**
+**Phases 0–2 are done.**
+
+Phase 2, watch and listen:
+
+- **Watch**:
+  - Your library: the videos from your tracker history plus any YouTube link you add, and local media found by scanning `data\library\media\<lang>\` (same-named `.srt`/`.vtt` files become transcripts).
+  - Each video shows how much you'd know, the expected new words and its speaking speed.
+- **Player**:
+  - YouTube or local file next to a synced transcript. Click a word: the video pauses, the lookup opens, and it resumes when you close it.
+  - Previous, next and replay line; speed control; pause after each line.
+  - Watching time is tracked only while it plays, with a live timer in the top bar.
+- **History analysis**: fetches the captions of every video you watched (`npm run lingo -- content fetch-history`, or the button on Watch). It counts how often you've heard each word, which feeds word colouring and your starting level.
+- **Level Lab listening**: dictation of graded sentences read by your browser's voice.
 
 Phase 1, the word engine and Level Lab:
 

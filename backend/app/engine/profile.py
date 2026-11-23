@@ -8,6 +8,7 @@ from typing import Any
 from sqlalchemy import Connection, text
 
 from app.config import AppConfig
+from app.engine.evidence import blend_with_hours, content_evidence
 from app.engine.vocab_model import DEFAULT_K, solve_r50
 from app.services.estimate import hours_estimate
 from app.timeutil import to_iso, utc_now
@@ -64,12 +65,15 @@ def sync_baselines(conn: Connection, cfg: AppConfig) -> None:
         if profile and profile["measured"]:
             continue
         estimate = hours_estimate(lang, total_seconds(conn, lang) / 3600, cfg.baselines)
-        words = max(100, estimate.get("words_prior") or 100)
+        hours_words = max(100, estimate.get("words_prior") or 100)
+        words, confidence = blend_with_hours(hours_words, content_evidence(conn, lang))
+        words = round(words)
         r50 = solve_r50(words, DEFAULT_K)
         level, alt = band_for_size(cfg.baselines, lang, words)
-        if profile and abs(profile["vocab_size"] - words) < 5:
+        if profile and abs(profile["vocab_size"] - words) < 5 and abs(profile["confidence"] - confidence) < 0.01:
             continue
-        _write(conn, lang, r50=r50, k=DEFAULT_K, size=words, level=level, alt=alt, confidence=0.2, reason="baseline")
+        reason = "baseline" if confidence <= 0.2 else "recompute"
+        _write(conn, lang, r50=r50, k=DEFAULT_K, size=words, level=level, alt=alt, confidence=confidence, reason=reason)
 
 
 def apply_measurement(

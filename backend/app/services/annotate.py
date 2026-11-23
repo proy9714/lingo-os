@@ -6,6 +6,8 @@ from typing import Any
 
 from sqlalchemy import Connection
 
+from app.engine.evidence import heard_for
+from app.engine.knowledge import knowledge_p
 from app.engine.profile import get_profile
 from app.engine.vocab_model import DEFAULT_K, p_known
 from app.languages import analyze
@@ -19,6 +21,7 @@ def annotate(conn: Connection, lang: str, text: str) -> dict[str, Any]:
     tokens, sentences = analyze(lang, text)
     profile = get_profile(conn, lang) or {"r50": 500.0, "k": DEFAULT_K}
     known = vocab.states(conn, lang, [(t.lemma, t.reading) for t in tokens if t.is_word])
+    heard = heard_for(conn, lang, [t.lemma for t in tokens if t.learnable])
 
     out: list[dict[str, Any]] = []
     learnable = 0
@@ -30,12 +33,14 @@ def annotate(conn: Connection, lang: str, text: str) -> dict[str, Any]:
         if not token.is_word:
             status, p = "none", None
         elif state:
-            p = 1.0 if state["status"] == "ignored" else state["p_known"]
+            times_heard = heard.get((token.lemma, token.reading), 0)
+            p = knowledge_p(rank, state["status"], state["p_known"], times_heard, profile["r50"], profile["k"])
             status = state["status"]
             if status == "seen":
                 status = "new" if p < 0.5 else "likely"
         elif token.learnable:
-            p = p_known(rank, profile["r50"], profile["k"])
+            times_heard = heard.get((token.lemma, token.reading), 0)
+            p = knowledge_p(rank, None, None, times_heard, profile["r50"], profile["k"])
             status = "likely" if p >= 0.5 else "new"
         else:
             status, p = "none", 1.0  # function words, names, numbers: never highlighted
@@ -63,13 +68,18 @@ def annotate(conn: Connection, lang: str, text: str) -> dict[str, Any]:
             }
         )
 
+    # Coverage counts every running word, as the research thresholds (95–98 %) do:
+    # function words, names and numbers count as known.
+    running = sum(1 for t in tokens if t.is_word)
+    others = running - learnable
     return {
         "language": lang,
         "tokens": out,
         "sentences": [{"start": s.start, "end": s.end} for s in sentences],
         "summary": {
             "words": learnable,
-            "known_share": round(p_total / learnable, 3) if learnable else None,
+            "running_words": running,
+            "known_share": round((p_total + others) / running, 3) if running else None,
             "new_words": len(new_keys),
             "profile_measured": bool(profile.get("measured")),
         },
