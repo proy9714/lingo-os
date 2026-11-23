@@ -8,7 +8,19 @@ The design, schema and roadmap are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.m
 
 ## Status
 
-**Phases 0–2 are done.**
+**Phases 0–3 are done.**
+
+Phase 3, read and Up Next:
+
+- **Read**:
+  - Your shelf of books (.epub), PDFs with a text layer, web articles (the main text is extracted once and kept locally) and pasted texts.
+  - Each shows how much you'd know and the expected new words.
+- **Reader**:
+  - Pages on a paper background, every word clickable. A saved word keeps just its sentence as context.
+  - Arrow keys turn pages, text size is adjustable, and it reopens where you left off.
+  - Reading time is tracked while the page is open and you've been active in the last 3 minutes.
+- **Up Next** on Today: 12 picks matched to your level. They favour items that bring back your saved words and things you've started, and mix channels and formats. Dismiss any pick with ×.
+- `npm run lingo -- content rescore` refreshes the starting estimate and every item's score.
 
 Phase 2, watch and listen:
 
@@ -63,6 +75,8 @@ Windows with Node 18+ and [uv](https://docs.astral.sh/uv/). uv installs Python 3
 | `npm run doctor` | Check Python, data folder, databases, build, ffmpeg and API keys |
 | `npm run lingo -- dict import` | Import every Yomitan dictionary zip in `data/dictionaries` (re-importing replaces) |
 | `npm run lingo -- dict list` | Show installed dictionaries |
+| `npm run lingo -- content fetch-history` | Fetch and analyse captions of the videos you've watched (resumes where it stopped) |
+| `npm run lingo -- content rescore` | Refresh the starting estimate and re-score the library |
 
 `npm run dev` starts the API through `backend/app/devserver.py`. On Windows, uvicorn's auto-reload sends Ctrl+C to the
 whole console, which would also stop Vite. The launcher keeps the API on its own hidden console.

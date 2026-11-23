@@ -149,6 +149,43 @@ def content_fetch_history(
         )
 
 
+@content_app.command("rescore")
+def content_rescore(
+    lang: Optional[str] = typer.Option(None, "--lang", help="de, es or ja. Default: all."),
+    as_json: bool = typer.Option(False, "--json", help="Machine-readable output."),
+) -> None:
+    """Refresh the starting estimate and re-score every analysed item against your current profile."""
+    from app.engine.evidence import content_evidence
+    from app.engine.profile import get_profile, sync_baselines
+    from app.main import bootstrap
+    from app.services.content import rescore_language
+
+    cfg = load_config()
+    out = {}
+    with bootstrap(cfg).begin() as conn:
+        sync_baselines(conn, cfg)
+        for code in cfg.language_codes:
+            if lang not in (None, code):
+                continue
+            profile = get_profile(conn, code) or {}
+            out[code] = {
+                "rescored": rescore_language(conn, code),
+                "vocabulary_for_90_percent": content_evidence(conn, code)["vocabulary_for_90_percent"],
+                "profile_words": round(profile.get("vocab_size") or 0),
+                "level": profile.get("level"),
+                "measured": bool(profile.get("measured")),
+            }
+    if as_json:
+        _emit_json(out)
+        return
+    for code, row in out.items():
+        console.print(
+            f"{code.upper()}: {row['rescored']} items re-scored · typical item needs ~{row['vocabulary_for_90_percent']} words "
+            f"for 90% · estimate ≈ {row['profile_words']:,} words, {row['level']} "
+            f"({'measured' if row['measured'] else 'starting estimate'})"
+        )
+
+
 @content_app.command("scan")
 def content_scan() -> None:
     """Register media files in data/library/media/<lang>/ (same-named .srt/.vtt become transcripts)."""
@@ -243,6 +280,34 @@ def status(
             f"{today_entry['today_minutes']}/{today_entry['goal_minutes']} min",
             f"{est['level']} of {est['max_level']} (~{est['words_prior']} words, low confidence)",
         )
+    console.print(table)
+
+
+@app.command()
+def recommend(
+    lang: Optional[str] = typer.Option(None, "--lang", help="de, es or ja. Default: the active language."),
+    n: int = typer.Option(12, min=1, max=50, help="How many picks."),
+    as_json: bool = typer.Option(False, "--json", help="Machine-readable output."),
+) -> None:
+    """Up Next: picks matched to your level, with the reasons for each."""
+    from app.db import settings_store
+    from app.main import bootstrap
+    from app.services.recommend import up_next
+
+    cfg = load_config()
+    with bootstrap(cfg).begin() as conn:
+        code = lang or settings_store.get(conn, "active_language") or cfg.language_codes[0]
+        result = up_next(conn, code, n)
+    keep = ("id", "kind", "type", "title", "creator", "duration_sec", "word_count", "coverage", "band", "expected_unknown", "reasons")
+    result["picks"] = [{k: pick[k] for k in keep} for pick in result["picks"]]
+    if as_json:
+        _emit_json(result)
+        return
+    table = Table(title=f"Up next ({code}) · {len(result['picks'])} of {result['available']} analysed")
+    for column in ("#", "Title", "Channel / author", "Fit", "Why"):
+        table.add_column(column)
+    for i, pick in enumerate(result["picks"], 1):
+        table.add_row(str(i), pick["title"][:60], pick["creator"] or "", pick["band"] or "", "; ".join(pick["reasons"]))
     console.print(table)
 
 

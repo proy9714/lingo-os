@@ -315,6 +315,8 @@ export interface ContentItem {
   expected_unknown: number | null;
   band: string | null;
   speech_wpm: number | null;
+  word_count: number | null;
+  page_count: number | null;
 }
 
 export interface TranscriptCue {
@@ -392,4 +394,55 @@ export interface SystemStatus {
   device_id: string;
   data_dir: string;
   checks: SystemCheck[];
+}
+
+// ---------------------------------------------------------------- Phase 3: reading, Up Next
+
+export interface UpNextPick {
+  id: number;
+  type: string;
+  kind: "video" | "reading";
+  title: string;
+  creator: string | null;
+  source: string;
+  external_id: string | null;
+  duration_sec: number | null;
+  word_count: number | null;
+  status: string;
+  progress: number | null;
+  coverage: number | null;
+  i1_score: number | null;
+  band: string | null;
+  expected_unknown: number | null;
+  learning_words: number;
+  watched: number;
+  score: number;
+  reasons: string[];
+}
+
+export interface UpNext {
+  language: string;
+  available: number;
+  picks: UpNextPick[];
+}
+
+export interface ReaderParagraph {
+  id: number;
+  seq: number;
+  locator: string;
+  text: string;
+  tokens: AnnotatedToken[];
+}
+
+export interface ReaderPage {
+  item: ContentItem;
+  page: number;
+  pages: number;
+  title: string | null;
+  paragraphs: ReaderParagraph[];
+  summary: Annotation["summary"] | null;
+}
+
+export interface AddedDocument extends ContentItem {
+  analysing_in_background: boolean;
 }

@@ -6,6 +6,9 @@ import type {
   DictationStep,
   Evidence,
   TranscriptData,
+  AddedDocument,
+  ReaderPage,
+  UpNext,
   Language,
   LevelOverview,
   LookupResult,
@@ -118,9 +121,9 @@ export const api = {
     request<CTestResult>(`/api/level/ctest/${id}/submit`, { method: "POST", body: json({ answers }) }),
 
   // Phase 2
-  content: (lang: string, q = "") =>
+  content: (lang: string, q = "", shelf: "watch" | "read" = "watch") =>
     request<{ total: number; items: ContentItem[] }>(
-      `/api/content?lang=${encodeURIComponent(lang)}&limit=120${q ? `&q=${encodeURIComponent(q)}` : ""}`,
+      `/api/content?lang=${encodeURIComponent(lang)}&shelf=${shelf}&limit=120${q ? `&q=${encodeURIComponent(q)}` : ""}`,
     ),
   contentItem: (id: number) => request<ContentItem>(`/api/content/${id}`),
   addYouTube: (lang: string, url: string) =>
@@ -147,4 +150,27 @@ export const api = {
       method: "POST",
       body: json({ item_id: itemId, typed, plays }),
     }),
+
+  // Phase 3
+  recommend: (lang: string, n = 12) => request<UpNext>(`/api/recommend?lang=${encodeURIComponent(lang)}&n=${n}`),
+  uploadDocument: async (lang: string, file: File) => {
+    const form = new FormData();
+    form.append("lang", lang);
+    form.append("file", file);
+    const response = await fetch("/api/content/upload", { method: "POST", body: form });
+    if (!response.ok) {
+      const body = (await response.json().catch(() => ({}))) as { detail?: unknown };
+      throw new ApiError(response.status, typeof body.detail === "string" ? body.detail : response.statusText);
+    }
+    return (await response.json()) as AddedDocument;
+  },
+  addArticle: (lang: string, url: string) =>
+    request<AddedDocument>("/api/content/article", { method: "POST", body: json({ lang, url }) }),
+  addText: (lang: string, title: string, text: string) =>
+    request<AddedDocument>("/api/content/text", { method: "POST", body: json({ lang, title, text }) }),
+  pageList: (id: number) => request<{ total: number; pages: { n: number; title: string | null }[] }>(`/api/content/${id}/pages`),
+  readerPage: (id: number, page: number) => request<ReaderPage>(`/api/content/${id}/page/${page}`),
+  readProgress: (id: number, page: number, total: number) =>
+    request<{ ok: boolean }>(`/api/content/${id}/read-progress`, { method: "POST", body: json({ page, total }) }),
+  dismiss: (id: number) => request<{ ok: boolean }>(`/api/content/${id}/dismiss`, { method: "POST" }),
 };

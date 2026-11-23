@@ -81,7 +81,7 @@ function useActivityMutation<TVars, TData>(fn: (vars: TVars) => Promise<TData>) 
 // ---------------------------------------------------------------- Phase 1
 
 /** Everything that shows word statuses. */
-const WORD_KEYS = [["annotate"], ["words"], ["word"], ["vocab-summary"], ["level"]];
+const WORD_KEYS = [["annotate"], ["words"], ["word"], ["vocab-summary"], ["level"], ["reader"], ["transcript"]];
 
 export const useAnnotation = (lang: string, text: string) =>
   useQuery({
@@ -120,8 +120,14 @@ export const useLevelMutation = <TVars, TData>(fn: (vars: TVars) => Promise<TDat
 
 // ---------------------------------------------------------------- Phase 2
 
-export const useContentList = (lang: string, q: string) =>
-  useQuery({ queryKey: ["content", lang, q], queryFn: () => api.content(lang, q) });
+export const useContentList = (lang: string, q: string, shelf: "watch" | "read" = "watch") =>
+  useQuery({
+    queryKey: ["content", lang, q, shelf],
+    queryFn: () => api.content(lang, q, shelf),
+    // books are analysed in the background: poll until they're done
+    refetchInterval: (query) =>
+      query.state.data?.items.some((i) => i.analysis_status === "queued" || i.analysis_status === "running") ? 3000 : false,
+  });
 
 export const useContentItem = (id: number) => useQuery({ queryKey: ["content-item", id], queryFn: () => api.contentItem(id) });
 
@@ -143,7 +149,7 @@ export function useContentMutation<TVars, TData>(fn: (vars: TVars) => Promise<TD
   return useMutation({
     mutationFn: fn,
     onSuccess: () => {
-      for (const key of [["content"], ["content-item"], ["transcript"], ["evidence"], ["level"], ["annotate"]]) {
+      for (const key of [["content"], ["content-item"], ["transcript"], ["evidence"], ["level"], ["annotate"], ["recommend"]]) {
         void qc.invalidateQueries({ queryKey: key });
       }
     },
@@ -153,3 +159,13 @@ export function useContentMutation<TVars, TData>(fn: (vars: TVars) => Promise<TD
 export const useLogManual = () => useActivityMutation(api.logManual);
 export const useImportTracker = () => useActivityMutation((path?: string) => api.importTracker(path));
 export const useCountFlag = () => useActivityMutation(api.countFlag);
+
+// ---------------------------------------------------------------- Phase 3
+
+export const useRecommend = (lang: string) =>
+  useQuery({ queryKey: ["recommend", lang], queryFn: () => api.recommend(lang, 12), staleTime: 60_000 });
+
+export const useReaderPage = (id: number, page: number) =>
+  useQuery({ queryKey: ["reader", id, page], queryFn: () => api.readerPage(id, page), placeholderData: (previous) => previous });
+
+export const usePageList = (id: number) => useQuery({ queryKey: ["pages", id], queryFn: () => api.pageList(id), staleTime: Infinity });

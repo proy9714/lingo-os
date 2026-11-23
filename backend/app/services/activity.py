@@ -8,7 +8,7 @@ from typing import Any
 from sqlalchemy import Connection, text
 
 from app.sync.ids import new_ulid
-from app.timeutil import local_noon_utc, local_today, to_iso, utc_now
+from app.timeutil import local_midnight_utc, local_noon_utc, local_today, to_iso, utc_now
 
 MODALITY = {
     "video": "listening",
@@ -53,8 +53,12 @@ def log_manual(
     day = day or today
     if day > today:
         raise ActivityError("cannot log time in the future")
-    # Today: the session ends now. Earlier days: centred on local noon so it lands on that day.
-    start = utc_now() - timedelta(minutes=minutes) if day == today else local_noon_utc(day)
+    # Today: the session ends now, but never starts before local midnight (logging just after 00:00 still counts
+    # for today). Earlier days: centred on local noon so it lands on that day.
+    if day == today:
+        start = max(utc_now() - timedelta(minutes=minutes), local_midnight_utc(today))
+    else:
+        start = local_noon_utc(day)
     end = start + timedelta(minutes=minutes)
     client_uuid = new_ulid()
 

@@ -6,6 +6,7 @@ import { LevelPage } from "./pages/LevelPage";
 import { PlayerPage } from "./pages/PlayerPage";
 import { WatchPage } from "./pages/WatchPage";
 import { ReadPage } from "./pages/ReadPage";
+import { ReaderPage } from "./pages/ReaderPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { TodayPage } from "./pages/TodayPage";
 import { WordsPage } from "./pages/WordsPage";
@@ -22,6 +23,7 @@ const routeTree = rootRoute.addChildren([
   page("/watch", WatchPage),
   page("/watch/$itemId", PlayerPage),
   page("/read", ReadPage),
+  page("/read/$itemId", ReaderPage),
   page("/manga", preview("manga")),
   page("/speak", preview("speak")),
   page("/words", WordsPage),

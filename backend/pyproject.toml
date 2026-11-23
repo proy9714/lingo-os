@@ -19,6 +19,9 @@ dependencies = [
   "de-core-news-sm",
   "es-core-news-sm",
   "yt-dlp[default]>=2026.10.26",
+  "pypdf>=5",
+  "trafilatura>=2",
+  "python-multipart>=0.0.12",
 ]
 
 [project.scripts]

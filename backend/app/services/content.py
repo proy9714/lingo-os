@@ -13,12 +13,13 @@ from typing import Any
 from sqlalchemy import Connection, bindparam, text
 
 from app.config import AppConfig
+from app.engine.evidence import sample_running_words
 from app.engine.knowledge import knowledge_p
 from app.engine.profile import get_profile
 from app.engine.vocab_model import DEFAULT_K
 from app.ingest.subtitles import Cue, parse_file
 from app.languages import analyze
-from app.services.annotate import annotate, best_rank
+from app.services.annotate import annotate_segments, best_rank
 from app.timeutil import to_iso, utc_now
 
 ANALYZER_VERSION = "2"
@@ -89,12 +90,12 @@ _ITEM_COLUMNS = (
     "(SELECT COUNT(*) FROM activity_sessions s WHERE s.content_item_id = ci.id AND s.is_baseline = 0), "
     "(SELECT MAX(s.started_at) FROM activity_sessions s WHERE s.content_item_id = ci.id), "
     "(SELECT kind FROM transcripts t WHERE t.content_item_id = ci.id AND t.is_primary = 1), "
-    "cs.coverage, cs.expected_unknown, cs.band, ca.speech_wpm"
+    "cs.coverage, cs.expected_unknown, cs.band, ca.speech_wpm, ci.word_count, ci.page_count"
 )
 _ITEM_KEYS = (
     "id", "language", "type", "title", "creator", "source", "url", "external_id", "local_path", "duration_sec",
     "status", "progress", "position_ref", "analysis_status", "last_opened_at", "metadata", "times_watched",
-    "last_watched_at", "transcript_kind", "coverage", "expected_unknown", "band", "speech_wpm",
+    "last_watched_at", "transcript_kind", "coverage", "expected_unknown", "band", "speech_wpm", "word_count", "page_count",
 )
 _ITEM_FROM = (
     "FROM content_items ci LEFT JOIN content_scores cs ON cs.content_item_id = ci.id "
@@ -115,10 +116,22 @@ def get_item(conn: Connection, item_id: int) -> dict[str, Any]:
     return _item(row)
 
 
+WATCH_TYPES = ("youtube", "video", "audio", "podcast_episode")
+READ_TYPES = ("epub", "pdf", "article", "text")
+
+
 def list_items(
-    conn: Connection, lang: str, *, q: str | None = None, kind: str | None = None, limit: int = 60, offset: int = 0
+    conn: Connection,
+    lang: str,
+    *,
+    q: str | None = None,
+    kind: str | None = None,
+    shelf: str = "watch",
+    limit: int = 60,
+    offset: int = 0,
 ) -> dict[str, Any]:
-    where = ["ci.language_code = :l", "ci.type IN ('youtube', 'video', 'audio', 'podcast_episode')", "ci.status != 'dismissed'"]
+    types = ", ".join(f"'{t}'" for t in (READ_TYPES if shelf == "read" else WATCH_TYPES))
+    where = ["ci.language_code = :l", f"ci.type IN ({types})", "ci.status NOT IN ('dismissed', 'archived')"]
     params: dict[str, Any] = {"l": lang, "limit": limit, "offset": offset}
     if q:
         where.append("(ci.title LIKE :q OR ci.creator LIKE :q)")
@@ -219,24 +232,23 @@ def annotated_transcript(conn: Connection, item_id: int) -> dict[str, Any]:
     cues = cues_of(conn, item_id)
     if not cues:
         return {"item": item, "cues": [], "summary": None}
-    full = "\n".join(c["text"] for c in cues)
-    data = annotate(conn, item["language"], full)
-    offset = 0
-    bounds = []
-    for cue in cues:
-        bounds.append((offset, offset + len(cue["text"])))
-        offset += len(cue["text"]) + 1
-    tokens = data["tokens"]
-    t = 0
-    for cue, (start, end) in zip(cues, bounds):
-        own = []
-        while t < len(tokens) and tokens[t]["start"] < end:
-            token = tokens[t]
-            if token["start"] >= start:
-                own.append({**token, "start": token["start"] - start, "end": min(token["end"], end) - start})
-            t += 1
+    tokens, summary = annotate_segments(conn, item["language"], [c["text"] for c in cues])
+    for cue, own in zip(cues, tokens):
         cue["tokens"] = own
-    return {"item": item, "cues": cues, "summary": data["summary"]}
+    return {"item": item, "cues": cues, "summary": summary}
+
+
+def chunks_of(conn: Connection, item_id: int) -> list[dict[str, Any]]:
+    rows = conn.execute(
+        text("SELECT seq, locator, text FROM content_chunks WHERE content_item_id = :id ORDER BY seq"), {"id": item_id}
+    ).all()
+    return [{"seq": r[0], "locator": r[1], "text": r[2]} for r in rows]
+
+
+def text_segments(conn: Connection, item_id: int) -> list[str]:
+    """The item's text: transcript lines for media, paragraphs for books and articles."""
+    cues = cues_of(conn, item_id)
+    return [c["text"] for c in cues] if cues else [c["text"] for c in chunks_of(conn, item_id)]
 
 
 # ------------------------------------------------------------------ local media
@@ -310,14 +322,25 @@ def media_path(cfg: AppConfig, item: dict[str, Any]) -> Path:
 # ------------------------------------------------------------------ analysis
 
 
+ANALYSIS_CHAR_LIMIT = 150_000  # longer books are analysed from a sample of their opening
+
+
 def analyze_item(conn: Connection, item_id: int) -> dict[str, Any] | None:
     item = get_item(conn, item_id)
-    cues = cues_of(conn, item_id)
-    if not cues:
+    segments = text_segments(conn, item_id)
+    if not segments:
         conn.execute(text("UPDATE content_items SET analysis_status = 'no_text' WHERE id = :id"), {"id": item_id})
         return None
+    cues = cues_of(conn, item_id)
     lang = item["language"]
-    tokens, _ = analyze(lang, "\n".join(c["text"] for c in cues))
+    total_chars = sum(len(s) for s in segments)
+    sample, used = [], 0
+    for segment in segments:
+        if used >= ANALYSIS_CHAR_LIMIT:
+            break
+        sample.append(segment)
+        used += len(segment)
+    tokens, _ = analyze(lang, "\n".join(sample))
     counts: Counter[tuple[str, str]] = Counter()
     pos: dict[tuple[str, str], str] = {}
     first_at: dict[tuple[str, str], int] = {}
@@ -344,28 +367,37 @@ def analyze_item(conn: Connection, item_id: int) -> dict[str, Any] | None:
     def pct(q: float) -> int | None:
         return token_ranks[min(len(token_ranks) - 1, int(q * len(token_ranks)))] if token_ranks else None
 
-    duration_min = (item["duration_sec"] or 0) / 60 or (cues[-1]["end_ms"] - cues[0]["start_ms"]) / 60000
+    if cues:
+        duration_min = (item["duration_sec"] or 0) / 60 or (cues[-1]["end_ms"] - cues[0]["start_ms"]) / 60000
+    else:
+        duration_min = 0
     kind = conn.execute(
         text("SELECT kind FROM transcripts WHERE content_item_id = :id AND is_primary = 1"), {"id": item_id}
-    ).scalar() or "unknown"
+    ).scalar() or item["type"]
+    sample_ratio = round(min(1.0, used / total_chars), 3) if total_chars else 1.0
+    if sample_ratio < 1:  # scale counts to the whole item
+        word_tokens = int(word_tokens / sample_ratio)
     analysis = {
         "token_count": sum(counts.values()),
         "unique_lemmas": len(counts),
         "speech_wpm": round(word_tokens / duration_min, 1) if duration_min else None,
-        "avg_sentence_len": round(word_tokens / len(cues), 1),
+        "avg_sentence_len": round(word_tokens / max(1, len(sample)), 1),
+        "sample_ratio": sample_ratio,
         "rank_p50": pct(0.5), "rank_p90": pct(0.9), "rank_p95": pct(0.95),
     }
     conn.execute(
         text(
             "INSERT INTO content_analysis (content_item_id, text_source, analyzer_version, token_count, unique_lemmas, "
-            "speech_wpm, avg_sentence_len, rank_p50, rank_p90, rank_p95, analyzed_at) VALUES (:id, :src, :v, :tc, :ul, "
-            ":wpm, :asl, :p50, :p90, :p95, :now) ON CONFLICT(content_item_id) DO UPDATE SET text_source = excluded.text_source, "
+            "sample_ratio, speech_wpm, avg_sentence_len, rank_p50, rank_p90, rank_p95, analyzed_at) VALUES (:id, :src, :v, "
+            ":tc, :ul, :sr, :wpm, :asl, :p50, :p90, :p95, :now) ON CONFLICT(content_item_id) DO UPDATE SET "
+            "sample_ratio = excluded.sample_ratio, text_source = excluded.text_source, "
             "analyzer_version = excluded.analyzer_version, token_count = excluded.token_count, unique_lemmas = excluded.unique_lemmas, "
             "speech_wpm = excluded.speech_wpm, avg_sentence_len = excluded.avg_sentence_len, rank_p50 = excluded.rank_p50, "
             "rank_p90 = excluded.rank_p90, rank_p95 = excluded.rank_p95, analyzed_at = excluded.analyzed_at"
         ),
         {
             "id": item_id, "src": kind, "v": ANALYZER_VERSION, "tc": analysis["token_count"], "ul": analysis["unique_lemmas"],
+            "sr": sample_ratio,
             "wpm": analysis["speech_wpm"], "asl": analysis["avg_sentence_len"], "p50": analysis["rank_p50"],
             "p90": analysis["rank_p90"], "p95": analysis["rank_p95"], "now": to_iso(utc_now()),
         },
@@ -417,8 +449,7 @@ def score_item(conn: Connection, item_id: int) -> dict[str, Any] | None:
     if not rows:
         return None
     content_tokens = sum(r[0] for r in rows)
-    running = conn.execute(text("SELECT word_count FROM content_items WHERE id = :id"), {"id": item_id}).scalar() or 0
-    others = max(0, running - content_tokens)  # function words, names, numbers: counted as known
+    others = max(0, sample_running_words(conn, item_id) - content_tokens)  # function words, names, numbers: counted as known
     known = float(others)
     expected_unknown = 0.0
     for count, rank, status, p_user, heard in rows:

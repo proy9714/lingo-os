@@ -29,8 +29,25 @@ def heard_for(conn: Connection, lang: str, lemmas: list[str]) -> dict[tuple[str,
     return {(lemma, reading): int(heard) for lemma, reading, heard in rows}
 
 
+def sample_running_words(conn: Connection, item_id: int) -> int:
+    """Running words in the analysed text. For a sampled book this is the sample, matching content_lemmas."""
+    row = conn.execute(
+        text(
+            "SELECT ci.word_count, COALESCE(ca.sample_ratio, 1) FROM content_items ci "
+            "LEFT JOIN content_analysis ca ON ca.content_item_id = ci.id WHERE ci.id = :id"
+        ),
+        {"id": item_id},
+    ).first()
+    if not row or not row[0]:
+        return 0
+    return int(round(row[0] * min(1.0, row[1] or 1.0)))
+
+
 def vocabulary_for_coverage(conn: Connection, item_id: int, target: float = COVERAGE_TARGET) -> int | None:
-    """Smallest N such that the N most frequent words cover `target` of this item's content words."""
+    """Smallest N such that knowing the N most frequent words covers `target` of this item's running words.
+
+    Function words, names and numbers count as covered, the same rule the item scores use.
+    """
     rows = conn.execute(
         text(
             "SELECT COALESCE(l.freq_rank, 100000), cl.count FROM content_lemmas cl JOIN lexemes l ON l.id = cl.lexeme_id "
@@ -38,10 +55,14 @@ def vocabulary_for_coverage(conn: Connection, item_id: int, target: float = COVE
         ),
         {"id": item_id},
     ).all()
-    total = sum(count for _, count in rows)
-    if total < 50:
+    content = sum(count for _, count in rows)
+    if content < 50:
         return None
-    covered = 0
+    others = max(0, sample_running_words(conn, item_id) - content)
+    total = content + others
+    covered = others
+    if covered / total >= target:
+        return 0
     for rank, count in rows:
         covered += count
         if covered / total >= target:

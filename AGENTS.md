@@ -23,7 +23,7 @@ The router is `modes/_shared.md`; each mode's playbook is `modes/<mode>.md`.
 | `status [de\|es\|ja]` | ready | Hours, today vs goal, recent trend, starting level range |
 | `import` | ready | Re-sync the Immersion Tracker CSVs |
 | `doctor` | ready | Check the environment and explain any problem |
-| `recommend` | Phase 3 | Top i+1 picks with reasons |
+| `recommend [de\|es\|ja]` | ready | Top i+1 picks with reasons |
 | `update-content` | Phase 8 | Discover new videos, podcasts and articles at your level |
 | `evolve` | Phase 8 | Weekly recalibration and progress report |
 | `plan-week`, `tutor-brief` | Phase 8 | Plan the week; edit next week's tutor brief |

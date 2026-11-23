@@ -86,6 +86,27 @@ def annotate(conn: Connection, lang: str, text: str) -> dict[str, Any]:
     }
 
 
+def annotate_segments(conn: Connection, lang: str, segments: list[str]) -> tuple[list[list[dict[str, Any]]], dict[str, Any]]:
+    """Annotate several lines at once (one NLP pass) and give each line its own tokens, offsets relative to the line."""
+    full = "\n".join(segments)
+    data = annotate(conn, lang, full)
+    out: list[list[dict[str, Any]]] = []
+    tokens = data["tokens"]
+    t = 0
+    start = 0
+    for segment in segments:
+        end = start + len(segment)
+        own = []
+        while t < len(tokens) and tokens[t]["start"] < end:
+            token = tokens[t]
+            if token["start"] >= start:
+                own.append({**token, "start": token["start"] - start, "end": min(token["end"], end) - start})
+            t += 1
+        out.append(own)
+        start = end + 1
+    return out, data["summary"]
+
+
 def best_rank(lang: str, lemma: str, display: str, forms: tuple[str, ...] | list[str]) -> int | None:
     """Rank of the lemma itself; other forms only when the lemma is not in the frequency list."""
     return rank_of(lang, lemma) or rank_of(lang, display) or rank_of(lang, *forms)

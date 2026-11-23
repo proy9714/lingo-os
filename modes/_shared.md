@@ -17,7 +17,7 @@ uv run --project backend lingo <command> [options] --json
 | `/lingo status [de\|es\|ja]` | yes | See hours, today vs goal, recent trend and starting level range |
 | `/lingo import` | yes | Re-sync the Immersion Tracker CSVs |
 | `/lingo doctor` | yes | Check the setup and fix problems |
-| `/lingo recommend [lang]` | Phase 3 | Get i+1 picks with reasons |
+| `/lingo recommend [lang]` | yes | Get i+1 picks with reasons |
 | `/lingo update-content [lang]` | Phase 8 | Find new content at your level |
 | `/lingo evolve` | Phase 8 | Weekly recalibration and report |
 | `/lingo plan-week`, `/lingo tutor-brief` | Phase 8 | Plan the week, edit the tutor brief |

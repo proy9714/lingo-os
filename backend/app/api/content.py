@@ -2,18 +2,20 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import Connection
+from sqlalchemy import Connection, text
 
 from app.api.deps import get_cfg, get_conn, require_language
 from app.config import AppConfig
 from app.engine.evidence import content_evidence
+from app.ingest import documents
 from app.ingest.youtube import YouTubeError, fetch_captions, fetch_info, parse_video_id
-from app.jobs import history  # noqa: F401 - registers the job handler
+from app.jobs import analysis, history  # noqa: F401 - registers the job handlers
 from app.jobs.runner import enqueue, get_job, latest_job
-from app.services import content
+from app.services import content, reading
+from app.services.recommend import up_next
 
 router = APIRouter(prefix="/api", tags=["content"])
 
@@ -28,17 +30,101 @@ class HistoryRequest(BaseModel):
     limit: int | None = Field(default=None, ge=1, le=2000)
 
 
+class AddArticle(BaseModel):
+    lang: str = Field(min_length=2, max_length=8)
+    url: str = Field(min_length=8, max_length=1000, pattern=r"^https?://")
+
+
+class AddText(BaseModel):
+    lang: str = Field(min_length=2, max_length=8)
+    title: str = Field(min_length=1, max_length=200)
+    text: str = Field(min_length=1, max_length=200_000)
+
+
+class PageProgress(BaseModel):
+    page: int = Field(ge=1)
+    total: int = Field(ge=1)
+
+
+UPLOAD_LIMIT = 80 * 1024 * 1024
+
+
 @router.get("/content")
 def list_content(
     lang: str = Query(..., min_length=2, max_length=8),
     q: str | None = Query(None, max_length=100),
     kind: str | None = Query(None, pattern="^(youtube|local)$"),
+    shelf: str = Query("watch", pattern="^(watch|read)$"),
     limit: int = Query(60, ge=1, le=300),
     offset: int = Query(0, ge=0),
     conn: Connection = Depends(get_conn),
 ) -> dict[str, Any]:
     require_language(conn, lang)
-    return content.list_items(conn, lang, q=q, kind=kind, limit=limit, offset=offset)
+    return content.list_items(conn, lang, q=q, kind=kind, shelf=shelf, limit=limit, offset=offset)
+
+
+@router.get("/recommend")
+def recommend(
+    lang: str = Query(..., min_length=2, max_length=8),
+    n: int = Query(12, ge=1, le=50),
+    conn: Connection = Depends(get_conn),
+) -> dict[str, Any]:
+    require_language(conn, lang)
+    return up_next(conn, lang, n)
+
+
+@router.post("/content/upload", status_code=201)
+async def upload(
+    lang: str = Form(..., min_length=2, max_length=8),
+    file: UploadFile = File(...),
+    conn: Connection = Depends(get_conn),
+    cfg: AppConfig = Depends(get_cfg),
+) -> dict[str, Any]:
+    require_language(conn, lang)
+    data = await file.read(UPLOAD_LIMIT + 1)
+    if len(data) > UPLOAD_LIMIT:
+        raise HTTPException(status_code=413, detail="Files up to 80 MB are supported.")
+    name = file.filename or "upload"
+    suffix = name.lower().rsplit(".", 1)[-1] if "." in name else ""
+    if suffix not in {"epub", "pdf", "txt"}:
+        raise HTTPException(status_code=422, detail="Upload an .epub, .pdf or .txt file.")
+    path = reading.store_upload(cfg, lang, name, data)
+    try:
+        if suffix == "epub":
+            doc = documents.parse_epub(path)
+        elif suffix == "pdf":
+            doc = documents.parse_pdf(path)
+        else:
+            doc = documents.parse_text(name.rsplit(".", 1)[0], data.decode("utf-8", errors="replace"))
+    except documents.DocumentError as exc:
+        path.unlink(missing_ok=True)
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    item_id, analysed = reading.import_document(
+        conn, cfg, lang, doc, item_type="text" if suffix == "txt" else suffix, source="upload", local_path=path
+    )
+    return {**content.get_item(conn, item_id), "analysing_in_background": not analysed}
+
+
+@router.post("/content/article", status_code=201)
+def add_article(body: AddArticle, conn: Connection = Depends(get_conn), cfg: AppConfig = Depends(get_cfg)) -> dict[str, Any]:
+    require_language(conn, body.lang)
+    try:
+        doc = documents.fetch_article(body.url)
+    except documents.DocumentError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    item_id, analysed = reading.import_document(conn, cfg, body.lang, doc, item_type="article", source="web", source_url=body.url)
+    return {**content.get_item(conn, item_id), "analysing_in_background": not analysed}
+
+
+@router.post("/content/text", status_code=201)
+def add_text(body: AddText, conn: Connection = Depends(get_conn), cfg: AppConfig = Depends(get_cfg)) -> dict[str, Any]:
+    require_language(conn, body.lang)
+    try:
+        doc = documents.parse_text(body.title, body.text)
+    except documents.DocumentError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    item_id, analysed = reading.import_document(conn, cfg, body.lang, doc, item_type="text", source="paste")
+    return {**content.get_item(conn, item_id), "analysing_in_background": not analysed}
 
 
 @router.post("/content/youtube", status_code=201)
@@ -133,6 +219,32 @@ def transcript(item_id: int, conn: Connection = Depends(get_conn)) -> dict[str, 
         return content.annotated_transcript(conn, item_id)
     except content.ContentError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@router.get("/content/{item_id}/pages")
+def page_list(item_id: int, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
+    entries = reading.pages(conn, item_id)
+    return {"total": len(entries), "pages": [{"n": p["n"], "title": p["title"]} for p in entries]}
+
+
+@router.get("/content/{item_id}/page/{number}")
+def read_page(item_id: int, number: int, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
+    try:
+        return reading.page(conn, item_id, number)
+    except content.ContentError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@router.post("/content/{item_id}/read-progress")
+def read_progress(item_id: int, body: PageProgress, conn: Connection = Depends(get_conn)) -> dict[str, bool]:
+    reading.record_page_progress(conn, item_id, body.page, body.total)
+    return {"ok": True}
+
+
+@router.post("/content/{item_id}/dismiss")
+def dismiss(item_id: int, conn: Connection = Depends(get_conn)) -> dict[str, bool]:
+    conn.execute(text("UPDATE content_items SET status = 'dismissed' WHERE id = :id"), {"id": item_id})
+    return {"ok": True}
 
 
 @router.get("/content/{item_id}/media")

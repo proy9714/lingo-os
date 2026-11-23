@@ -51,12 +51,13 @@ def register(kind: str) -> Callable[[Handler], Handler]:
     return wrap
 
 
-def enqueue(conn: Connection, kind: str, payload: dict[str, Any], lane: str = "cpu") -> int:
-    existing = conn.execute(
-        text("SELECT id FROM jobs WHERE kind = :k AND status IN ('queued', 'running') ORDER BY id LIMIT 1"), {"k": kind}
-    ).scalar()
-    if existing:
-        return existing  # one job of a kind at a time
+def enqueue(conn: Connection, kind: str, payload: dict[str, Any], lane: str = "cpu", dedupe: bool = True) -> int:
+    if dedupe:
+        existing = conn.execute(
+            text("SELECT id FROM jobs WHERE kind = :k AND status IN ('queued', 'running') ORDER BY id LIMIT 1"), {"k": kind}
+        ).scalar()
+        if existing:
+            return existing  # one job of a kind at a time
     return conn.execute(
         text("INSERT INTO jobs (kind, lane, payload_json) VALUES (:k, :lane, :p)"),
         {"k": kind, "lane": lane, "p": json.dumps(payload)},

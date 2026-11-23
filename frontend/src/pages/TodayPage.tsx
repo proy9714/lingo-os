@@ -1,15 +1,18 @@
 import { Link } from "@tanstack/react-router";
 
+import { api } from "../api/client";
 import {
   useActiveLanguage,
+  useContentMutation,
   useImportTracker,
   useLevelOverview,
   useOverview,
   useRecent,
+  useRecommend,
   useToday,
   useUpdateSettings,
 } from "../api/hooks";
-import type { LanguageOverview, RecentSession, TodayStats } from "../api/types";
+import type { LanguageOverview, RecentSession, TodayStats, UpNextPick } from "../api/types";
 import { Chip, Panel, PanelTitle, ProgressBar, Skeleton, cx } from "../components/ui";
 import {
   ACTIVITY_LABELS,
@@ -66,7 +69,7 @@ export function TodayPage() {
           active={code}
           names={Object.fromEntries(languages.map((l) => [l.code, l.name]))}
         />
-        <UpNextCard data={current} />
+        <UpNextCard lang={code} />
         <RecentCard sessions={recent.data} />
         <MonthlyCard data={current} />
       </div>
@@ -278,23 +281,106 @@ function LanguagesCard({ entries, active, names }: { entries: LanguageOverview[]
   );
 }
 
-function UpNextCard({ data }: { data: LanguageOverview | undefined }) {
+function UpNextCard({ lang }: { lang: string }) {
+  const recommend = useRecommend(lang);
+  const dismiss = useContentMutation((id: number) => api.dismiss(id));
+  const data = recommend.data;
   return (
-    <Panel aria-labelledby="t-next">
-      <PanelTitle id="t-next" aside={<Chip>arrives in Phase 3</Chip>}>
+    <Panel aria-labelledby="t-next" className="[grid-column:1/-1]">
+      <PanelTitle
+        id="t-next"
+        aside={data && data.picks.length > 0 && <Chip>{data.picks.length} picks from {data.available} analysed</Chip>}
+      >
         Up next
       </PanelTitle>
-      <p className="text-sm leading-relaxed text-ink-2">
-        At least 10 picks matched to your level will appear here once transcripts and books can be analysed against the
-        words you know.
-      </p>
-      {data && data.content_items > 0 && (
-        <p className="well mt-4 rounded-xl p-3 text-sm text-ink-2">
-          <strong className="text-ink">{data.content_items} videos</strong> from your history are already in the library,
-          ready for that analysis.
+      {recommend.isError ? (
+        <p role="alert" className="text-sm text-red-200">
+          Could not load picks: {recommend.error.message}
         </p>
+      ) : !data ? (
+        <Skeleton className="h-40" />
+      ) : data.picks.length === 0 ? (
+        <p className="text-sm leading-relaxed text-ink-2">
+          Picks appear once something has been analysed. Fetch the captions of your watched videos on{" "}
+          <Link to="/watch" className="text-accent underline">
+            Watch
+          </Link>
+          , or add a book or article on{" "}
+          <Link to="/read" className="text-accent underline">
+            Read
+          </Link>
+          .
+        </p>
+      ) : (
+        <>
+          <ol className="grid gap-2.5 [grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))]">
+            {data.picks.map((pick) => (
+              <PickRow key={pick.id} pick={pick} onDismiss={() => dismiss.mutate(pick.id)} />
+            ))}
+          </ol>
+          {data.picks.length < 10 && (
+            <p className="mt-3 text-xs text-ink-3">
+              Only {data.picks.length} analysed item{data.picks.length === 1 ? "" : "s"} so far. Add videos or books to get at least 10
+              picks.
+            </p>
+          )}
+        </>
       )}
     </Panel>
+  );
+}
+
+const BAND_LABELS: Record<string, string> = {
+  too_easy: "easy",
+  comfortable: "comfortable",
+  i_plus_1: "just right",
+  stretch: "stretch",
+  too_hard: "hard",
+};
+
+function PickRow({ pick, onDismiss }: { pick: UpNextPick; onDismiss: () => void }) {
+  const thumb = pick.source === "youtube" && pick.external_id ? `https://i.ytimg.com/vi/${pick.external_id}/default.jpg` : null;
+  const length =
+    pick.kind === "video"
+      ? pick.duration_sec
+        ? `${Math.round(pick.duration_sec / 60)} min`
+        : null
+      : pick.word_count
+        ? `${pick.word_count.toLocaleString("en")} words`
+        : null;
+  const target = pick.kind === "reading" ? "/read/$itemId" : "/watch/$itemId";
+  return (
+    <li className="well group relative flex gap-3 rounded-xl p-2.5 pr-9">
+      <div aria-hidden="true" className="flex h-[54px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-lg bg-black/40">
+        {thumb ? (
+          <img src={thumb} alt="" loading="lazy" className="h-full w-full object-cover" />
+        ) : (
+          <span className="text-[10px] font-bold tracking-wider text-ink-3 uppercase">{pick.kind === "reading" ? "Read" : "Media"}</span>
+        )}
+      </div>
+      <div className="min-w-0 flex-1">
+        <Link
+          to={target}
+          params={{ itemId: String(pick.id) }}
+          className="line-clamp-2 text-sm leading-snug font-semibold after:absolute after:inset-0 after:content-['']"
+        >
+          {pick.title}
+        </Link>
+        <div className="mt-1 truncate text-xs text-ink-3">
+          {[pick.creator, length, pick.band ? BAND_LABELS[pick.band] : null].filter(Boolean).join(" · ")}
+        </div>
+        <div className="mt-1 truncate text-xs text-ink-2">{pick.reasons.join(" · ")}</div>
+      </div>
+      <button
+        type="button"
+        onClick={onDismiss}
+        aria-label={`Not interested in ${pick.title}`}
+        title="Not interested"
+        className="absolute top-1.5 right-1.5 z-10 flex h-7 w-7 items-center justify-center rounded-lg text-ink-3 opacity-60 transition hover:bg-white/10 hover:text-ink group-hover:opacity-100 focus-visible:opacity-100"
+      >
+        ×
+      </button>
+    </li>
   );
 }
 
