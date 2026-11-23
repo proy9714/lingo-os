@@ -47,7 +47,7 @@ Phase 3, read and Up Next:
   - Pages on a paper background, every word clickable. A saved word keeps just its sentence as context.
   - Arrow keys turn pages, text size is adjustable, and it reopens where you left off.
   - Reading time is tracked while the page is open and you've been active in the last 3 minutes.
-- **Up Next** on Today: 12 picks matched to your level. They favour items that bring back your saved words and things you've started, and mix channels and formats. Dismiss any pick with ×.
+- **Up Next** on Today: 12 picks matched to your level. They favour items that bring back your saved words and books you've started, and mix channels and formats. Videos you've watched (in the app or in your tracker CSVs) and anything you've finished are never suggested. Dismiss any pick with ×.
 - `npm run lingo -- content rescore` refreshes the starting estimate and every item's score.
 
 Phase 2, watch and listen:

@@ -145,6 +145,23 @@ def _known_ids(conn: Connection, source: str, ids: list[str]) -> set[str]:
     return {r[0] for r in rows}
 
 
+def _title_key(title: str) -> str:
+    return "".join(ch for ch in title.casefold() if ch.isalnum())
+
+
+def watched_titles(conn: Connection, lang: str) -> set[str]:
+    """Titles of everything you've watched: sessions tracked here and rows imported from the tracker CSVs."""
+    rows = conn.execute(
+        text(
+            "SELECT s.title FROM activity_sessions s WHERE s.language_code = :l AND s.title IS NOT NULL "
+            "UNION SELECT ci.title FROM content_items ci WHERE ci.language_code = :l "
+            "AND EXISTS (SELECT 1 FROM activity_sessions s WHERE s.content_item_id = ci.id)"
+        ),
+        {"l": lang},
+    ).all()
+    return {key for (title,) in rows if title and len(key := _title_key(title)) >= 8}
+
+
 def _band(conn: Connection, item_id: int) -> str | None:
     return conn.execute(text("SELECT band FROM content_scores WHERE content_item_id = :i"), {"i": item_id}).scalar()
 
@@ -229,8 +246,9 @@ def discover_language(
             continue
         unique.setdefault(item.video_id, (item, via))
     with engine.connect() as conn:
-        known = _known_ids(conn, "youtube", list(unique))
-    fresh = [v for k, v in unique.items() if k not in known]
+        known = _known_ids(conn, "youtube", list(unique))  # already in the library, watched (CSV) or not
+        seen_titles = watched_titles(conn, lang)  # the same video re-uploaded, or a CSV row without a link
+    fresh = [v for k, v in unique.items() if k not in known and _title_key(v[0].title) not in seen_titles]
     stats["listed"] = len(fresh)
     if dry_run:
         stats["would_check"] = [{"video_id": i.video_id, "title": i.title, "channel": i.channel, "via": via} for i, via in fresh[:limit]]

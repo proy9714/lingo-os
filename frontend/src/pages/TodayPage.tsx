@@ -1,9 +1,12 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import { api } from "../api/client";
 import {
   useActiveLanguage,
   useContentMutation,
+  useDiscoverStatus,
   useImportTracker,
   useLevelOverview,
   useOverview,
@@ -14,7 +17,7 @@ import {
   useUpdateSettings,
 } from "../api/hooks";
 import type { LanguageOverview, RecentSession, TodayStats, UpNextPick } from "../api/types";
-import { Chip, Panel, PanelTitle, ProgressBar, Skeleton, cx } from "../components/ui";
+import { Button, Chip, Panel, PanelTitle, ProgressBar, Skeleton, cx } from "../components/ui";
 import {
   ACTIVITY_LABELS,
   formatDay,
@@ -302,17 +305,7 @@ function UpNextCard({ lang }: { lang: string }) {
       ) : !data ? (
         <Skeleton className="h-40" />
       ) : data.picks.length === 0 ? (
-        <p className="text-sm leading-relaxed text-ink-2">
-          Picks appear once something has been analysed. Fetch the captions of your watched videos on{" "}
-          <Link to="/watch" className="text-accent underline">
-            Watch
-          </Link>
-          , or add a book or article on{" "}
-          <Link to="/read" className="text-accent underline">
-            Read
-          </Link>
-          .
-        </p>
+        <EmptyUpNext lang={lang} />
       ) : (
         <>
           <ol className="grid gap-2.5 [grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))]">
@@ -478,5 +471,44 @@ function WeeklyCard() {
         {latest ? "Open the report →" : "Run the first review →"}
       </Link>
     </Panel>
+  );
+}
+
+/** Up Next never repeats what you've watched, so it can run dry: offer to find new content right here. */
+function EmptyUpNext({ lang }: { lang: string }) {
+  const status = useDiscoverStatus();
+  const qc = useQueryClient();
+  const run = useMutation({
+    mutationFn: () => api.discoverRun(lang),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["discover-status"] }),
+  });
+  const job = status.data?.job;
+  const running = job?.status === "queued" || job?.status === "running";
+  useEffect(() => {
+    if (job?.status === "done") {
+      for (const key of [["recommend"], ["content"]]) void qc.invalidateQueries({ queryKey: key });
+    }
+  }, [job?.status, job?.id, qc]);
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="text-sm leading-relaxed text-ink-2">
+        Nothing new to suggest: Up Next never repeats videos you've watched (here or in your tracker history) or things
+        you've finished. Find new videos and articles at your level, or add a book on{" "}
+        <Link to="/read" className="text-accent underline">
+          Read
+        </Link>
+        .
+      </p>
+      {running && job ? (
+        <div className="max-w-md">
+          <ProgressBar value={job.progress} label="Looking for content" />
+          <p className="mt-1.5 truncate text-xs text-ink-3">{String(job.result?.message ?? "Starting…")}</p>
+        </div>
+      ) : (
+        <Button variant="primary" className="self-start" disabled={run.isPending} onClick={() => run.mutate()}>
+          Find new content now
+        </Button>
+      )}
+    </div>
   );
 }

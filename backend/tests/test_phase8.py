@@ -124,6 +124,25 @@ def test_discovery_keeps_candidates_and_skips_known(client, cfg, fake_sources) -
     assert left == ["Artikel"]
 
 
+def test_discovery_skips_videos_you_already_watched(client, cfg, fake_sources) -> None:
+    engine = client.app.state.engine
+    with engine.begin() as conn:  # a tracker CSV row: watched, title only
+        conn.execute(
+            text(
+                "INSERT INTO activity_sessions (language_code, activity, modality, tracking, started_at, active_seconds, title) "
+                "VALUES ('de', 'video', 'listening', 'import', '2026-11-01T10:00:00.000Z', 600, 'Ein Tag in Berlin | Folge 3')"
+            )
+        )
+    fetchers = discover.Fetchers(
+        search=lambda q, n: [youtube.Listing("reupload000", "EIN TAG IN BERLIN – Folge 3", "Other", 600),
+                             youtube.Listing("brandnew000", "Etwas ganz Neues", "K", 600)],
+        channel_uploads=lambda url, n: [], captions=lambda vid, lang: None, feed=lambda url: [], wiki=lambda lang: WIKI,
+        pause=lambda s: None,
+    )
+    stats = discover.discover_language(engine, cfg, "de", fetchers=fetchers, dry_run=True)
+    assert [w["video_id"] for w in stats["would_check"]] == ["brandnew000"]
+
+
 def test_discovery_stops_when_youtube_refuses(client, cfg, fake_sources) -> None:
     def refuse(vid, lang):
         raise youtube.YouTubeError("Sign in to confirm you're not a bot")

@@ -2,7 +2,9 @@
 
 score = i+1 fit × (1 + 0.15·min(re-encounters, 4)) × freshness
   re-encounters: how many of your 'learning' words appear in the item (no flashcards: words come back here)
-  freshness: unfinished in-progress items get a boost; finished ones are re-watch suggestions at half weight
+  freshness: unfinished books and manga you started get a boost
+Never suggested: videos you've watched (tracked in the app or imported from the Immersion Tracker CSVs) and
+anything you've finished.
 Diversity: at most 4 of one kind (video / reading), at most 2 per creator; one stretch and one comfortable pick if any exist.
 """
 
@@ -13,7 +15,9 @@ from typing import Any
 
 from sqlalchemy import Connection, text
 
-from app.services.content import MANGA_TYPES, READ_TYPES
+from app.services.content import MANGA_TYPES, READ_TYPES, WATCH_TYPES
+
+WATCHED_TYPES = ", ".join(f"'{t}'" for t in WATCH_TYPES)
 
 KIND_LIMIT, CREATOR_LIMIT = 4, 2
 
@@ -27,7 +31,8 @@ def candidates(conn: Connection, lang: str) -> list[dict[str, Any]]:
             " WHERE cl.content_item_id = ci.id AND w.status = 'learning') AS learning_words, "
             "(SELECT COUNT(*) FROM activity_sessions s WHERE s.content_item_id = ci.id AND s.is_baseline = 0) AS watched "
             "FROM content_items ci JOIN content_scores cs ON cs.content_item_id = ci.id "
-            "WHERE ci.language_code = :l AND ci.status NOT IN ('dismissed', 'archived') AND ci.analysis_status = 'done'"
+            "WHERE ci.language_code = :l AND ci.status NOT IN ('dismissed', 'archived', 'finished') AND ci.analysis_status = 'done' "
+            f"AND NOT (ci.type IN ({WATCHED_TYPES}) AND EXISTS (SELECT 1 FROM activity_sessions w WHERE w.content_item_id = ci.id))"
         ),
         {"l": lang},
     ).all()
@@ -41,12 +46,7 @@ def candidates(conn: Connection, lang: str) -> list[dict[str, Any]]:
 def _score(item: dict[str, Any]) -> float:
     fit = item["i1_score"] or 0.0
     reencounter = 1 + 0.15 * min(item["learning_words"], 4)
-    if item["status"] == "in_progress" and (item["progress"] or 0) < 0.9:
-        freshness = 1.25
-    elif item["status"] == "finished" or item["watched"]:
-        freshness = 0.5
-    else:
-        freshness = 1.0
+    freshness = 1.25 if item["status"] == "in_progress" and (item["progress"] or 0) < 0.9 else 1.0
     return fit * reencounter * freshness
 
 
@@ -56,8 +56,6 @@ def _reasons(item: dict[str, Any]) -> list[str]:
         reasons.append(f"brings back {item['learning_words']} of your saved words")
     if item["status"] == "in_progress" and (item["progress"] or 0) < 0.9:
         reasons.append("continue where you left off")
-    elif item["watched"]:
-        reasons.append("a re-watch: easier the second time")
     return reasons
 
 

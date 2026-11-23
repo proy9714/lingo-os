@@ -122,3 +122,38 @@ def test_article_needs_a_url(client) -> None:
 def test_history_fetch_can_be_queued(client) -> None:
     response = client.post("/api/content/history/fetch", json={})
     assert response.status_code == 202 and response.json()["job_id"] > 0
+
+
+def test_up_next_never_suggests_watched_videos_or_finished_items(client) -> None:
+    engine = client.app.state.engine
+    with engine.begin() as conn:
+        ids = {}
+        for name, kind, status, progress in [
+            ("watched in the app", "youtube", "library", 0.3),
+            ("from the tracker CSV", "youtube", "library", 0.0),
+            ("new video", "youtube", "candidate", 0.0),
+            ("finished book", "epub", "finished", 1.0),
+            ("book in progress", "epub", "in_progress", 0.4),
+        ]:
+            ids[name] = conn.execute(
+                text(
+                    "INSERT INTO content_items (language_code, type, title, origin, source, external_id, status, progress, "
+                    "analysis_status) VALUES ('de', :k, :t, 'user_added', 'x', :t, :s, :p, 'done')"
+                ),
+                {"k": kind, "t": name, "s": status, "p": progress},
+            ).lastrowid
+            conn.execute(
+                text("INSERT INTO content_scores (content_item_id, profile_version, coverage, expected_unknown, i1_score, band) VALUES (:i, 1, 0.92, 10, 0.8, 'i_plus_1')"),
+                {"i": ids[name]},
+            )
+        for name, tracking in [("watched in the app", "auto"), ("from the tracker CSV", "import")]:
+            conn.execute(
+                text(
+                    "INSERT INTO activity_sessions (language_code, activity, modality, tracking, started_at, active_seconds, "
+                    "content_item_id) VALUES ('de', 'video', 'listening', :tr, '2026-11-01T10:00:00.000Z', 600, :i)"
+                ),
+                {"tr": tracking, "i": ids[name]},
+            )
+        picks = up_next(conn, "de", 10)["picks"]
+    assert {p["title"] for p in picks} == {"new video", "book in progress"}
+    assert next(p for p in picks if p["title"] == "book in progress")["reasons"][-1] == "continue where you left off"
