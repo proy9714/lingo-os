@@ -11,6 +11,7 @@ import { useTrackerStore } from "../state/tracker";
 import { useUi } from "../state/ui";
 import { Icon } from "./Icon";
 import { LookupPanel } from "./LookupPanel";
+import { Logo } from "./Logo";
 import { navFor } from "./nav";
 import { QuickLogModal } from "./QuickLogModal";
 import { SearchPill } from "./Suggestions";
@@ -111,12 +112,9 @@ function SideRail() {
       aria-label="Main"
       className="glass sticky top-[calc(var(--inset-top)+1rem)] hidden h-[calc(100dvh-2rem-var(--inset-top))] w-[88px] shrink-0 flex-col items-center gap-1.5 overflow-x-hidden overflow-y-auto rounded-[20px] py-4 [scrollbar-width:none] md:flex [&::-webkit-scrollbar]:hidden"
     >
-      <div
-        aria-hidden="true"
-        className="mb-3 flex size-9 items-center justify-center rounded-[11px] bg-accent text-base font-bold text-accent-ink"
-      >
-        L
-      </div>
+      <Link to="/" aria-label="Lingo OS: Today" className="mb-3 rounded-[11px] transition hover:scale-105">
+        <Logo size={40} />
+      </Link>
       {navFor(code).map((item) => (
         <Link key={item.to} to={item.to} activeOptions={{ exact: item.to === "/" }} className={railLink}>
           <Icon name={item.icon} />

@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/brand/logo-256.png" width="112" height="112" alt="Lingo OS logo: four letters from four scripts on coloured tiles" /></p>
+
 # Lingo OS
 
 **Learn a language by watching, reading and listening to things you enjoy, at the right level for you.**
