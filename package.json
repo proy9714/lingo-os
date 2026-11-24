@@ -5,7 +5,7 @@
   "license": "AGPL-3.0-or-later",
   "description": "Local-first language immersion OS for German, Spanish and Japanese",
   "scripts": {
-    "setup": "uv sync --project backend && npm install --prefix frontend && uv run --project backend lingo db migrate",
+    "setup": "npm install --no-audit --no-fund && uv sync --project backend && npm install --prefix frontend --no-audit --no-fund && uv run --project backend lingo db migrate",
     "dev": "concurrently -k -n api,web -c yellow,cyan \"uv run --project backend python -m app.devserver\" \"npm --prefix frontend run dev\"",
     "build": "npm --prefix frontend run build",
     "start": "npm run build && uv run --project backend lingo serve",

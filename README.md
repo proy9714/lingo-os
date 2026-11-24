@@ -1,171 +1,173 @@
 # Lingo OS
 
-A local-first, single-window system for learning **German, Spanish and Japanese** through comprehensible input.
-Watch, read, look words up, track immersion and practise speaking without leaving the app. Your data stays on your
-laptop in `data/`.
+**Learn a language by watching, reading and listening to things you enjoy, at the right level for you.**
 
-The design, schema and roadmap are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+Lingo OS is a free, local-first app for learning **German, Spanish and Japanese** through comprehensible input. It
+finds YouTube videos and articles matched to your level, gives every video a clickable transcript and every text
+clickable words, tracks your immersion time, and estimates your level from what you actually understand. It runs on
+your computer, keeps your data there, and comes with an Android app that syncs over your home Wi-Fi.
 
-## Status
+No flashcards and no streak pressure: the words you save come back through the videos and articles you're shown.
 
-**All phases (0–9) are done.**
+## What you can do
 
-Phase 9, your Android phone:
+- **Today**: a daily pick and rows of videos and articles chosen for your level, your goal for the day, and your progress.
+- **Watch**: YouTube (or your own video and audio files) next to a synced transcript. Click any word: the video
+  pauses and the dictionary opens. Replay a line, slow it down, or pause after each line.
+- **Read**: articles from news and learner sites, your own books (EPUB), PDFs and pasted texts, with every word
+  clickable and colour-coded by how likely you are to know it.
+- **Look up any word**: its dictionary form (*rufe … an* → *anrufen*, 間に合わない → 間に合う), meanings, readings and a
+  native voice reading it aloud. Save it with the sentence you met it in.
+- **Suggestions that learn**: picks get easier or harder as you rate them, favour the channels and topics you finish,
+  never repeat what you've watched, and new ones are found in the background.
+- **Level Lab**: short tests (vocabulary, reading, listening, speaking) that give your level as a range.
+- **Speak**: an AI tutor that talks at your level (optional, needs a free Gemini key), and shadowing practice.
+- **Grammar**, **Manga** (Japanese, with clickable speech bubbles), **weekly reports**, and an **Android app**.
 
-- Settings → **Phone**: let a phone sync over your home Wi-Fi and pair it with a QR code. Only paired phones can connect, and everything is encrypted.
-- The phone app is this same app built with Capacitor: `npm run phone` opens it in Android Studio (see **[docs/PHONE.md](docs/PHONE.md)**).
-- At home the phone uses the laptop; away from home it reads the texts you saved for offline, and lookups, word statuses, reading time and progress sync when it's back.
+## Install it on your computer
 
-Phase 8, the system adapts itself:
+Lingo OS is developed and tested on **Windows**. macOS and Linux should work but are less tested.
 
-- **Find new content** (Settings → New content, `npm run update-content`, or `/lingo update-content`): YouTube channels listed on the Comprehensible Input Wiki for your language, searches at your level, and news articles from RSS feeds. Only videos with real captions in the language are checked, and only items near your level are kept; they appear on Today, Watch and Read. It also runs **on its own in the background** whenever a shelf runs low (fewer than 24 videos or 12 articles), at most every 2 hours (12 hours after YouTube refuses); turn that off in Settings → New content. Articles are taken from every feed in turn, and feeds whose articles keep landing off your level are read less often. Unopened finds are removed after 30 days. If YouTube starts asking for a sign-in, the run stops and you can try later.
-- **Weekly review** (Reports, `npm run evolve-profile`, or `/lingo evolve`): measures your week, moves the difficulty of your picks by at most two points with the reason written down, updates the tutor's brief and writes `data\reports\<year>-W<week>.md`. With a Gemini key the report includes a short coaching note; `/lingo evolve` lets your terminal AI write it instead, and the app validates whatever is proposed.
-- **Schedule both** (optional): `powershell -ExecutionPolicy Bypass -File scripts\schedule-windows.ps1` registers a daily content search (06:00) and the Sunday review (21:00). `-Remove` takes them out again.
-- Sources live in `config/sources.yaml` (searches, topics, feeds); wiki channels can be switched off in Settings.
+### 1. Install the tools (once)
 
-Phases 6–7, speaking:
+You need [Git](https://git-scm.com/), [Node.js](https://nodejs.org/) 18 or newer, and
+[uv](https://docs.astral.sh/uv/) (it installs the right Python for you). On Windows, in PowerShell:
 
-- **Tutor** (Speak → Tutor; needs an AI provider): chat by typing or with the microphone, replies read aloud. It writes at your level, reuses words you're learning, and simplifies any reply with too many unknown words. Modes: conversation, role-play cards, talk about something you watched or read, grammar practice. **End and review** adds corrections to your turns and a summary, and records grammar slips, which feed the next conversation.
-- **Shadowing** (Speak → Shadowing): press **Shadow this line** in the video player, or type any sentence. Listen once or loop with a pause for your turn, at 0.5–1× speed, record yourself, and see which words were recognised. Recordings stay in `data\recordings\`.
-- **Level Lab → Speaking**: hear a sentence, say it back; ten sentences from A1 to C1.
-- Voice input uses the browser's speech recognition (Chrome and Edge send the audio to their speech service); spoken replies use native neural voices (see Voices below).
+```powershell
+winget install Git.Git OpenJS.NodeJS.LTS astral-sh.uv
+```
 
-Phase 5, manga:
+On macOS: `brew install git node uv`. On Linux: Git and Node.js from your package manager, then
+`curl -LsSf https://astral.sh/uv/install.sh | sh`. Close and reopen the terminal afterwards.
 
-- Drop volumes into `data\inbox\manga\` (Japanese; use a `de` or `es` subfolder for other languages): a `.mokuro` file with its image folder, a folder of page images, or a `.zip`/`.cbz`. They're imported when you open Manga (or run `npm run lingo -- manga scan`). Nothing is deleted: volumes move into the library, zips into `_imported`.
-- The viewer fits pages to the screen, one or two at a time, right to left for Japanese. Hover a speech bubble to see its text, click a word to look it up. **Fix OCR text** corrects a bubble; **Volume words** lists the likely-new words with the page they first appear on.
-- **Mokuro Bunko**: the Manga screen links to catalog.mokuro.moe. Lingo OS never crawls it.
-- Volumes without mokuro text can be read as images. Running OCR here needs mokuro, which isn't installed (a large download, like Whisper).
+Optional: [ffmpeg](https://ffmpeg.org/) (`winget install Gyan.FFmpeg`), only needed for your own video and audio files.
 
-Phase 4, AI explanations (optional; everything else works without them):
+### 2. Download Lingo OS and set it up
 
-- Click a word and the lookup panel says what it means **in that sentence**, marks the dictionary sense that fits, and adds a usage note. Translation and a grammar breakdown are one click away; the sentence can be played aloud.
-- Gemini by default: put `GEMINI_API_KEY=…` in `.env` (copy `.env.example`), restart, then press **Test connection** in Settings or run `npm run lingo -- ai test`.
-- Any OpenAI-compatible server works too (Ollama on this laptop, OpenRouter, LM Studio); see `config/llm.yaml`. `local_only: true` keeps every request on this computer.
-- Answers are cached, and every call is logged with its token count (Settings shows the totals). Only the sentence you ask about is sent.
+```powershell
+git clone https://github.com/proy9714/lingo-os.git
+cd lingo-os
+npm run setup
+```
 
-Phase 3, read and Up Next:
+`setup` installs everything and creates your (empty) database in the `data` folder. It takes a few minutes the first
+time.
 
-- **Read**:
-  - Your shelf of books (.epub), PDFs with a text layer, web articles (the main text is extracted once and kept locally) and pasted texts.
-  - Each shows how much you'd know and the expected new words.
-- **Reader**:
-  - Pages on a paper background, every word clickable. A saved word keeps just its sentence as context.
-  - Arrow keys turn pages, text size is adjustable, and it reopens where you left off.
-  - Reading time is tracked while the page is open and you've been active in the last 3 minutes.
-- **Up Next** on Today: 12 picks matched to your level. They favour items that bring back your saved words and books you've started, and mix channels and formats. Videos you've watched (in the app or in your tracker CSVs) and anything you've finished are never suggested. Dismiss any pick with ×.
-- **For you** on Watch and Read: every suggestion for that shelf, best first, with infinite scroll; the end of the list asks for more in the background. Watched videos have their own tab, and your books and texts are under *Your shelf*.
-- **Help** (in the menu): how every page works, how suggestions are picked, and a step-by-step phone sync guide.
-- **A big catalogue**: whole YouTube channels are listed (wiki channels, the channels you watch, and channels found at your level), hundreds of videos at a time. Levels are estimated from each channel's measured videos (marked ≈), and the best are measured in the background or when you open them. Videos about another language are left out.
-- **Difficulty ratings** (very easy … very hard) under every video and page: they move your "just right" level for videos or reading right away.
-- **Taste**: suggestions learn from what you finish, rewatch, abandon or dismiss (channels, sites, topics, length), and say why each one was picked.
-- **Grammar**: a reference for German, Spanish and Japanese with tables, translated examples you can hear and look up, and links from the tutor's notes on your slips.
-- `npm run lingo -- content rescore` refreshes the starting estimate and every item's score.
+### 3. Add dictionaries
 
-Phase 2, watch and listen:
+Download the dictionary for each language you're learning and put the `.zip` files, unopened, in `data\dictionaries\`:
 
-- **Watch**:
-  - Your library: the videos from your tracker history plus any YouTube link you add, and local media found by scanning `data\library\media\<lang>\` (same-named `.srt`/`.vtt` files become transcripts).
-  - Each video shows how much you'd know, the expected new words and its speaking speed.
-- **Player**:
-  - YouTube or local file next to a synced transcript. Click a word: the video pauses, the lookup opens, and it resumes when you close it.
-  - Previous, next and replay line; speed control; pause after each line.
-  - Watching time is tracked only while it plays, with a live timer in the top bar.
-- **History analysis**: fetches the captions of every video you watched (`npm run lingo -- content fetch-history`, or the button on Watch). It counts how often you've heard each word, which feeds word colouring and your starting level.
-- **Level Lab listening**: dictation of graded sentences read by a native voice.
+- **German / Spanish**: `wty-de-en.zip` / `wty-es-en.zip` from the
+  [Wiktionary-to-Yomitan downloads page](https://yomidevs.github.io/wiktionary-to-yomitan/download/)
+  (the "target language → English" dictionaries).
+- **Japanese**: `jitendex-yomitan.zip` from [jitendex.org](https://jitendex.org/).
 
-Phase 1, the word engine and Level Lab:
+Then import them (takes a minute or two):
 
-- **Read** (paste mode): paste any German, Spanish or Japanese text. Words are coloured as likely new or learning, and every word is clickable. Shows how much of the text you probably know.
-- **Lookup panel**: dictionary form (*rufe … an* → *anrufen*, *muss* → *müssen*, *dámelo* → *dar*, 間に合わない → 間に合う), readings, glosses, German gender/plural/conjugation notes, frequency rank and native pronunciation. Set a word to new, learning, known or ignored, or save it with its sentence.
-- **Words**: everything you saved or looked up, with sentences and notes. A browser, not flashcards.
-- **Level Lab**:
-  - Adaptive vocabulary test, about 5 minutes. Meanings are verified and made-up words catch guessing. The result is a vocabulary range and approximate CEFR (and JLPT) band.
-  - C-test reading check for German and Spanish.
-  - Results recolour your texts.
-- **Dictionaries**: Jitendex (ja) and Wiktionary-derived de/es dictionaries, imported with `npm run lingo -- dict import`.
+```powershell
+npm run lingo -- dict import
+```
 
-Phase 0, the foundation:
+### 4. Start it
 
-- Glass app shell for desktop and phone widths, with a DE / ES / JA switcher that re-themes the app
-- Today dashboard on your real history: daily goal, last 7 days, tracked hours by month, all languages, recent sessions
-- A starting level range per language (hours only, low confidence) on your tracker's 7-level roadmap
-- Import and re-sync of your Immersion Tracker CSVs (its `data` folder, set in `config/app.local.yaml`). It is idempotent, and a probable
-  double-log is held back until you confirm it.
-- Manual time logging (`+ Log` or Ctrl+L)
-- Settings: daily goals, tracker sync, system checks, this laptop's device id
-- `/lingo status`, `/lingo import` and `/lingo doctor` from Gemini CLI or Claude Code opened in this folder
+```powershell
+npm run start
+```
 
-Pages for Watch, Read, Manga, Speak, Words and Level describe what each phase will add.
+Open **http://127.0.0.1:8787** in your browser. Keep the terminal open while you use the app; press Ctrl+C there to
+stop it. Next time, `npm run start` is all you need.
 
-## Install on Android
+### 5. First steps in the app
 
-Get the app from the [latest release](https://github.com/proy9714/lingo-os/releases/latest), or add
-`https://github.com/proy9714/lingo-os` to [Obtainium](https://github.com/ImranR98/Obtainium) to be updated
-automatically. The phone pairs with your laptop over Wi-Fi: see [docs/PHONE.md](docs/PHONE.md).
-Maintainers publish releases with `/lingo release` ([docs/RELEASING.md](docs/RELEASING.md)).
+1. Pick your language with the **DE / ES / JA** buttons at the top, and set your daily goal in **Settings**.
+2. Take the 5-minute vocabulary test in **Level**. It measures where you are, so suggestions fit you from day one
+   (especially if you've been learning for a while). Entering the hours you studied before using the app is planned
+   for a coming release.
+3. Go to **Today** or **Watch**. Suggestions are found in the background in your first minutes; they appear as they're
+   found.
+4. Time you spend away from the app (a podcast, a class) can be added with **Log time** (or Ctrl+L).
 
-## Requirements
+Stuck? Run `npm run doctor`: it checks your setup and says what to fix. The **Help** page in the app explains every screen.
 
-Windows with Node 18+ and [uv](https://docs.astral.sh/uv/). uv installs Python 3.12 for the backend if needed.
+## The Android app
 
-## Commands
+Install [Obtainium](https://github.com/ImranR98/Obtainium) on your phone, tap **Add app**, paste
+`https://github.com/proy9714/lingo-os`, then **Install**. Obtainium tells you when there's an update. (Or download the
+`.apk` from the [latest release](https://github.com/proy9714/lingo-os/releases/latest).)
+
+The phone works through your computer: turn on Settings → **Phone** on the computer, then scan the pairing code with
+the app. Both must be on the same Wi-Fi. Away from home, texts you saved for offline still work, and everything you
+do syncs when you're back. Details in [docs/PHONE.md](docs/PHONE.md).
+
+## Optional extras
+
+- **AI explanations and the tutor**: create a free API key at [aistudio.google.com](https://aistudio.google.com/),
+  copy `.env.example` to `.env`, put the key after `GEMINI_API_KEY=`, restart, and press **Test connection** in
+  Settings. Other providers (a local Ollama, OpenRouter, any OpenAI-compatible server) are set in `config/llm.yaml`.
+  Everything else works without AI.
+- **Voices**: words and sentences are read by native neural voices, whatever voices your computer has. Choose a voice
+  per language in Settings → **Voices**, or switch to your device's own voices to stay fully offline.
+- **Your own videos and audio**: put them in `data\library\media\<language>\` with a same-named `.srt` or `.vtt`
+  subtitle file, then **Watch → Add a video → Scan**.
+- **Manga** (Japanese): drop volumes processed with mokuro into `data\inbox\manga\`.
+- **Immersion Tracker users**: put its data folder in `config/app.local.yaml` (`immersion_tracker: { path: ... }`) and
+  press **Sync now** in Settings to bring in your history.
+- **AI terminals**: open Claude Code, Gemini CLI or Codex in this folder and type `/lingo` for status, recommendations,
+  weekly reviews and more.
+- **Scheduled runs** (Windows): `powershell -ExecutionPolicy Bypass -File scripts\schedule-windows.ps1` runs a daily
+  content search and the Sunday review.
+
+## Updating
+
+```powershell
+git pull
+npm run setup
+npm run start
+```
+
+Your data in `data\` is kept, and the database is upgraded automatically. The phone updates through Obtainium.
+
+## Your data and privacy
+
+Everything you do (words, history, levels, notes, recordings) stays in the `data` folder on your computer. Back that
+folder up to keep it safe. The app goes online only to play and search YouTube, read the article sites in
+`config/sources.yaml`, read a sentence aloud the first time (Microsoft's speech service; can be turned off), ask the AI
+provider you set up when you ask for an explanation, and talk to your own phone over your Wi-Fi, encrypted.
+
+## For developers
 
 | Command | What it does |
 |---|---|
-| `npm run setup` | Install backend and frontend dependencies and create the databases |
 | `npm run dev` | API on http://127.0.0.1:8787 and the app on **http://localhost:5173**, both reloading on changes |
-| `npm run start` | Build the app and serve everything on **http://127.0.0.1:8787** |
 | `npm test` | Backend tests plus the frontend typecheck |
-| `npm run status` | Hours, today vs goal and starting level per language (add `-- --json` for JSON) |
-| `npm run import-tracker` | Import or re-sync the Immersion Tracker CSVs |
+| `npm run status` | Hours, today vs goal and starting level per language (`-- --json`) |
 | `npm run doctor` | Check Python, data folder, databases, build, ffmpeg and API keys |
-| `npm run lingo -- dict import` | Import every Yomitan dictionary zip in `data/dictionaries` (re-importing replaces) |
+| `npm run import-tracker` | Import or re-sync Immersion Tracker CSVs |
+| `npm run update-content` | Find new videos and articles near your level (`-- --lang es --dry-run`) |
+| `npm run evolve-profile` | Weekly review and report (`-- --no-llm`, `-- --dry-run --json`) |
 | `npm run lingo -- dict list` | Show installed dictionaries |
-| `npm run lingo -- content fetch-history` | Fetch and analyse captions of the videos you've watched (resumes where it stopped) |
+| `npm run lingo -- content fetch-history` | Fetch and analyse captions of the videos you've watched |
 | `npm run lingo -- content rescore` | Refresh the starting estimate and re-score the library |
 | `npm run lingo -- recommend` | Up Next picks with reasons (`--lang es`, `--json`) |
 | `npm run lingo -- manga scan` | Import volumes from `data\inbox\manga\` |
-| `npm run update-content` | Find new videos and articles near your level (`-- --lang es --dry-run`) |
-| `npm run evolve-profile` | Weekly review and report (`-- --no-llm`, `-- --dry-run --json`, `-- --apply proposal.json`) |
-| `npm run lingo -- sources list --lang de` | Content sources and whether they're fetched |
-| `npm run lingo -- tutor-brief show --lang de` | The tutor's current brief (`set --file` to change it) |
-| `npm run phone` | Build the web app into the Android project and open it in Android Studio |
-| `npm run lingo -- ai status` / `ai test` / `ai models` | Which model each task uses; check the key; list the Gemini models your key can use |
+| `npm run lingo -- ai status` / `ai test` | Which model each task uses; check the key |
+| `npm run phone` | Build the app into the Android project and open it in Android Studio |
+| `npm run lingo -- release check` | Maintainers: what changed since the last release (see [docs/RELEASING.md](docs/RELEASING.md)) |
 
-`npm run dev` starts the API through `backend/app/devserver.py`. On Windows, uvicorn's auto-reload sends Ctrl+C to the
-whole console, which would also stop Vite. The launcher keeps the API on its own hidden console.
-
-## In an AI terminal
-
-Open Gemini CLI (or Claude Code) in this folder and type `/lingo`, `/lingo status de`, `/lingo import` or
-`/lingo doctor`. Instructions live in `AGENTS.md`, and each mode's playbook in `modes/`. The AI reads and changes data
-only through the `lingo` CLI, never by touching the database files.
-
-## Configuration
-
-- `config/app.yaml`: data folder, languages, default goal
-- `config/app.local.yaml` (optional, not committed): this computer's own overrides, e.g. `immersion_tracker: { path: ... }`
-- `config/baselines.yaml`: hours → level roadmap and per-language difficulty divisors
-- `config/llm.yaml`: AI providers and task routing (Gemini by default)
-- `.env`: API keys only (copy `.env.example`)
-
-## Voices
-
-Words and sentences are read aloud by native neural voices (German by a German voice, Japanese by a Japanese one),
-whatever voices your operating system has. The laptop makes each clip with Microsoft's speech service (the voices
-Edge's Read Aloud uses; no key or account) and keeps it in `data/cache/tts`, so a sentence is sent once and replays
-offline. Only the sentence being spoken is sent. Settings → **Voices** picks a voice per language, or switches to
-**this device's voices only** (fully offline; a language without a voice stays silent instead of being read with an
-English accent). The phone gets the same audio through sync, and uses Android's own voices away from the laptop.
-
-## Layout
+Configuration lives in `config/`: `app.yaml` (data folder, languages, default goal), `app.local.yaml` (optional,
+git-ignored, this computer's overrides), `baselines.yaml` (hours → level roadmap), `llm.yaml` (AI providers),
+`sources.yaml` (content searches and feeds). API keys go in `.env` only.
 
 ```
-backend/   FastAPI + SQLite (Python, uv)     frontend/  React + Vite + Tailwind
-config/    YAML settings                     docs/      architecture + schema
+backend/   FastAPI + SQLite (Python, uv)     frontend/  React + Vite + Tailwind, Capacitor for Android
+config/    YAML settings                     docs/      architecture, schema, phone, releasing
 modes/     /lingo playbooks for AI terminals data/      your personal data (git-ignored)
 ```
+
+The design and data model are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/schema.sql](docs/schema.sql).
+AI terminals follow [AGENTS.md](AGENTS.md) and read and change data only through the `lingo` command line.
+On Windows, `npm run dev` starts the API through `backend/app/devserver.py`, which keeps uvicorn's auto-reload from
+stopping Vite.
 
 ## License
 
