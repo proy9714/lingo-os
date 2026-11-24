@@ -115,13 +115,13 @@ def test_discovery_keeps_candidates_and_skips_known(client, cfg, fake_sources) -
         runs = conn.execute(text("SELECT status, candidates_added FROM scrape_runs ORDER BY id")).all()
     assert runs == [("done", 2), ("done", 0)]
 
-    # unopened candidates age out; anything you opened stays
+    # unopened measured candidates age out; anything you opened stays
     with engine.begin() as conn:
         conn.execute(text("UPDATE content_items SET added_at = '2020-01-01T00:00:00.000Z' WHERE origin = 'scraper'"))
         conn.execute(text("UPDATE content_items SET last_opened_at = '2026-01-01T00:00:00.000Z' WHERE title = 'Artikel'"))
-        assert discover.prune(conn, 30, "de") == 2
-        left = conn.execute(text("SELECT title FROM content_items WHERE origin = 'scraper'")).scalars().all()
-    assert left == ["Artikel"]
+        assert discover.prune(conn, 30, "de") == 1
+        left = conn.execute(text("SELECT title FROM content_items WHERE origin = 'scraper' ORDER BY title")).scalars().all()
+    assert left == ["Artikel", "Video B"]  # Video B had no captions: kept, so it's never checked again
 
 
 def test_discovery_skips_videos_you_already_watched(client, cfg, fake_sources) -> None:

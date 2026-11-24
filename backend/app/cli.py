@@ -220,8 +220,9 @@ def update_content_cmd(
     for code, row in result.items():
         wiki = row.get("wiki") or {}
         console.print(
-            f"{code.upper()}: {row['listed']} new listed · {row['checked']} checked · {row['added']} videos and "
-            f"{row['articles_added']} articles kept · {row['off_level']} off-level · {row['no_captions']} without captions"
+            f"{code.upper()}: {row.get('catalogued', 0)} new videos in the catalogue · {row['checked']} measured · "
+            f"{row['added']} videos and {row['articles_added']} articles kept · {row['off_level']} off-level · "
+            f"{row['no_captions']} without captions"
             + (" · stopped early (YouTube refused)" if row["stopped_early"] else "")
         )
         if wiki.get("skipped") or wiki.get("error"):

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { api } from "../api/client";
 import { useContentItem, usePageList, useReaderPage } from "../api/hooks";
+import { DifficultyRating } from "../components/DifficultyRating";
 import type { ReaderParagraph } from "../api/types";
 import { TokenLine } from "../components/TokenLine";
 import { Button, Chip, Panel, Skeleton, cx } from "../components/ui";
@@ -162,6 +163,13 @@ export function ReaderPage() {
             )}
           </div>
         </article>
+      )}
+
+      {item.data && (
+        <div className="glass rounded-2xl px-4 py-3">
+          <DifficultyRating itemId={id} value={item.data.difficulty} kind="text" />
+          <p className="mt-1.5 text-xs text-ink-3">Your rating tunes how hard your suggested articles and books are.</p>
+        </div>
       )}
 
       <nav aria-label="Pages" className="flex items-center justify-between gap-3 pb-4">

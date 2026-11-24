@@ -23,19 +23,20 @@ from app.config import AppConfig
 from app.db import settings_store
 from app.engine.profile import get_profile
 from app.ingest import ci_wiki, documents, feeds, youtube
-from app.services import content, reading
+from app.services import catalog, content, reading
 from app.timeutil import from_iso, to_iso, utc_now
 
 PAUSE_SECONDS = 2.0
 STOP_AFTER_FAILURES = 3
 WIKI_EVERY = timedelta(days=7)
 DEFAULTS = {
-    "per_run": 10, "articles_per_run": 8, "per_feed": 3, "min_minutes": 3, "max_minutes": 45, "prune_days": 30,
+    "per_run": 12, "articles_per_run": 30, "per_feed": 12, "min_minutes": 3, "max_minutes": 45, "prune_days": 30,
     "keep_bands": ["stretch", "i_plus_1", "comfortable"],
 }
 # A feed whose articles keep landing off your level is read less: after this many tries with a keep rate under
 # FEED_MIN_RATE it is skipped, except every FEED_RETRY_EVERY runs (your level moves, so it gets another chance).
 FEED_TRIES, FEED_MIN_RATE, FEED_RETRY_EVERY = 6, 0.15, 5
+ARCHIVE_MIN_RATE = 0.4  # feeds at least this good get their older pages read too
 Progress = Callable[[float, str], None]
 
 
@@ -44,7 +45,8 @@ class Fetchers:
     """Everything that touches the network, replaceable in tests."""
 
     search: Callable[[str, int], list[youtube.Listing]] = youtube.search
-    channel_uploads: Callable[[str, int], list[youtube.Listing]] = youtube.channel_uploads
+    channel_uploads: Callable[[str, int, int], list[youtube.Listing]] = youtube.channel_uploads
+    info: Callable[[str], youtube.VideoInfo] = youtube.fetch_info
     captions: Callable[[str, str], youtube.Captions | None] = field(
         default=lambda video_id, lang: youtube.fetch_captions(video_id, lang, strict=True)
     )
@@ -139,38 +141,17 @@ def _level(conn: Connection, lang: str) -> str:
     return str(profile.get("level") or "B1")
 
 
-def _known_ids(conn: Connection, source: str, ids: list[str]) -> set[str]:
-    if not ids:
-        return set()
-    rows = conn.execute(
-        text(f"SELECT external_id FROM content_items WHERE source = :s AND external_id IN ({','.join(':i%d' % n for n in range(len(ids)))})"),
-        {"s": source, **{f"i{n}": v for n, v in enumerate(ids)}},
-    ).all()
-    return {r[0] for r in rows}
-
-
-def _title_key(title: str) -> str:
-    return "".join(ch for ch in title.casefold() if ch.isalnum())
-
-
-def watched_titles(conn: Connection, lang: str) -> set[str]:
-    """Titles of everything you've watched: sessions tracked here and rows imported from the tracker CSVs."""
-    rows = conn.execute(
-        text(
-            "SELECT s.title FROM activity_sessions s WHERE s.language_code = :l AND s.title IS NOT NULL "
-            "UNION SELECT ci.title FROM content_items ci WHERE ci.language_code = :l "
-            "AND EXISTS (SELECT 1 FROM activity_sessions s WHERE s.content_item_id = ci.id)"
-        ),
-        {"l": lang},
-    ).all()
-    return {key for (title,) in rows if title and len(key := _title_key(title)) >= 8}
+# kept for callers and tests that used the old names
+_known_ids = catalog.known_ids
+_title_key = catalog.title_key
+watched_titles = catalog.watched_titles
 
 
 def _band(conn: Connection, item_id: int) -> str | None:
     return conn.execute(text("SELECT band FROM content_scores WHERE content_item_id = :i"), {"i": item_id}).scalar()
 
 
-def _queries(spec: dict[str, Any], level: str, run_number: int, count: int = 2) -> list[str]:
+def _queries(spec: dict[str, Any], level: str, run_number: int, count: int = 3) -> list[str]:
     templates = spec.get("searches") or []
     topics = spec.get("topics") or [""]
     out = []
@@ -196,25 +177,21 @@ def discover_language(
     articles: bool = True,
 ) -> dict[str, Any]:
     """Look for new videos (`videos`) and articles (`articles`) for one language."""
+    from app.services import taste
+
     fetchers = fetchers or Fetchers()
     sources = load_sources(cfg)
     settings, spec = sources["defaults"], sources["languages"].get(lang, {})
     limit = (per_run or int(settings["per_run"])) if videos else 0
-    stats: dict[str, Any] = {"language": lang, "listed": 0, "checked": 0, "added": 0, "off_level": 0, "no_captions": 0,
-                             "articles_added": 0, "errors": [], "stopped_early": False, "added_titles": []}
+    stats: dict[str, Any] = {"language": lang, "listed": 0, "checked": 0, "added": 0, "catalogued": 0, "off_level": 0,
+                             "no_captions": 0, "articles_added": 0, "errors": [], "stopped_early": False, "added_titles": [],
+                             "channels_added": []}
     say = progress or (lambda fraction, message: None)
-    video_share = 0.75 if articles else 0.95  # of the progress bar
 
     with engine.begin() as conn:
         level = _level(conn, lang)
         run_number = conn.execute(text("SELECT COUNT(*) FROM scrape_runs WHERE language_code = :l"), {"l": lang}).scalar() or 0
-        channels = conn.execute(
-            text(
-                "SELECT id, target, name FROM content_sources WHERE language_code = :l AND kind = 'youtube_channel' "
-                "AND enabled = 1 ORDER BY COALESCE(last_fetched_at, '') LIMIT 3"
-            ),
-            {"l": lang},
-        ).all() if videos else []
+        youtube_ok = videos and not catalog.youtube_refused_recently(conn)
         run_id = None
         if not dry_run:
             # a run cut off by closing the app never finished: close it so it doesn't look busy forever
@@ -225,96 +202,76 @@ def discover_language(
             run_id = conn.execute(
                 text("INSERT INTO scrape_runs (language_code, status) VALUES (:l, 'running')"), {"l": lang}
             ).lastrowid
-    if videos:
-        say(0.03, "listing new videos")
+    if videos and not youtube_ok:
+        stats["stopped_early"] = True
+        stats["errors"].append("YouTube refused recently; videos are skipped for now")
 
-    # 1. List candidates: wiki channels' recent uploads, then searches. Listings are cheap (one request each).
-    listings: list[tuple[youtube.Listing, str]] = []
-    refused = False
-    for source_id, target, name in channels:
-        try:
-            found = fetchers.channel_uploads(target, 8)
-            listings += [(item, f"channel: {name}") for item in found]
-            status = f"ok, {len(found)} listed"
-        except youtube.YouTubeError as exc:
-            status = f"error: {exc}"[:200]
-            stats["errors"].append(f"{name}: {exc}"[:200])
-            refused = refused or "confirm you" in str(exc)
-        if not dry_run:
-            with engine.begin() as conn:
-                conn.execute(
-                    text("UPDATE content_sources SET last_fetched_at = :t, last_status = :s WHERE id = :i"),
-                    {"t": to_iso(utc_now()), "s": status, "i": source_id},
-                )
-        fetchers.pause(PAUSE_SECONDS / 2)
-    for query in _queries(spec, level, run_number) if videos and not refused else []:
-        try:
-            listings += [(item, f"search: {query}") for item in fetchers.search(query, 8)]
-        except youtube.YouTubeError as exc:
-            stats["errors"].append(f"search '{query}': {exc}"[:200])
-        fetchers.pause(PAUSE_SECONDS / 2)
+    if youtube_ok and dry_run:
+        with engine.connect() as conn:
+            channels = catalog.channel_sources(conn, lang)
+        listings: list[tuple[youtube.Listing, str]] = []
+        for query in _queries(spec, level, run_number):
+            listings += [(item, f"search: {query}") for item in fetchers.search(query, 20)]
+        with engine.connect() as conn:
+            known = catalog.known_ids(conn, "youtube", [v.video_id for v, _ in listings])
+            seen_titles = catalog.watched_titles(conn, lang)
+        unique = {v.video_id: (v, via) for v, via in reversed(listings)}  # first listing of each video wins
+        fresh = [(v, via) for v, via in unique.values() if v.video_id not in known and catalog.title_key(v.title) not in seen_titles]
+        stats["listed"] = len(fresh)
+        stats["would_list_channels"] = [c["name"] for c in channels[: catalog.CHANNELS_PER_RUN]]
+        stats["would_check"] = [{"video_id": v.video_id, "title": v.title, "channel": v.channel, "via": via} for v, via in fresh[:limit]]
+    elif youtube_ok:
+        with engine.connect() as conn:
+            profile = taste.profile(conn, lang)
+        # 1. Channels: the ones you watch, then list many uploads from each (cheap: no per-video request).
+        say(0.02, "finding channels you watch")
+        stats["channels_added"] = catalog.resolve_history_channels(engine, lang, fetchers)
+        listed = catalog.list_channels(
+            engine, settings, lang, fetchers, affinity=profile.channel_affinity, say=say, span=(0.05, 0.35)
+        )
+        stats["seen"] = listed["listed"]
+        stats["catalogued"] += listed["new"]
+        stats["errors"] += listed["errors"]
+        refused = listed["refused"]
+        # 2. Searches at your level: new channels come from here.
+        if not refused:
+            listings: list[tuple[youtube.Listing, str]] = []
+            for query in _queries(spec, level, run_number):
+                say(0.38, f"searching: {query[:50]}")
+                try:
+                    listings += [(item, f"search: {query}") for item in fetchers.search(query, 20)]
+                except youtube.YouTubeError as exc:
+                    stats["errors"].append(f"search '{query}': {exc}"[:200])
+                    if catalog._is_refusal(exc):
+                        refused = True
+                        break
+                fetchers.pause(catalog.PAUSE)
+            stats["seen"] += len(listings)
+            stats["catalogued"] += catalog.add_listings(engine, lang, listings, settings)
+        # 3. Estimate every new video's level, then measure the most promising ones.
+        with engine.begin() as conn:
+            stats["estimated"] = catalog.estimate_scores(conn, lang)
+        if not refused:
+            measured = catalog.verify(
+                engine, lang, fetchers, settings["keep_bands"], limit=limit, say=say,
+                span=(0.42, 0.72 if articles else 0.97),
+            )
+            stats["checked"] += measured["checked"]
+            stats["added"] += measured["kept"]
+            stats["no_captions"] += measured["no_captions"]
+            stats["off_level"] += measured["off_level"]
+            stats["errors"] += measured["errors"]
+            stats["added_titles"] += measured["kept_titles"]
+            refused = measured["refused"]
+        stats["stopped_early"] = refused
+        stats["listed"] = stats["catalogued"]  # new videos in the catalogue
 
-    lo, hi = float(settings["min_minutes"]) * 60, float(settings["max_minutes"]) * 60
-    unique: dict[str, tuple[youtube.Listing, str]] = {}
-    for item, via in listings:
-        if item.duration and not lo <= item.duration <= hi:
-            continue
-        unique.setdefault(item.video_id, (item, via))
-    with engine.connect() as conn:
-        known = _known_ids(conn, "youtube", list(unique))  # already in the library, watched (CSV) or not
-        seen_titles = watched_titles(conn, lang)  # the same video re-uploaded, or a CSV row without a link
-    fresh = [v for k, v in unique.items() if k not in known and _title_key(v[0].title) not in seen_titles]
-    stats["listed"] = len(fresh)
-    if dry_run:
-        stats["would_check"] = [{"video_id": i.video_id, "title": i.title, "channel": i.channel, "via": via} for i, via in fresh[:limit]]
-    else:
-        # 2. Check captions and analyse, one video at a time, paced.
-        consecutive = 0
-        batch = fresh[:limit]
-        for number, (item, via) in enumerate(batch):
-            if refused:
-                stats["stopped_early"] = True
-                break
-            say(0.05 + video_share * number / max(1, len(batch)), f"checking video {number + 1} of {len(batch)}: {item.title[:60]}")
-            stats["checked"] += 1
-            try:
-                captions = fetchers.captions(item.video_id, lang)
-                consecutive = 0
-            except youtube.YouTubeError as exc:
-                stats["errors"].append(f"{item.video_id}: {exc}"[:200])
-                consecutive += 1
-                refused = consecutive >= STOP_AFTER_FAILURES or "confirm you" in str(exc)
-                fetchers.pause(PAUSE_SECONDS)
-                continue
-            with engine.begin() as conn:
-                item_id = content.upsert_youtube(
-                    conn, lang, item.video_id, title=item.title, channel=item.channel, duration=item.duration,
-                    origin="scraper", status="candidate",
-                )
-                if captions is None:
-                    stats["no_captions"] += 1
-                    conn.execute(text("UPDATE content_items SET status = 'dismissed' WHERE id = :i"), {"i": item_id})
-                    content.set_metadata(conn, item_id, captions="none", discovered_via=via, discovery="no_captions")
-                else:
-                    content.save_transcript(conn, item_id, lang, captions.kind, captions.fmt, captions.cues)
-                    content.set_metadata(conn, item_id, captions=captions.kind, caption_track=captions.track_lang, discovered_via=via)
-                    content.analyze_item(conn, item_id)
-                    if _band(conn, item_id) in settings["keep_bands"]:
-                        stats["added"] += 1
-                        stats["added_titles"].append(item.title)
-                    else:
-                        stats["off_level"] += 1
-                        conn.execute(text("UPDATE content_items SET status = 'dismissed' WHERE id = :i"), {"i": item_id})
-                        content.set_metadata(conn, item_id, discovery="off_level")
-            fetchers.pause(PAUSE_SECONDS)
-
-    # 3. Articles from the feeds: a few from each feed in turn, the feeds that suit your level first.
+    # 4. Articles from the feeds: the feeds that suit your level get most of the budget.
     if articles:
         _discover_articles(
-            engine, cfg, lang, spec, settings, stats, fetchers, say, run_number, dry_run, start=0.05 + video_share if videos else 0.05
+            engine, cfg, lang, spec, settings, stats, fetchers, say, run_number, dry_run, start=0.75 if videos else 0.05
         )
 
-    stats["stopped_early"] = stats["stopped_early"] or refused
     if not dry_run:
         with engine.begin() as conn:
             stats["pruned"] = prune(conn, int(settings["prune_days"]), lang)
@@ -338,6 +295,11 @@ def discover_language(
 def feed_stats(conn: Connection, lang: str) -> dict[str, dict[str, int]]:
     """Per feed: how many of its articles were read and how many were near your level."""
     return settings_store.get(conn, f"feed_stats.{lang}", {}) or {}
+
+
+def _paged(url: str, page: int) -> str:
+    """An older page of a feed (WordPress and many others accept ?paged=N)."""
+    return f"{url}{'&' if '?' in url else '?'}paged={page}"
 
 
 def _keep_rate(entry: dict[str, int]) -> float:
@@ -366,20 +328,46 @@ def _discover_articles(
         return entry.get("tried", 0) < FEED_TRIES or _keep_rate(entry) >= FEED_MIN_RATE or run_number % FEED_RETRY_EVERY == 0
 
     ordered = sorted((f for f in configured if worth_reading(f)), key=lambda f: -_keep_rate(history.get(f["url"], {})))
+    weights = {f["url"]: _keep_rate(history.get(f["url"], {})) for f in ordered}
+    total_weight = sum(weights.values()) or 1.0
+    budget = int(settings["articles_per_run"])
+    per_feed = int(settings["per_feed"])
     queues: list[tuple[dict[str, Any], list[feeds.FeedEntry]]] = []
-    for feed in ordered:  # one request per feed for its list of entries
+    for feed in ordered:
+        url = feed["url"]
+        quota = min(per_feed, max(2, round(budget * weights[url] / total_weight)))
         try:
-            entries = fetchers.feed(feed["url"])[:20]
+            entries = fetchers.feed(url)
         except feeds.FeedError as exc:
-            stats["errors"].append(f"{feed.get('name', feed['url'])}: {exc}"[:200])
+            stats["errors"].append(f"{feed.get('name', url)}: {exc}"[:200])
             continue
         with engine.connect() as conn:
             known = _known_ids(conn, "web", [e.url for e in entries])
-        fresh = [e for e in entries if e.url not in known][: int(settings["per_feed"])]
+        fresh = [e for e in entries if e.url not in known]
+        # A feed that suits you and has run dry gets its archive read, a page further back each run.
+        tally = history.setdefault(url, {"tried": 0, "kept": 0})
+        pages = 0
+        while len(fresh) < quota and tally.get("archive", True) and weights[url] >= ARCHIVE_MIN_RATE and pages < 2 and not dry_run:
+            page = int(tally.get("page", 2))
+            try:
+                older = fetchers.feed(_paged(url, page))
+            except feeds.FeedError:
+                older = []
+            with engine.connect() as conn:
+                known_older = _known_ids(conn, "web", [e.url for e in older])
+            new_older = [e for e in older if e.url not in known_older and e.url not in {f.url for f in fresh}]
+            if not older or {e.url for e in older} <= {e.url for e in entries}:
+                tally["archive"] = False  # no archive pages on this feed
+                break
+            tally["page"] = page + 1
+            fresh += new_older
+            pages += 1
+            fetchers.pause(PAUSE_SECONDS / 4)
         if fresh:
-            queues.append((feed, fresh))
+            queues.append((feed, fresh[:quota]))
+    with engine.begin() as conn:
+        settings_store.put(conn, f"feed_stats.{lang}", history)
     plan: list[tuple[dict[str, Any], feeds.FeedEntry]] = []
-    budget = int(settings["articles_per_run"])
     while budget > 0 and any(entries for _, entries in queues):
         for feed, entries in queues:
             if entries and budget > 0:
@@ -420,11 +408,14 @@ def _discover_articles(
 
 
 def prune(conn: Connection, days: int, lang: str | None = None) -> int:
-    """Remove discovered items nobody opened, older than `days` (never anything you added or watched)."""
+    """Remove discovered items nobody opened, older than `days`: dropped ones (so they can be re-checked as your level
+    moves) and measured candidates. Estimated catalogue entries stay; things you dismissed yourself, added or watched
+    are never removed."""
     result = conn.execute(
         text(
             "DELETE FROM content_items WHERE origin = 'scraper' AND status IN ('candidate', 'dismissed') "
-            "AND last_opened_at IS NULL AND (:l IS NULL OR language_code = :l) "
+            "AND analysis_status = 'done' AND last_opened_at IS NULL AND (:l IS NULL OR language_code = :l) "
+            "AND COALESCE(json_extract(metadata_json, '$.dismissed_by_you'), 0) = 0 "
             "AND added_at < strftime('%Y-%m-%dT%H:%M:%fZ', 'now', :age) "
             "AND NOT EXISTS (SELECT 1 FROM activity_sessions s WHERE s.content_item_id = content_items.id)"
         ),

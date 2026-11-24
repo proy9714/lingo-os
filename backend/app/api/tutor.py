@@ -103,6 +103,18 @@ def review_job(job_id: int, conn: Connection = Depends(get_conn)) -> dict[str, A
     return job
 
 
+@router.get("/reference/{lang}")
+def grammar_reference(lang: str, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
+    """The grammar overview for a language, with the tutor's notes on what you still slip on."""
+    from app.services import grammar
+
+    require_language(conn, lang)
+    try:
+        return {**grammar.reference(lang), "weak_spots": grammar.weak_spots(conn, lang)}
+    except grammar.GrammarError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
 @router.get("/grammar")
 def grammar(lang: str = Query(..., min_length=2, max_length=8), conn: Connection = Depends(get_conn)) -> list[dict[str, Any]]:
     return tutor.grammar_overview(conn, lang)

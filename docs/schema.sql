@@ -527,9 +527,11 @@ CREATE TABLE content_scores (
   interest_match    REAL,
   i1_score          REAL NOT NULL,                       -- final rank score 0..1
   band              TEXT NOT NULL CHECK (band IN ('too_easy','comfortable','i_plus_1','stretch','too_hard')),
-  computed_at       TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+  computed_at       TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+  estimated         INTEGER NOT NULL DEFAULT 0           -- 1 = estimated from the channel/source, not yet measured (0003)
 );
 CREATE INDEX ix_scores_rank ON content_scores(band, i1_score DESC);
+CREATE INDEX ix_scores_estimated ON content_scores(estimated);
 
 -- =====================================================================
 -- 8. IMMERSION TRACKING & CSV IMPORT
@@ -756,7 +758,8 @@ CREATE TABLE jobs (
   kind          TEXT NOT NULL CHECK (kind IN
                 ('analyze_content','fetch_subtitles','transcribe','ocr_manga','extract_text',
                  'extract_clip','import_dictionary','rescore','tutor_postprocess','backup',
-                 'fetch_history_captions','update_content','evolve_profile','build_offline_pack')),
+                 'fetch_history_captions','update_content','evolve_profile','build_offline_pack',
+                 'verify_candidates')),
   lane          TEXT NOT NULL DEFAULT 'cpu' CHECK (lane IN ('cpu','gpu')),
   status        TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued','running','done','failed','cancelled')),
   priority      INTEGER NOT NULL DEFAULT 5,              -- lower runs first

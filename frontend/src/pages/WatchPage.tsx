@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { api } from "../api/client";
 import { useActiveLanguage, useContentMutation, useEvidence, useLibrary, usePool } from "../api/hooks";
 import type { ContentItem } from "../api/types";
+import { DifficultyRating } from "../components/DifficultyRating";
 import { GRID, SuggestionGrid } from "../components/Suggestions";
 import { Button, Chip, Panel, PanelTitle, ProgressBar, Skeleton, Tabs } from "../components/ui";
 import { formatDay, localDayOf } from "../lib/format";
@@ -133,7 +134,10 @@ function WatchedTab({ lang }: { lang: string }) {
     <div className="flex flex-col gap-4">
       <HistoryCard lang={lang} />
       <div className="flex flex-wrap items-center justify-between gap-2 px-1">
-        <p className="text-sm text-ink-3">Everything you've watched, newest first. These are never suggested again.</p>
+        <p className="max-w-xl text-sm text-ink-3">
+          Everything you've watched, newest first; never suggested again. Rate a few (very easy … very hard) and your
+          suggestions adjust to your real level.
+        </p>
         <label className="flex min-w-[240px] items-center rounded-xl border border-white/10 bg-black/25 px-3">
           <span className="sr-only">Search watched videos</span>
           <input
@@ -211,6 +215,11 @@ function VideoCard({ item }: { item: ContentItem }) {
           </div>
         </div>
       </Link>
+      {item.coverage !== null && (
+        <div className="mt-1.5 px-1">
+          <DifficultyRating itemId={item.id} value={item.difficulty} compact />
+        </div>
+      )}
     </li>
   );
 }

@@ -103,7 +103,7 @@ def test_review_records_corrections_and_grammar(client) -> None:
     grammar = client.get("/api/tutor/grammar", params={"lang": "de"}).json()
     assert grammar[0]["title"] == "Perfekt mit sein" and grammar[0]["errors"] == 1 and grammar[0]["status"] == "practicing"
     # the weak point now feeds the next session's prompt
-    client.post(f"/api/tutor/sessions", json={"lang": "de", "mode": "correction_drill"})
+    client.post("/api/tutor/sessions", json={"lang": "de", "mode": "correction_drill"})
     assert any("Practice session for: Perfekt mit sein" in r.system for r in gateway.providers["cloud"].requests)
     assert postprocess(gateway, client.app.state.engine, session["id"])["skipped"] == "already reviewed"
     with client.app.state.engine.connect() as conn:

@@ -8,6 +8,7 @@ import { PlayerPage } from "./pages/PlayerPage";
 import { WatchPage } from "./pages/WatchPage";
 import { ReadPage } from "./pages/ReadPage";
 import { ConnectPage } from "./pages/ConnectPage";
+import { GrammarPage } from "./pages/GrammarPage";
 import { HelpPage } from "./pages/HelpPage";
 import { ReaderPage } from "./pages/ReaderPage";
 import { ReportsPage } from "./pages/ReportsPage";
@@ -31,6 +32,7 @@ const routeTree = rootRoute.addChildren([
   page("/manga/$itemId", MangaViewerPage),
   page("/speak", SpeakPage),
   page("/words", WordsPage),
+  page("/grammar", GrammarPage),
   page("/level", LevelPage),
   page("/settings", SettingsPage),
   page("/reports", ReportsPage),

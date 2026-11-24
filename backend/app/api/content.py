@@ -7,15 +7,17 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import Connection, text
 
-from app.api.deps import get_cfg, get_conn, require_language
+from app.api.deps import get_cfg, get_conn, get_dict_conn, require_language
 from app.config import AppConfig
 from app.engine.evidence import content_evidence
 from app.ingest import documents
 from app.ingest.youtube import YouTubeError, fetch_captions, fetch_info, parse_video_id
 from app.jobs import analysis, history  # noqa: F401 - registers the job handlers
 from app.jobs.runner import enqueue, get_job, latest_job
-from app.services import content, reading
+from app.services import calibration, content, reading, taste
+from app.services import recommend as ranking
 from app.services.recommend import feed, up_next
+from app.timeutil import to_iso, utc_now
 
 router = APIRouter(prefix="/api", tags=["content"])
 
@@ -258,8 +260,51 @@ def read_progress(item_id: int, body: PageProgress, conn: Connection = Depends(g
 
 @router.post("/content/{item_id}/dismiss")
 def dismiss(item_id: int, conn: Connection = Depends(get_conn)) -> dict[str, bool]:
+    """Not interested: never suggested again, and the taste model learns from it."""
+    lang = conn.execute(text("SELECT language_code FROM content_items WHERE id = :id"), {"id": item_id}).scalar()
     conn.execute(text("UPDATE content_items SET status = 'dismissed' WHERE id = :id"), {"id": item_id})
+    if lang:
+        content.set_metadata(conn, item_id, dismissed_by_you=1, dismissed_at=to_iso(utc_now()))
+        taste.invalidate(lang)
+        ranking.invalidate()
     return {"ok": True}
+
+
+class Difficulty(BaseModel):
+    value: int | None = Field(default=None, ge=1, le=5)
+
+
+@router.put("/content/{item_id}/difficulty")
+def rate_difficulty(item_id: int, body: Difficulty, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
+    """Very easy (1) … very hard (5): moves your "just right" level for videos or reading. null clears it."""
+    try:
+        result = calibration.rate(conn, item_id, body.value)
+    except content.ContentError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    ranking.invalidate()
+    return result
+
+
+@router.get("/taste")
+def taste_summary(
+    lang: str = Query(..., min_length=2, max_length=8),
+    conn: Connection = Depends(get_conn),
+    dict_conn: Connection = Depends(get_dict_conn),
+) -> dict[str, Any]:
+    """What the app has learned: channels and topics you like, lengths you finish, your calibrated level window."""
+    from app.dictionary.lookup import lookup
+
+    require_language(conn, lang)
+    summary = taste.explain(conn, lang)
+    # show only real words as topics (a presenter's name isn't a topic); an empty dictionary leaves them all
+    has_dictionary = bool(dict_conn.execute(text("SELECT 1 FROM dict_terms LIMIT 1")).first())
+    if has_dictionary:
+        def is_word(w: str) -> bool:
+            entries = lookup(dict_conn, lang, [w], limit=3)["entries"]
+            return any("name" not in (e.get("pos") or []) for e in entries)
+
+        summary["topics"] = [w for w in summary["topics"] if is_word(w)]
+    return {**summary, "calibration": calibration.summary(conn, lang)}
 
 
 @router.get("/content/{item_id}/media")

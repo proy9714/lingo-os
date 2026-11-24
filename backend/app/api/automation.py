@@ -35,6 +35,8 @@ class SourcePatch(BaseModel):
 class TopUpRequest(BaseModel):
     lang: str = Field(min_length=2, max_length=8)
     force: bool = False
+    shelf: str | None = Field(default=None, pattern="^(watch|read)$")
+    at_end: bool = False  # you scrolled to the end of this shelf: look for more sooner
 
 
 class AutoSetting(BaseModel):
@@ -62,7 +64,7 @@ def discovery_pool(lang: str = Query(..., min_length=2, max_length=8), conn: Con
 def discovery_top_up(body: TopUpRequest, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
     """Start a background search if a shelf is running low (or right away with `force`)."""
     require_language(conn, body.lang)
-    return topup.maybe_top_up(conn, body.lang, force=body.force)
+    return topup.maybe_top_up(conn, body.lang, force=body.force, shelf=body.shelf, at_end=body.at_end)
 
 
 @router.put("/discover/auto")

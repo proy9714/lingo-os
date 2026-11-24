@@ -146,7 +146,7 @@ function Code({ children }: { children: ReactNode }) {
   return <code className="rounded bg-black/40 px-1.5 py-0.5 text-[13px] text-ink">{children}</code>;
 }
 
-function Go({ to, hash, children }: { to: "/" | "/watch" | "/read" | "/manga" | "/speak" | "/words" | "/level" | "/settings" | "/reports" | "/connect"; hash?: string; children: ReactNode }) {
+function Go({ to, hash, children }: { to: "/" | "/watch" | "/read" | "/manga" | "/speak" | "/words" | "/grammar" | "/level" | "/settings" | "/reports" | "/connect"; hash?: string; children: ReactNode }) {
   return (
     <Link to={to} hash={hash} className="font-semibold text-accent hover:underline">
       {children}
@@ -255,7 +255,7 @@ const TOPICS: Topic[] = [
     id: "suggestions",
     title: "How suggestions work",
     summary: "Why you see what you see, and where new content comes from.",
-    keywords: "recommend recommendation i+1 level band known percent coverage background search find new content sources feeds youtube watched dismiss not interested",
+    keywords: "recommend recommendation i+1 level band known percent coverage background search find new content sources feeds youtube watched dismiss not interested taste learn preferences rating difficulty very easy hard estimated catalogue channels",
     body: (
       <>
         <p>
@@ -283,22 +283,37 @@ const TOPICS: Topic[] = [
           Picks that fit your level best come first. Things that bring back words you're learning get a boost, and so do books you've
           started. One channel never fills the screen: others are mixed in.
         </p>
-        <H3>New content, found in the background</H3>
+        <H3>Your taste: learned from what you do</H3>
         <p>
-          When your suggestions run low (fewer than 24 videos or 12 articles), the app looks for more on its own while you keep using it.
-          A badge <span className="rounded-lg bg-accent/14 px-2 py-0.5 text-xs font-semibold text-accent">Finding new content</span> shows
-          in the top bar while it runs. It checks:
+          Like a video site's feed, suggestions learn what you enjoy, with no likes needed. Videos you finish or come back to, and
+          articles you read most of, count for their channel or site, their topic and their length. Things you leave after a few
+          seconds, or mark <em>Not interested</em>, count against. Recent behaviour counts most. Channels you've never tried still
+          turn up now and then, so the list doesn't narrow to the same few. The card <em>What your suggestions learned</em> on Today
+          shows what it has picked up, and the reasons on each card say why it was suggested ("you often watch …", "similar to
+          things you enjoyed").
         </p>
-        <Bullets>
-          {[
-            "YouTube channels listed for your language on the Comprehensible Input Wiki (the list is refreshed at most once a week).",
-            "YouTube searches at your level. Only videos with real captions in the language are kept.",
-            "News and learner sites (RSS feeds). Sites whose articles keep turning out too hard are read less often.",
-          ]}
-        </Bullets>
+        <H3>Rate how hard things are</H3>
         <p>
-          Everything found is analysed. Only items near your level are kept; the rest are dropped. Searches run at most every 2 hours
-          (12 hours if YouTube asked to slow down), and unopened suggestions are cleared after 30 days.
+          Under every video and at the end of every page you read: <strong>Very easy · Easy · Comfortable · Hard · Very hard</strong>.
+          Each rating moves your "just right" level right away, separately for videos and for reading, and every suggestion is
+          re-ranked. Rating a few videos you've already watched (Watch → Watched) is the quickest way to tune it. Click a rating
+          again to remove it.
+        </p>
+        <H3>A big catalogue, found in the background</H3>
+        <p>
+          The app lists whole YouTube channels: those from the Comprehensible Input Wiki, the ones you watch, and new ones whose
+          videos turn out to be at your level. A little more of each channel's back catalogue is listed on each search, so there
+          are hundreds of videos to choose from. Until a video has been measured word by word, its level is{" "}
+          <strong>estimated</strong> from the channel's other videos and marked <strong>≈ … estimated</strong>. The best ones are
+          measured in the background, and any video is measured the moment you open it. Videos about another language
+          (a channel that teaches German and Japanese, say) are left out.
+        </p>
+        <p>
+          Searches start on their own when a list runs low or you scroll to its end, while you keep using the app. A badge{" "}
+          <span className="rounded-lg bg-accent/14 px-2 py-0.5 text-xs font-semibold text-accent">Finding new content</span> shows in
+          the top bar while one runs. Articles come from news and learner sites (RSS feeds); sites whose articles suit you get
+          most of the reading, including their older articles, and sites that keep turning out too hard are read less. YouTube is
+          asked for videos at most every 45 minutes, and left alone for 12 hours if it asks to slow down.
         </p>
         <Tip>
           Want more right now? Scroll to the end of the list on Watch or Read and press <strong>Find more now</strong>. To turn the
@@ -396,6 +411,31 @@ const TOPICS: Topic[] = [
           With an AI key (see <a href="#ai" className="font-semibold text-accent hover:underline">AI explanations</a>), the panel also
           explains what the word means <em>in that sentence</em>, and can translate or break down the whole sentence.
         </p>
+      </>
+    ),
+  },
+  {
+    id: "grammar",
+    title: "Grammar",
+    summary: "A reference for each language, with sentences you can hear and look up.",
+    keywords: "grammar reference cases verbs conjugation tables tutor weak spots",
+    body: (
+      <>
+        <p>
+          <Go to="/grammar">Grammar</Go> has a reference for German, Spanish and Japanese, from beginner to intermediate: numbered
+          sections with tables, a short explanation and real example sentences with translations. Colours show the kind of topic:{" "}
+          <span className="font-semibold text-sky-300">structure</span>, <span className="font-semibold text-amber-300">verb forms</span>{" "}
+          and <span className="font-semibold text-rose-300">watch-out contrasts</span>, and each ends with a one-page summary.
+        </p>
+        <Bullets>
+          {[
+            "It opens on the language you're learning; the tabs show the others.",
+            "Search (dative, ser, て form …) or filter by kind.",
+            "The speaker button reads an example aloud; Aa makes its words clickable for lookups.",
+            "Japanese examples show the reading in kana underneath.",
+            "If the tutor noticed slips (for example 'dative after mit'), they're listed at the top with links to the sections that explain them.",
+          ]}
+        </Bullets>
       </>
     ),
   },

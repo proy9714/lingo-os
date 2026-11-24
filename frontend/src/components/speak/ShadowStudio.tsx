@@ -36,7 +36,7 @@ export function ShadowStudio({ lang, initialClip }: { lang: string; initialClip:
   }, [clips.data, selected]);
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[300px_minmax(0,1fr)]">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[300px_minmax(0,1fr)]">
       <Panel aria-labelledby="t-clips" className="p-4">
         <PanelTitle id="t-clips">Your clips</PanelTitle>
         <p className="mb-3 text-xs leading-relaxed text-ink-3">

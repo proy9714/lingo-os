@@ -317,6 +317,8 @@ export interface ContentItem {
   speech_wpm: number | null;
   word_count: number | null;
   page_count: number | null;
+  difficulty: number | null;
+  estimated: number;
 }
 
 export interface TranscriptCue {
@@ -418,6 +420,8 @@ export interface UpNextPick {
   watched: number;
   score: number;
   reasons: string[];
+  estimated?: boolean;
+  level_basis?: string | null;
   url?: string | null;
   origin?: string;
   image?: string | null;
@@ -431,6 +435,7 @@ export interface FeedPage {
   total: number;
   items: UpNextPick[];
   next_offset: number | null;
+  estimated?: number;
 }
 
 /** How many suggestions each shelf has, and the background search that keeps them topped up. */
@@ -438,6 +443,7 @@ export interface PoolStatus {
   language: string;
   auto: boolean;
   pools: { watch: number; read: number };
+  estimated?: number;
   targets: { watch: number; read: number };
   low: ("watch" | "read")[];
   searching: boolean;
@@ -734,4 +740,77 @@ export interface SyncStatus {
   port: number;
   addresses: string[];
   devices: DeviceRow[];
+}
+
+// ---------------------------------------------------------------- grammar reference
+
+export type GrammarKind = "structure" | "verbs" | "contrast" | "summary";
+
+export interface GrammarTable {
+  caption?: string;
+  head: string[];
+  rows: string[][];
+}
+
+export interface GrammarExample {
+  text: string;
+  translation: string;
+  note: string | null;
+  reading: string | null;
+}
+
+export interface GrammarSection {
+  number: number;
+  id: string;
+  title: string;
+  kind: GrammarKind;
+  level: string;
+  tags: string[];
+  rule: string | null;
+  text: string | null;
+  tables: GrammarTable[];
+  after: string | null;
+  examples: GrammarExample[];
+  points: string[];
+  tip: string | null;
+}
+
+export interface GrammarWeakSpot {
+  key: string;
+  title: string;
+  errors: number;
+  mastery: number;
+  example: string | null;
+  sections: string[];
+}
+
+export interface GrammarReference {
+  language: string;
+  title: string;
+  intro: string;
+  sections: GrammarSection[];
+  weak_spots: GrammarWeakSpot[];
+}
+
+// ---------------------------------------------------------------- ratings and taste
+
+export interface DifficultyResult {
+  id: number;
+  value: number | null;
+  label: string | null;
+  modality: "listening" | "reading";
+  ideal_before: number;
+  ideal_after: number;
+  ratings: number;
+  message: string;
+}
+
+export interface TasteSummary {
+  language: string;
+  signals: number;
+  channels: { name: string; affinity: number; evidence: number }[];
+  less_of: { name: string; affinity: number }[];
+  lengths: { bucket: string; affinity: number }[];
+  topics: string[];
+  calibration: Record<"listening" | "reading", { ideal: number; default: number; ratings: number; counts: Record<string, number> }>;
 }

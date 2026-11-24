@@ -56,6 +56,10 @@ Phase 3, read and Up Next:
 - **Up Next** on Today: 12 picks matched to your level. They favour items that bring back your saved words and books you've started, and mix channels and formats. Videos you've watched (in the app or in your tracker CSVs) and anything you've finished are never suggested. Dismiss any pick with ×.
 - **For you** on Watch and Read: every suggestion for that shelf, best first, with infinite scroll; the end of the list asks for more in the background. Watched videos have their own tab, and your books and texts are under *Your shelf*.
 - **Help** (in the menu): how every page works, how suggestions are picked, and a step-by-step phone sync guide.
+- **A big catalogue**: whole YouTube channels are listed (wiki channels, the channels you watch, and channels found at your level), hundreds of videos at a time. Levels are estimated from each channel's measured videos (marked ≈), and the best are measured in the background or when you open them. Videos about another language are left out.
+- **Difficulty ratings** (very easy … very hard) under every video and page: they move your "just right" level for videos or reading right away.
+- **Taste**: suggestions learn from what you finish, rewatch, abandon or dismiss (channels, sites, topics, length), and say why each one was picked.
+- **Grammar**: a reference for German, Spanish and Japanese with tables, translated examples you can hear and look up, and links from the tutor's notes on your slips.
 - `npm run lingo -- content rescore` refreshes the starting estimate and every item's score.
 
 Phase 2, watch and listen:

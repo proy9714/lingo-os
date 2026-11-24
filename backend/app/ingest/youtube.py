@@ -67,11 +67,22 @@ class Listing:
     title: str
     channel: str | None
     duration: int | None
+    channel_url: str | None = None
 
 
-def _flat(url: str, limit: int) -> list[Listing]:
+def _channel_url(entry: dict[str, Any], info: dict[str, Any]) -> str | None:
+    url = entry.get("channel_url") or entry.get("uploader_url")
+    if url:
+        return url
+    channel_id = entry.get("channel_id") or info.get("channel_id")
+    if channel_id:
+        return f"https://www.youtube.com/channel/{channel_id}"
+    return info.get("channel_url") or info.get("uploader_url")
+
+
+def _flat(url: str, limit: int, start: int = 1) -> list[Listing]:
     try:
-        with _ydl(extract_flat="in_playlist", playlistend=limit, noplaylist=False) as ydl:
+        with _ydl(extract_flat="in_playlist", playliststart=start, playlistend=start + limit - 1, noplaylist=False) as ydl:
             info = ydl.extract_info(url, download=False)
     except Exception as exc:
         raise YouTubeError(_short(exc)) from exc
@@ -86,6 +97,7 @@ def _flat(url: str, limit: int) -> list[Listing]:
                 title=entry.get("title") or video_id,
                 channel=entry.get("channel") or entry.get("uploader") or info.get("channel") or info.get("uploader"),
                 duration=int(entry["duration"]) if entry.get("duration") else None,
+                channel_url=_channel_url(entry, info or {}),
             )
         )
     return out[:limit]
@@ -96,12 +108,13 @@ def search(query: str, limit: int = 10) -> list[Listing]:
     return _flat(f"ytsearch{limit}:{query}", limit)
 
 
-def channel_uploads(channel_url: str, limit: int = 10) -> list[Listing]:
-    """The most recent uploads of a channel, from its /videos tab."""
+def channel_uploads(channel_url: str, limit: int = 10, start: int = 1) -> list[Listing]:
+    """A channel's uploads from its /videos tab, newest first: entries start … start + limit - 1."""
     url = channel_url.rstrip("/")
-    if not url.endswith("/videos"):
-        url += "/videos"
-    return _flat(url, limit)
+    for suffix in ("/featured", "/videos", "/streams", "/shorts"):
+        if url.endswith(suffix):
+            url = url[: -len(suffix)]
+    return _flat(url + "/videos", limit, start)
 
 
 def fetch_info(video_id: str) -> VideoInfo:

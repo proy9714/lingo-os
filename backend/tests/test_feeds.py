@@ -100,7 +100,7 @@ def test_top_up_queues_a_background_search_only_when_low(client) -> None:
             _item(conn, f"A{n}", kind="article")
         conn.execute(text("DELETE FROM app_settings WHERE key LIKE 'discover.auto_last.%'"))
     pool = client.get("/api/discover/pool", params={"lang": "de"}).json()
-    assert pool["low"] == [] and pool["pools"] == {"watch": 24, "read": 12}
+    assert pool["low"] == [] and pool["pools"] == topup.POOL_TARGET
     assert client.post("/api/discover/top-up", json={"lang": "de"}).json()["reason"] == "enough suggestions"
     client.put("/api/discover/auto", json={"enabled": False})
     with engine.begin() as conn:

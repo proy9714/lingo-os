@@ -83,7 +83,7 @@ export function SuggestionGrid({ lang, shelf }: { lang: string; shelf: "watch" |
   useEffect(() => {
     if (atEnd && items.length > 0 && !askedAtEnd.current) {
       askedAtEnd.current = true;
-      topUp.mutate(false);
+      topUp.mutate({ shelf, atEnd: true });
     }
   }, [atEnd, items.length, topUp]);
 
@@ -103,8 +103,17 @@ export function SuggestionGrid({ lang, shelf }: { lang: string; shelf: "watch" |
       </p>
     );
   }
+  const total = feed.data?.pages[0]?.total ?? 0;
+  const estimated = feed.data?.pages[0]?.estimated ?? 0;
   return (
     <div className="flex flex-col gap-5">
+      {total > 0 && (
+        <p className="-mt-1 px-1 text-xs text-ink-3">
+          {total.toLocaleString("en")} {NOUN[shelf]} for you, best first
+          {estimated > 0 &&
+            ` · ${estimated.toLocaleString("en")} with a level estimated from their channel (marked ≈), checked in the background and when you open them`}
+        </p>
+      )}
       {feed.isPending ? (
         <ul className={GRID} aria-label="Loading suggestions">
           {Array.from({ length: 8 }, (_, n) => (
@@ -131,7 +140,7 @@ export function SuggestionGrid({ lang, shelf }: { lang: string; shelf: "watch" |
         )
       )}
       <div ref={sentinel} aria-hidden="true" />
-      {atEnd && <FeedEnd shelf={shelf} count={items.length} pool={pool.data} onFind={() => topUp.mutate(true)} finding={topUp.isPending} />}
+      {atEnd && <FeedEnd shelf={shelf} count={items.length} pool={pool.data} onFind={() => topUp.mutate({ force: true, shelf })} finding={topUp.isPending} />}
     </div>
   );
 }

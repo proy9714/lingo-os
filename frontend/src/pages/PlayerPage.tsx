@@ -5,6 +5,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../api/client";
 import { useContentItem, useContentMutation, useTranscript } from "../api/hooks";
 import type { TranscriptCue } from "../api/types";
+import { BANDS } from "../components/cards";
+import { DifficultyRating } from "../components/DifficultyRating";
 import { MediaPlayer, type PlayerControls } from "../components/MediaPlayer";
 import { TokenLine } from "../components/TokenLine";
 import { Button, Chip, Panel, Skeleton, cx } from "../components/ui";
@@ -28,6 +30,16 @@ export function PlayerPage() {
   const item = useContentItem(id);
   const transcript = useTranscript(id);
   const fetchCaptions = useContentMutation(() => api.fetchCaptions(id));
+  // A suggested video whose level was only estimated: fetch its captions and measure it as soon as it's opened.
+  const autoFetched = useRef<number | null>(null);
+  const needsCaptions =
+    item.data?.source === "youtube" && !item.data.transcript_kind && item.data.metadata?.captions !== "none";
+  useEffect(() => {
+    if (needsCaptions && autoFetched.current !== id && !fetchCaptions.isPending) {
+      autoFetched.current = id;
+      fetchCaptions.mutate(undefined);
+    }
+  }, [needsCaptions, id, fetchCaptions]);
 
   const controls = useRef<PlayerControls | null>(null);
   const [time, setTime] = useState(0);
@@ -148,13 +160,14 @@ export function PlayerPage() {
         {summary?.known_share != null && (
           <div className="flex flex-wrap gap-1.5">
             <Chip tone="accent">≈ {Math.round(summary.known_share * 100)}% known</Chip>
+            {data.band && BANDS[data.band] && <Chip>{BANDS[data.band].label} for you</Chip>}
             <Chip>{summary.new_words} likely new</Chip>
             {data.speech_wpm && <Chip>{Math.round(data.speech_wpm)} words/min</Chip>}
           </div>
         )}
       </header>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
         <div className="flex min-w-0 flex-col gap-3">
           <MediaPlayer
             item={data}
@@ -222,6 +235,10 @@ export function PlayerPage() {
               Pause after each line
             </button>
             <span className="ml-auto text-xs text-ink-3 tabular-nums">{clock(time)}</span>
+          </div>
+          <div className="glass rounded-2xl px-3 py-2.5">
+            <DifficultyRating itemId={id} value={data.difficulty} />
+            <p className="mt-1.5 text-xs text-ink-3">Your rating tunes how hard your suggested videos are.</p>
           </div>
         </div>
 

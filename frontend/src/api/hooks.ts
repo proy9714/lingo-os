@@ -262,7 +262,7 @@ export const usePool = (lang: string) =>
 export function useTopUp(lang: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (force: boolean) => api.topUp(lang, force),
+    mutationFn: (opts: { force?: boolean; shelf?: "watch" | "read"; atEnd?: boolean }) => api.topUp(lang, opts),
     onSuccess: (data) => {
       qc.setQueryData(["discover-pool", lang], data);
       void qc.invalidateQueries({ queryKey: ["discover-status"] });
@@ -277,7 +277,7 @@ export function useAutoTopUp(lang: string) {
   useEffect(() => {
     if (lang && asked.current !== lang) {
       asked.current = lang;
-      topUp.mutate(false);
+      topUp.mutate({});
     }
   }, [lang, topUp]);
 }
@@ -299,3 +299,21 @@ export function useSearchWatcher(lang: string) {
 
 export const useTutorTopics = (lang: string) =>
   useQuery({ queryKey: ["tutor-topics", lang], queryFn: () => api.tutorTopics(lang), staleTime: 30_000 });
+
+/** Rate how hard something was; the server moves your level and re-ranks suggestions. */
+export function useRateDifficulty() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (v: { id: number; value: number | null }) => api.rateDifficulty(v.id, v.value),
+    onSuccess: () => {
+      for (const key of [["content-item"], ["content"], ["feed"], ["recommend"], ["taste"], ["discover-pool"]]) {
+        void qc.invalidateQueries({ queryKey: key });
+      }
+    },
+  });
+}
+
+export const useTaste = (lang: string) => useQuery({ queryKey: ["taste", lang], queryFn: () => api.taste(lang), staleTime: 60_000 });
+
+export const useGrammarReference = (lang: string) =>
+  useQuery({ queryKey: ["grammar", lang], queryFn: () => api.grammarReference(lang), staleTime: Infinity, enabled: Boolean(lang) });

@@ -1,0 +1,644 @@
+# German grammar reference, beginner to intermediate. Shown on the Grammar page.
+# Cells: "target | translation"; several in one cell are separated by " ;; "; {…} marks an ending to highlight.
+# Examples: [sentence, translation, optional note].  kind: structure | verbs | contrast | summary
+
+language: de
+title: German grammar
+intro: >-
+  A working reference for beginners to intermediate learners. Every pattern comes with real sentences and a translation:
+  read a section, notice the shape, then listen for it in what you watch and read.
+
+sections:
+  - id: nouns
+    title: Nouns, articles & gender
+    kind: structure
+    level: A1
+    tags: [gender, article, der, die, das, plural, noun]
+    tables:
+      - head: ["", "Definite", "Indefinite"]
+        rows:
+          - ["der (masculine)", "der Tisch | the table", "ein Tisch | a table"]
+          - ["die (feminine)", "die Lampe | the lamp", "eine Lampe | a lamp"]
+          - ["das (neuter)", "das Fenster | the window", "ein Fenster | a window"]
+          - ["die (plural, every gender)", "die Tische | the tables", "Tische | tables (there is no plural ein)"]
+    text: >-
+      Gender belongs to the word, not to its meaning, so learn every noun together with its article. Endings help:
+      **-ung, -heit, -keit, -schaft, -ion, -tät** are feminine (die Wohnung); **-chen, -lein** are always neuter, even for
+      people (das Mädchen); a person who does something, ending in **-er**, is usually masculine (der Fahrer); most nouns in
+      **-e** are feminine (die Tasche). A compound takes the gender of its last part: das Haus + die Tür → die Haustür.
+      Plurals come in several patterns (Tische, Bücher, Lampen, Autos, Fenster), so learn them with the noun too.
+    examples:
+      - ["Die Lampe ist kaputt.", "The lamp is broken."]
+      - ["Wir brauchen einen neuen Tisch.", "We need a new table.", "einen: masculine, as the object"]
+      - ["Das Mädchen heißt Lena.", "The girl is called Lena.", "-chen is always neuter"]
+      - ["Die Haustür ist offen.", "The front door is open.", "the last part, die Tür, decides the gender"]
+
+  - id: pronouns
+    title: Personal pronouns
+    kind: structure
+    level: A1
+    tags: [pronoun, pronouns, ich, mich, mir, dich, dir]
+    rule: >-
+      Pronouns change with their role in the sentence: subject (Nominativ), direct object (Akkusativ) or indirect object
+      (Dativ).
+    tables:
+      - head: ["Meaning", "Nominativ", "Akkusativ", "Dativ"]
+        rows:
+          - ["I / me", "ich", "mich", "mir"]
+          - ["you (friend, family)", "du", "dich", "dir"]
+          - ["he / him", "er", "ihn", "ihm"]
+          - ["she / her", "sie", "sie", "ihr"]
+          - ["it", "es", "es", "ihm"]
+          - ["we / us", "wir", "uns", "uns"]
+          - ["you (several people)", "ihr", "euch", "euch"]
+          - ["they / them", "sie", "sie", "ihnen"]
+          - ["you (formal)", "Sie", "Sie", "Ihnen"]
+    text: >-
+      A pronoun follows the noun's grammatical gender: der Kaffee → **er**, die Stadt → **sie**, das Buch → **es**.
+      German always says the subject; it never drops it the way Spanish or Japanese do. Use **Sie** (always capitalised)
+      with strangers, at work and in shops; **du** with friends, family, children and online.
+    examples:
+      - ["Kennst du ihn?", "Do you know him?", "ihn: Akkusativ"]
+      - ["Kannst du mir helfen?", "Can you help me?", "helfen takes the Dativ: mir"]
+      - ["Der Kaffee ist kalt, er schmeckt nicht.", "The coffee is cold; it doesn't taste good.", "der Kaffee → er"]
+      - ["Wie geht es Ihnen?", "How are you?", "formal"]
+
+  - id: cases
+    title: The four cases
+    kind: structure
+    level: A1–A2
+    tags: [case, cases, nominativ, akkusativ, dativ, genitiv, accusative, dative, genitive]
+    text: >-
+      German shows who does what to whom with **case** endings, mostly on the article. Ask the case question:
+      **Wer?** (Nominativ, the subject), **Wen? Was?** (Akkusativ, the direct object), **Wem?** (Dativ, the indirect
+      object), **Wessen?** (Genitiv, whose).
+    tables:
+      - caption: Definite article (der-words, also dieser, jeder, welcher)
+        head: ["", "Masc.", "Fem.", "Neuter", "Plural"]
+        rows:
+          - ["Nominativ", "der", "die", "das", "die"]
+          - ["Akkusativ", "d{en}", "die", "das", "die"]
+          - ["Dativ", "d{em}", "d{er}", "d{em}", "d{en} | (+ -n on the noun)"]
+          - ["Genitiv", "d{es} | (+ -s / -es)", "d{er}", "d{es} | (+ -s / -es)", "d{er}"]
+      - caption: Indefinite article (ein-words, also kein, mein, dein …)
+        head: ["", "Masc.", "Fem.", "Neuter", "Plural (kein)"]
+        rows:
+          - ["Nominativ", "ein", "eine", "ein", "keine"]
+          - ["Akkusativ", "ein{en}", "eine", "ein", "keine"]
+          - ["Dativ", "ein{em}", "ein{er}", "ein{em}", "kein{en}"]
+          - ["Genitiv", "ein{es}", "ein{er}", "ein{es}", "kein{er}"]
+    after: >-
+      Only the masculine changes in the Akkusativ (der → den, ein → einen). In speech the Genitiv is often replaced by
+      **von + Dativ**: das Auto von meinem Vater.
+    examples:
+      - ["Der Hund sucht den Ball.", "The dog is looking for the ball.", "der Hund: subject; den Ball: object"]
+      - ["Ich schenke meiner Mutter Blumen.", "I'm giving my mother flowers.", "meiner Mutter: Dativ, the person receiving"]
+      - ["Das Fahrrad meines Bruders ist rot.", "My brother's bike is red.", "Genitiv; in speech: das Fahrrad von meinem Bruder"]
+
+  - id: present
+    title: Present tense
+    kind: verbs
+    level: A1
+    tags: [present, präsens, conjugation, verb endings]
+    rule: Take the infinitive, drop -en to get the stem, then add the ending for the person.
+    tables:
+      - head: ["Person", "Ending", "spielen | to play", "kochen | to cook", "trinken | to drink"]
+        rows:
+          - ["ich", "-e", "spiel{e}", "koch{e}", "trink{e}"]
+          - ["du", "-st", "spiel{st}", "koch{st}", "trink{st}"]
+          - ["er / sie / es", "-t", "spiel{t}", "koch{t}", "trink{t}"]
+          - ["wir", "-en", "spiel{en}", "koch{en}", "trink{en}"]
+          - ["ihr", "-t", "spiel{t}", "koch{t}", "trink{t}"]
+          - ["sie / Sie", "-en", "spiel{en}", "koch{en}", "trink{en}"]
+    text: >-
+      Stems ending in **-t / -d** add an -e: du arbeit**e**st, er find**e**t. Stems ending in **-s / -ß / -z** take only -t
+      for du: du heißt, du tanzt. Many common irregular verbs change their vowel in the du and er/sie/es forms:
+      **e → i** (sprechen: du sprichst), **e → ie** (lesen: du liest), **a → ä** (fahren: du fährst). The present also
+      covers "I'm doing" and plans: there is no separate continuous form.
+    examples:
+      - ["Wir spielen am Samstag Tennis.", "We're playing tennis on Saturday.", "the present for a plan"]
+      - ["Du fährst zu schnell!", "You're driving too fast!", "fahren: a → ä"]
+      - ["Sie liest gerade einen Krimi.", "She's reading a crime novel at the moment.", "gerade = right now"]
+
+  - id: irregular
+    title: Essential irregular verbs
+    kind: verbs
+    level: A1
+    tags: [sein, haben, werden, wissen, irregular]
+    tables:
+      - head: ["Verb", "ich", "du", "er / sie / es", "wir", "ihr", "sie / Sie"]
+        rows:
+          - ["sein | to be", "bin", "bist", "ist", "sind", "seid", "sind"]
+          - ["haben | to have", "habe", "hast", "hat", "haben", "habt", "haben"]
+          - ["werden | to become", "werde", "wirst", "wird", "werden", "werdet", "werden"]
+          - ["wissen | to know (a fact)", "weiß", "weißt", "weiß", "wissen", "wisst", "wissen"]
+          - ["nehmen | to take", "nehme", "nimmst", "nimmt", "nehmen", "nehmt", "nehmen"]
+          - ["essen | to eat", "esse", "isst", "isst", "essen", "esst", "essen"]
+          - ["sehen | to see", "sehe", "siehst", "sieht", "sehen", "seht", "sehen"]
+          - ["geben | to give", "gebe", "gibst", "gibt", "geben", "gebt", "geben"]
+    text: >-
+      Learn **sein, haben** and **werden** first: besides their own meaning they build the past (habe gemacht, bin
+      gegangen), the future (werde machen) and the passive.
+    examples:
+      - ["Ich bin müde, aber ich habe Hunger.", "I'm tired, but I'm hungry.", "Hunger haben: literally 'to have hunger'"]
+      - ["Weißt du, wo der Bahnhof ist?", "Do you know where the station is?"]
+      - ["Er nimmt den Bus.", "He takes the bus."]
+
+  - id: modals
+    title: Modal verbs
+    kind: verbs
+    level: A1–A2
+    tags: [modal, können, müssen, dürfen, wollen, sollen, möchten]
+    rule: The modal verb is conjugated in position 2; the main verb goes to the end as an infinitive.
+    tables:
+      - head: ["", "können | can", "müssen | have to", "wollen | want", "dürfen | may", "sollen | should", "möchten | would like"]
+        rows:
+          - ["ich", "kann", "muss", "will", "darf", "soll", "möchte"]
+          - ["du", "kannst", "musst", "willst", "darfst", "sollst", "möchtest"]
+          - ["er / sie / es", "kann", "muss", "will", "darf", "soll", "möchte"]
+          - ["wir", "können", "müssen", "wollen", "dürfen", "sollen", "möchten"]
+          - ["ihr", "könnt", "müsst", "wollt", "dürft", "sollt", "möchtet"]
+          - ["sie / Sie", "können", "müssen", "wollen", "dürfen", "sollen", "möchten"]
+    text: >-
+      The ich and er/sie/es forms are the same and have no ending. Careful: **muss nicht** means "don't have to"; "mustn't"
+      is **darf nicht**. **Will** means "want", not the English future.
+    examples:
+      - ["Ich kann heute nicht kommen.", "I can't come today."]
+      - ["Hier darf man nicht rauchen.", "You're not allowed to smoke here."]
+      - ["Du musst das nicht machen.", "You don't have to do that.", "not 'you mustn't'"]
+      - ["Ich möchte einen Kaffee, bitte.", "I'd like a coffee, please."]
+
+  - id: verb-second
+    title: "Word order: main clauses (verb second)"
+    kind: structure
+    level: A1
+    tags: [word order, verb second, v2, position]
+    rule: >-
+      In a main clause the conjugated verb is always the second element. Whatever comes first (subject, time, place,
+      object), the subject then stands right after the verb.
+    tables:
+      - head: ["Position 1", "Verb", "The rest"]
+        rows:
+          - ["Ich | I", "fahre", "morgen nach Hamburg. | am going to Hamburg tomorrow."]
+          - ["Morgen | Tomorrow", "fahre", "ich nach Hamburg."]
+          - ["Nach Hamburg | To Hamburg", "fahre", "ich morgen."]
+          - ["(yes/no question)", "Fährst", "du morgen nach Hamburg? | Are you going to Hamburg tomorrow?"]
+    text: >-
+      The second part of the verb (infinitive, participle, separable prefix) goes to the very end: Ich **habe** gestern
+      lange **geschlafen**. The connectors **und, aber, oder, denn, sondern** don't take up a position. In the middle of
+      the sentence the usual order is time, reason, manner, place: Ich fahre **morgen** **wegen der Arbeit** **mit dem Zug**
+      **nach Hamburg**.
+    examples:
+      - ["Heute bleibe ich zu Hause.", "Today I'm staying at home.", "heute takes position 1, so ich follows the verb"]
+      - ["Am Wochenende habe ich viel geschlafen.", "At the weekend I slept a lot."]
+      - ["Kommst du mit?", "Are you coming along?", "yes/no question: the verb comes first"]
+
+  - id: verb-final
+    title: "Word order: subordinate clauses (verb last)"
+    kind: structure
+    level: A2
+    tags: [subordinate, weil, dass, wenn, ob, word order, verb final]
+    rule: >-
+      After a subordinating conjunction (dass, weil, wenn, als, ob, obwohl, damit, bevor, nachdem …) the conjugated verb
+      moves to the end of its clause. There is always a comma.
+    text: >-
+      If the subordinate clause comes first, it counts as position 1, so the main clause starts with its verb:
+      **Wenn es regnet, bleibe ich zu Hause.** With a modal, the modal is last: …, weil ich arbeiten **muss**.
+      A separable verb joins up again at the end: …, dass er früh **aufsteht**.
+    examples:
+      - ["Ich glaube, dass sie recht hat.", "I think she's right."]
+      - ["Weil der Zug Verspätung hatte, kam ich zu spät.", "Because the train was late, I arrived late.", "clause first → the main clause starts with the verb"]
+      - ["Weißt du, ob das Museum heute offen ist?", "Do you know whether the museum is open today?"]
+      - ["Er sagt, dass er früh aufsteht.", "He says he gets up early.", "auf + steht come back together at the end"]
+
+  - id: separable
+    title: Separable & inseparable verbs
+    kind: verbs
+    level: A2
+    tags: [separable, trennbar, prefix, anrufen, aufstehen, inseparable]
+    tables:
+      - head: ["Prefix", "Splits?", "Verb", "In a main clause"]
+        rows:
+          - ["an-", "yes", "anrufen | to call", "Ich rufe dich morgen an. | I'll call you tomorrow."]
+          - ["auf-", "yes", "aufmachen | to open", "Mach bitte die Tür auf. | Please open the door."]
+          - ["ein-", "yes", "einkaufen | to shop", "Wir kaufen heute ein. | We're going shopping today."]
+          - ["mit-", "yes", "mitkommen | to come along", "Kommst du mit? | Are you coming along?"]
+          - ["ver-", "never", "verstehen | to understand", "Ich verstehe dich. | I understand you."]
+          - ["be-", "never", "bekommen | to get, receive", "Sie bekommt ein Paket. | She's getting a parcel."]
+          - ["er-", "never", "erzählen | to tell", "Er erzählt eine Geschichte. | He's telling a story."]
+    text: >-
+      Separable prefixes (an, auf, aus, ab, ein, mit, vor, zu, zurück, weg …) are stressed (**AN**rufen) and go to the end of
+      a main clause. Inseparable prefixes (**be-, ge-, er-, ver-, zer-, ent-, emp-, miss-**) are unstressed and never move.
+      In the Perfekt, ge- goes between a separable prefix and the stem (an**ge**rufen); inseparable verbs take no ge-
+      (verstanden, bekommen).
+    examples:
+      - ["Der Film fängt um acht an.", "The film starts at eight.", "anfangen"]
+      - ["Ich habe meine Schwester angerufen.", "I called my sister.", "an-ge-rufen"]
+      - ["Hast du alles verstanden?", "Did you understand everything?", "ver-: no ge-"]
+
+  - id: akk-dat
+    title: Akkusativ vs. Dativ
+    kind: contrast
+    level: A2
+    tags: [akkusativ, dativ, accusative, dative, object, helfen, gefallen]
+    tables:
+      - head: ["", "Akkusativ", "Dativ"]
+        rows:
+          - ["Question", "Wen? Was? | whom? what?", "Wem? | to whom?"]
+          - ["Role", "the direct object: what the action happens to", "the indirect object: who receives or benefits"]
+          - ["Typical verbs", "sehen, kaufen, brauchen, haben, finden, suchen", "helfen, danken, gefallen, gehören, gratulieren, antworten, schmecken, passen"]
+          - ["With two objects", "the thing", "the person"]
+    text: >-
+      With geben, schenken, zeigen, erklären, schicken, bringen the person is Dativ and the thing Akkusativ. Order: two
+      nouns → Dativ first (Ich gebe **dem Kind** **den Ball**); if the thing is a pronoun, it comes first
+      (Ich gebe **ihn** dem Kind).
+    examples:
+      - ["Ich zeige dem Gast das Zimmer.", "I'm showing the guest the room.", "dem Gast: Dativ; das Zimmer: Akkusativ"]
+      - ["Die Jacke gefällt mir.", "I like the jacket.", "literally: the jacket pleases me"]
+      - ["Ich danke dir für die Hilfe.", "Thank you for the help.", "danken + Dativ"]
+      - ["Ich gebe es ihm morgen.", "I'll give it to him tomorrow.", "the Akkusativ pronoun goes first"]
+
+  - id: two-way
+    title: Two-way prepositions (Wechselpräpositionen)
+    kind: contrast
+    level: A2
+    tags: [two-way, wechselpräpositionen, in, an, auf, wohin, wo, liegen, legen]
+    rule: "an, auf, hinter, in, neben, über, unter, vor, zwischen: movement towards a place → Akkusativ; location → Dativ."
+    tables:
+      - head: ["Question", "Case", "Example"]
+        rows:
+          - ["Wohin? (where to: movement)", "Akkusativ", "Ich lege das Buch auf den Tisch. | I put the book on the table."]
+          - ["Wo? (where: location)", "Dativ", "Das Buch liegt auf dem Tisch. | The book is lying on the table."]
+    text: >-
+      The verbs come in pairs: **legen / liegen** (lay / lie), **stellen / stehen** (stand something / stand),
+      **setzen / sitzen** (sit someone / sit), **hängen / hängen**. Short forms: in dem → **im**, in das → **ins**,
+      an dem → **am**, an das → **ans**.
+    examples:
+      - ["Wir gehen ins Kino.", "We're going to the cinema.", "ins = in das: Akkusativ, direction"]
+      - ["Wir sind im Kino.", "We're at the cinema.", "im = in dem: Dativ, location"]
+      - ["Häng das Bild an die Wand.", "Hang the picture on the wall."]
+      - ["Das Bild hängt an der Wand.", "The picture is hanging on the wall."]
+
+  - id: perfekt
+    title: Perfekt (the spoken past)
+    kind: verbs
+    level: A2
+    tags: [perfekt, past, participle, haben, sein, partizip]
+    rule: haben or sein in position 2 + past participle at the end. In conversation this is the normal past tense.
+    tables:
+      - head: ["Verb type", "Participle", "Example"]
+        rows:
+          - ["regular", "ge- + stem + -t: machen → ge{mach}t", "Ich habe Kaffee gemacht. | I made coffee."]
+          - ["irregular", "ge- + (changed) stem + -en: schreiben → geschrieben, trinken → getrunken", "Sie hat eine E-Mail geschrieben. | She wrote an email."]
+          - ["separable", "prefix + ge + stem: einkaufen → eingekauft", "Wir haben schon eingekauft. | We've already done the shopping."]
+          - ["be-, ver-, er- … and -ieren", "no ge-: besuchen → besucht, telefonieren → telefoniert", "Ich habe Oma besucht. | I visited grandma."]
+    text: >-
+      Use **sein** with verbs of movement from A to B (gehen, fahren, fliegen, kommen, laufen), changes of state
+      (aufwachen, einschlafen, sterben, werden) and with sein, bleiben, passieren. Everything else takes **haben**.
+    examples:
+      - ["Wir sind nach Wien gefahren.", "We went to Vienna.", "movement → sein"]
+      - ["Hast du schon gegessen?", "Have you eaten yet?"]
+      - ["Was ist passiert?", "What happened?", "passieren takes sein"]
+
+  - id: praeteritum
+    title: Präteritum (the written past)
+    kind: verbs
+    level: B1
+    tags: [präteritum, simple past, war, hatte, konnte]
+    rule: >-
+      Stories, news and books use the Präteritum. In speech it's used mainly for sein, haben, the modal verbs and a few
+      others (es gab, ich wusste, ich dachte).
+    tables:
+      - head: ["", "sein", "haben", "können", "machen (regular)", "gehen (irregular)"]
+        rows:
+          - ["ich", "war", "hatte", "konnte", "mach{te}", "ging"]
+          - ["du", "warst", "hattest", "konntest", "mach{test}", "gingst"]
+          - ["er / sie / es", "war", "hatte", "konnte", "mach{te}", "ging"]
+          - ["wir", "waren", "hatten", "konnten", "mach{ten}", "gingen"]
+          - ["ihr", "wart", "hattet", "konntet", "mach{tet}", "gingt"]
+          - ["sie / Sie", "waren", "hatten", "konnten", "mach{ten}", "gingen"]
+    text: >-
+      Regular verbs add **-te** to the stem. Irregular verbs get a new stem with no ending for ich and er/sie/es:
+      gehen → ging, kommen → kam, sehen → sah, finden → fand, sprechen → sprach.
+    examples:
+      - ["Gestern war ich krank.", "Yesterday I was ill."]
+      - ["Wir hatten keine Zeit.", "We didn't have time."]
+      - ["Es war einmal ein König.", "Once upon a time there was a king.", "fairy tales and stories use the Präteritum"]
+      - ["Ich musste lange warten.", "I had to wait a long time."]
+
+  - id: future
+    title: Futur I
+    kind: verbs
+    level: A2
+    tags: [future, futur, werden]
+    rule: werden in position 2 + infinitive at the end.
+    text: >-
+      For plans, German usually just uses the present with a time word: **Morgen fliege ich nach Rom.** Futur I is for
+      promises, predictions and guesses about now (often with **wohl** or **schon**). On its own, **werden** means
+      "to become".
+    examples:
+      - ["Ich werde dir helfen.", "I'll help you.", "a promise"]
+      - ["Es wird morgen regnen.", "It's going to rain tomorrow."]
+      - ["Sie wird wohl noch schlafen.", "She's probably still asleep.", "a guess about now"]
+      - ["Er wird Arzt.", "He's going to be a doctor.", "werden alone = become"]
+
+  - id: reflexive
+    title: Reflexive verbs
+    kind: verbs
+    level: A2
+    tags: [reflexive, sich, mich, mir]
+    tables:
+      - head: ["", "Akkusativ", "Dativ"]
+        rows:
+          - ["ich", "mich", "mir"]
+          - ["du", "dich", "dir"]
+          - ["er / sie / es", "sich", "sich"]
+          - ["wir", "uns", "uns"]
+          - ["ihr", "euch", "euch"]
+          - ["sie / Sie", "sich", "sich"]
+    text: >-
+      Many verbs are reflexive in German but not in English: **sich freuen** (auf / über), **sich beeilen**,
+      **sich erinnern an**, **sich interessieren für**, **sich setzen**, **sich fühlen**. Use the Dativ form when there
+      is another object: Ich wasche **mir die Hände**.
+    examples:
+      - ["Ich freue mich auf das Wochenende.", "I'm looking forward to the weekend.", "sich freuen auf"]
+      - ["Beeil dich!", "Hurry up!"]
+      - ["Ich putze mir die Zähne.", "I brush my teeth.", "mir: die Zähne is the direct object"]
+      - ["Interessierst du dich für Musik?", "Are you interested in music?"]
+
+  - id: adjective-endings
+    title: Adjective endings
+    kind: structure
+    level: B1
+    tags: [adjective, endings, adjektivendungen, declension]
+    rule: >-
+      An adjective before a noun takes an ending. If the article already shows gender and case (der, dem), the adjective
+      just takes -e or -en. If it doesn't (ein, or no article at all), the adjective shows it (-er, -es).
+    tables:
+      - caption: After der, die, das (and dieser, jeder, welcher)
+        head: ["", "Masc.", "Fem.", "Neuter", "Plural"]
+        rows:
+          - ["Nominativ", "der neu{e} Rock", "die neu{e} Jacke", "das neu{e} Hemd", "die neu{en} Schuhe"]
+          - ["Akkusativ", "den neu{en} Rock", "die neu{e} Jacke", "das neu{e} Hemd", "die neu{en} Schuhe"]
+          - ["Dativ", "dem neu{en} Rock", "der neu{en} Jacke", "dem neu{en} Hemd", "den neu{en} Schuhen"]
+          - ["Genitiv", "des neu{en} Rocks", "der neu{en} Jacke", "des neu{en} Hemds", "der neu{en} Schuhe"]
+      - caption: After ein, kein, mein, dein …
+        head: ["", "Masc.", "Fem.", "Neuter", "Plural"]
+        rows:
+          - ["Nominativ", "ein neu{er} Rock", "eine neu{e} Jacke", "ein neu{es} Hemd", "keine neu{en} Schuhe"]
+          - ["Akkusativ", "einen neu{en} Rock", "eine neu{e} Jacke", "ein neu{es} Hemd", "keine neu{en} Schuhe"]
+          - ["Dativ", "einem neu{en} Rock", "einer neu{en} Jacke", "einem neu{en} Hemd", "keinen neu{en} Schuhen"]
+          - ["Genitiv", "eines neu{en} Rocks", "einer neu{en} Jacke", "eines neu{en} Hemds", "keiner neu{en} Schuhe"]
+      - caption: No article
+        head: ["", "Masc.", "Fem.", "Neuter", "Plural"]
+        rows:
+          - ["Nominativ", "kalt{er} Kaffee", "kalt{e} Milch", "kalt{es} Wasser", "kalt{e} Getränke"]
+          - ["Akkusativ", "kalt{en} Kaffee", "kalt{e} Milch", "kalt{es} Wasser", "kalt{e} Getränke"]
+          - ["Dativ", "kalt{em} Kaffee", "kalt{er} Milch", "kalt{em} Wasser", "kalt{en} Getränken"]
+          - ["Genitiv", "kalt{en} Kaffees", "kalt{er} Milch", "kalt{en} Wassers", "kalt{er} Getränke"]
+    after: "After the noun, with sein or werden, there is no ending: Das Hemd ist **neu**."
+    examples:
+      - ["Ich suche eine günstige Wohnung.", "I'm looking for a cheap flat."]
+      - ["Mit dem neuen Handy bin ich zufrieden.", "I'm happy with the new phone.", "dem → -en"]
+      - ["Frisches Brot schmeckt am besten.", "Fresh bread tastes best.", "no article → -es shows the neuter"]
+
+  - id: comparison
+    title: Comparatives & superlatives
+    kind: structure
+    level: A2
+    tags: [comparative, superlative, als, wie, besser, am besten]
+    tables:
+      - head: ["Adjective", "Comparative", "Superlative"]
+        rows:
+          - ["schnell | fast", "schnell{er}", "am schnell{sten}"]
+          - ["alt | old", "ält{er}", "am ält{esten}"]
+          - ["jung | young", "jüng{er}", "am jüng{sten}"]
+          - ["teuer | expensive", "teur{er}", "am teuer{sten}"]
+          - ["gut | good", "besser", "am besten"]
+          - ["viel | much", "mehr", "am meisten"]
+          - ["gern | gladly", "lieber", "am liebsten"]
+          - ["hoch | high", "höher", "am höchsten"]
+          - ["nah | near", "näher", "am nächsten"]
+    text: >-
+      "Than" is **als**: größer als ich. "As … as" is **so … wie**: so groß wie du. Short adjectives often take an umlaut
+      (alt → älter). Before a noun the forms take normal adjective endings: das schneller**e** Auto, der höchst**e** Berg.
+    examples:
+      - ["Berlin ist größer als München.", "Berlin is bigger than Munich."]
+      - ["Mein Bruder ist so alt wie du.", "My brother is as old as you."]
+      - ["Am liebsten esse ich Pasta.", "Pasta is what I like eating most."]
+      - ["Die Zugspitze ist der höchste Berg Deutschlands.", "The Zugspitze is Germany's highest mountain."]
+
+  - id: questions
+    title: Question words (W-Fragen)
+    kind: structure
+    level: A1
+    tags: [question, questions, w-fragen, wer, wen, wem, wo, wohin, woher]
+    tables:
+      - head: ["German", "Meaning", "Example"]
+        rows:
+          - ["was", "what", "Was kostet das? | What does that cost?"]
+          - ["wer", "who", "Wer kommt mit? | Who's coming along?"]
+          - ["wen", "whom (Akkusativ)", "Wen hast du gesehen? | Who did you see?"]
+          - ["wem", "to whom (Dativ)", "Wem gehört das? | Who does this belong to?"]
+          - ["wo", "where", "Wo ist die Toilette? | Where's the toilet?"]
+          - ["wohin", "where to", "Wohin fährst du? | Where are you going?"]
+          - ["woher", "where from", "Woher kommst du? | Where are you from?"]
+          - ["wann", "when", "Wann beginnt der Kurs? | When does the course start?"]
+          - ["warum", "why", "Warum lachst du? | Why are you laughing?"]
+          - ["wie", "how", "Wie heißt du? | What's your name?"]
+          - ["welcher / welche / welches", "which", "Welche Farbe magst du? | Which colour do you like?"]
+          - ["wie viel / wie viele", "how much / how many", "Wie viele Leute kommen? | How many people are coming?"]
+    text: >-
+      The question word takes position 1 and the verb follows. With a preposition, things become **wo(r)- + preposition**:
+      Worauf wartest du? (What are you waiting for?) Wofür ist das? (What's that for?) For people you keep the preposition:
+      Auf wen wartest du?
+
+  - id: negation
+    title: "Negation: nicht vs. kein"
+    kind: contrast
+    level: A1
+    tags: [negation, nicht, kein, nichts, nie]
+    tables:
+      - head: ["Use", "When", "Example"]
+        rows:
+          - ["kein", "a noun that would have ein, or no article", "Ich habe kein Auto. | I don't have a car."]
+          - ["nicht", "everything else: verbs, adjectives, nouns with der/die/das, names", "Das ist nicht mein Auto. | That isn't my car."]
+    text: >-
+      **Nicht** goes to the end of the clause, or right before what it negates (an adjective, a place, a phrase with a
+      preposition): Ich wohne **nicht in Berlin**. After a negation, "but" is **sondern**. Useful: **noch nicht** (not yet),
+      **nicht mehr** (no longer), **kein … mehr** (no more), **nie** (never), **nichts** (nothing), **niemand** (nobody).
+    examples:
+      - ["Ich trinke keinen Alkohol.", "I don't drink alcohol."]
+      - ["Er kommt heute nicht.", "He isn't coming today."]
+      - ["Das ist nicht teuer, sondern billig.", "That isn't expensive, it's cheap."]
+      - ["Ich habe noch nichts gegessen.", "I haven't eaten anything yet."]
+
+  - id: relative
+    title: Relative clauses
+    kind: structure
+    level: B1
+    tags: [relative, relativsatz, der, die, das, denen, dessen]
+    rule: >-
+      The relative pronoun takes its gender and number from the noun it refers to, and its case from its role in the
+      relative clause. The verb goes to the end, with commas around the clause.
+    tables:
+      - head: ["", "Masc.", "Fem.", "Neuter", "Plural"]
+        rows:
+          - ["Nominativ", "der", "die", "das", "die"]
+          - ["Akkusativ", "den", "die", "das", "die"]
+          - ["Dativ", "dem", "der", "dem", "{denen}"]
+          - ["Genitiv", "{dessen}", "{deren}", "{dessen}", "{deren}"]
+    examples:
+      - ["Der Mann, der dort steht, ist mein Nachbar.", "The man who's standing there is my neighbour.", "der: subject of its clause"]
+      - ["Das ist die Frau, die ich gestern getroffen habe.", "That's the woman I met yesterday.", "die: Akkusativ"]
+      - ["Die Freunde, mit denen ich reise, kommen aus Köln.", "The friends I'm travelling with are from Cologne.", "mit + Dativ plural: denen"]
+
+  - id: konjunktiv
+    title: Konjunktiv II (would, could, if only)
+    kind: verbs
+    level: B1
+    tags: [konjunktiv, subjunctive, würde, wäre, hätte, könnte, conditional, polite]
+    tables:
+      - head: ["", "würde + infinitive", "sein", "haben", "können"]
+        rows:
+          - ["ich", "würde gehen", "wäre", "hätte", "könnte"]
+          - ["du", "würdest gehen", "wärst", "hättest", "könntest"]
+          - ["er / sie / es", "würde gehen", "wäre", "hätte", "könnte"]
+          - ["wir", "würden gehen", "wären", "hätten", "könnten"]
+          - ["ihr", "würdet gehen", "wärt", "hättet", "könntet"]
+          - ["sie / Sie", "würden gehen", "wären", "hätten", "könnten"]
+    text: >-
+      Use it for things that aren't real (Wenn ich Zeit **hätte**, **würde** ich mehr lesen), for polite requests
+      (**Könnten** Sie …? Ich **hätte** gern …) and advice (An deiner Stelle **würde** ich …). For most verbs use
+      würde + infinitive; sein, haben and the modals have their own forms. For the past: hätte / wäre + participle.
+    examples:
+      - ["Wenn ich reich wäre, würde ich reisen.", "If I were rich, I would travel."]
+      - ["Könnten Sie mir bitte helfen?", "Could you help me, please?"]
+      - ["Ich hätte gern ein Wasser.", "I'd like a water, please."]
+      - ["Das hätte ich nicht gedacht.", "I wouldn't have thought so."]
+
+  - id: imperative
+    title: Commands (imperative)
+    kind: verbs
+    level: A1
+    tags: [imperative, command, imperativ]
+    tables:
+      - head: ["", "kommen | come", "warten | wait", "nehmen | take", "sein | be"]
+        rows:
+          - ["du", "Komm!", "Warte!", "Nimm!", "Sei leise!"]
+          - ["ihr", "Kommt!", "Wartet!", "Nehmt!", "Seid leise!"]
+          - ["Sie", "Kommen Sie!", "Warten Sie!", "Nehmen Sie!", "Seien Sie leise!"]
+    text: >-
+      The du form drops -st and the pronoun (du kommst → **Komm!**). Verbs with e → i keep the i (nimm, lies, gib, sprich),
+      but a → ä does not carry over (fahr!). **Bitte, doch, mal** make it friendlier: Komm doch mal vorbei!
+      "Let's …" is **Gehen wir!** or **Lass uns gehen!**
+    examples:
+      - ["Mach bitte das Fenster zu.", "Please close the window."]
+      - ["Seien Sie vorsichtig!", "Be careful!", "formal"]
+      - ["Lies das mal!", "Have a read of this!", "lesen → lies"]
+      - ["Lass uns morgen anfangen.", "Let's start tomorrow."]
+
+  - id: prepositions
+    title: Prepositions & their cases
+    kind: structure
+    level: A2
+    tags: [prepositions, präpositionen, mit, für, ohne, seit, wegen, zu, nach]
+    tables:
+      - head: ["Case", "Prepositions", "Example"]
+        rows:
+          - ["Akkusativ", "durch, für, gegen, ohne, um, bis, entlang", "Das Geschenk ist für dich. | The present is for you."]
+          - ["Dativ", "aus, bei, mit, nach, seit, von, zu, gegenüber, ab", "Ich fahre mit dem Rad zur Arbeit. | I cycle to work."]
+          - ["Akkusativ or Dativ", "an, auf, hinter, in, neben, über, unter, vor, zwischen", "Akkusativ for direction, Dativ for location (see two-way prepositions)"]
+          - ["Genitiv", "wegen, trotz, während, statt, innerhalb", "Wegen des Regens bleiben wir drinnen. | Because of the rain we're staying in."]
+    text: >-
+      Common short forms: zu dem → **zum**, zu der → **zur**, bei dem → **beim**, von dem → **vom**. In speech, wegen and
+      trotz often take the Dativ: wegen dem Regen.
+    examples:
+      - ["Ich wohne seit zwei Jahren bei meinen Eltern.", "I've been living with my parents for two years.", "seit + present tense"]
+      - ["Wir gehen ohne ihn.", "We're going without him."]
+      - ["Nach dem Essen gehen wir spazieren.", "After the meal we're going for a walk."]
+
+  - id: connectors
+    title: Connectors & conjunctions
+    kind: structure
+    level: A2–B1
+    tags: [conjunctions, connectors, weil, denn, deshalb, trotzdem, obwohl]
+    tables:
+      - head: ["Type", "Words", "Verb position", "Example"]
+        rows:
+          - ["Coordinating", "und, aber, oder, denn, sondern", "unchanged", "Ich bleibe hier, denn es regnet. | I'm staying here because it's raining."]
+          - ["Subordinating", "weil, dass, wenn, als, ob, obwohl, damit, bevor, nachdem, während, bis, sobald", "verb at the end", "Ich bleibe hier, weil es regnet. | I'm staying here because it's raining."]
+          - ["Adverbs (take position 1)", "deshalb, trotzdem, dann, danach, außerdem, sonst", "verb right after", "Es regnet, deshalb bleibe ich hier. | It's raining, so I'm staying here."]
+          - ["Two-part", "entweder … oder, weder … noch, sowohl … als auch, nicht nur … sondern auch", "—", "Ich trinke weder Kaffee noch Tee. | I drink neither coffee nor tea."]
+    examples:
+      - ["Obwohl ich müde bin, gehe ich joggen.", "Even though I'm tired, I'm going for a run."]
+      - ["Ich lerne Deutsch, damit ich in Wien arbeiten kann.", "I'm learning German so that I can work in Vienna."]
+      - ["Zuerst frühstücke ich, dann gehe ich los.", "First I have breakfast, then I head off."]
+
+  - id: numbers-time
+    title: Numbers, days & time
+    kind: structure
+    level: A1
+    tags: [numbers, zahlen, time, uhrzeit, days, months, date]
+    tables:
+      - caption: Numbers
+        head: ["", "German"]
+        rows:
+          - ["1–10", "eins, zwei, drei, vier, fünf, sechs, sieben, acht, neun, zehn"]
+          - ["11–20", "elf, zwölf, dreizehn, vierzehn, fünfzehn, sechzehn, siebzehn, achtzehn, neunzehn, zwanzig"]
+          - ["tens", "dreißig, vierzig, fünfzig, sechzig, siebzig, achtzig, neunzig, hundert"]
+          - ["21, 37, 99", "einundzwanzig, siebenunddreißig, neunundneunzig | the unit comes first: 'one-and-twenty'"]
+          - ["dates", "am 3. Mai = am dritten Mai | on 3 May (erste, zweite, dritte, vierte … zwanzigste)"]
+          - ["days", "Montag, Dienstag, Mittwoch, Donnerstag, Freitag, Samstag, Sonntag | am Montag = on Monday"]
+      - caption: Telling the time
+        head: ["Clock", "Everyday", "Meaning"]
+        rows:
+          - ["8:00", "acht Uhr", "eight o'clock"]
+          - ["8:15", "Viertel nach acht", "quarter past eight"]
+          - ["8:30", "halb neun", "half past eight (literally 'half nine': half-way to nine)"]
+          - ["8:45", "Viertel vor neun", "quarter to nine"]
+          - ["8:20", "zwanzig nach acht", "twenty past eight"]
+          - ["20:00", "zwanzig Uhr", "8 pm (timetables and official times use 24 hours)"]
+    examples:
+      - ["Der Zug fährt um halb sieben ab.", "The train leaves at half past six.", "halb sieben = 6:30"]
+      - ["Ich habe am zwölften März Geburtstag.", "My birthday is on 12 March."]
+      - ["Das kostet neunundzwanzig Euro.", "That costs 29 euros."]
+
+  - id: confusions
+    title: High-value confusions
+    kind: contrast
+    level: A2–B1
+    tags: [confusions, wissen, kennen, als, wenn, seit, vor, bekommen, gern, mögen, nach, zu]
+    tables:
+      - head: ["Don't confuse", "Difference", "Example"]
+        rows:
+          - ["wissen / kennen", "know a fact vs. be familiar with a person, place or thing", "Ich weiß, wo er wohnt. | I know where he lives. ;; Ich kenne ihn gut. | I know him well."]
+          - ["als / wenn / wann", "als: one event in the past; wenn: whenever, if, or in the future; wann: the question 'when?'", "Als ich Kind war … | When I was a child … ;; Wenn ich Zeit habe … | When(ever) I have time …"]
+          - ["seit / vor", "for or since (still going: present tense) vs. ago", "Ich wohne seit 2020 hier. | I've lived here since 2020. ;; vor zwei Jahren | two years ago"]
+          - ["bekommen / werden", "get, receive vs. become", "Ich bekomme ein Geschenk. | I'm getting a present. ;; Ich werde müde. | I'm getting tired."]
+          - ["gern / mögen / gefallen", "gern + verb: like doing; mögen + noun: like a thing; gefallen + Dativ: appeal to", "Ich koche gern. | I like cooking. ;; Das Lied gefällt mir. | I like the song."]
+          - ["nach / zu", "nach: towns, countries, home; zu: people, places, buildings", "nach Berlin | to Berlin ;; zum Arzt | to the doctor's"]
+          - ["zu Hause / nach Hause", "at home (location) vs. home (direction)", "Ich bin zu Hause. | I'm at home. ;; Ich gehe nach Hause. | I'm going home."]
+          - ["sondern / aber", "sondern corrects a negation; aber adds a contrast", "nicht heute, sondern morgen | not today but tomorrow ;; teuer, aber gut | expensive but good"]
+          - ["lernen / studieren", "learn (anything) vs. study at university", "Ich lerne Deutsch. | I'm learning German. ;; Sie studiert Medizin. | She's studying medicine."]
+          - ["Sie / sie / sie", "you (formal) vs. she vs. they: the verb and the capital letter tell", "Sie kommt. | She's coming. ;; Kommen Sie? | Are you coming?"]
+
+  - id: memory-map
+    title: One-page memory map
+    kind: summary
+    level: all
+    tags: [summary, overview]
+    points:
+      - Learn der, die or das with every noun; meaning doesn't tell you the gender.
+      - The four cases show who does what to whom, so the word order can move around.
+      - The conjugated verb is second in a main clause and last in a subordinate clause.
+      - Separable prefixes go to the end; be-, ver-, er- and friends never move.
+      - "Perfekt: sein for movement and change, haben for almost everything else."
+      - helfen, danken, gefallen, gehören and a few more always take the Dativ.
+      - "Two-way prepositions: direction (wohin?) → Akkusativ, location (wo?) → Dativ."
+      - kein negates nouns with ein or no article; nicht negates everything else.
+      - würde + infinitive covers most "would"; wäre, hätte and könnte have their own forms.
+      - "Adjective endings depend on what comes before them: a der-word, an ein-word or nothing."
+    tip: >-
+      Reading strategy: find the conjugated verb first (it tells you who is doing what), then look at the end of the
+      clause for the piece that completes it: a separable prefix, a participle or an infinitive.

@@ -40,7 +40,7 @@ export function ReportsPage() {
         </p>
       </header>
 
-      <div className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
         <div className="flex flex-col gap-4">
           <Panel aria-labelledby="t-run-review">
             <PanelTitle id="t-run-review">Run it now</PanelTitle>

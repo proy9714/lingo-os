@@ -2,6 +2,9 @@ import type {
   Annotation,
   ContentItem,
   FeedPage,
+  DifficultyResult,
+  GrammarReference,
+  TasteSummary,
   PoolStatus,
   TutorTopic,
   CTestResult,
@@ -308,8 +311,15 @@ export const api = {
     request<{ job_id: number }>("/api/discover/run", { method: "POST", body: json(lang ? { lang } : {}) }),
   discoverStatus: () => request<{ job: Job | null; runs: ScrapeRun[] }>("/api/discover/status"),
   discoverPool: (lang: string) => request<PoolStatus>(`/api/discover/pool?lang=${encodeURIComponent(lang)}`),
-  topUp: (lang: string, force = false) =>
-    request<PoolStatus>("/api/discover/top-up", { method: "POST", body: json({ lang, force }) }),
+  topUp: (lang: string, opts: { force?: boolean; shelf?: "watch" | "read"; atEnd?: boolean } = {}) =>
+    request<PoolStatus>("/api/discover/top-up", {
+      method: "POST",
+      body: json({ lang, force: Boolean(opts.force), shelf: opts.shelf, at_end: Boolean(opts.atEnd) }),
+    }),
+  rateDifficulty: (id: number, value: number | null) =>
+    request<DifficultyResult>(`/api/content/${id}/difficulty`, { method: "PUT", body: json({ value }) }),
+  taste: (lang: string) => request<TasteSummary>(`/api/taste?lang=${encodeURIComponent(lang)}`),
+  grammarReference: (lang: string) => request<GrammarReference>(`/api/tutor/reference/${encodeURIComponent(lang)}`),
   setDiscoverAuto: (enabled: boolean) =>
     request<{ enabled: boolean }>("/api/discover/auto", { method: "PUT", body: json({ enabled }) }),
   sources: (lang: string) => request<ContentSource[]>(`/api/sources?lang=${encodeURIComponent(lang)}`),

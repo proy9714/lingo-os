@@ -19,6 +19,7 @@ import {
 import type { LanguageOverview, PoolStatus, RecentSession, TodayStats, UpNextPick } from "../api/types";
 import { FeaturedCard, PickRow } from "../components/cards";
 import { Spinner, SuggestionRow, relativeTime } from "../components/Suggestions";
+import { TasteCard } from "../components/TasteCard";
 import { Button, Chip, Panel, PanelTitle, ProgressBar, Skeleton, cx } from "../components/ui";
 import {
   ACTIVITY_LABELS,
@@ -85,6 +86,7 @@ export function TodayPage() {
         <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))]">
           <GoalCard data={today.data} />
           <LevelCard data={current} languageName={language?.name} lang={code} />
+          <TasteCard lang={code} />
           <WeeklyCard />
           <RecentCard sessions={recent.data} />
           <LanguagesCard
@@ -241,7 +243,7 @@ function RowEmpty({ lang, pool, noun }: { lang: string; pool: PoolStatus | undef
       ) : (
         <>
           <span>No {noun} at your level yet.</span>
-          <Button disabled={topUp.isPending} onClick={() => topUp.mutate(true)}>
+          <Button disabled={topUp.isPending} onClick={() => topUp.mutate({ force: true })}>
             Find some now
           </Button>
         </>
@@ -271,7 +273,7 @@ function HeroEmpty({ lang, pool }: { lang: string; pool: PoolStatus | undefined 
         </div>
       ) : (
         <div className="mt-5 flex flex-wrap gap-2">
-          <Button variant="primary" disabled={topUp.isPending} onClick={() => topUp.mutate(true)}>
+          <Button variant="primary" disabled={topUp.isPending} onClick={() => topUp.mutate({ force: true })}>
             Find new content now
           </Button>
           <Link to="/read" className="inline-flex min-h-11 items-center rounded-xl px-4 text-sm font-semibold text-ink-2 hover:bg-white/8">

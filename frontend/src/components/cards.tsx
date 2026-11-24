@@ -15,20 +15,36 @@ export const BANDS: Record<string, { label: string; tone: string; hint: string }
   too_hard: { label: "Hard", tone: "bg-red-400/18 text-red-200", hint: "Too many unknown words to enjoy yet." },
 };
 
-export function LevelChip({ band, coverage, className }: { band: string | null; coverage: number | null; className?: string }) {
+export function LevelChip({
+  band,
+  coverage,
+  className,
+  estimated = false,
+}: {
+  band: string | null;
+  coverage: number | null;
+  className?: string;
+  estimated?: boolean;
+}) {
   const info = band ? BANDS[band] : null;
   if (!info && coverage === null) return null;
   return (
     <span
-      title={info?.hint}
+      title={
+        estimated
+          ? `${info?.hint ?? ""} Estimated from the channel's other videos; measured exactly when you open it or soon in the background.`
+          : info?.hint
+      }
       className={cx(
         "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap backdrop-blur-md",
         info?.tone ?? "bg-white/12 text-ink-2",
         className,
       )}
     >
+      {estimated && "≈ "}
       {info?.label}
-      {coverage !== null && <span className="font-medium opacity-80">· {Math.round(coverage * 100)}% known</span>}
+      {coverage !== null && !estimated && <span className="font-medium opacity-80">· {Math.round(coverage * 100)}% known</span>}
+      {estimated && <span className="font-medium opacity-80">· estimated</span>}
     </span>
   );
 }
@@ -134,7 +150,7 @@ export function PickCard({ pick, className }: { pick: UpNextPick; className?: st
       <div className="relative aspect-video overflow-hidden bg-black/40">
         <Picture pick={pick} />
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-black/45 to-transparent" />
-        <LevelChip band={pick.band} coverage={pick.coverage} className="absolute top-2 left-2 bg-black/55" />
+        <LevelChip band={pick.band} coverage={pick.coverage} estimated={pick.estimated} className="absolute top-2 left-2 bg-black/55" />
         {length && (
           <span className="absolute right-2 bottom-2 rounded-md bg-black/75 px-1.5 py-0.5 text-[11px] font-semibold">{length}</span>
         )}
@@ -161,8 +177,8 @@ export function PickCard({ pick, className }: { pick: UpNextPick; className?: st
 }
 
 function reasonLine(pick: UpNextPick): string {
-  // the % known is already on the picture
-  const rest = pick.reasons.filter((r) => !r.endsWith("% known"));
+  // the % known and "estimated" are already on the picture
+  const rest = pick.reasons.filter((r) => !r.endsWith("% known") && !r.startsWith("level estimated"));
   if (rest.length) return rest.join(" · ");
   if (pick.expected_unknown !== null) return `≈ ${Math.round(pick.expected_unknown)} new words`;
   return "";
@@ -185,7 +201,7 @@ export function FeaturedCard({ pick }: { pick: UpNextPick }) {
           <span className="rounded-full bg-white/14 px-2.5 py-1 text-[11px] font-bold tracking-[0.12em] text-white/90 uppercase backdrop-blur-md">
             {inProgress ? "Continue" : "Top pick for you"}
           </span>
-          <LevelChip band={pick.band} coverage={pick.coverage} className="bg-black/50 text-xs" />
+          <LevelChip band={pick.band} coverage={pick.coverage} estimated={pick.estimated} className="bg-black/50 text-xs" />
         </div>
         <h2 className="line-clamp-3 max-w-3xl text-2xl leading-tight font-bold text-white md:text-[32px]">{pick.title}</h2>
         <p className="text-sm text-white/75">
@@ -224,7 +240,7 @@ export function PickRow({ pick }: { pick: UpNextPick }) {
           {pick.title}
         </Link>
         <div className="flex min-w-0 items-center gap-2">
-          <LevelChip band={pick.band} coverage={null} />
+          <LevelChip band={pick.band} coverage={null} estimated={pick.estimated} />
           <span className="truncate text-xs text-ink-3">{pick.site || pick.creator}</span>
         </div>
       </div>

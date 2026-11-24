@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import math
 import shutil
 import subprocess
 from collections import Counter
@@ -13,7 +12,7 @@ from typing import Any
 from sqlalchemy import Connection, bindparam, text
 
 from app.config import AppConfig
-from app.db import settings_store
+from app.services import calibration
 from app.engine.evidence import sample_running_words
 from app.engine.knowledge import knowledge_p
 from app.engine.profile import get_profile
@@ -91,12 +90,14 @@ _ITEM_COLUMNS = (
     "(SELECT COUNT(*) FROM activity_sessions s WHERE s.content_item_id = ci.id AND s.is_baseline = 0), "
     "(SELECT MAX(s.started_at) FROM activity_sessions s WHERE s.content_item_id = ci.id), "
     "(SELECT kind FROM transcripts t WHERE t.content_item_id = ci.id AND t.is_primary = 1), "
-    "cs.coverage, cs.expected_unknown, cs.band, ca.speech_wpm, ci.word_count, ci.page_count"
+    "cs.coverage, cs.expected_unknown, cs.band, ca.speech_wpm, ci.word_count, ci.page_count, ci.perceived_difficulty, "
+    "COALESCE(cs.estimated, 0)"
 )
 _ITEM_KEYS = (
     "id", "language", "type", "title", "creator", "source", "url", "external_id", "local_path", "duration_sec",
     "status", "progress", "position_ref", "analysis_status", "last_opened_at", "metadata", "times_watched",
     "last_watched_at", "transcript_kind", "coverage", "expected_unknown", "band", "speech_wpm", "word_count", "page_count",
+    "difficulty", "estimated",
 )
 _ITEM_FROM = (
     "FROM content_items ci LEFT JOIN content_scores cs ON cs.content_item_id = ci.id "
@@ -468,29 +469,24 @@ def score_item(conn: Connection, item_id: int) -> dict[str, Any] | None:
         known += count * p
         expected_unknown += 1 - p
     coverage = known / (content_tokens + others)
-    lo, hi = (0.88, 0.97) if item["type"] in {"youtube", "video", "audio", "podcast_episode"} else (0.85, 0.95)
-    shift = float(settings_store.get(conn, f"band_shift.{item['language']}", 0.0) or 0.0)  # weekly calibration
-    lo, hi = lo + shift, hi + shift
-    centre, width = (lo + hi) / 2, (hi - lo)
-    band = (
-        "too_hard" if coverage < lo - 0.1 else "stretch" if coverage < lo else "i_plus_1" if coverage <= hi
-        else "comfortable" if coverage <= hi + 0.02 else "too_easy"
-    )
+    lo, hi = calibration.window(conn, item["language"], item["type"])  # your ratings + the weekly review
+    band, fit = calibration.band_and_fit(coverage, lo, hi)
     minutes = (item["duration_sec"] or 0) / 60
     score = {
         "coverage": round(coverage, 4),
         "expected_unknown": round(expected_unknown, 1),
         "unknown_density": round(expected_unknown / minutes, 2) if minutes else None,
-        "i1_score": round(math.exp(-(((coverage - centre) / width) ** 2)), 4),
+        "i1_score": fit,
         "band": band,
     }
     conn.execute(
         text(
             "INSERT INTO content_scores (content_item_id, profile_version, coverage, expected_unknown, unknown_density, "
-            "i1_score, band, computed_at) VALUES (:id, :v, :c, :e, :d, :s, :b, :now) ON CONFLICT(content_item_id) DO UPDATE "
+            "i1_score, band, computed_at, estimated) VALUES (:id, :v, :c, :e, :d, :s, :b, :now, 0) "
+            "ON CONFLICT(content_item_id) DO UPDATE "
             "SET profile_version = excluded.profile_version, coverage = excluded.coverage, "
             "expected_unknown = excluded.expected_unknown, unknown_density = excluded.unknown_density, "
-            "i1_score = excluded.i1_score, band = excluded.band, computed_at = excluded.computed_at"
+            "i1_score = excluded.i1_score, band = excluded.band, computed_at = excluded.computed_at, estimated = 0"
         ),
         {
             "id": item_id, "v": profile.get("version", 0), "c": score["coverage"], "e": score["expected_unknown"],
