@@ -103,9 +103,6 @@ def test_unknown_channels_are_measured_before_they_are_suggested(client, cfg) ->
     keep = ["too_easy", "comfortable", "i_plus_1", "stretch", "too_hard"]
     result = catalog.verify(engine, "de", fetchers, keep, limit=5)
     assert result["kept"] == 1
-    with engine.connect() as conn:
-        print("DBG band", conn.execute(text("SELECT coverage, band FROM content_scores")).all(), conn.execute(text("SELECT language, vocab_size, confidence FROM user_profile")).all() if False else "")
-        print("DBG langs", conn.execute(text("SELECT code, enabled, position FROM languages")).all())
     with engine.begin() as conn:  # measured at your level: its other videos get listed next time
         conn.execute(text("UPDATE content_scores SET band = 'i_plus_1'"))
         assert catalog.promote_channels(conn, "de") == 1
