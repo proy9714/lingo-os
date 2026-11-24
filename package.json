@@ -14,7 +14,8 @@
     "doctor": "uv run --project backend lingo doctor",
     "import-tracker": "uv run --project backend lingo import-tracker",
     "update-content": "uv run --project backend lingo update-content",
-    "evolve-profile": "uv run --project backend lingo evolve-profile"
+    "evolve-profile": "uv run --project backend lingo evolve-profile",
+    "phone": "npm --prefix frontend run android:sync && npm --prefix frontend run android:open"
   },
   "devDependencies": {
     "concurrently": "^10.0.7"

@@ -13,6 +13,7 @@ import { Button, Chip, Panel, PanelTitle, Skeleton, cx } from "../components/ui"
 import { formatDay, formatMinutes } from "../lib/format";
 import { useUi } from "../state/ui";
 import { AiPanel } from "../components/AiPanel";
+import { PhonePanel } from "../components/PhonePanel";
 import { SourcesPanel } from "../components/SourcesPanel";
 
 export function SettingsPage() {
@@ -28,7 +29,7 @@ export function SettingsPage() {
         <AiPanel />
         <SourcesSection />
         <SystemPanel />
-        <DevicesPanel />
+        <PhonePanel />
       </div>
     </div>
   );
@@ -183,25 +184,6 @@ function SystemPanel() {
           </li>
         ))}
       </ul>
-    </Panel>
-  );
-}
-
-function DevicesPanel() {
-  const status = useSystemStatus();
-  return (
-    <Panel aria-labelledby="t-devices">
-      <PanelTitle id="t-devices" aside={<Chip>phone in Phase 9</Chip>}>
-        Devices
-      </PanelTitle>
-      <div className="well rounded-xl p-3 text-sm">
-        <div className="font-semibold">This laptop · hub</div>
-        <div className="mt-1 font-mono text-xs break-all text-ink-3">{status.data?.device_id ?? "…"}</div>
-      </div>
-      <p className="mt-3 text-sm leading-relaxed text-ink-2">
-        Your Android phone will pair here by scanning a QR code, then sync over your home Wi-Fi. Every record is already
-        created with sync-ready ids and clocks, so nothing will need migrating.
-      </p>
     </Panel>
   );
 }

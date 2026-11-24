@@ -302,7 +302,7 @@ def pages(conn: Connection, item_id: int) -> list[dict[str, Any]]:
     return [{"id": r[0], "n": r[1] + 1, "width": r[2], "height": r[3], "ocr": r[4], "blocks": r[5]} for r in rows]
 
 
-def page(conn: Connection, item_id: int, number: int) -> dict[str, Any]:
+def page(conn: Connection, item_id: int, number: int, *, touch: bool = True) -> dict[str, Any]:
     item = get_item(conn, item_id)
     if item["type"] != "manga_volume":
         raise ContentError("not a manga volume")
@@ -336,10 +336,11 @@ def page(conn: Connection, item_id: int, number: int) -> dict[str, Any]:
     tokens, summary = annotate_segments(conn, item["language"], [b["text"] for b in blocks]) if blocks else ([], None)
     for block, own in zip(blocks, tokens):
         block["tokens"] = own
-    conn.execute(
-        text("UPDATE content_items SET position_ref = :pos, last_opened_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id = :id"),
-        {"pos": f"page:{number}", "id": item_id},
-    )
+    if touch:  # opening a page in the viewer remembers where you are; building an offline pack doesn't
+        conn.execute(
+            text("UPDATE content_items SET position_ref = :pos, last_opened_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id = :id"),
+            {"pos": f"page:{number}", "id": item_id},
+        )
     return {
         "item": item,
         "page": number,

@@ -8,6 +8,7 @@ import { formatDay, localDayOf } from "../../lib/format";
 import { canSpeak, speak, stopSpeaking, useRecorder, useSpeechInput } from "../../lib/speech";
 import { useEngagement } from "../../lib/useEngagement";
 import { useTracker } from "../../lib/useTracker";
+import { useMediaUrl } from "../../sync/useSync";
 import { MediaPlayer, type PlayerControls } from "../MediaPlayer";
 import { Button, Chip, Panel, PanelTitle, Skeleton, cx } from "../ui";
 
@@ -414,10 +415,15 @@ function Attempts({ lang, attempts }: { lang: string; attempts: ShadowAttempt[] 
             <span lang={lang} className="min-w-0 flex-1 truncate text-ink-2">
               {a.heard ?? "(nothing recognised)"}
             </span>
-            <audio controls preload="none" src={attemptAudio(a.id)} className="h-8 max-w-full" />
+            <AttemptAudio id={a.id} />
           </li>
         ))}
       </ul>
     </Panel>
   );
+}
+
+function AttemptAudio({ id }: { id: number }) {
+  const src = useMediaUrl(attemptAudio(id));
+  return src ? <audio controls preload="none" src={src} className="h-8 max-w-full" /> : null;
 }

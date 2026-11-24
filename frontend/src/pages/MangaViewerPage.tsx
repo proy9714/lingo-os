@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
-import { api, mangaImage } from "../api/client";
+import { api, mangaImage, mediaUrl } from "../api/client";
 import { useContentItem, useContentMutation, useMangaPage, useMangaVocab } from "../api/hooks";
 import type { AnnotatedToken, MangaBlock, MangaPageData, MangaVocabWord } from "../api/types";
 import { TokenLine } from "../components/TokenLine";
@@ -10,6 +10,7 @@ import { Button, Chip, Panel, cx } from "../components/ui";
 import { useEngagement } from "../lib/useEngagement";
 import { useTracker } from "../lib/useTracker";
 import { useLookupStore } from "../state/lookup";
+import { useMediaUrl } from "../sync/useSync";
 
 function stored(key: string, fallback: boolean): boolean {
   try {
@@ -80,7 +81,7 @@ export function MangaViewerPage() {
   // Fetch the next page's image ahead of time.
   useEffect(() => {
     for (const n of [current + step, current + step + 1]) {
-      if (n <= total) new Image().src = mangaImage(id, n);
+      if (n <= total) void mediaUrl(mangaImage(id, n)).then((src) => (new Image().src = src)).catch(() => undefined);
     }
   }, [id, current, step, total]);
 
@@ -258,10 +259,11 @@ function PageView({
   editMode: boolean;
   onEdit: (block: MangaBlock) => void;
 }) {
+  const image = useMediaUrl(mangaImage(itemId, data.page));
   return (
     <div className="relative shrink-0 overflow-hidden rounded-md bg-white" style={{ width: data.width * scale, height: data.height * scale }}>
       <img
-        src={mangaImage(itemId, data.page)}
+        src={image}
         alt={`Page ${data.page}`}
         draggable={false}
         className="absolute inset-0 h-full w-full select-none"

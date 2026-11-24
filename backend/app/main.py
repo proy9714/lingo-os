@@ -13,12 +13,15 @@ from sqlalchemy import Engine
 from app import __version__
 from app.ai.config import load_ai_config
 from app.ai.gateway import Gateway
-from app.api import activity, ai, automation, content, imports, level, manga, nlp, settings, shadowing, stats, system, tutor, vocab
+from app.api import activity, ai, automation, content, devices, imports, level, manga, nlp, settings, shadowing, stats, system, tutor, vocab
 from app.jobs.runner import Runner
 from app.config import AppConfig, load_config
 from app.db import migrate
 from app.db.engine import make_engine
+from app.db import settings_store
 from app.db.seed import seed
+from app.sync.hub import SYNC_PORT
+from app.sync.server import Listener
 from app.engine.profile import sync_baselines
 
 
@@ -39,11 +42,17 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
     engine = bootstrap(cfg)
 
     @asynccontextmanager
-    async def lifespan(_app: FastAPI):
+    async def lifespan(app_: FastAPI):
         runner = Runner(engine, cfg) if run_jobs else None
         if runner:
             runner.start()
+        with engine.connect() as conn:  # phone sync listens on the Wi-Fi only when turned on in Settings
+            sync_on = run_jobs and bool(settings_store.get(conn, "sync.enabled", False))
+            port = int(settings_store.get(conn, "sync.port", SYNC_PORT))
+        if sync_on:
+            devices.start_listener(app_, cfg, port)
         yield
+        app_.state.sync_listener.stop()
         if runner:
             runner.stop()
 
@@ -52,8 +61,9 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
     app.state.engine = engine
     app.state.dict_engine = make_engine(cfg.dict_db_path)
     app.state.ai = Gateway(load_ai_config(cfg.root), engine)
+    app.state.sync_listener = Listener()
 
-    for module in (system, settings, stats, activity, imports, nlp, vocab, level, content, ai, manga, tutor, shadowing, automation):
+    for module in (system, settings, stats, activity, imports, nlp, vocab, level, content, ai, manga, tutor, shadowing, automation, devices):
         app.include_router(module.router)
 
     _serve_frontend(app, cfg.frontend_dist)

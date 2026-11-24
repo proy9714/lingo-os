@@ -5,6 +5,7 @@ import { api, mangaImage } from "../api/client";
 import { useActiveLanguage, useContentList, useContentMutation, useMangaInbox } from "../api/hooks";
 import type { ContentItem, MangaScanResult } from "../api/types";
 import { Button, Chip, Panel, PanelTitle, Skeleton } from "../components/ui";
+import { useMediaUrl } from "../sync/useSync";
 
 const CATALOG_URL = "https://catalog.mokuro.moe";
 
@@ -160,7 +161,7 @@ function VolumeCard({ item }: { item: ContentItem }) {
         className="glass flex h-full flex-col overflow-hidden rounded-2xl transition hover:bg-white/10"
       >
         <div className="relative aspect-[2/3] bg-black/40">
-          <img src={mangaImage(item.id, 1)} alt="" loading="lazy" className="h-full w-full object-cover" />
+          <Cover id={item.id} />
           {item.progress > 0.02 && item.status !== "finished" && (
             <div className="absolute inset-x-0 bottom-0 h-1 bg-black/50">
               <div className="h-full bg-accent" style={{ width: `${item.progress * 100}%` }} />
@@ -190,4 +191,9 @@ function VolumeCard({ item }: { item: ContentItem }) {
       </Link>
     </li>
   );
+}
+
+function Cover({ id }: { id: number }) {
+  const src = useMediaUrl(mangaImage(id, 1));
+  return src ? <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" /> : null;
 }

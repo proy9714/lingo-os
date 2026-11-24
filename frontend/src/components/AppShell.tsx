@@ -2,6 +2,8 @@ import { Link, Outlet } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import { useActiveLanguage, useToday, useUpdateSettings } from "../api/hooks";
+import { remoteConfig, useSyncState } from "../sync/remote";
+import { usePhoneSync } from "../sync/useSync";
 import { useLookupStore } from "../state/lookup";
 import { useTrackerStore } from "../state/tracker";
 import { useUi } from "../state/ui";
@@ -17,6 +19,7 @@ export function AppShell() {
   const openQuickLog = useUi((s) => s.openQuickLog);
   const lookupOpen = useLookupStore((s) => s.selection !== null);
   const closeLookup = useLookupStore((s) => s.close);
+  usePhoneSync();
 
   useEffect(() => {
     document.documentElement.dataset.lang = code;
@@ -113,6 +116,7 @@ function TopBar() {
     <header className="glass flex flex-wrap items-center gap-2.5 rounded-[18px] p-2.5 md:gap-3 md:p-3">
       <LanguageSwitcher />
       <div className="flex-1" />
+      <SyncBadge />
       <TimerPill />
       <Button variant="secondary" onClick={openQuickLog} aria-keyshortcuts="Control+L" title="Log offline time (Ctrl+L)">
         <Icon name="plus" size={18} />
@@ -182,5 +186,21 @@ function TimerPill() {
         Today <strong className="text-ink">{done}</strong> / {goal} min
       </span>
     </div>
+  );
+}
+
+/** On the phone only: offline, or changes waiting to sync. */
+function SyncBadge() {
+  const { online, pending } = useSyncState();
+  if (!remoteConfig() || (online !== false && pending === 0)) return null;
+  return (
+    <Link
+      to="/connect"
+      className="rounded-full bg-orange-400/15 px-3 py-1.5 text-xs font-semibold text-warn"
+      title="Phone sync"
+    >
+      {online === false ? "Offline" : "Syncing"}
+      {pending > 0 && ` · ${pending} to sync`}
+    </Link>
   );
 }

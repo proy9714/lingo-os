@@ -8,7 +8,13 @@ The design, schema and roadmap are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.m
 
 ## Status
 
-**Phases 0–8 are done.**
+**All phases (0–9) are done.**
+
+Phase 9, your Android phone:
+
+- Settings → **Phone**: let a phone sync over your home Wi-Fi and pair it with a QR code. Only paired phones can connect, and everything is encrypted.
+- The phone app is this same app built with Capacitor: `npm run phone` opens it in Android Studio (see **[docs/PHONE.md](docs/PHONE.md)**).
+- At home the phone uses the laptop; away from home it reads the texts you saved for offline, and lookups, word statuses, reading time and progress sync when it's back.
 
 Phase 8, the system adapts itself:
 
@@ -111,6 +117,7 @@ Windows with Node 18+ and [uv](https://docs.astral.sh/uv/). uv installs Python 3
 | `npm run evolve-profile` | Weekly review and report (`-- --no-llm`, `-- --dry-run --json`, `-- --apply proposal.json`) |
 | `npm run lingo -- sources list --lang de` | Content sources and whether they're fetched |
 | `npm run lingo -- tutor-brief show --lang de` | The tutor's current brief (`set --file` to change it) |
+| `npm run phone` | Build the web app into the Android project and open it in Android Studio |
 | `npm run lingo -- ai status` / `ai test` / `ai models` | Which model each task uses; check the key; list the Gemini models your key can use |
 
 `npm run dev` starts the API through `backend/app/devserver.py`. On Windows, uvicorn's auto-reload sends Ctrl+C to the

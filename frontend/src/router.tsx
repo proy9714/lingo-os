@@ -7,6 +7,7 @@ import { MangaViewerPage } from "./pages/MangaViewerPage";
 import { PlayerPage } from "./pages/PlayerPage";
 import { WatchPage } from "./pages/WatchPage";
 import { ReadPage } from "./pages/ReadPage";
+import { ConnectPage } from "./pages/ConnectPage";
 import { ReaderPage } from "./pages/ReaderPage";
 import { ReportsPage } from "./pages/ReportsPage";
 import { SettingsPage } from "./pages/SettingsPage";
@@ -32,6 +33,7 @@ const routeTree = rootRoute.addChildren([
   page("/level", LevelPage),
   page("/settings", SettingsPage),
   page("/reports", ReportsPage),
+  page("/connect", ConnectPage),
 ]);
 
 export const router = createRouter({ routeTree, defaultPreload: "intent" });

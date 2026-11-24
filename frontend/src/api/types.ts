@@ -675,3 +675,25 @@ export interface ContentSource {
   last_status: string | null;
   config: { section?: string; note?: string; flags?: string[]; site?: string; youtube?: string | null };
 }
+
+// ---------------------------------------------------------------- Phase 9: phone sync
+
+export interface DeviceRow {
+  id: string;
+  name: string;
+  kind: "hub" | "android";
+  last_seen_at: string | null;
+  paired_at: string;
+  revoked_at: string | null;
+  events: number;
+  packs: number;
+}
+
+export interface SyncStatus {
+  enabled: boolean;
+  running: boolean;
+  error: string | null;
+  port: number;
+  addresses: string[];
+  devices: DeviceRow[];
+}

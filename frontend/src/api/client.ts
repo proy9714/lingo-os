@@ -7,6 +7,7 @@ import type {
   Evidence,
   TranscriptData,
   AddedDocument,
+  SyncStatus,
   ContentSource,
   Job,
   ReportRow,
@@ -46,6 +47,11 @@ import type {
   TrackerImportSummary,
 } from "./types";
 
+import { flush } from "../sync/outbox";
+import { offlineAnswer, remember } from "../sync/offline";
+import type { Pack } from "../sync/packs";
+import { blobUrl, OfflineError, remoteConfig, rpc } from "../sync/remote";
+
 export class ApiError extends Error {
   readonly status: number;
 
@@ -56,6 +62,7 @@ export class ApiError extends Error {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  if (remoteConfig()) return remoteRequest<T>(path, init);
   const response = await fetch(path, {
     ...init,
     headers: { "Content-Type": "application/json", ...init?.headers },
@@ -77,6 +84,32 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 const json = (body: unknown): RequestInit["body"] => JSON.stringify(body);
+
+/** On the phone: the same API, through the encrypted channel to the laptop; offline answers come from packs. */
+async function remoteRequest<T>(path: string, init?: RequestInit): Promise<T> {
+  const url = new URL(path, "http://hub");
+  const method = (init?.method ?? "GET").toUpperCase();
+  const body = typeof init?.body === "string" ? (JSON.parse(init.body) as Record<string, unknown>) : null;
+  const query = Object.fromEntries(url.searchParams);
+  try {
+    const result = await rpc(method, url.pathname, Object.keys(query).length ? query : null, body, url.pathname.startsWith("/api/packs") ? 180_000 : 30_000);
+    if (result.status >= 400) {
+      const detail = (result.json as { detail?: unknown } | undefined)?.detail;
+      throw new ApiError(result.status, typeof detail === "string" ? detail : `Request failed (${result.status})`);
+    }
+    const data = (result.json ?? result.text) as T;
+    if (method === "GET") remember(url.pathname + url.search, data);
+    void flush().catch(() => undefined); // back in reach: send what was queued
+    return data;
+  } catch (error) {
+    if (!(error instanceof OfflineError)) throw error;
+    try {
+      return (await offlineAnswer(method, url.pathname, url.searchParams, body)) as T;
+    } catch (offline) {
+      throw new ApiError(0, offline instanceof Error ? offline.message : "Offline");
+    }
+  }
+}
 
 export const api = {
   settings: () => request<Settings>("/api/settings"),
@@ -269,6 +302,7 @@ export const api = {
   evolveStatus: () => request<{ job: Job | null }>("/api/evolve/status"),
   reports: () => request<ReportRow[]>("/api/reports"),
   reportText: async (path: string) => {
+    if (remoteConfig()) return request<string>(`/api/reports/file?path=${encodeURIComponent(path)}`);
     const response = await fetch(`/api/reports/file?path=${encodeURIComponent(path)}`);
     if (!response.ok) throw new ApiError(response.status, "Could not load the report");
     return response.text();
@@ -277,3 +311,29 @@ export const api = {
 
 export const mangaImage = (id: number, page: number) => `/api/manga/${id}/image/${page}`;
 export const attemptAudio = (id: number) => `/api/shadow/attempts/${id}/audio`;
+
+/** An image or audio URL that works on the laptop (served directly) and on the phone (fetched through sync). */
+const mediaCache = new Map<string, Promise<string>>();
+export function mediaUrl(path: string): Promise<string> {
+  if (!remoteConfig()) return Promise.resolve(path);
+  let pending = mediaCache.get(path);
+  if (!pending) {
+    pending = rpc("GET", path, null, null, 60_000).then((r) => {
+      if (r.status >= 400 || !r.b64) throw new ApiError(r.status, "media unavailable");
+      return blobUrl(r.b64, r.type ?? "application/octet-stream");
+    });
+    pending.catch(() => mediaCache.delete(path));
+    mediaCache.set(path, pending);
+  }
+  return pending;
+}
+
+// Phase 9: phone sync (laptop side)
+export const syncApi = {
+  status: () => request<SyncStatus>("/api/sync/status"),
+  enable: (enabled: boolean) => request<SyncStatus>("/api/sync/enable", { method: "POST", body: json({ enabled }) }),
+  pair: (name: string) =>
+    request<{ device_id: string; expires: string; qr: string; addresses: string[] }>("/api/sync/pair", { method: "POST", body: json({ name }) }),
+  remove: (id: string) => request<{ removed: boolean }>(`/api/devices/${encodeURIComponent(id)}`, { method: "DELETE" }),
+  pack: (itemId: number) => request<Pack>(`/api/packs/${itemId}`),
+};
