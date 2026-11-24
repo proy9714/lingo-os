@@ -23,6 +23,7 @@ dependencies = [
   "trafilatura>=2",
   "python-multipart>=0.0.12",
   "cryptography>=44",
+  "edge-tts>=7.3.1",
 ]
 
 [project.scripts]

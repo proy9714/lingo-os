@@ -374,6 +374,10 @@ export function useSearchWatcher(lang: string) {
   return pool;
 }
 
+/** The voices for a language and the chosen one; also tells the speech module which engine to use. */
+export const useVoices = (lang: string) =>
+  useQuery({ queryKey: ["tts-voices", lang], queryFn: () => api.ttsVoices(lang), enabled: Boolean(lang), staleTime: 5 * 60_000 });
+
 export const useTutorTopics = (lang: string) =>
   useQuery({ queryKey: ["tutor-topics", lang], queryFn: () => api.tutorTopics(lang), staleTime: 30_000 });
 

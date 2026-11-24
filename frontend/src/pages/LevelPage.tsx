@@ -116,7 +116,7 @@ export function LevelPage() {
               <p className="text-sm text-ink-3">Not measured yet.</p>
             )}
             <p className="mt-3 text-sm leading-relaxed text-ink-2">
-              Ten sentences read aloud by your browser's voice; type what you hear. Sentences get harder after a clean answer.
+              Ten sentences read aloud by a native voice; type what you hear. Sentences get harder after a clean answer.
               Spelling, accents and punctuation don't count.
             </p>
             {startDictation.isError && <p role="alert" className="mt-2 text-sm text-red-200">{startDictation.error.message}</p>}
@@ -130,7 +130,7 @@ export function LevelPage() {
                 })
               }
             >
-              {canSpeak() ? (overview.data.skills.listening ? "Retake the listening check" : "Start the listening check") : "No browser voice available"}
+              {canSpeak() ? (overview.data.skills.listening ? "Retake the listening check" : "Start the listening check") : "No voice available"}
             </Button>
           </Panel>
           <Panel aria-labelledby="t-speak">

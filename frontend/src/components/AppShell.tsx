@@ -1,7 +1,8 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-import { useActiveLanguage, useSearchWatcher, useToday, useUpdateSettings } from "../api/hooks";
+import { useActiveLanguage, useSearchWatcher, useToday, useUpdateSettings, useVoices } from "../api/hooks";
+import { onSpeechUnavailable, setSpeechEngine } from "../lib/speech";
 import { remoteConfig, useSyncState } from "../sync/remote";
 import { usePhoneSync } from "../sync/useSync";
 import { useLookupStore } from "../state/lookup";
@@ -21,6 +22,12 @@ export function AppShell() {
   const lookupOpen = useLookupStore((s) => s.selection !== null);
   const closeLookup = useLookupStore((s) => s.close);
   usePhoneSync();
+  const showToast = useUi((s) => s.showToast);
+  const engine = useVoices(code).data?.engine;
+  useEffect(() => {
+    if (engine) setSpeechEngine(engine);
+  }, [engine]);
+  useEffect(() => onSpeechUnavailable((_lang, reason) => showToast(reason)), [showToast]);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {

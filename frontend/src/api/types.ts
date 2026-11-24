@@ -291,6 +291,21 @@ export interface CTestResult {
 
 // ---------------------------------------------------------------- Phase 2: library, player, listening
 
+export interface VoiceOption {
+  id: string;
+  name: string;
+  gender: string;
+  locale: string;
+}
+
+export interface VoiceList {
+  language: string;
+  engine: "neural" | "device";
+  voice: string | null;
+  voices: VoiceOption[];
+  error: string | null;
+}
+
 export interface ContentItem {
   id: number;
   language: string;

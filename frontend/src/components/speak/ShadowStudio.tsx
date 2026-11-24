@@ -41,7 +41,7 @@ export function ShadowStudio({ lang, initialClip }: { lang: string; initialClip:
         <PanelTitle id="t-clips">Your clips</PanelTitle>
         <p className="mb-3 text-xs leading-relaxed text-ink-3">
           Make a clip from any line in the video player (<strong className="text-ink-2">Shadow this line</strong>), or type a
-          sentence below to practise it with the browser's voice.
+          sentence below to practise it with a native voice.
         </p>
         <form
           className="mb-3 flex gap-2"
@@ -84,7 +84,7 @@ export function ShadowStudio({ lang, initialClip }: { lang: string; initialClip:
                     {clip.text}
                   </div>
                   <div className="mt-0.5 text-[11px] text-ink-3">
-                    {clip.item_title ? clip.item_title.slice(0, 40) : "browser voice"} · {clip.practice_count}×
+                    {clip.item_title ? clip.item_title.slice(0, 40) : "native voice"} · {clip.practice_count}×
                     {clip.best !== null && ` · best ${Math.round(clip.best * 100)}%`}
                   </div>
                 </button>

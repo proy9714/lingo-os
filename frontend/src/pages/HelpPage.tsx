@@ -599,6 +599,27 @@ const TOPICS: Topic[] = [
     ),
   },
   {
+    id: "voices",
+    title: "Voices: native pronunciation",
+    summary: "Every word and sentence read by a native voice of the language.",
+    keywords: "voice voices speech speak pronunciation audio tts text to speech accent read aloud listen",
+    body: (
+      <>
+        <p>
+          The speaker buttons (lookup panel, sentences, tutor replies, shadowing, grammar examples, the Level Lab listening check) use a
+          neural voice of the language itself, so German sounds German even when your computer only has English voices. The laptop makes
+          each clip with Microsoft's speech service (no account) and keeps it, so a sentence is sent once and replays offline.
+        </p>
+        <p>
+          <Go to="/settings">Settings</Go> → Voices: choose a voice per language (female or male, and other regions such as Mexican
+          Spanish), and press <em>Test</em>. Or choose <em>This device's voices only</em> to stay fully offline: a language your device
+          has no voice for then stays silent, with a message, instead of being read with an English accent.
+        </p>
+        <p>On the phone the same voices come from the laptop; away from it, Android's own voices are used.</p>
+      </>
+    ),
+  },
+  {
     id: "phone",
     title: "Phone sync (Android)",
     summary: "Use Lingo OS on your phone over your home Wi-Fi, and offline away from home.",
@@ -765,6 +786,7 @@ const TOPICS: Topic[] = [
             "Play YouTube videos and fetch their captions, and search YouTube when looking for new videos.",
             "Read the news and learner sites listed in config/sources.yaml, and the Comprehensible Input Wiki page for your language (at most once a week).",
             "Ask the AI service you set up, only when you request an explanation or use the tutor.",
+            "Send a sentence to Microsoft's speech service the first time it's read aloud (Settings → Voices can switch this off).",
             "Talk to your own paired phone over your home Wi-Fi, encrypted, if you turned phone sync on.",
           ]}
         </Bullets>

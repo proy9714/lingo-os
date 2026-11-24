@@ -28,7 +28,7 @@ Phases 6–7, speaking:
 - **Tutor** (Speak → Tutor; needs an AI provider): chat by typing or with the microphone, replies read aloud. It writes at your level, reuses words you're learning, and simplifies any reply with too many unknown words. Modes: conversation, role-play cards, talk about something you watched or read, grammar practice. **End and review** adds corrections to your turns and a summary, and records grammar slips, which feed the next conversation.
 - **Shadowing** (Speak → Shadowing): press **Shadow this line** in the video player, or type any sentence. Listen once or loop with a pause for your turn, at 0.5–1× speed, record yourself, and see which words were recognised. Recordings stay in `data\recordings\`.
 - **Level Lab → Speaking**: hear a sentence, say it back; ten sentences from A1 to C1.
-- Voice input uses the browser's speech recognition (Chrome and Edge send the audio to their speech service); spoken replies use the browser's voices.
+- Voice input uses the browser's speech recognition (Chrome and Edge send the audio to their speech service); spoken replies use native neural voices (see Voices below).
 
 Phase 5, manga:
 
@@ -72,12 +72,12 @@ Phase 2, watch and listen:
   - Previous, next and replay line; speed control; pause after each line.
   - Watching time is tracked only while it plays, with a live timer in the top bar.
 - **History analysis**: fetches the captions of every video you watched (`npm run lingo -- content fetch-history`, or the button on Watch). It counts how often you've heard each word, which feeds word colouring and your starting level.
-- **Level Lab listening**: dictation of graded sentences read by your browser's voice.
+- **Level Lab listening**: dictation of graded sentences read by a native voice.
 
 Phase 1, the word engine and Level Lab:
 
 - **Read** (paste mode): paste any German, Spanish or Japanese text. Words are coloured as likely new or learning, and every word is clickable. Shows how much of the text you probably know.
-- **Lookup panel**: dictionary form (*rufe … an* → *anrufen*, *muss* → *müssen*, *dámelo* → *dar*, 間に合わない → 間に合う), readings, glosses, German gender/plural/conjugation notes, frequency rank and browser pronunciation. Set a word to new, learning, known or ignored, or save it with its sentence.
+- **Lookup panel**: dictionary form (*rufe … an* → *anrufen*, *muss* → *müssen*, *dámelo* → *dar*, 間に合わない → 間に合う), readings, glosses, German gender/plural/conjugation notes, frequency rank and native pronunciation. Set a word to new, learning, known or ignored, or save it with its sentence.
 - **Words**: everything you saved or looked up, with sentences and notes. A browser, not flashcards.
 - **Level Lab**:
   - Adaptive vocabulary test, about 5 minutes. Meanings are verified and made-up words catch guessing. The result is a vocabulary range and approximate CEFR (and JLPT) band.
@@ -141,6 +141,15 @@ only through the `lingo` CLI, never by touching the database files.
 - `config/baselines.yaml`: hours → level roadmap and per-language difficulty divisors
 - `config/llm.yaml`: AI providers and task routing (Gemini by default)
 - `.env`: API keys only (copy `.env.example`)
+
+## Voices
+
+Words and sentences are read aloud by native neural voices (German by a German voice, Japanese by a Japanese one),
+whatever voices your operating system has. The laptop makes each clip with Microsoft's speech service (the voices
+Edge's Read Aloud uses; no key or account) and keeps it in `data/cache/tts`, so a sentence is sent once and replays
+offline. Only the sentence being spoken is sent. Settings → **Voices** picks a voice per language, or switches to
+**this device's voices only** (fully offline; a language without a voice stays silent instead of being read with an
+English accent). The phone gets the same audio through sync, and uses Android's own voices away from the laptop.
 
 ## Layout
 
