@@ -152,6 +152,15 @@ def add_language(conn: Connection, dict_conn: Connection, cfg: AppConfig, code: 
     needs_dictionary = not dictionaries_of(dict_conn, code)
     if not needs_model:
         _enable(conn, cfg, code, variant)
+    else:  # a hidden row until the download is done, so its level, hours and history can be set right away
+        conn.execute(
+            text(
+                "INSERT OR IGNORE INTO languages (code, name, native_name, accent_color, writing_mode, direction, variant, "
+                "position, enabled) VALUES (:c, :n, :nn, :a, :w, :d, :v, 0, 0)"
+            ),
+            {"c": code, "n": s.name, "nn": s.native_name, "a": s.accent, "w": s.writing_mode, "d": s.direction,
+             "v": s.variant(variant).id},
+        )
     job = install_job(conn, code)
     if (needs_model or needs_dictionary) and not (job and job["status"] in ("queued", "running")):
         enqueue(conn, "install_language", {"code": code, "variant": variant}, dedupe=False)
@@ -182,4 +191,7 @@ def set_variant(conn: Connection, code: str, variant: str) -> None:
 
 def finish_install(conn: Connection, cfg: AppConfig, code: str, variant: str | None) -> None:
     """Called by the install job once the model is in place."""
+    from app.engine.profile import sync_language
+
     _enable(conn, cfg, code, variant)
+    sync_language(conn, cfg, code)

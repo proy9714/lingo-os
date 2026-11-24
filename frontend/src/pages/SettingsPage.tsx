@@ -16,6 +16,7 @@ import { AiPanel } from "../components/AiPanel";
 import { PhonePanel } from "../components/PhonePanel";
 import { SourcesPanel } from "../components/SourcesPanel";
 import { LanguagesPanel } from "../components/LanguagesPanel";
+import { StartingPointPanel } from "../components/StartingPoint";
 import { VoicesPanel } from "../components/VoicesPanel";
 
 export function SettingsPage() {
@@ -27,6 +28,7 @@ export function SettingsPage() {
       </header>
       <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr))]">
         <LanguagesPanel />
+        <ActiveStartingPoint />
         <GoalsPanel />
         <TrackerPanel />
         <AiPanel />
@@ -37,6 +39,11 @@ export function SettingsPage() {
       </div>
     </div>
   );
+}
+
+function ActiveStartingPoint() {
+  const { code, language } = useActiveLanguage();
+  return code ? <StartingPointPanel key={code} lang={code} languageName={language?.name ?? code} /> : null;
 }
 
 function GoalsPanel() {

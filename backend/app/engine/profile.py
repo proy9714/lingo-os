@@ -62,22 +62,45 @@ def get_profile(conn: Connection, lang: str) -> dict[str, Any] | None:
     return profile
 
 
+# A level you chose yourself (when adding the language, or in Settings), as a receptive vocabulary: the middle of the
+# usual range for that level. It replaces the hours-only guess until a Level Lab test measures you.
+SELF_LEVEL_WORDS = {
+    "A0": 100, "A1": 600, "A2": 1500, "B1": 2700, "B2": 4700, "C1": 8000, "C2": 12000,
+    "N5": 1000, "N4": 2200, "N3": 4500, "N2": 7500, "N1": 11000,
+}
+
+
+def self_level(conn: Connection, lang: str) -> str | None:
+    from app.db import settings_store
+
+    value = settings_store.get(conn, f"self_level.{lang}")
+    return value if value in SELF_LEVEL_WORDS else None
+
+
 def sync_baselines(conn: Connection, cfg: AppConfig) -> None:
     """Create missing profiles; refresh untested ones from current hours (after an import, say)."""
     for lang in cfg.language_codes:
-        profile = get_profile(conn, lang)
-        if profile and profile["measured"]:
-            continue
-        estimate = hours_estimate(lang, total_seconds(conn, lang) / 3600, cfg.baselines)
-        hours_words = max(100, estimate.get("words_prior") or 100)
-        words, confidence = blend_with_hours(hours_words, content_evidence(conn, lang))
-        words = round(words)
-        r50 = solve_r50(words, DEFAULT_K)
-        level, alt = band_for_size(cfg.baselines, lang, words)
-        if profile and abs(profile["vocab_size"] - words) < 5 and abs(profile["confidence"] - confidence) < 0.01:
-            continue
-        reason = "baseline" if confidence <= 0.2 else "recompute"
-        _write(conn, lang, r50=r50, k=DEFAULT_K, size=words, level=level, alt=alt, confidence=confidence, reason=reason)
+        sync_language(conn, cfg, lang)
+
+
+def sync_language(conn: Connection, cfg: AppConfig, lang: str) -> None:
+    """The starting estimate for one language: your chosen level, else your hours; blended with what you watched."""
+    profile = get_profile(conn, lang)
+    if profile and profile["measured"]:
+        return
+    estimate = hours_estimate(lang, total_seconds(conn, lang) / 3600, cfg.baselines)
+    hours_words = max(100, estimate.get("words_prior") or 100)
+    chosen = self_level(conn, lang)
+    if chosen:
+        hours_words = SELF_LEVEL_WORDS[chosen]
+    words, confidence = blend_with_hours(hours_words, content_evidence(conn, lang))
+    words = round(words)
+    r50 = solve_r50(words, DEFAULT_K)
+    level, alt = band_for_size(cfg.baselines, lang, words)
+    if profile and abs(profile["vocab_size"] - words) < 5 and abs(profile["confidence"] - confidence) < 0.01:
+        return
+    reason = "baseline" if confidence <= 0.2 else "recompute"
+    _write(conn, lang, r50=r50, k=DEFAULT_K, size=words, level=level, alt=alt, confidence=confidence, reason=reason)
 
 
 def apply_measurement(

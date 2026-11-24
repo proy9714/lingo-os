@@ -17,6 +17,38 @@ export interface Language {
   level_alt: string | null;
 }
 
+export interface StartingPoint {
+  language: string;
+  self_level: string | null;
+  levels: string[];
+  measured: boolean;
+  baseline_hours: number;
+  imported_baseline_hours: number;
+  tracked_hours: number;
+  imported_session_hours: number;
+  has_start: boolean;
+}
+
+export interface HistoryImportReport {
+  format: "simple" | "immersion-tracker";
+  file: string;
+  status: "imported" | "unchanged" | "missing";
+  rows: number;
+  imported: number;
+  already_present: number;
+  duplicates: number;
+  errors: string[];
+  videos: number;
+  time_only_rows: number;
+  analysis_job: number | null;
+}
+
+export interface ImportHistory {
+  imports: { id: number; file: string; rows: number; imported: number; skipped: number; errors: number; at: string; format: string }[];
+  videos: { watched: number; analysed: number; no_captions: number; waiting: number };
+  job: Job | null;
+}
+
 export interface CatalogLanguage {
   code: string;
   name: string;

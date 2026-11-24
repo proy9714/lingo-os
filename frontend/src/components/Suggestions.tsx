@@ -180,7 +180,7 @@ function FeedEnd({
       </p>
       {pool?.youtube_refused && shelf === "watch" && (
         <p className="mt-2 text-xs text-warn">
-          YouTube asked the last search to slow down, so automatic searches wait 12 hours. Articles aren't affected.
+          YouTube asked the last search to slow down, so video searches pause for a while (an hour at first, longer if it keeps asking). Articles aren't affected.
         </p>
       )}
       <div className={cx("mt-4 flex flex-wrap items-center gap-3", count === 0 && "justify-center")}>

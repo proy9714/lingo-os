@@ -42,7 +42,7 @@ REFUSAL_KEY = "youtube.refused_at"
 LABEL_OFFSETS = (
     (("super easy", "absolute beginner", "a1"), 0.045),
     (("beginner", "a2", "easy"), 0.03),
-    (("intermediate", "b1"), 0.0),
+    (("intermediate", "b1", "all levels"), 0.0),
     (("upper", "b2"), -0.03),
     (("advanced", "c1", "c2", "native"), -0.07),
 )
@@ -89,14 +89,30 @@ def name_key(name: str | None) -> str:
     return "".join(ch for ch in (name or "").casefold() if ch.isalnum())
 
 
-def youtube_refused_recently(conn: Connection, hours: float = 12) -> bool:
+REFUSALS_KEY = "youtube.refusals"  # refusals in a row: the pause doubles each time (1, 2, 4 … 12 hours)
+
+
+def refusal_pause_hours(conn: Connection) -> float:
+    return float(min(12, 2 ** max(0, int(settings_store.get(conn, REFUSALS_KEY, 1) or 1) - 1)))
+
+
+def youtube_refused_recently(conn: Connection, hours: float | None = None) -> bool:
     at = settings_store.get(conn, REFUSAL_KEY)
-    return bool(at) and (utc_now() - from_iso(at)).total_seconds() < hours * 3600
+    wait = refusal_pause_hours(conn) if hours is None else hours
+    return bool(at) and (utc_now() - from_iso(at)).total_seconds() < wait * 3600
 
 
 def _mark_refused(engine: Engine) -> None:
     with engine.begin() as conn:
         settings_store.put(conn, REFUSAL_KEY, to_iso(utc_now()))
+        settings_store.put(conn, REFUSALS_KEY, int(settings_store.get(conn, REFUSALS_KEY, 0) or 0) + 1)
+
+
+def _mark_answered(engine: Engine) -> None:
+    """YouTube answered normally again: the next refusal starts with a short pause."""
+    with engine.begin() as conn:
+        if settings_store.get(conn, REFUSALS_KEY):
+            settings_store.put(conn, REFUSALS_KEY, 0)
 
 
 def _is_refusal(exc: Exception) -> bool:
@@ -363,12 +379,13 @@ def estimate_scores(conn: Connection, lang: str, item_ids: list[int] | None = No
     ).first()
     lang_cov = overall[0] if overall and overall[0] else ideal
     lang_rate = overall[1] if overall and overall[1] else 4.0
-    labels = {
-        r[0]: r[1]
-        for r in conn.execute(
-            text("SELECT id, level_label FROM content_sources WHERE language_code = :l AND kind = 'youtube_channel'"), {"l": lang}
-        ).all()
-    }
+    channel_rows = conn.execute(
+        text("SELECT id, level_label, origin FROM content_sources WHERE language_code = :l AND kind = 'youtube_channel'"),
+        {"l": lang},
+    ).all()
+    labels = {r[0]: r[1] for r in channel_rows}
+    # channels listed on the Comprehensible Input Wiki are made for learners: worth suggesting before they're measured
+    curated = {r[0] for r in channel_rows if r[2] == "ci_wiki"}
     failures = caption_failures(conn, lang)
     pending = conn.execute(
         text(
@@ -403,6 +420,8 @@ def estimate_scores(conn: Connection, lang: str, item_ids: list[int] | None = No
             basis, per_minute = ("channel3" if n >= 3 else "channel1"), rate or lang_rate
         elif label is not None:
             coverage, basis, per_minute = ideal + label, "label", lang_rate
+        elif source_id in curated:
+            coverage, basis, per_minute = lang_cov, "language", lang_rate
         else:
             # Nothing known about this channel: measure it before suggesting it.
             conn.execute(text("DELETE FROM content_scores WHERE content_item_id = :i AND estimated = 1"), {"i": item_id})
@@ -438,8 +457,7 @@ def measure(conn: Connection, item_id: int, lang: str, captions: youtube.Caption
     content.set_metadata(conn, item_id, captions=captions.kind, caption_track=captions.track_lang)
     content.analyze_item(conn, item_id)
     band = conn.execute(text("SELECT band FROM content_scores WHERE content_item_id = :i"), {"i": item_id}).scalar()
-    if band not in keep_bands:
-        conn.execute(text("UPDATE content_items SET status = 'dismissed' WHERE id = :i AND status = 'candidate'"), {"i": item_id})
+    if band not in keep_bands:  # kept as a candidate: it fills the lists while little fits your level
         content.set_metadata(conn, item_id, discovery="off_level")
         return "off_level"
     content.set_metadata(conn, item_id, discovery="ok")
@@ -488,6 +506,8 @@ def verify(
         stats["checked"] += 1
         try:
             captions = fetchers.captions(video_id, lang)
+            if stats["checked"] == 1:  # the first request of a run went through
+                _mark_answered(engine)
             consecutive = 0
         except youtube.YouTubeError as exc:
             stats["errors"].append(f"{video_id}: {exc}"[:200])

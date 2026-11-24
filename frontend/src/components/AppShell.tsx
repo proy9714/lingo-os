@@ -11,7 +11,7 @@ import { useTrackerStore } from "../state/tracker";
 import { useUi } from "../state/ui";
 import { Icon } from "./Icon";
 import { LookupPanel } from "./LookupPanel";
-import { NAV } from "./nav";
+import { navFor } from "./nav";
 import { QuickLogModal } from "./QuickLogModal";
 import { SearchPill } from "./Suggestions";
 import { Toast } from "./Toast";
@@ -82,7 +82,7 @@ function Shell() {
       >
         Skip to content
       </a>
-      <div className="relative mx-auto flex max-w-[1480px] gap-4 p-3 pb-28 md:p-4 md:pb-6">
+      <div className="shell-pad relative mx-auto flex max-w-[1480px] gap-4">
         <SideRail />
         <div className={cx("flex min-w-0 flex-1 flex-col gap-4 transition-[margin]", lookupOpen && "md:mr-[396px]")}>
           <TopBar />
@@ -105,10 +105,11 @@ const railLink =
   "flex w-[72px] flex-col items-center gap-1 rounded-xl py-2.5 text-[11px] font-medium text-ink-2 transition hover:bg-white/6 hover:text-ink data-[status=active]:bg-white/12 data-[status=active]:font-semibold data-[status=active]:text-white data-[status=active]:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.16)]";
 
 function SideRail() {
+  const { code } = useActiveLanguage();
   return (
     <nav
       aria-label="Main"
-      className="glass sticky top-4 hidden h-[calc(100dvh-2rem)] w-[88px] shrink-0 flex-col items-center gap-1.5 overflow-x-hidden overflow-y-auto rounded-[20px] py-4 [scrollbar-width:none] md:flex [&::-webkit-scrollbar]:hidden"
+      className="glass sticky top-[calc(var(--inset-top)+1rem)] hidden h-[calc(100dvh-2rem-var(--inset-top))] w-[88px] shrink-0 flex-col items-center gap-1.5 overflow-x-hidden overflow-y-auto rounded-[20px] py-4 [scrollbar-width:none] md:flex [&::-webkit-scrollbar]:hidden"
     >
       <div
         aria-hidden="true"
@@ -116,7 +117,7 @@ function SideRail() {
       >
         L
       </div>
-      {NAV.map((item) => (
+      {navFor(code).map((item) => (
         <Link key={item.to} to={item.to} activeOptions={{ exact: item.to === "/" }} className={railLink}>
           <Icon name={item.icon} />
           <span>{item.label}</span>
@@ -127,13 +128,13 @@ function SideRail() {
 }
 
 function BottomNav() {
+  const { code } = useActiveLanguage();
   return (
     <nav
       aria-label="Main"
-      className="glass-strong fixed inset-x-2 bottom-2 z-30 flex gap-1 overflow-x-auto rounded-2xl p-1.5 [scrollbar-width:none] md:hidden [&::-webkit-scrollbar]:hidden"
-      style={{ paddingBottom: "max(0.375rem, env(safe-area-inset-bottom))" }}
+      className="bottom-nav fixed z-30 flex gap-1 overflow-x-auto rounded-[22px] p-1.5 [scrollbar-width:none] md:hidden [&::-webkit-scrollbar]:hidden"
     >
-      {NAV.map((item) => (
+      {navFor(code).map((item) => (
         <Link
           key={item.to}
           to={item.to}

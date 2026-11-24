@@ -4,7 +4,7 @@ The pages that show suggestions (Today, Watch, Read) ask for a top-up when they 
 list. Two kinds of background work:
   update_content     list channels and searches (videos), read feeds (articles). Queued for the shelves that are low
                      (under POOL_TARGET) or that you scrolled to the end of; videos at most every 45 minutes, articles
-                     every 30 (10 when you're at the end), and no YouTube at all for 12 hours after it refused.
+                     every 30 (10 when you're at the end), and no YouTube for a while after it refused (1 hour, doubling up to 12).
   verify_candidates  measure the best-ranked videos whose level is only estimated (captions + word analysis).
 Turn it off with the setting `discover.auto`.
 """
@@ -54,14 +54,18 @@ def _last_search(conn: Connection, lang: str) -> str | None:
 
 
 def status(conn: Connection, lang: str) -> dict[str, Any]:
-    pools = {shelf: len(ranked(conn, lang, shelf)) for shelf in POOL_TARGET}
+    from app.services.recommend import in_band
+
+    # only content near your level counts: the closest-match fill-ins mean "keep looking"
+    pools = {shelf: sum(1 for i in ranked(conn, lang, shelf) if in_band(i)) for shelf in POOL_TARGET}
     estimated = sum(1 for i in ranked(conn, lang, "watch") if i["estimated"])
     job = _running(conn) or latest_job(conn, "update_content")
     refused = catalog.youtube_refused_recently(conn)
     last = _last_search(conn, lang)
     next_at = None
     if last:
-        next_at = to_iso(from_iso(last) + (timedelta(hours=12) if refused else COOLDOWN["watch"]))
+        pause = timedelta(hours=catalog.refusal_pause_hours(conn)) if refused else COOLDOWN["watch"]
+        next_at = to_iso(from_iso(last) + pause)
     return {
         "language": lang,
         "auto": auto_enabled(conn),
@@ -118,3 +122,29 @@ def maybe_top_up(
     if state["youtube_refused"] and (shelf == "watch" or "watch" in state["low"]):
         reason = "YouTube asked to slow down"
     return {**state, "queued": False, "reason": reason}
+
+
+def daily_refresh(conn: Connection, cfg: Any, lang: str) -> dict[str, Any]:
+    """Once a day per language (the first time the app opens that day): adapt to yesterday.
+
+    Your level estimate and taste are recomputed from what you did, every item is re-scored against them, and new
+    videos and articles are looked for. It all runs as background jobs, one at a time, in short steps, so the app
+    stays responsive; nothing waits for it.
+    """
+    from app.engine.profile import sync_language
+    from app.services import recommend, taste
+    from app.timeutil import local_today
+
+    today = local_today().isoformat()
+    key = f"daily.last.{lang}"
+    if settings_store.get(conn, key) == today:
+        return {"language": lang, "ran": False, "date": today, "reason": "already refreshed today"}
+    settings_store.put(conn, key, today)
+    sync_language(conn, cfg, lang)
+    taste.invalidate(lang)
+    recommend.invalidate()
+    jobs = [enqueue(conn, "rescore", {"lang": lang})]
+    found = maybe_top_up(conn, lang, force=True) if auto_enabled(conn) else {"queued": False, "reason": "automatic search is off"}
+    if found.get("job_id"):
+        jobs.append(found["job_id"])
+    return {"language": lang, "ran": True, "date": today, "jobs": jobs, "search": found.get("reason") or "queued"}

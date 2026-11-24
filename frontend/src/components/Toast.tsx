@@ -14,7 +14,7 @@ export function Toast() {
   }, [toast, action, clear]);
 
   return (
-    <div role="status" aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-24 z-50 flex justify-center px-4 md:bottom-6">
+    <div role="status" aria-live="polite" className="above-bottom-nav pointer-events-none fixed inset-x-0 z-50 flex justify-center px-4">
       {toast && (
         <div key={toast} className="anim-toast glass-strong pointer-events-auto flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-ink">
           <span>{toast}</span>

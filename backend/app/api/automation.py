@@ -43,6 +43,17 @@ class AutoSetting(BaseModel):
     enabled: bool
 
 
+class DailyRequest(BaseModel):
+    lang: str = Field(min_length=2, max_length=8)
+
+
+@router.post("/discover/daily", status_code=202)
+def daily(body: DailyRequest, conn: Connection = Depends(get_conn), cfg: AppConfig = Depends(get_cfg)) -> dict[str, Any]:
+    """The app's first opening of the day: re-score to your level and taste, and look for new content (in the background)."""
+    require_language(conn, body.lang)
+    return topup.daily_refresh(conn, cfg, body.lang)
+
+
 @router.post("/discover/run", status_code=202)
 def run_discovery(body: DiscoverRequest, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
     return {"job_id": enqueue(conn, "update_content", body.model_dump(exclude_none=True))}

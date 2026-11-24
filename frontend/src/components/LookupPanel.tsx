@@ -65,7 +65,7 @@ export function LookupPanel() {
   return (
     <aside
       aria-label="Word lookup"
-      className="anim-panel fixed inset-x-2 bottom-2 z-40 flex max-h-[72dvh] flex-col overflow-hidden rounded-3xl border border-white/16 bg-[#121726]/95 shadow-[0_24px_48px_rgb(0_0_0/0.45)] backdrop-blur-xl md:inset-x-auto md:top-4 md:right-4 md:bottom-4 md:max-h-none md:w-[380px]"
+      className="anim-panel edge-sheet fixed z-40 flex max-h-[72dvh] flex-col overflow-hidden rounded-3xl border border-white/16 bg-[#121726]/95 shadow-[0_24px_48px_rgb(0_0_0/0.45)] backdrop-blur-xl md:inset-x-auto md:top-4 md:right-4 md:bottom-4 md:max-h-none md:w-[380px]"
     >
       <div className="flex items-start justify-between gap-3 p-5 pb-3">
         <div className="min-w-0">

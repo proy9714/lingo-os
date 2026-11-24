@@ -51,6 +51,34 @@ function useLanguageMutation<TVars, TData>(fn: (vars: TVars) => Promise<TData>) 
   });
 }
 
+/** Where you start in a language: your chosen level, hours before Lingo OS, imported history. */
+export const useStartingPoint = (code: string) =>
+  useQuery({ queryKey: ["starting-point", code], queryFn: () => api.languageStart(code), enabled: Boolean(code), retry: false });
+
+export const useImportHistoryList = (code: string) =>
+  useQuery({
+    queryKey: ["import-history", code],
+    queryFn: () => api.importHistoryList(code),
+    enabled: Boolean(code),
+    refetchInterval: (q) => (busy(q.state.data?.job?.status) ? 2500 : false),
+  });
+
+function useStartMutation<TVars, TData>(fn: (vars: TVars) => Promise<TData>) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: fn,
+    onSuccess: () => {
+      for (const key of [["starting-point"], ["import-history"], ["level"], ["today"], ["overview"], ["recent"], ["feed"], ["recommend"], ["discover-pool"], ["evidence"]]) {
+        void qc.invalidateQueries({ queryKey: key });
+      }
+    },
+  });
+}
+
+export const useSetLevel = () => useStartMutation((v: { code: string; level: string | null }) => api.setLanguageLevel(v.code, v.level));
+export const useSetBaseline = () => useStartMutation((v: { code: string; hours: number }) => api.setLanguageBaseline(v.code, v.hours));
+export const useImportHistory = () => useStartMutation((v: { code: string; file: File }) => api.importHistory(v.code, v.file));
+
 export const useAddLanguage = () => useLanguageMutation((v: { code: string; variant?: string }) => api.addLanguage(v.code, v.variant));
 export const useRemoveLanguage = () => useLanguageMutation((code: string) => api.removeLanguage(code));
 export const useSetLanguageVariant = () =>
@@ -371,6 +399,42 @@ export function useAutoTopUp(lang: string) {
   }, [lang, mutate]);
 }
 
+const localDay = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
+/**
+ * Once a day per language, the first time the app is opened (or brought back) that day: the laptop re-scores your
+ * content to your current level and taste and looks for new things, in the background. Nothing waits for it.
+ */
+export function useDailyRefresh(lang: string) {
+  const qc = useQueryClient();
+  useEffect(() => {
+    if (!lang) return;
+    const check = () => {
+      if (document.visibilityState !== "visible") return;
+      const key = `lingo.daily.${lang}`;
+      const today = localDay();
+      if (localStorage.getItem(key) === today) return;
+      localStorage.setItem(key, today);
+      api
+        .dailyRefresh(lang)
+        .then((result) => {
+          if (result.ran) void qc.invalidateQueries({ queryKey: ["discover-pool", lang] });
+        })
+        .catch(() => localStorage.removeItem(key)); // offline or starting up: try again next time
+    };
+    check();
+    document.addEventListener("visibilitychange", check);
+    window.addEventListener("focus", check);
+    return () => {
+      document.removeEventListener("visibilitychange", check);
+      window.removeEventListener("focus", check);
+    };
+  }, [lang, qc]);
+}
+
 /**
  * The background search, mounted once in the app shell: asks for a top-up as soon as the app opens (the server decides
  * if one is needed), pulls new finds into the suggestion lists while the search is still running, and refreshes
@@ -380,6 +444,7 @@ export function useSearchWatcher(lang: string) {
   const qc = useQueryClient();
   const pool = usePool(lang);
   useAutoTopUp(lang);
+  useDailyRefresh(lang);
   const searching = pool.data?.searching;
   const sizes = pool.data ? `${pool.data.pools.watch}/${pool.data.pools.read}/${pool.data.estimated}` : "";
   const was = useRef(searching);

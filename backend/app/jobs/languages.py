@@ -112,3 +112,16 @@ def install_language(ctx: JobContext) -> dict[str, Any]:
         pass
     ctx.progress(1.0, f"{spec.name} is ready")
     return result
+
+
+@register("rescore")
+def rescore(ctx: JobContext) -> dict[str, Any]:
+    """Your starting estimate changed: score everything in the language again, then re-rank."""
+    from app.services import content, recommend
+
+    lang = ctx.payload["lang"]
+    ctx.progress(0.05, "re-scoring your content")
+    with ctx.engine.begin() as conn:
+        count = content.rescore_language(conn, lang)
+    recommend.invalidate()
+    return {"language": lang, "rescored": count}

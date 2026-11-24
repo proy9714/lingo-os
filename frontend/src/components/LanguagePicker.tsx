@@ -1,6 +1,11 @@
 import { useState } from "react";
 
+import { useQueryClient } from "@tanstack/react-query";
+
+import { api } from "../api/client";
 import { useAddLanguage, useLanguageCatalog } from "../api/hooks";
+import { isNativeApp } from "../sync/remote";
+import { CsvFormatHelp, LevelChips } from "./StartingPoint";
 import type { CatalogLanguage } from "../api/types";
 import { Button, ProgressBar, Skeleton, cx } from "./ui";
 
@@ -31,7 +36,31 @@ export function LanguagePicker({ onlyNew = false, compact = false }: { onlyNew?:
 
 function LanguageCard({ lang, open, onOpen }: { lang: CatalogLanguage; open: boolean; onOpen: () => void }) {
   const add = useAddLanguage();
+  const qc = useQueryClient();
   const [variant, setVariant] = useState(lang.variant);
+  const [level, setLevel] = useState<string | null>(null);
+  const [hours, setHours] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [startError, setStartError] = useState<string | null>(null);
+  const hoursValue = Number(hours.replace(",", "."));
+  const hoursValid = hours.trim() === "" || (Number.isFinite(hoursValue) && hoursValue >= 0 && hoursValue <= 20000);
+  const addIt = () =>
+    add.mutate(
+      { code: lang.code, variant },
+      {
+        // the language exists now (hidden while it downloads): store where you start, then import your history
+        onSuccess: async () => {
+          try {
+            if (level) await api.setLanguageLevel(lang.code, level);
+            if (hours.trim() && hoursValue > 0) await api.setLanguageBaseline(lang.code, hoursValue);
+            if (file) await api.importHistory(lang.code, file);
+          } catch (error) {
+            setStartError(error instanceof Error ? error.message : "Couldn't save your starting point");
+          }
+          for (const key of [["starting-point"], ["import-history"], ["level"], ["today"], ["overview"]]) void qc.invalidateQueries({ queryKey: key });
+        },
+      },
+    );
   const failed = lang.install?.status === "failed";
   return (
     <div
@@ -67,6 +96,7 @@ function LanguageCard({ lang, open, onOpen }: { lang: CatalogLanguage; open: boo
           <p className="mt-1.5 truncate text-xs text-ink-3">{String(lang.install?.result?.message ?? `Setting up ${lang.name}…`)}</p>
         </div>
       )}
+      {startError && <p role="alert" className="text-xs text-red-200">{startError} (you can set it in Settings later)</p>}
       {failed && !lang.installing && (
         <p role="alert" className="text-xs text-red-200">
           The download didn't finish ({lang.install?.error ?? "network error"}). Try again.
@@ -93,10 +123,39 @@ function LanguageCard({ lang, open, onOpen }: { lang: CatalogLanguage; open: boo
               <span className="text-xs text-ink-3">Sets the voices and where videos and articles come from. You can change it later.</span>
             </fieldset>
           )}
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs font-medium text-ink-2">Your level today (optional)</span>
+            <LevelChips lang={lang.code} value={level} onChange={setLevel} />
+            <span className="text-xs text-ink-3">Suggestions start from it; the Level Lab can measure you later.</span>
+          </div>
+          <label className="flex flex-wrap items-center gap-2 text-xs font-medium text-ink-2">
+            Hours you've already spent on {lang.name} (optional)
+            <input
+              inputMode="decimal"
+              value={hours}
+              onChange={(e) => setHours(e.target.value)}
+              placeholder="0"
+              className="min-h-9 w-24 rounded-lg border border-white/14 bg-surface px-2 text-right text-sm tabular-nums text-ink"
+            />
+          </label>
+          {!isNativeApp() && (
+            <div className="flex flex-col gap-1.5">
+              <label className="flex flex-wrap items-center gap-2 text-xs font-medium text-ink-2">
+                History CSV (optional)
+                <input
+                  type="file"
+                  accept=".csv,.tsv,.txt,text/csv"
+                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                  className="max-w-full text-xs text-ink-3 file:mr-2 file:rounded-lg file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-ink"
+                />
+              </label>
+              <CsvFormatHelp />
+            </div>
+          )}
           <Button
             variant="primary"
-            disabled={add.isPending}
-            onClick={() => add.mutate({ code: lang.code, variant })}
+            disabled={add.isPending || !hoursValid}
+            onClick={addIt}
             style={{ background: lang.accent, color: lang.accent_ink }}
           >
             {lang.download_mb ? `Add ${lang.name} · download ${lang.download_mb} MB` : `Add ${lang.name}`}

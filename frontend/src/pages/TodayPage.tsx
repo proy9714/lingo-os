@@ -4,12 +4,13 @@ import { useMemo } from "react";
 import {
   useActiveLanguage,
   useFeed,
-  useImportTracker,
   useLevelOverview,
   useOverview,
   usePool,
   useRecent,
   useRecommend,
+  useSetLevel,
+  useStartingPoint,
   useReports,
   useToday,
   useTopUp,
@@ -18,6 +19,7 @@ import {
 import type { LanguageOverview, PoolStatus, RecentSession, TodayStats, UpNextPick } from "../api/types";
 import { FeaturedCard, PickRow } from "../components/cards";
 import { Spinner, SuggestionRow, relativeTime } from "../components/Suggestions";
+import { LevelChips } from "../components/StartingPoint";
 import { TasteCard } from "../components/TasteCard";
 import { Button, Chip, Panel, PanelTitle, ProgressBar, Skeleton, cx } from "../components/ui";
 import {
@@ -41,7 +43,6 @@ export function TodayPage() {
 
   const all = overview.data?.languages ?? [];
   const current = all.find((entry) => entry.language === code);
-  const empty = overview.isSuccess && all.every((entry) => entry.total_hours === 0);
 
   if (overview.isError) {
     return (
@@ -68,7 +69,7 @@ export function TodayPage() {
         <TodayStrip today={today.data} current={current} lang={code} />
       </header>
 
-      {empty && <ImportPrompt />}
+      <StartPrompt lang={code} languageName={language?.name ?? ""} />
 
       <Suggestions lang={code} />
 
@@ -283,25 +284,23 @@ function HeroEmpty({ lang, pool }: { lang: string; pool: PoolStatus | undefined 
   );
 }
 
-function ImportPrompt() {
-  const importer = useImportTracker();
+/** A new language with nothing to go on yet: ask where the learner is, so suggestions fit from the start. */
+function StartPrompt({ lang, languageName }: { lang: string; languageName: string }) {
+  const start = useStartingPoint(lang).data;
+  const setLevel = useSetLevel();
+  if (!start || start.has_start) return null;
   return (
-    <Panel className="glass-strong">
-      <PanelTitle>Bring in your history</PanelTitle>
+    <Panel className="glass-strong anim-in">
+      <PanelTitle>Where are you in {languageName}?</PanelTitle>
       <p className="max-w-2xl text-sm leading-relaxed text-ink-2">
-        Import your Immersion Tracker logs to fill in your hours, streak and starting level. It is safe to run again whenever
-        the tracker has new entries.
+        Pick your level so suggestions fit you from the start. You can also add the hours you've already spent, or import a CSV
+        of what you've watched, in Settings.
       </p>
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={() => importer.mutate(undefined)}
-          disabled={importer.isPending}
-          className="min-h-11 rounded-xl bg-accent px-4 text-sm font-bold text-accent-ink disabled:opacity-60"
-        >
-          {importer.isPending ? "Importing…" : "Import from Immersion Tracker"}
-        </button>
-        {importer.isError && <span className="text-sm text-red-200">{importer.error.message}</span>}
+      <div className="mt-4 flex flex-col gap-3">
+        <LevelChips lang={lang} value={start.self_level} disabled={setLevel.isPending} onChange={(level) => setLevel.mutate({ code: lang, level })} />
+        <Link to="/settings" hash="start" className="w-fit text-sm font-semibold text-accent hover:underline">
+          Add past hours or import your history →
+        </Link>
       </div>
     </Panel>
   );

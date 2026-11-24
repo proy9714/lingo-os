@@ -2,15 +2,42 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
 import { api, mangaImage } from "../api/client";
-import { useActiveLanguage, useContentList, useContentMutation, useMangaInbox } from "../api/hooks";
+import { useActiveLanguage, useContentList, useContentMutation, useMangaInbox, useUpdateSettings } from "../api/hooks";
 import type { ContentItem, MangaScanResult } from "../api/types";
 import { Button, Chip, Panel, PanelTitle, Skeleton } from "../components/ui";
 import { useMediaUrl } from "../sync/useSync";
 
 const CATALOG_URL = "https://catalog.mokuro.moe";
 
+/** Manga reading (mokuro OCR) is for Japanese; other languages get a pointer to switch. */
 export function MangaPage() {
-  const { code, language } = useActiveLanguage();
+  const { code, languages } = useActiveLanguage();
+  const update = useUpdateSettings();
+  if (code === "ja") return <MangaLibrary />;
+  const hasJapanese = languages.some((l) => l.code === "ja");
+  return (
+    <Panel className="mt-1">
+      <PanelTitle>Manga is for Japanese</PanelTitle>
+      <p className="max-w-2xl text-sm text-ink-2">
+        Manga reading uses mokuro's Japanese text recognition, so it's available while Japanese is your active language.
+      </p>
+      <div className="mt-4">
+        {hasJapanese ? (
+          <Button variant="primary" onClick={() => update.mutate({ active_language: "ja" })}>
+            Switch to Japanese
+          </Button>
+        ) : (
+          <Link to="/settings" hash="languages" className="text-sm font-semibold text-accent hover:underline">
+            Add Japanese in Settings →
+          </Link>
+        )}
+      </div>
+    </Panel>
+  );
+}
+
+function MangaLibrary() {
+  const { code } = useActiveLanguage();
   const list = useContentList(code, "", "manga");
   const inbox = useMangaInbox();
   const scan = useContentMutation(() => api.mangaScan());
@@ -45,8 +72,7 @@ export function MangaPage() {
                 {inbox.data?.folder ?? "data\\inbox\\manga"}
               </code>
               A <code>.mokuro</code> file with its image folder, a folder of page images, or a <code>.zip</code>/
-              <code>.cbz</code>. Japanese by default; put {language && code !== "ja" ? language.name : "other-language"} volumes
-              in a <code>{code !== "ja" ? code : "de"}</code> subfolder.
+              <code>.cbz</code>.
             </li>
             <li>
               They're imported when you open this page or press Scan. Volumes move into your library folder and zips into{" "}
@@ -137,7 +163,7 @@ export function MangaPage() {
           <Panel role="alert">Could not load your manga: {list.error.message}</Panel>
         ) : list.data.items.length === 0 ? (
           <Panel>
-            <p className="text-sm text-ink-2">No {language?.name ?? ""} volumes yet.</p>
+            <p className="text-sm text-ink-2">No volumes yet.</p>
           </Panel>
         ) : (
           <ul className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(min(46%,170px),1fr))]">

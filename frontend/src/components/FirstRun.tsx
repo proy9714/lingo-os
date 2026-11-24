@@ -5,7 +5,7 @@ export function FirstRun() {
   return (
     <div className="relative min-h-dvh">
       <div className="ambient" aria-hidden="true" />
-      <main className="anim-page relative mx-auto flex max-w-5xl flex-col gap-6 px-4 py-10 md:py-16">
+      <main className="shell-pad anim-page relative mx-auto flex max-w-5xl flex-col gap-6 !pb-12 md:!pt-16">
         <header className="flex flex-col gap-3">
           <div aria-hidden="true" className="flex size-11 items-center justify-center rounded-[13px] bg-accent text-lg font-bold text-accent-ink">
             L

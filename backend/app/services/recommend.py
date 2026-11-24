@@ -99,8 +99,11 @@ def _reasons(item: dict[str, Any]) -> list[str]:
     reasons += item.get("_taste_reasons", [])
     if item["learning_words"]:
         reasons.append(f"brings back {item['learning_words']} of your saved words")
+    if item.get("_fill"):
+        reasons.append("the closest to your level found so far")
     if item["estimated"]:
-        reasons.append("level estimated from the channel" if item["level_basis"] != "label" else "level estimated from the channel's label")
+        reasons.append({"label": "level estimated from the channel's label", "language": "a learner channel, level not measured yet"}
+                       .get(item["level_basis"] or "", "level estimated from the channel"))
     return reasons
 
 
@@ -149,6 +152,26 @@ def _version(conn: Connection, lang: str) -> tuple:
     )
 
 
+# Found content near your level. When there's too little of it (a new learner, a new language), the lists are filled
+# with the closest found content outside it, so there is always something to watch and read.
+IN_BAND = frozenset({"stretch", "i_plus_1", "comfortable"})
+MIN_IN_BAND = 30
+
+
+def in_band(item: dict[str, Any]) -> bool:
+    return item["band"] in IN_BAND or item["origin"] != "scraper"
+
+
+def _never_empty(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    near = [i for i in items if in_band(i)]
+    if len(near) >= MIN_IN_BAND:
+        return near
+    off = [i for i in items if not in_band(i)]
+    for item in off:
+        item["_fill"] = True
+    return near + off[: max(0, 2 * MIN_IN_BAND - len(near))]
+
+
 def ranked(conn: Connection, lang: str, shelf: str | None) -> list[dict[str, Any]]:
     """Every suggestion for a shelf (None = all), best first, creators spread out."""
     key = (lang, shelf or "all")
@@ -159,7 +182,7 @@ def ranked(conn: Connection, lang: str, shelf: str | None) -> list[dict[str, Any
     items = candidates(conn, lang, shelf)
     _apply_taste(conn, lang, items)
     items.sort(key=lambda i: (-_score(i), i["id"]))
-    result = spread_creators(items)
+    result = spread_creators(_never_empty(items))
     _RANKED[key] = (time.monotonic(), version, result)
     return result
 

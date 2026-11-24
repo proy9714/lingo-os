@@ -3,6 +3,9 @@ import type {
   ContentItem,
   VoiceList,
   CatalogLanguage,
+  StartingPoint,
+  HistoryImportReport,
+  ImportHistory,
   FeedPage,
   DifficultyResult,
   GrammarReference,
@@ -128,6 +131,22 @@ export const api = {
   addLanguage: (code: string, variant?: string) =>
     request<{ code: string; added: boolean; installing: boolean }>("/api/languages", { method: "POST", body: json({ code, variant }) }),
   removeLanguage: (code: string) => request<{ removed: boolean }>(`/api/languages/${encodeURIComponent(code)}`, { method: "DELETE" }),
+  languageStart: (code: string) => request<StartingPoint>(`/api/languages/${encodeURIComponent(code)}/start`),
+  setLanguageLevel: (code: string, level: string | null) =>
+    request<StartingPoint>(`/api/languages/${encodeURIComponent(code)}/level`, { method: "PUT", body: json({ level }) }),
+  setLanguageBaseline: (code: string, hours: number) =>
+    request<StartingPoint>(`/api/languages/${encodeURIComponent(code)}/baseline`, { method: "PUT", body: json({ hours }) }),
+  importHistory: async (code: string, file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    const response = await fetch(`/api/languages/${encodeURIComponent(code)}/history`, { method: "POST", body: form });
+    if (!response.ok) {
+      const body = (await response.json().catch(() => ({}))) as { detail?: unknown };
+      throw new ApiError(response.status, typeof body.detail === "string" ? body.detail : response.statusText);
+    }
+    return (await response.json()) as HistoryImportReport;
+  },
+  importHistoryList: (code: string) => request<ImportHistory>(`/api/languages/${encodeURIComponent(code)}/history`),
   setLanguageVariant: (code: string, variant: string) =>
     request<{ variant: string }>(`/api/languages/${encodeURIComponent(code)}`, { method: "PATCH", body: json({ variant }) }),
   today: (lang: string) => request<TodayStats>(`/api/stats/today?lang=${encodeURIComponent(lang)}`),
@@ -324,6 +343,8 @@ export const api = {
     request<{ job_id: number }>("/api/discover/run", { method: "POST", body: json(lang ? { lang } : {}) }),
   discoverStatus: () => request<{ job: Job | null; runs: ScrapeRun[] }>("/api/discover/status"),
   discoverPool: (lang: string) => request<PoolStatus>(`/api/discover/pool?lang=${encodeURIComponent(lang)}`),
+  dailyRefresh: (lang: string) =>
+    request<{ language: string; ran: boolean; date: string }>("/api/discover/daily", { method: "POST", body: json({ lang }) }),
   topUp: (lang: string, opts: { force?: boolean; shelf?: "watch" | "read"; atEnd?: boolean } = {}) =>
     request<PoolStatus>("/api/discover/top-up", {
       method: "POST",

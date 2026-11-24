@@ -247,3 +247,56 @@ def test_already_watched_leaves_the_suggestions_and_can_be_undone(client) -> Non
     assert undone["status"] == "candidate" and undone["progress"] == 0.4 and "marked_watched" not in undone["metadata"]
     assert a in feed_ids() and a not in watched_ids()
     assert client.post("/api/content/999999/watched", json={"watched": True}).status_code == 404
+
+
+def test_a_new_learner_still_gets_the_closest_suggestions(client) -> None:
+    """Everything found is too hard for a beginner: the list shows the closest anyway, instead of nothing."""
+    engine = client.app.state.engine
+    with engine.begin() as conn:
+        for n in range(3):
+            _video(conn, f"Schwer {n}", f"Kanal {n}", coverage=0.6, status="candidate", origin="scraper")
+        band = conn.execute(text("SELECT DISTINCT band FROM content_scores")).scalar()
+    assert band == "too_hard"
+    feed = client.get("/api/feed", params={"lang": "de", "shelf": "watch"}).json()
+    assert feed["total"] == 3
+    assert all("the closest to your level found so far" in i["reasons"] for i in feed["items"])
+    # but they don't count as enough: the background search keeps looking
+    assert client.get("/api/discover/pool", params={"lang": "de"}).json()["pools"]["watch"] == 0
+
+
+def test_learner_channels_from_the_wiki_are_estimated_before_measuring(client) -> None:
+    engine = client.app.state.engine
+    with engine.begin() as conn:
+        source = conn.execute(
+            text(
+                "INSERT INTO content_sources (language_code, kind, name, target, origin, enabled) "
+                "VALUES ('de', 'youtube_channel', 'Lernkanal', 'https://www.youtube.com/@Lernkanal', 'ci_wiki', 1)"
+            )
+        ).lastrowid
+        item = _video(conn, "Folge 1", "Lernkanal", status="candidate", origin="scraper")
+        conn.execute(text("UPDATE content_items SET source_id = :s WHERE id = :i"), {"s": source, "i": item})
+        assert catalog.estimate_scores(conn, "de", [item]) == 1
+        basis = conn.execute(text("SELECT json_extract(metadata_json, '$.level_basis') FROM content_items WHERE id = :i"), {"i": item}).scalar()
+    assert basis == "language"
+
+
+def test_youtube_refusals_pause_longer_each_time_and_reset(client, monkeypatch) -> None:
+    from datetime import timedelta
+
+    from app.db import settings_store
+    from app.timeutil import to_iso, utc_now
+
+    engine = client.app.state.engine
+
+    def refused_ago(hours: float) -> bool:
+        with engine.begin() as conn:
+            settings_store.put(conn, catalog.REFUSAL_KEY, to_iso(utc_now() - timedelta(hours=hours)))
+            return catalog.youtube_refused_recently(conn)
+
+    catalog._mark_refused(engine)
+    assert refused_ago(0.5) and not refused_ago(1.5)  # first refusal: one hour
+    catalog._mark_refused(engine)
+    assert refused_ago(1.5) and not refused_ago(2.5)  # second in a row: two hours
+    catalog._mark_answered(engine)
+    catalog._mark_refused(engine)
+    assert not refused_ago(1.5)  # answered in between: back to one hour

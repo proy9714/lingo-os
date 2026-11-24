@@ -357,7 +357,7 @@ const TOPICS: Topic[] = [
           <span className="rounded-lg bg-accent/14 px-2 py-0.5 text-xs font-semibold text-accent">Finding new content</span> shows in
           the top bar while one runs. Articles come from news and learner sites (RSS feeds); sites whose articles suit you get
           most of the reading, including their older articles, and sites that keep turning out too hard are read less. YouTube is
-          asked for videos at most every 45 minutes, and left alone for 12 hours if it asks to slow down.
+          asked for videos at most every 45 minutes, and left alone for a while if it asks to slow down (an hour at first, up to 12 hours if it keeps asking).
         </p>
         <Tip>
           Want more right now? Scroll to the end of the list on Watch or Read and press <strong>Find more now</strong>. To turn the
@@ -886,7 +886,7 @@ const TOPICS: Topic[] = [
         </Faq>
         <Faq q="Searching stopped early / YouTube asked to sign in">
           <p>
-            YouTube sometimes asks automated requests to slow down. The app stops right away and waits 12 hours before searching
+            YouTube sometimes asks automated requests to slow down. The app stops right away and waits (an hour at first, up to 12 hours if it keeps happening) before searching
             YouTube again on its own. Articles keep coming meanwhile.
           </p>
         </Faq>

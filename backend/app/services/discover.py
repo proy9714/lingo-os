@@ -390,7 +390,7 @@ def _discover_articles(
             keep = _band(conn, item_id) in settings["keep_bands"]
             conn.execute(
                 text("UPDATE content_items SET origin = 'scraper', status = :s, creator = COALESCE(creator, :c) WHERE id = :i"),
-                {"s": "candidate" if keep else "dismissed", "c": name, "i": item_id},
+                {"s": "candidate", "c": name, "i": item_id},  # off-level too: it fills the list while little fits
             )
             content.set_metadata(
                 conn, item_id, discovered_via=f"feed: {name}", discovery="ok" if keep else "off_level", site=name
