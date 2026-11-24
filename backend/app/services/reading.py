@@ -11,7 +11,7 @@ from sqlalchemy import Connection, text
 from app.config import AppConfig
 from app.ingest.documents import Document
 from app.services.annotate import annotate_segments
-from app.services.content import ContentError, analyze_item, chunks_of, get_item
+from app.services.content import ContentError, analyze_item, chunks_of, get_item, set_metadata
 
 PAGE_CHARS = 2400
 INLINE_ANALYSIS_CHARS = 60_000  # bigger documents are analysed by a background job
@@ -68,6 +68,8 @@ def import_document(
             rows.append({"id": item_id, "seq": seq, "loc": locator, "text": paragraph})
             seq += 1
     conn.execute(text("INSERT INTO content_chunks (content_item_id, seq, locator, text) VALUES (:id, :seq, :loc, :text)"), rows)
+    if doc.image or doc.site:
+        set_metadata(conn, item_id, **{k: v for k, v in (("image", doc.image), ("site", doc.site)) if v})
     if doc.characters <= INLINE_ANALYSIS_CHARS:
         analyze_item(conn, item_id)
         return item_id, True

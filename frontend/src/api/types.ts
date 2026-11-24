@@ -418,6 +418,44 @@ export interface UpNextPick {
   watched: number;
   score: number;
   reasons: string[];
+  url?: string | null;
+  origin?: string;
+  image?: string | null;
+  site?: string | null;
+}
+
+/** One page of a shelf's suggestions (infinite scroll). */
+export interface FeedPage {
+  language: string;
+  shelf: "watch" | "read";
+  total: number;
+  items: UpNextPick[];
+  next_offset: number | null;
+}
+
+/** How many suggestions each shelf has, and the background search that keeps them topped up. */
+export interface PoolStatus {
+  language: string;
+  auto: boolean;
+  pools: { watch: number; read: number };
+  targets: { watch: number; read: number };
+  low: ("watch" | "read")[];
+  searching: boolean;
+  job: Job | null;
+  last_search_at: string | null;
+  youtube_refused: boolean;
+  next_auto_at: string | null;
+  queued?: boolean;
+  reason?: string;
+}
+
+export interface TutorTopic {
+  id: number;
+  title: string;
+  type: string;
+  creator: string | null;
+  kind: "video" | "reading";
+  last_at: string | null;
 }
 
 export interface UpNext {

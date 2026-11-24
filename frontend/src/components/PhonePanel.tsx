@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
@@ -108,7 +109,10 @@ export function PhonePanel() {
             ))}
           </ul>
           <p className="text-xs text-ink-3">
-            The phone app is built from this project with Android Studio: see <code>docs/PHONE.md</code>.
+            The phone app is built from this project with Android Studio.{" "}
+            <Link to="/help" hash="phone" className="font-semibold text-accent hover:underline">
+              Step-by-step guide
+            </Link>
           </p>
         </div>
       )}

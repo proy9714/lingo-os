@@ -1,22 +1,24 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useMemo } from "react";
 
-import { api } from "../api/client";
 import {
   useActiveLanguage,
-  useContentMutation,
-  useDiscoverStatus,
+  useAutoTopUp,
+  useFeed,
   useImportTracker,
   useLevelOverview,
   useOverview,
+  usePool,
   useRecent,
   useRecommend,
   useReports,
   useToday,
+  useTopUp,
   useUpdateSettings,
 } from "../api/hooks";
-import type { LanguageOverview, RecentSession, TodayStats, UpNextPick } from "../api/types";
+import type { LanguageOverview, PoolStatus, RecentSession, TodayStats, UpNextPick } from "../api/types";
+import { FeaturedCard, PickRow } from "../components/cards";
+import { Spinner, SuggestionRow, relativeTime } from "../components/Suggestions";
 import { Button, Chip, Panel, PanelTitle, ProgressBar, Skeleton, cx } from "../components/ui";
 import {
   ACTIVITY_LABELS,
@@ -36,6 +38,7 @@ export function TodayPage() {
   const today = useToday(code);
   const overview = useOverview();
   const recent = useRecent(code);
+  useAutoTopUp(code);
 
   const all = overview.data?.languages ?? [];
   const current = all.find((entry) => entry.language === code);
@@ -53,32 +56,230 @@ export function TodayPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <header className="px-1 pt-1">
-        <h1 lang={code} className="text-[28px] font-bold tracking-tight md:text-3xl">
-          {greeting(code)}
-        </h1>
-        <p className="mt-1.5 text-sm text-ink-2">
-          {formatLongToday()} · {language?.name ?? ""}
-        </p>
+    <div className="flex flex-col gap-8">
+      <header className="flex flex-wrap items-end justify-between gap-4 px-1 pt-1">
+        <div>
+          <h1 lang={code} className="text-[28px] font-bold tracking-tight md:text-[34px]">
+            {greeting(code)}
+          </h1>
+          <p className="mt-1 text-sm text-ink-2">
+            {formatLongToday()} · {language?.name ?? ""} · what to watch and read next, picked for your level
+          </p>
+        </div>
+        <TodayStrip today={today.data} current={current} lang={code} />
       </header>
 
       {empty && <ImportPrompt />}
 
-      <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))]">
-        <GoalCard data={today.data} />
-        <LevelCard data={current} languageName={language?.name} lang={code} />
-        <LanguagesCard
-          entries={all}
-          active={code}
-          names={Object.fromEntries(languages.map((l) => [l.code, l.name]))}
-        />
-        <UpNextCard lang={code} />
-        <WeeklyCard />
-        <RecentCard sessions={recent.data} />
-        <MonthlyCard data={current} />
-      </div>
+      <Suggestions lang={code} />
+
+      <section aria-labelledby="t-progress" className="flex flex-col gap-3">
+        <div className="flex items-end justify-between gap-2 px-1">
+          <h2 id="t-progress" className="text-xl font-bold tracking-tight">
+            Your progress
+          </h2>
+          <Link to="/reports" className="text-sm font-semibold text-accent hover:underline">
+            Weekly reports →
+          </Link>
+        </div>
+        <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))]">
+          <GoalCard data={today.data} />
+          <LevelCard data={current} languageName={language?.name} lang={code} />
+          <WeeklyCard />
+          <RecentCard sessions={recent.data} />
+          <LanguagesCard
+            entries={all}
+            active={code}
+            names={Object.fromEntries(languages.map((l) => [l.code, l.name]))}
+          />
+          <MonthlyCard data={current} />
+        </div>
+      </section>
     </div>
+  );
+}
+
+/** Today at a glance, in one line: minutes against the goal, total hours, level. */
+function TodayStrip({ today, current, lang }: { today: TodayStats | undefined; current: LanguageOverview | undefined; lang: string }) {
+  const level = useLevelOverview(lang).data;
+  const vocab = level?.profile?.measured ? level.skills.vocabulary?.result : null;
+  const pill = "flex min-h-11 items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.05] px-3.5 text-sm";
+  return (
+    <div className="flex flex-wrap gap-2">
+      <div className={pill} title="Today's immersion against your daily goal">
+        {today ? <MiniRing value={today.today_minutes} goal={today.goal_minutes} /> : <Skeleton className="size-6 rounded-full" />}
+        <span>
+          <strong>{today?.today_minutes ?? "–"}</strong>
+          <span className="text-ink-3"> / {today?.goal_minutes ?? "–"} min today</span>
+        </span>
+      </div>
+      <div className={pill} title="All immersion in this language, including time before tracking">
+        <strong>{current ? formatHours(current.total_hours) : "–"}</strong>
+        <span className="text-ink-3">total</span>
+      </div>
+      <Link to="/level" className={cx(pill, "transition hover:bg-white/10")} title="Your level (a range, never exact)">
+        {vocab?.vocabulary ? (
+          <>
+            <strong>≈ {vocab.vocabulary.toLocaleString("en")}</strong>
+            <span className="text-ink-3">words known</span>
+          </>
+        ) : current ? (
+          <>
+            <strong>Level {current.estimate.level}</strong>
+            <span className="text-ink-3">of {current.estimate.max_level} (rough estimate)</span>
+          </>
+        ) : (
+          "Level"
+        )}
+      </Link>
+    </div>
+  );
+}
+
+function MiniRing({ value, goal }: { value: number; goal: number }) {
+  const r = 9;
+  const c = 2 * Math.PI * r;
+  const share = goal > 0 ? Math.min(1, value / goal) : 0;
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r={r} fill="none" stroke="rgb(255 255 255 / 0.14)" strokeWidth="4" />
+      <circle
+        cx="12"
+        cy="12"
+        r={r}
+        fill="none"
+        stroke={share >= 1 ? "#34d399" : "var(--accent)"}
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeDasharray={`${Math.max(share * c, 0.01)} ${c}`}
+        transform="rotate(-90 12 12)"
+      />
+    </svg>
+  );
+}
+
+/** The top of Today: one big pick, four more beside it, then rows of videos and of things to read. */
+function Suggestions({ lang }: { lang: string }) {
+  const recommend = useRecommend(lang);
+  const videos = useFeed(lang, "watch");
+  const reading = useFeed(lang, "read");
+  const pool = usePool(lang).data;
+  const picks = useMemo(() => recommend.data?.picks ?? [], [recommend.data]);
+  const heroIds = useMemo(() => new Set(picks.slice(0, 5).map((p) => p.id)), [picks]);
+  const rest = (pages: { items: UpNextPick[] }[] | undefined) =>
+    (pages?.[0]?.items ?? []).filter((p) => !heroIds.has(p.id)).slice(0, 16);
+
+  return (
+    <>
+      {recommend.isPending ? (
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
+          <Skeleton className="min-h-[380px] rounded-[22px]" />
+          <div className="flex flex-col gap-2.5">
+            {Array.from({ length: 4 }, (_, n) => (
+              <Skeleton key={n} className="h-[86px] rounded-2xl" />
+            ))}
+          </div>
+        </div>
+      ) : picks.length === 0 ? (
+        <HeroEmpty lang={lang} pool={pool} />
+      ) : (
+        <section aria-labelledby="t-upnext" className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
+          <h2 id="t-upnext" className="sr-only">
+            Up next
+          </h2>
+          <FeaturedCard pick={picks[0]} />
+          <div className="flex flex-col gap-2.5">
+            <div className="flex items-baseline justify-between gap-2 px-1">
+              <h3 className="text-[13px] font-semibold tracking-[0.08em] text-ink-2 uppercase">Also up next</h3>
+              <span className="text-xs text-ink-3">{recommend.data?.available} at your level</span>
+            </div>
+            {picks.slice(1, 5).map((pick) => (
+              <PickRow key={pick.id} pick={pick} />
+            ))}
+            <SearchNote pool={pool} />
+          </div>
+        </section>
+      )}
+
+      <SuggestionRow
+        title="Videos for you"
+        subtitle="Never one you've already watched"
+        items={rest(videos.data?.pages)}
+        to="/watch"
+        loading={videos.isPending}
+        empty={<RowEmpty lang={lang} pool={pool} noun="videos" />}
+      />
+      <SuggestionRow
+        title="Articles & books for you"
+        subtitle="From the web and your shelf, matched to your reading level"
+        items={rest(reading.data?.pages)}
+        to="/read"
+        loading={reading.isPending}
+        empty={<RowEmpty lang={lang} pool={pool} noun="articles" />}
+      />
+    </>
+  );
+}
+
+function SearchNote({ pool }: { pool: PoolStatus | undefined }) {
+  if (!pool?.searching) return null;
+  return (
+    <p role="status" className="flex items-center gap-2 rounded-2xl border border-accent/20 bg-accent/[0.06] px-3 py-3 text-xs text-accent">
+      <Spinner /> Finding more at your level in the background…
+    </p>
+  );
+}
+
+function RowEmpty({ lang, pool, noun }: { lang: string; pool: PoolStatus | undefined; noun: string }) {
+  const topUp = useTopUp(lang);
+  return (
+    <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-white/14 px-4 py-6 text-sm text-ink-2">
+      {pool?.searching ? (
+        <span role="status" className="flex items-center gap-2 text-accent">
+          <Spinner /> Looking for {noun} at your level in the background. They'll show up here.
+        </span>
+      ) : (
+        <>
+          <span>No {noun} at your level yet.</span>
+          <Button disabled={topUp.isPending} onClick={() => topUp.mutate(true)}>
+            Find some now
+          </Button>
+        </>
+      )}
+    </div>
+  );
+}
+
+function HeroEmpty({ lang, pool }: { lang: string; pool: PoolStatus | undefined }) {
+  const topUp = useTopUp(lang);
+  const job = pool?.job;
+  return (
+    <section className="relative overflow-hidden rounded-[22px] border border-white/12 bg-gradient-to-br from-accent/[0.14] via-white/[0.03] to-transparent p-6 md:p-9">
+      <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+        {pool?.searching ? "Finding things to watch and read…" : "Nothing new to suggest right now"}
+      </h2>
+      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-2">
+        Suggestions never repeat videos you've watched (here or in your Immersion Tracker history) or things you've finished.
+        {pool?.searching
+          ? " New videos and articles at your level are being looked for in the background. They appear here as soon as they're found, so keep using the app meanwhile."
+          : ` New ones are looked for automatically in the background${pool?.last_search_at ? ` (last search ${relativeTime(pool.last_search_at)})` : ""}. You can also add your own on Watch or Read.`}
+      </p>
+      {pool?.searching && job ? (
+        <div className="mt-5 max-w-md">
+          <ProgressBar value={job.progress} label="Search progress" />
+          <p className="mt-1.5 truncate text-xs text-ink-3">{String(job.result?.message ?? "starting")}</p>
+        </div>
+      ) : (
+        <div className="mt-5 flex flex-wrap gap-2">
+          <Button variant="primary" disabled={topUp.isPending} onClick={() => topUp.mutate(true)}>
+            Find new content now
+          </Button>
+          <Link to="/read" className="inline-flex min-h-11 items-center rounded-xl px-4 text-sm font-semibold text-ink-2 hover:bg-white/8">
+            Add a book or article
+          </Link>
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -286,103 +487,6 @@ function LanguagesCard({ entries, active, names }: { entries: LanguageOverview[]
   );
 }
 
-function UpNextCard({ lang }: { lang: string }) {
-  const recommend = useRecommend(lang);
-  const dismiss = useContentMutation((id: number) => api.dismiss(id));
-  const data = recommend.data;
-  return (
-    <Panel aria-labelledby="t-next" className="[grid-column:1/-1]">
-      <PanelTitle
-        id="t-next"
-        aside={data && data.picks.length > 0 && <Chip>{data.picks.length} picks from {data.available} analysed</Chip>}
-      >
-        Up next
-      </PanelTitle>
-      {recommend.isError ? (
-        <p role="alert" className="text-sm text-red-200">
-          Could not load picks: {recommend.error.message}
-        </p>
-      ) : !data ? (
-        <Skeleton className="h-40" />
-      ) : data.picks.length === 0 ? (
-        <EmptyUpNext lang={lang} />
-      ) : (
-        <>
-          <ol className="grid gap-2.5 [grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))]">
-            {data.picks.map((pick) => (
-              <PickRow key={pick.id} pick={pick} onDismiss={() => dismiss.mutate(pick.id)} />
-            ))}
-          </ol>
-          {data.picks.length < 10 && (
-            <p className="mt-3 text-xs text-ink-3">
-              Only {data.picks.length} analysed item{data.picks.length === 1 ? "" : "s"} so far. Add videos or books to get at least 10
-              picks.
-            </p>
-          )}
-        </>
-      )}
-    </Panel>
-  );
-}
-
-const BAND_LABELS: Record<string, string> = {
-  too_easy: "easy",
-  comfortable: "comfortable",
-  i_plus_1: "just right",
-  stretch: "stretch",
-  too_hard: "hard",
-};
-
-function PickRow({ pick, onDismiss }: { pick: UpNextPick; onDismiss: () => void }) {
-  const thumb = pick.source === "youtube" && pick.external_id ? `https://i.ytimg.com/vi/${pick.external_id}/default.jpg` : null;
-  const length =
-    pick.kind === "manga"
-      ? null
-      : pick.kind === "video"
-      ? pick.duration_sec
-        ? `${Math.round(pick.duration_sec / 60)} min`
-        : null
-      : pick.word_count
-        ? `${pick.word_count.toLocaleString("en")} words`
-        : null;
-  const target = pick.kind === "reading" ? "/read/$itemId" : pick.kind === "manga" ? "/manga/$itemId" : "/watch/$itemId";
-  return (
-    <li className="well group relative flex gap-3 rounded-xl p-2.5 pr-9">
-      <div aria-hidden="true" className="flex h-[54px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-lg bg-black/40">
-        {thumb ? (
-          <img src={thumb} alt="" loading="lazy" className="h-full w-full object-cover" />
-        ) : (
-          <span className="text-[10px] font-bold tracking-wider text-ink-3 uppercase">
-            {pick.kind === "reading" ? "Read" : pick.kind === "manga" ? "Manga" : "Media"}
-          </span>
-        )}
-      </div>
-      <div className="min-w-0 flex-1">
-        <Link
-          to={target}
-          params={{ itemId: String(pick.id) }}
-          className="line-clamp-2 text-sm leading-snug font-semibold after:absolute after:inset-0 after:content-['']"
-        >
-          {pick.title}
-        </Link>
-        <div className="mt-1 truncate text-xs text-ink-3">
-          {[pick.creator, length, pick.band ? BAND_LABELS[pick.band] : null].filter(Boolean).join(" · ")}
-        </div>
-        <div className="mt-1 truncate text-xs text-ink-2">{pick.reasons.join(" · ")}</div>
-      </div>
-      <button
-        type="button"
-        onClick={onDismiss}
-        aria-label={`Not interested in ${pick.title}`}
-        title="Not interested"
-        className="absolute top-1.5 right-1.5 z-10 flex h-7 w-7 items-center justify-center rounded-lg text-ink-3 opacity-60 transition hover:bg-white/10 hover:text-ink group-hover:opacity-100 focus-visible:opacity-100"
-      >
-        ×
-      </button>
-    </li>
-  );
-}
-
 function RecentCard({ sessions }: { sessions: RecentSession[] | undefined }) {
   if (!sessions) return <Skeleton className="h-[300px] rounded-[20px]" />;
   return (
@@ -471,44 +575,5 @@ function WeeklyCard() {
         {latest ? "Open the report →" : "Run the first review →"}
       </Link>
     </Panel>
-  );
-}
-
-/** Up Next never repeats what you've watched, so it can run dry: offer to find new content right here. */
-function EmptyUpNext({ lang }: { lang: string }) {
-  const status = useDiscoverStatus();
-  const qc = useQueryClient();
-  const run = useMutation({
-    mutationFn: () => api.discoverRun(lang),
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ["discover-status"] }),
-  });
-  const job = status.data?.job;
-  const running = job?.status === "queued" || job?.status === "running";
-  useEffect(() => {
-    if (job?.status === "done") {
-      for (const key of [["recommend"], ["content"]]) void qc.invalidateQueries({ queryKey: key });
-    }
-  }, [job?.status, job?.id, qc]);
-  return (
-    <div className="flex flex-col gap-3">
-      <p className="text-sm leading-relaxed text-ink-2">
-        Nothing new to suggest: Up Next never repeats videos you've watched (here or in your tracker history) or things
-        you've finished. Find new videos and articles at your level, or add a book on{" "}
-        <Link to="/read" className="text-accent underline">
-          Read
-        </Link>
-        .
-      </p>
-      {running && job ? (
-        <div className="max-w-md">
-          <ProgressBar value={job.progress} label="Looking for content" />
-          <p className="mt-1.5 truncate text-xs text-ink-3">{String(job.result?.message ?? "Starting…")}</p>
-        </div>
-      ) : (
-        <Button variant="primary" className="self-start" disabled={run.isPending} onClick={() => run.mutate()}>
-          Find new content now
-        </Button>
-      )}
-    </div>
   );
 }

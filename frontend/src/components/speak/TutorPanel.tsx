@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
 import { api } from "../../api/client";
-import { useContentList, useTutorGrammar, useTutorOptions, useTutorSessions } from "../../api/hooks";
+import { useTutorGrammar, useTutorOptions, useTutorSessions, useTutorTopics } from "../../api/hooks";
 import type { TutorMessage, TutorMode, TutorSession } from "../../api/types";
 import { formatDay, localDayOf } from "../../lib/format";
 import { canSpeak, speak, stopSpeaking, useSpeechInput } from "../../lib/speech";
@@ -112,12 +112,7 @@ function StartCard({
   weakGrammar: string[];
   onStart: (mode: TutorMode, extra?: { scenario?: string; content_item_id?: number }) => void;
 }) {
-  const watched = useContentList(lang, "", "watch").data?.items ?? [];
-  const read = useContentList(lang, "", "read").data?.items ?? [];
-  const recent = [...watched, ...read]
-    .filter((i) => i.last_opened_at || i.last_watched_at)
-    .sort((a, b) => (b.last_opened_at ?? b.last_watched_at ?? "").localeCompare(a.last_opened_at ?? a.last_watched_at ?? ""))
-    .slice(0, 12);
+  const recent = useTutorTopics(lang).data ?? [];
   const [itemId, setItemId] = useState<string>("");
 
   return (
@@ -150,6 +145,7 @@ function StartCard({
         </div>
         <div>
           <h3 className="mb-2 text-xs font-semibold text-ink-2">Talk about something you watched or read</h3>
+          <p className="-mt-1 mb-2 text-xs text-ink-3">Your last {recent.length || 10} videos and texts, most recent first.</p>
           <div className="flex gap-2">
             <select
               value={itemId}
@@ -157,10 +153,11 @@ function StartCard({
               aria-label="Choose a video or text"
               className="min-h-11 min-w-0 flex-1 rounded-xl border border-white/14 bg-surface px-2 text-sm text-ink"
             >
-              <option value="">Choose…</option>
+              <option value="">{recent.length ? "Choose a video or text…" : "Watch or read something first"}</option>
               {recent.map((i) => (
                 <option key={i.id} value={i.id}>
-                  {i.title.slice(0, 70)}
+                  {i.kind === "video" ? "Video" : "Read"} · {i.title.slice(0, 70)}
+                  {i.last_at ? ` (${formatDay(localDayOf(i.last_at))})` : ""}
                 </option>
               ))}
             </select>

@@ -1,11 +1,13 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { api } from "../api/client";
-import { useActiveLanguage, useContentList, useContentMutation } from "../api/hooks";
+import { useActiveLanguage, useContentMutation, useLibrary, usePool } from "../api/hooks";
 import type { ContentItem } from "../api/types";
-import { Button, Chip, Panel, PanelTitle, Skeleton, cx } from "../components/ui";
+import { SuggestionGrid } from "../components/Suggestions";
+import { Button, Chip, Panel, PanelTitle, Skeleton, Tabs, cx } from "../components/ui";
 import { formatDay, localDayOf } from "../lib/format";
+import { useInfiniteSentinel } from "../lib/useInfiniteSentinel";
 
 type AddMode = "file" | "article" | "text";
 
@@ -17,62 +19,101 @@ const SAMPLES: Record<string, string> = {
 
 const TYPE_LABELS: Record<string, string> = { epub: "Book", pdf: "PDF", article: "Article", text: "Text" };
 
+type ReadTab = "for-you" | "shelf";
+
 export function ReadPage() {
   const { code, language } = useActiveLanguage();
+  const [tab, setTab] = useState<ReadTab>("for-you");
+  const [adding, setAdding] = useState(false);
+  const pool = usePool(code).data;
+  const shelfCount = useLibrary(code, "read", "mine", "").data?.pages[0]?.total;
+
+  return (
+    <div className="flex flex-col gap-5">
+      <header className="flex flex-wrap items-end justify-between gap-3 px-1 pt-1">
+        <div>
+          <h1 className="text-[28px] font-bold tracking-tight">Read</h1>
+          <p className="mt-1.5 max-w-2xl text-sm text-ink-2">
+            {language?.name} articles from the web and books from your shelf, picked for your reading level. Every word is
+            clickable; reading time counts while the page is open and you're active on it.
+          </p>
+        </div>
+        <Button variant={adding ? "secondary" : "primary"} aria-expanded={adding} onClick={() => setAdding((v) => !v)}>
+          {adding ? "Close" : "+ Add something to read"}
+        </Button>
+      </header>
+
+      {adding && <AddPanel lang={code} />}
+
+      <Tabs<ReadTab>
+        label="Reading"
+        value={tab}
+        onChange={setTab}
+        items={[
+          { value: "for-you", label: "For you", count: pool?.pools.read ?? null },
+          { value: "shelf", label: "Your shelf", count: shelfCount ?? null },
+        ]}
+      />
+
+      {tab === "for-you" ? <SuggestionGrid key={code} lang={code} shelf="read" /> : <ShelfTab lang={code} />}
+    </div>
+  );
+}
+
+function ShelfTab({ lang }: { lang: string }) {
   const [query, setQuery] = useState("");
   const [debounced, setDebounced] = useState("");
-  const list = useContentList(code, debounced, "read");
-
   useEffect(() => {
     const timer = window.setTimeout(() => setDebounced(query.trim()), 250);
     return () => window.clearTimeout(timer);
   }, [query]);
+  const list = useLibrary(lang, "read", "mine", debounced);
+  const items = useMemo(() => list.data?.pages.flatMap((p) => p.items) ?? [], [list.data]);
+  const sentinel = useInfiniteSentinel(
+    () => {
+      if (list.hasNextPage && !list.isFetchingNextPage) void list.fetchNextPage();
+    },
+    Boolean(list.hasNextPage),
+    items.length,
+  );
 
   return (
-    <div className="flex flex-col gap-4">
-      <header className="px-1 pt-1">
-        <h1 className="text-[28px] font-bold tracking-tight">Read</h1>
-        <p className="mt-1.5 max-w-2xl text-sm text-ink-2">
-          {language?.name} books, PDFs and web articles, with every word clickable. Reading time is tracked while the page is
-          open and you're active on it.
-        </p>
-      </header>
-
-      <AddPanel lang={code} />
-
-      <section aria-labelledby="t-shelf" className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-2 px-1">
-          <h2 id="t-shelf" className="text-lg font-bold">
-            Your shelf {list.data && <span className="text-sm font-medium text-ink-3">· {list.data.total}</span>}
-          </h2>
-          <label className="flex min-w-[220px] items-center rounded-xl border border-white/10 bg-black/25 px-3">
-            <span className="sr-only">Search the shelf</span>
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search titles, authors…"
-              className="min-h-10 w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink-3"
-            />
-          </label>
-        </div>
-        {list.isPending ? (
-          <Skeleton className="h-48 rounded-[20px]" />
-        ) : list.isError ? (
-          <Panel role="alert">Could not load your shelf: {list.error.message}</Panel>
-        ) : list.data.items.length === 0 ? (
-          <Panel>
-            <p className="text-sm text-ink-2">Nothing here yet. Add a book, a PDF, an article link or a pasted text above.</p>
-          </Panel>
-        ) : (
-          <ul className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))]">
-            {list.data.items.map((item) => (
-              <ShelfCard key={item.id} item={item} />
-            ))}
-          </ul>
-        )}
-      </section>
-    </div>
+    <section aria-label="Your shelf" className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+        <p className="text-sm text-ink-3">What you've added or opened, most recent first.</p>
+        <label className="flex min-w-[240px] items-center rounded-xl border border-white/10 bg-black/25 px-3">
+          <span className="sr-only">Search the shelf</span>
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search titles, authors…"
+            className="min-h-10 w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink-3"
+          />
+        </label>
+      </div>
+      {list.isPending ? (
+        <Skeleton className="h-48 rounded-[20px]" />
+      ) : list.isError ? (
+        <Panel role="alert">Could not load your shelf: {list.error.message}</Panel>
+      ) : items.length === 0 ? (
+        <Panel>
+          <p className="text-sm text-ink-2">
+            {debounced
+              ? "Nothing on your shelf matches that."
+              : "Nothing here yet. Open an article from For you, or add a book, a PDF, an article link or a pasted text."}
+          </p>
+        </Panel>
+      ) : (
+        <ul className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))]">
+          {items.map((item) => (
+            <ShelfCard key={item.id} item={item} />
+          ))}
+        </ul>
+      )}
+      <div ref={sentinel} aria-hidden="true" />
+      {list.isFetchingNextPage && <Skeleton className="h-32 rounded-[20px]" />}
+    </section>
   );
 }
 
@@ -249,7 +290,7 @@ function ShelfCard({ item }: { item: ContentItem }) {
       <Link
         to="/read/$itemId"
         params={{ itemId: String(item.id) }}
-        className="glass flex h-full flex-col gap-3 rounded-2xl p-4 transition hover:bg-white/10"
+        className="flex h-full flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.045] p-4 transition hover:border-white/20 hover:bg-white/[0.08]"
       >
         <div className="flex items-start gap-3">
           <div

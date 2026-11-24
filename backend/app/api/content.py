@@ -15,7 +15,7 @@ from app.ingest.youtube import YouTubeError, fetch_captions, fetch_info, parse_v
 from app.jobs import analysis, history  # noqa: F401 - registers the job handlers
 from app.jobs.runner import enqueue, get_job, latest_job
 from app.services import content, reading
-from app.services.recommend import up_next
+from app.services.recommend import feed, up_next
 
 router = APIRouter(prefix="/api", tags=["content"])
 
@@ -55,12 +55,27 @@ def list_content(
     q: str | None = Query(None, max_length=100),
     kind: str | None = Query(None, pattern="^(youtube|local)$"),
     shelf: str = Query("watch", pattern="^(watch|read|manga)$"),
+    state: str = Query("all", pattern="^(all|watched|mine)$"),
     limit: int = Query(60, ge=1, le=300),
     offset: int = Query(0, ge=0),
     conn: Connection = Depends(get_conn),
 ) -> dict[str, Any]:
+    """The library. `state`: watched = videos you've watched; mine = what you added or opened (not untouched suggestions)."""
     require_language(conn, lang)
-    return content.list_items(conn, lang, q=q, kind=kind, shelf=shelf, limit=limit, offset=offset)
+    return content.list_items(conn, lang, q=q, kind=kind, shelf=shelf, state=state, limit=limit, offset=offset)
+
+
+@router.get("/feed")
+def suggestions(
+    lang: str = Query(..., min_length=2, max_length=8),
+    shelf: str = Query("watch", pattern="^(watch|read)$"),
+    offset: int = Query(0, ge=0),
+    limit: int = Query(24, ge=1, le=60),
+    conn: Connection = Depends(get_conn),
+) -> dict[str, Any]:
+    """Suggestions for one shelf, best first, paged for infinite scrolling. Never anything you've watched or finished."""
+    require_language(conn, lang)
+    return feed(conn, lang, shelf, offset, limit)
 
 
 @router.get("/recommend")

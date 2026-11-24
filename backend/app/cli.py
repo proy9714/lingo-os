@@ -212,7 +212,7 @@ def update_content_cmd(
     engine = bootstrap(cfg)
     result = update_content(
         engine, cfg, lang, per_run=limit, dry_run=dry_run,
-        progress=None if as_json else (lambda message: console.print(f"  {message}"[:110])),
+        progress=None if as_json else (lambda fraction, message: console.print(f"  {round(fraction * 100):3d}%  {message}"[:110])),
     )
     if as_json:
         _emit_json(result)

@@ -1,4 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 
 import { api } from "./client";
 import type { Language, Settings } from "./types";
@@ -149,7 +150,7 @@ export function useContentMutation<TVars, TData>(fn: (vars: TVars) => Promise<TD
   return useMutation({
     mutationFn: fn,
     onSuccess: () => {
-      for (const key of [["content"], ["content-item"], ["transcript"], ["evidence"], ["level"], ["annotate"], ["recommend"]]) {
+      for (const key of [["content"], ["content-item"], ["transcript"], ["evidence"], ["level"], ["annotate"], ["recommend"], ["feed"], ["discover-pool"]]) {
         void qc.invalidateQueries({ queryKey: key });
       }
     },
@@ -216,3 +217,85 @@ export const useReports = () => useQuery({ queryKey: ["reports"], queryFn: api.r
 export const useReportText = (path: string | null) =>
   useQuery({ queryKey: ["report", path], queryFn: () => api.reportText(path as string), enabled: Boolean(path), staleTime: Infinity });
 export const useSources = (lang: string) => useQuery({ queryKey: ["sources", lang], queryFn: () => api.sources(lang) });
+
+// ---------------------------------------------------------------- suggestions, infinite scroll, background search
+
+const FEED_PAGE = 24;
+const LIBRARY_PAGE = 36;
+
+/** A shelf's suggestions, best first, loaded a page at a time as you scroll. */
+export const useFeed = (lang: string, shelf: "watch" | "read") =>
+  useInfiniteQuery({
+    queryKey: ["feed", lang, shelf],
+    queryFn: ({ pageParam }) => api.feed(lang, shelf, pageParam, FEED_PAGE),
+    initialPageParam: 0,
+    getNextPageParam: (last) => last.next_offset ?? undefined,
+    staleTime: 60_000,
+  });
+
+/** The library (watched videos, your shelf), a page at a time. */
+export const useLibrary = (lang: string, shelf: "watch" | "read", state: "all" | "watched" | "mine", q: string) =>
+  useInfiniteQuery({
+    queryKey: ["content", lang, q, shelf, state, "paged"],
+    queryFn: ({ pageParam }) => api.content(lang, q, shelf, { state, offset: pageParam, limit: LIBRARY_PAGE }),
+    initialPageParam: 0,
+    getNextPageParam: (last, pages) => {
+      const loaded = pages.reduce((n, page) => n + page.items.length, 0);
+      return loaded < last.total && last.items.length > 0 ? loaded : undefined;
+    },
+    // books are analysed in the background: poll until they're done
+    refetchInterval: (query) =>
+      query.state.data?.pages.some((page) => page.items.some((i) => i.analysis_status === "queued" || i.analysis_status === "running"))
+        ? 3000
+        : false,
+  });
+
+/** Suggestion counts and the background search. Polls while a search runs. */
+export const usePool = (lang: string) =>
+  useQuery({
+    queryKey: ["discover-pool", lang],
+    queryFn: () => api.discoverPool(lang),
+    enabled: Boolean(lang),
+    refetchInterval: (query) => (query.state.data?.searching ? 3000 : 60_000),
+  });
+
+export function useTopUp(lang: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (force: boolean) => api.topUp(lang, force),
+    onSuccess: (data) => {
+      qc.setQueryData(["discover-pool", lang], data);
+      void qc.invalidateQueries({ queryKey: ["discover-status"] });
+    },
+  });
+}
+
+/** Ask for a background top-up once when a page with suggestions opens (the server decides if one is needed). */
+export function useAutoTopUp(lang: string) {
+  const topUp = useTopUp(lang);
+  const asked = useRef<string | null>(null);
+  useEffect(() => {
+    if (lang && asked.current !== lang) {
+      asked.current = lang;
+      topUp.mutate(false);
+    }
+  }, [lang, topUp]);
+}
+
+/** When a background search finishes, refresh everything that shows suggestions. Mounted once, in the app shell. */
+export function useSearchWatcher(lang: string) {
+  const qc = useQueryClient();
+  const pool = usePool(lang);
+  const searching = pool.data?.searching;
+  const was = useRef(searching);
+  useEffect(() => {
+    if (was.current && searching === false) {
+      for (const key of [["feed"], ["recommend"], ["content"], ["discover-status"]]) void qc.invalidateQueries({ queryKey: key });
+    }
+    was.current = searching;
+  }, [searching, qc]);
+  return pool;
+}
+
+export const useTutorTopics = (lang: string) =>
+  useQuery({ queryKey: ["tutor-topics", lang], queryFn: () => api.tutorTopics(lang), staleTime: 30_000 });

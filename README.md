@@ -18,7 +18,7 @@ Phase 9, your Android phone:
 
 Phase 8, the system adapts itself:
 
-- **Find new content** (Settings → New content, `npm run update-content`, or `/lingo update-content`): YouTube channels listed on the Comprehensible Input Wiki for your language, searches at your level, and news articles from RSS feeds. Only videos with real captions in the language are checked, and only items near your level are kept; they appear in Up Next. Unopened finds are removed after 30 days. If YouTube starts asking for a sign-in, the run stops and you can try later.
+- **Find new content** (Settings → New content, `npm run update-content`, or `/lingo update-content`): YouTube channels listed on the Comprehensible Input Wiki for your language, searches at your level, and news articles from RSS feeds. Only videos with real captions in the language are checked, and only items near your level are kept; they appear on Today, Watch and Read. It also runs **on its own in the background** whenever a shelf runs low (fewer than 24 videos or 12 articles), at most every 2 hours (12 hours after YouTube refuses); turn that off in Settings → New content. Articles are taken from every feed in turn, and feeds whose articles keep landing off your level are read less often. Unopened finds are removed after 30 days. If YouTube starts asking for a sign-in, the run stops and you can try later.
 - **Weekly review** (Reports, `npm run evolve-profile`, or `/lingo evolve`): measures your week, moves the difficulty of your picks by at most two points with the reason written down, updates the tutor's brief and writes `data\reports\<year>-W<week>.md`. With a Gemini key the report includes a short coaching note; `/lingo evolve` lets your terminal AI write it instead, and the app validates whatever is proposed.
 - **Schedule both** (optional): `powershell -ExecutionPolicy Bypass -File scripts\schedule-windows.ps1` registers a daily content search (06:00) and the Sunday review (21:00). `-Remove` takes them out again.
 - Sources live in `config/sources.yaml` (searches, topics, feeds); wiki channels can be switched off in Settings.
@@ -54,6 +54,8 @@ Phase 3, read and Up Next:
   - Arrow keys turn pages, text size is adjustable, and it reopens where you left off.
   - Reading time is tracked while the page is open and you've been active in the last 3 minutes.
 - **Up Next** on Today: 12 picks matched to your level. They favour items that bring back your saved words and books you've started, and mix channels and formats. Videos you've watched (in the app or in your tracker CSVs) and anything you've finished are never suggested. Dismiss any pick with ×.
+- **For you** on Watch and Read: every suggestion for that shelf, best first, with infinite scroll; the end of the list asks for more in the background. Watched videos have their own tab, and your books and texts are under *Your shelf*.
+- **Help** (in the menu): how every page works, how suggestions are picked, and a step-by-step phone sync guide.
 - `npm run lingo -- content rescore` refreshes the starting estimate and every item's score.
 
 Phase 2, watch and listen:

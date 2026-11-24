@@ -2,12 +2,25 @@
 
 from __future__ import annotations
 
+import html
+import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
 import httpx
 
 USER_AGENT = "LingoOS/0.1 (personal language-learning app)"
+
+
+RUBY_READINGS = re.compile(r"<r[tp](?=[\s>])[^>]*>.*?</r[tp]>", re.IGNORECASE | re.DOTALL)
+TAGS = re.compile(r"<[^>]+>")
+
+
+def clean_title(raw: str) -> str:
+    """Feed titles may carry escaped HTML, such as furigana: JR<ruby>渋谷駅<rt>しぶやえき</rt></ruby> -> JR渋谷駅."""
+    value = html.unescape(raw)
+    value = TAGS.sub("", RUBY_READINGS.sub("", value))
+    return " ".join(html.unescape(value).split())
 
 
 class FeedError(Exception):
@@ -39,7 +52,7 @@ def parse_feed(xml: str) -> list[FeedEntry]:
         for child in node:
             child_name = _local(child.tag)
             if child_name == "title":
-                title = (child.text or "").strip()
+                title = clean_title(child.text or "")
             elif child_name == "link":
                 href = child.get("href")
                 if href and child.get("rel", "alternate") == "alternate":

@@ -17,6 +17,7 @@ from xml.etree import ElementTree
 BLOCK_TAGS = {"p", "div", "h1", "h2", "h3", "h4", "h5", "h6", "li", "blockquote", "br", "tr", "section", "article", "dd", "dt"}
 SKIP_TAGS = {"rt", "rp", "script", "style", "head", "title", "nav"}
 MAX_PARAGRAPH = 1200
+RUBY_READINGS = re.compile(r"<r[tp](?=[\s>])[^>]*>.*?</r[tp]>", re.IGNORECASE | re.DOTALL)
 
 
 class DocumentError(ValueError):
@@ -35,6 +36,8 @@ class Document:
     author: str | None
     language: str | None
     sections: list[Section]
+    image: str | None = None  # a web article's lead picture (og:image), shown on its card
+    site: str | None = None  # a web article's site name
 
     @property
     def characters(self) -> int:
@@ -170,6 +173,7 @@ def fetch_article(url: str) -> Document:
     downloaded = trafilatura.fetch_url(url)
     if not downloaded:
         raise DocumentError("could not download that page")
+    downloaded = RUBY_READINGS.sub("", downloaded)  # 渋谷駅<rt>しぶやえき</rt> -> 渋谷駅
     result = trafilatura.bare_extraction(downloaded, url=url, include_comments=False, include_tables=False, with_metadata=True)
     if not result:
         raise DocumentError("no article text found on that page")
@@ -178,7 +182,15 @@ def fetch_article(url: str) -> Document:
     if len(text) < 200:
         raise DocumentError("no article text found on that page")
     paragraphs = [p for line in text.split("\n") if line.strip() for p in _split_long(line.strip())]
-    return Document((data.get("title") or url).strip(), data.get("author"), data.get("language"), [Section(None, paragraphs)])
+    image = data.get("image")
+    return Document(
+        (data.get("title") or url).strip(),
+        data.get("author"),
+        data.get("language"),
+        [Section(None, paragraphs)],
+        image=image if isinstance(image, str) and image.startswith("https://") else None,
+        site=data.get("sitename") or None,
+    )
 
 
 def parse_text(title: str, text: str) -> Document:

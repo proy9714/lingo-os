@@ -130,12 +130,20 @@ def list_items(
     q: str | None = None,
     kind: str | None = None,
     shelf: str = "watch",
+    state: str = "all",
     limit: int = 60,
     offset: int = 0,
 ) -> dict[str, Any]:
     types = ", ".join(f"'{t}'" for t in SHELVES.get(shelf, WATCH_TYPES))
     where = ["ci.language_code = :l", f"ci.type IN ({types})", "ci.status NOT IN ('dismissed', 'archived')"]
     params: dict[str, Any] = {"l": lang, "limit": limit, "offset": offset}
+    if state == "watched":
+        where.append("EXISTS (SELECT 1 FROM activity_sessions s WHERE s.content_item_id = ci.id)")
+    elif state == "mine":  # leave out suggestions you haven't opened yet
+        where.append(
+            "(ci.origin != 'scraper' OR ci.last_opened_at IS NOT NULL "
+            "OR EXISTS (SELECT 1 FROM activity_sessions s WHERE s.content_item_id = ci.id))"
+        )
     if q:
         where.append("(ci.title LIKE :q OR ci.creator LIKE :q)")
         params["q"] = f"%{q}%"
@@ -149,7 +157,7 @@ def list_items(
         text(
             f"SELECT {_ITEM_COLUMNS} {_ITEM_FROM} WHERE {clause} "
             "ORDER BY COALESCE(ci.last_opened_at, (SELECT MAX(s.started_at) FROM activity_sessions s "
-            "WHERE s.content_item_id = ci.id), ci.added_at) DESC LIMIT :limit OFFSET :offset"
+            "WHERE s.content_item_id = ci.id), ci.added_at) DESC, ci.id DESC LIMIT :limit OFFSET :offset"
         ),
         params,
     ).all()

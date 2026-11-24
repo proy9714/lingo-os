@@ -324,7 +324,7 @@ i1_score   = fit × (0.6 + 0.4·interest) × (0.8 + 0.2·learnability) × (1 + 0
 ```
 - `content_lemmas` stores one histogram per item, so rescoring the whole library after a profile change is a single SQL pass.
 - **Re-encounter instead of flashcards:** the `reencounter` term is the app's only "review" mechanism. Words you saved come back because you meet them again in real content you chose.
-- **Up Next** shows **at least 10 picks** (default 12, configurable) per language, with diversity rules: at most 4 of one type, at most 2 from one channel or series, and at least one "stretch" and one "comfortable" item. `/lingo recommend` returns the same list with a reason for each pick.
+- **Up Next** shows **at least 10 picks** (default 12, configurable) per language, with diversity rules: at most 4 of one type, at most 2 from one channel or series, and at least one "stretch" and one "comfortable" item. `/lingo recommend` returns the same list with a reason for each pick. Watch and Read each open on a **For you** feed (`GET /api/feed?shelf=watch|read`, paged for infinite scroll) built from the same score, with creators spread out. When a shelf has fewer than 24 videos or 12 articles, opening a page asks `POST /api/discover/top-up`, which queues a background `update_content` job for just the low shelves (cooldown 2 h, 12 h after a YouTube refusal; setting `discover.auto`).
 - **Words to watch for:** an optional glance list for any item (its top unknown lemmas by `count × (1 − p)`). There are no drills; it is a list you can skim or ignore.
 
 ### 6.4 Media player

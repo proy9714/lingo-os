@@ -479,3 +479,25 @@ def grammar_overview(conn: Connection, lang: str) -> list[dict[str, Any]]:
     ).all()
     keys = ("key", "title", "level", "status", "errors", "successes", "mastery", "last_error_at", "example")
     return [dict(zip(keys, r)) for r in rows]
+
+
+def recent_items(conn: Connection, lang: str, limit: int = 10) -> list[dict[str, Any]]:
+    """The videos and texts you watched or read most recently: topics for a conversation."""
+    from app.services.content import READ_TYPES, WATCH_TYPES
+
+    types = ", ".join(f"'{t}'" for t in WATCH_TYPES + READ_TYPES)
+    rows = conn.execute(
+        text(
+            "SELECT ci.id, ci.title, ci.type, ci.creator, MAX(COALESCE((SELECT MAX(s.started_at) FROM activity_sessions s "
+            "WHERE s.content_item_id = ci.id), ''), COALESCE(ci.last_opened_at, '')) AS last_at "
+            f"FROM content_items ci WHERE ci.language_code = :l AND ci.type IN ({types}) "
+            "AND (ci.last_opened_at IS NOT NULL OR EXISTS (SELECT 1 FROM activity_sessions s WHERE s.content_item_id = ci.id)) "
+            "ORDER BY last_at DESC, ci.id DESC LIMIT :n"
+        ),
+        {"l": lang, "n": limit},
+    ).all()
+    return [
+        {"id": r[0], "title": r[1], "type": r[2], "creator": r[3], "last_at": r[4] or None,
+         "kind": "video" if r[2] in WATCH_TYPES else "reading"}
+        for r in rows
+    ]

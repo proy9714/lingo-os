@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 import { api } from "../api/client";
-import { useDiscoverStatus, useSources } from "../api/hooks";
+import { useDiscoverStatus, usePool, useSources } from "../api/hooks";
 import { formatDay, localDayOf } from "../lib/format";
 import { Button, Chip, Panel, PanelTitle, ProgressBar, Skeleton } from "./ui";
 
@@ -18,6 +18,11 @@ export function SourcesPanel({ lang, languageName }: { lang: string; languageNam
   const run = useMutation({
     mutationFn: () => api.discoverRun(lang),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ["discover-status"] }),
+  });
+  const pool = usePool(lang).data;
+  const auto = useMutation({
+    mutationFn: (enabled: boolean) => api.setDiscoverAuto(enabled),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["discover-pool"] }),
   });
   const job = status.data?.job;
   const running = job?.status === "queued" || job?.status === "running";
@@ -37,8 +42,25 @@ export function SourcesPanel({ lang, languageName }: { lang: string; languageNam
       </PanelTitle>
       <p className="text-sm leading-relaxed text-ink-2">
         Finds videos (YouTube channels from the Comprehensible Input Wiki and searches at your level) and articles (RSS feeds
-        in <code>config/sources.yaml</code>). Only items near your level are kept; they show up in Up Next.
+        in <code>config/sources.yaml</code>). Only items near your level are kept; they show up on Today, Watch and Read.
       </p>
+      <label className="mt-3 flex items-start gap-2.5 text-sm">
+        <input
+          type="checkbox"
+          checked={pool?.auto ?? true}
+          disabled={!pool || auto.isPending}
+          onChange={(e) => auto.mutate(e.target.checked)}
+          className="mt-0.5 size-4 accent-[var(--accent)]"
+        />
+        <span>
+          Search automatically in the background when suggestions run low
+          <span className="block text-xs text-ink-3">
+            Below {pool?.targets.watch ?? 24} videos or {pool?.targets.read ?? 12} articles; at most every 2 hours (12 hours after
+            YouTube refuses).
+            {pool && ` Now: ${pool.pools.watch} videos, ${pool.pools.read} articles suggested.`}
+          </span>
+        </span>
+      </label>
       <div className="mt-3">
         {running && job ? (
           <div>

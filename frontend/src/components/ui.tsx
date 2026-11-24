@@ -82,3 +82,46 @@ export function ProgressBar({ value, label }: { value: number; label: string }) 
     </div>
   );
 }
+
+/** Segmented tabs for switching a page between views. */
+export function Tabs<T extends string>({
+  value,
+  onChange,
+  items,
+  label,
+}: {
+  value: T;
+  onChange: (value: T) => void;
+  items: { value: T; label: string; count?: number | null }[];
+  label: string;
+}) {
+  return (
+    <div role="tablist" aria-label={label} className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.04] p-1">
+      {items.map((item) => (
+        <button
+          key={item.value}
+          type="button"
+          role="tab"
+          aria-selected={value === item.value}
+          onClick={() => onChange(item.value)}
+          className={cx(
+            "flex min-h-10 shrink-0 items-center gap-2 rounded-xl px-4 text-sm font-semibold transition",
+            value === item.value ? "bg-accent text-accent-ink" : "text-ink-2 hover:bg-white/8 hover:text-ink",
+          )}
+        >
+          {item.label}
+          {item.count != null && (
+            <span
+              className={cx(
+                "rounded-full px-1.5 py-px text-[11px] tabular-nums",
+                value === item.value ? "bg-black/15" : "bg-white/10 text-ink-3",
+              )}
+            >
+              {item.count}
+            </span>
+          )}
+        </button>
+      ))}
+    </div>
+  );
+}

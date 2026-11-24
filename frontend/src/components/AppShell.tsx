@@ -1,7 +1,7 @@
 import { Link, Outlet } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-import { useActiveLanguage, useToday, useUpdateSettings } from "../api/hooks";
+import { useActiveLanguage, useSearchWatcher, useToday, useUpdateSettings } from "../api/hooks";
 import { remoteConfig, useSyncState } from "../sync/remote";
 import { usePhoneSync } from "../sync/useSync";
 import { useLookupStore } from "../state/lookup";
@@ -11,6 +11,7 @@ import { Icon } from "./Icon";
 import { LookupPanel } from "./LookupPanel";
 import { NAV } from "./nav";
 import { QuickLogModal } from "./QuickLogModal";
+import { SearchPill } from "./Suggestions";
 import { Toast } from "./Toast";
 import { Button, cx } from "./ui";
 
@@ -112,10 +113,13 @@ function BottomNav() {
 
 function TopBar() {
   const openQuickLog = useUi((s) => s.openQuickLog);
+  const { code } = useActiveLanguage();
+  const pool = useSearchWatcher(code);
   return (
     <header className="glass flex flex-wrap items-center gap-2.5 rounded-[18px] p-2.5 md:gap-3 md:p-3">
       <LanguageSwitcher />
       <div className="flex-1" />
+      <SearchPill pool={pool.data} />
       <SyncBadge />
       <TimerPill />
       <Button variant="secondary" onClick={openQuickLog} aria-keyshortcuts="Control+L" title="Log offline time (Ctrl+L)">

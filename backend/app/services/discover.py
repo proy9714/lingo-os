@@ -30,9 +30,13 @@ PAUSE_SECONDS = 2.0
 STOP_AFTER_FAILURES = 3
 WIKI_EVERY = timedelta(days=7)
 DEFAULTS = {
-    "per_run": 10, "articles_per_run": 4, "min_minutes": 3, "max_minutes": 45, "prune_days": 30,
+    "per_run": 10, "articles_per_run": 8, "per_feed": 3, "min_minutes": 3, "max_minutes": 45, "prune_days": 30,
     "keep_bands": ["stretch", "i_plus_1", "comfortable"],
 }
+# A feed whose articles keep landing off your level is read less: after this many tries with a keep rate under
+# FEED_MIN_RATE it is skipped, except every FEED_RETRY_EVERY runs (your level moves, so it gets another chance).
+FEED_TRIES, FEED_MIN_RATE, FEED_RETRY_EVERY = 6, 0.15, 5
+Progress = Callable[[float, str], None]
 
 
 @dataclass
@@ -187,15 +191,19 @@ def discover_language(
     per_run: int | None = None,
     dry_run: bool = False,
     fetchers: Fetchers | None = None,
-    progress: Callable[[str], None] | None = None,
+    progress: Progress | None = None,
+    videos: bool = True,
+    articles: bool = True,
 ) -> dict[str, Any]:
+    """Look for new videos (`videos`) and articles (`articles`) for one language."""
     fetchers = fetchers or Fetchers()
     sources = load_sources(cfg)
     settings, spec = sources["defaults"], sources["languages"].get(lang, {})
-    limit = per_run or int(settings["per_run"])
+    limit = (per_run or int(settings["per_run"])) if videos else 0
     stats: dict[str, Any] = {"language": lang, "listed": 0, "checked": 0, "added": 0, "off_level": 0, "no_captions": 0,
                              "articles_added": 0, "errors": [], "stopped_early": False, "added_titles": []}
-    say = progress or (lambda message: None)
+    say = progress or (lambda fraction, message: None)
+    video_share = 0.75 if articles else 0.95  # of the progress bar
 
     with engine.begin() as conn:
         level = _level(conn, lang)
@@ -206,12 +214,19 @@ def discover_language(
                 "AND enabled = 1 ORDER BY COALESCE(last_fetched_at, '') LIMIT 3"
             ),
             {"l": lang},
-        ).all()
+        ).all() if videos else []
         run_id = None
         if not dry_run:
+            # a run cut off by closing the app never finished: close it so it doesn't look busy forever
+            conn.execute(
+                text("UPDATE scrape_runs SET status = 'failed', finished_at = :t WHERE language_code = :l AND status = 'running'"),
+                {"l": lang, "t": to_iso(utc_now())},
+            )
             run_id = conn.execute(
                 text("INSERT INTO scrape_runs (language_code, status) VALUES (:l, 'running')"), {"l": lang}
             ).lastrowid
+    if videos:
+        say(0.03, "listing new videos")
 
     # 1. List candidates: wiki channels' recent uploads, then searches. Listings are cheap (one request each).
     listings: list[tuple[youtube.Listing, str]] = []
@@ -232,7 +247,7 @@ def discover_language(
                     {"t": to_iso(utc_now()), "s": status, "i": source_id},
                 )
         fetchers.pause(PAUSE_SECONDS / 2)
-    for query in _queries(spec, level, run_number) if not refused else []:
+    for query in _queries(spec, level, run_number) if videos and not refused else []:
         try:
             listings += [(item, f"search: {query}") for item in fetchers.search(query, 8)]
         except youtube.YouTubeError as exc:
@@ -255,11 +270,12 @@ def discover_language(
     else:
         # 2. Check captions and analyse, one video at a time, paced.
         consecutive = 0
-        for item, via in fresh[:limit]:
+        batch = fresh[:limit]
+        for number, (item, via) in enumerate(batch):
             if refused:
                 stats["stopped_early"] = True
                 break
-            say(f"checking {item.title[:60]}")
+            say(0.05 + video_share * number / max(1, len(batch)), f"checking video {number + 1} of {len(batch)}: {item.title[:60]}")
             stats["checked"] += 1
             try:
                 captions = fetchers.captions(item.video_id, lang)
@@ -292,46 +308,11 @@ def discover_language(
                         content.set_metadata(conn, item_id, discovery="off_level")
             fetchers.pause(PAUSE_SECONDS)
 
-    # 3. Articles from the feeds.
-    articles_left = int(settings["articles_per_run"])
-    for feed in spec.get("feeds") or []:
-        if articles_left <= 0:
-            break
-        try:
-            entries = fetchers.feed(feed["url"])[:8]
-        except feeds.FeedError as exc:
-            stats["errors"].append(f"{feed.get('name', feed['url'])}: {exc}"[:200])
-            continue
-        with engine.connect() as conn:
-            known_urls = _known_ids(conn, "web", [e.url for e in entries])
-        for entry in entries:
-            if articles_left <= 0 or entry.url in known_urls:
-                continue
-            if dry_run:
-                stats.setdefault("would_read", []).append({"title": entry.title, "url": entry.url})
-                articles_left -= 1
-                continue
-            say(f"reading {entry.title[:60]}")
-            try:
-                doc = fetchers.article(entry.url)
-            except documents.DocumentError as exc:
-                stats["errors"].append(f"{entry.url}: {exc}"[:200])
-                continue
-            with engine.begin() as conn:
-                item_id, _ = reading.import_document(conn, cfg, lang, doc, item_type="article", source="web", source_url=entry.url)
-                keep = _band(conn, item_id) in settings["keep_bands"]
-                conn.execute(
-                    text("UPDATE content_items SET origin = 'scraper', status = :s, creator = COALESCE(creator, :c) WHERE id = :i"),
-                    {"s": "candidate" if keep else "dismissed", "c": feed.get("name"), "i": item_id},
-                )
-                content.set_metadata(conn, item_id, discovered_via=f"feed: {feed.get('name', '')}", discovery="ok" if keep else "off_level")
-            articles_left -= 1
-            if keep:
-                stats["articles_added"] += 1
-                stats["added_titles"].append(doc.title)
-            else:
-                stats["off_level"] += 1
-            fetchers.pause(PAUSE_SECONDS / 2)
+    # 3. Articles from the feeds: a few from each feed in turn, the feeds that suit your level first.
+    if articles:
+        _discover_articles(
+            engine, cfg, lang, spec, settings, stats, fetchers, say, run_number, dry_run, start=0.05 + video_share if videos else 0.05
+        )
 
     stats["stopped_early"] = stats["stopped_early"] or refused
     if not dry_run:
@@ -349,6 +330,93 @@ def discover_language(
                 },
             )
     return stats
+
+
+# ------------------------------------------------------------------ articles
+
+
+def feed_stats(conn: Connection, lang: str) -> dict[str, dict[str, int]]:
+    """Per feed: how many of its articles were read and how many were near your level."""
+    return settings_store.get(conn, f"feed_stats.{lang}", {}) or {}
+
+
+def _keep_rate(entry: dict[str, int]) -> float:
+    return (entry.get("kept", 0) + 1) / (entry.get("tried", 0) + 2)
+
+
+def _discover_articles(
+    engine: Engine,
+    cfg: AppConfig,
+    lang: str,
+    spec: dict[str, Any],
+    settings: dict[str, Any],
+    stats: dict[str, Any],
+    fetchers: Fetchers,
+    say: Progress,
+    run_number: int,
+    dry_run: bool,
+    start: float,
+) -> None:
+    configured = [f for f in spec.get("feeds") or [] if f.get("url")]
+    with engine.connect() as conn:
+        history = feed_stats(conn, lang)
+
+    def worth_reading(feed: dict[str, Any]) -> bool:
+        entry = history.get(feed["url"], {})
+        return entry.get("tried", 0) < FEED_TRIES or _keep_rate(entry) >= FEED_MIN_RATE or run_number % FEED_RETRY_EVERY == 0
+
+    ordered = sorted((f for f in configured if worth_reading(f)), key=lambda f: -_keep_rate(history.get(f["url"], {})))
+    queues: list[tuple[dict[str, Any], list[feeds.FeedEntry]]] = []
+    for feed in ordered:  # one request per feed for its list of entries
+        try:
+            entries = fetchers.feed(feed["url"])[:20]
+        except feeds.FeedError as exc:
+            stats["errors"].append(f"{feed.get('name', feed['url'])}: {exc}"[:200])
+            continue
+        with engine.connect() as conn:
+            known = _known_ids(conn, "web", [e.url for e in entries])
+        fresh = [e for e in entries if e.url not in known][: int(settings["per_feed"])]
+        if fresh:
+            queues.append((feed, fresh))
+    plan: list[tuple[dict[str, Any], feeds.FeedEntry]] = []
+    budget = int(settings["articles_per_run"])
+    while budget > 0 and any(entries for _, entries in queues):
+        for feed, entries in queues:
+            if entries and budget > 0:
+                plan.append((feed, entries.pop(0)))
+                budget -= 1
+
+    for number, (feed, entry) in enumerate(plan):
+        name = feed.get("name") or feed["url"]
+        if dry_run:
+            stats.setdefault("would_read", []).append({"title": entry.title, "url": entry.url, "feed": name})
+            continue
+        say(start + (0.97 - start) * number / len(plan), f"reading article {number + 1} of {len(plan)}: {entry.title[:60]}")
+        try:
+            doc = fetchers.article(entry.url)
+        except documents.DocumentError as exc:
+            stats["errors"].append(f"{entry.url}: {exc}"[:200])
+            continue
+        with engine.begin() as conn:
+            item_id, _ = reading.import_document(conn, cfg, lang, doc, item_type="article", source="web", source_url=entry.url)
+            keep = _band(conn, item_id) in settings["keep_bands"]
+            conn.execute(
+                text("UPDATE content_items SET origin = 'scraper', status = :s, creator = COALESCE(creator, :c) WHERE id = :i"),
+                {"s": "candidate" if keep else "dismissed", "c": name, "i": item_id},
+            )
+            content.set_metadata(
+                conn, item_id, discovered_via=f"feed: {name}", discovery="ok" if keep else "off_level", site=name
+            )
+            tally = history.setdefault(feed["url"], {"tried": 0, "kept": 0})
+            tally["tried"] += 1
+            tally["kept"] += int(keep)
+            settings_store.put(conn, f"feed_stats.{lang}", history)
+        if keep:
+            stats["articles_added"] += 1
+            stats["added_titles"].append(doc.title)
+        else:
+            stats["off_level"] += 1
+        fetchers.pause(PAUSE_SECONDS / 2)
 
 
 def prune(conn: Connection, days: int, lang: str | None = None) -> int:
@@ -373,21 +441,31 @@ def update_content(
     per_run: int | None = None,
     dry_run: bool = False,
     fetchers: Fetchers | None = None,
-    progress: Callable[[str], None] | None = None,
+    progress: Progress | None = None,
+    videos: bool = True,
+    articles: bool = True,
 ) -> dict[str, Any]:
     results = {}
-    for code in cfg.language_codes:
-        if lang not in (None, code):
-            continue
+    codes = [code for code in cfg.language_codes if lang in (None, code)]
+    for number, code in enumerate(codes):
         wiki = None
-        if not dry_run:
+        if not dry_run and videos:
             try:
                 wiki = sync_wiki(engine, cfg, code, fetchers)
             except ci_wiki.WikiError as exc:
                 wiki = {"error": str(exc)}
+
+        def scaled(fraction: float, message: str, number: int = number, code: str = code) -> None:
+            if progress:
+                prefix = f"{code.upper()}: " if len(codes) > 1 else ""
+                progress((number + fraction) / len(codes), prefix + message)
+
         results[code] = {
             "wiki": wiki,
-            **discover_language(engine, cfg, code, per_run=per_run, dry_run=dry_run, fetchers=fetchers, progress=progress),
+            **discover_language(
+                engine, cfg, code, per_run=per_run, dry_run=dry_run, fetchers=fetchers, progress=scaled,
+                videos=videos, articles=articles,
+            ),
         }
     return results
 

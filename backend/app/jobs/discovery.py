@@ -13,7 +13,8 @@ def update_content_job(ctx: JobContext) -> dict[str, Any]:
     ctx.progress(0.02, "looking for new content")
     return update_content(
         ctx.engine, ctx.cfg, ctx.payload.get("lang"), per_run=ctx.payload.get("per_run"),
-        progress=lambda message: ctx.progress(0.5, message),
+        progress=lambda fraction, message: ctx.progress(fraction, message),
+        videos=bool(ctx.payload.get("videos", True)), articles=bool(ctx.payload.get("articles", True)),
     )
 
 

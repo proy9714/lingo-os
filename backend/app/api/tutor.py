@@ -52,6 +52,13 @@ def options(lang: str = Query(..., min_length=2, max_length=8), conn: Connection
     }
 
 
+@router.get("/recent-items")
+def recent_items(lang: str = Query(..., min_length=2, max_length=8), conn: Connection = Depends(get_conn)) -> list[dict[str, Any]]:
+    """The last 10 videos or texts you watched or read, for "talk about something you watched or read"."""
+    require_language(conn, lang)
+    return tutor.recent_items(conn, lang)
+
+
 @router.get("/sessions")
 def sessions(lang: str = Query(..., min_length=2, max_length=8), conn: Connection = Depends(get_conn)) -> list[dict[str, Any]]:
     return tutor.list_sessions(conn, lang)

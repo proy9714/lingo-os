@@ -8,6 +8,7 @@ import { PlayerPage } from "./pages/PlayerPage";
 import { WatchPage } from "./pages/WatchPage";
 import { ReadPage } from "./pages/ReadPage";
 import { ConnectPage } from "./pages/ConnectPage";
+import { HelpPage } from "./pages/HelpPage";
 import { ReaderPage } from "./pages/ReaderPage";
 import { ReportsPage } from "./pages/ReportsPage";
 import { SettingsPage } from "./pages/SettingsPage";
@@ -34,6 +35,7 @@ const routeTree = rootRoute.addChildren([
   page("/settings", SettingsPage),
   page("/reports", ReportsPage),
   page("/connect", ConnectPage),
+  page("/help", HelpPage),
 ]);
 
 export const router = createRouter({ routeTree, defaultPreload: "intent" });

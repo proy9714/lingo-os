@@ -3,7 +3,8 @@
 
 defaults:
   per_run: 10          # new videos to check per language per run (each one is a request to YouTube)
-  articles_per_run: 4  # new articles per language per run
+  articles_per_run: 8  # new articles per language per run (taken from the feeds in turn)
+  per_feed: 3          # at most this many from one feed per run
   min_minutes: 3
   max_minutes: 45
   prune_days: 30       # unopened candidates older than this are removed
@@ -16,8 +17,10 @@ languages:
       - "comprehensible input Deutsch {topic}"
       - "Easy German {topic}"
     topics: [Alltag, Reisen, Essen, Geschichte, Wissenschaft, Arbeit, Musik]
-    feeds:
-      - { name: nachrichtenleicht (einfache Sprache), url: "https://www.nachrichtenleicht.de/nachrichtenleicht-nachrichten-100.rss" }
+    feeds:              # easier sources first; feeds whose articles keep landing off your level are read less often
+      - { name: DW Langsam gesprochene Nachrichten, url: "https://rss.dw.com/xml/DKpodcast_lgn_de" }
+      - { name: duda.news (Kindernachrichten), url: "https://www.duda.news/feed/" }
+      - { name: DW Nachrichten, url: "https://rss.dw.com/xml/rss-de-all" }
       - { name: tagesschau, url: "https://www.tagesschau.de/index~rss2.xml" }
   es:
     searches:
@@ -26,7 +29,9 @@ languages:
       - "Dreaming Spanish {topic}"
     topics: [viajes, comida, historia, cultura, ciencia, música, vida diaria]
     feeds:
+      - { name: Muy Interesante, url: "https://www.muyinteresante.com/feed" }
       - { name: BBC Mundo, url: "https://feeds.bbci.co.uk/mundo/rss.xml" }
+      - { name: 20minutos, url: "https://www.20minutos.es/rss/" }
       - { name: El País, url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada" }
   ja:
     searches:
@@ -35,4 +40,6 @@ languages:
       - "やさしい日本語 {topic}"
     topics: [旅行, 料理, 日常生活, 歴史, 文化, アニメ, 仕事]
     feeds:
+      - { name: 和タのＣ (watanoc, JLPT N5–N4), url: "https://watanoc.com/feed" }
+      - { name: MATCHA やさしい日本語, url: "https://matcha-jp.com/easy/feed" }
       - { name: NHKニュース, url: "https://www3.nhk.or.jp/rss/news/cat0.xml" }

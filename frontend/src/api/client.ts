@@ -1,6 +1,9 @@
 import type {
   Annotation,
   ContentItem,
+  FeedPage,
+  PoolStatus,
+  TutorTopic,
   CTestResult,
   CTestStart,
   DictationStep,
@@ -173,10 +176,18 @@ export const api = {
     request<CTestResult>(`/api/level/ctest/${id}/submit`, { method: "POST", body: json({ answers }) }),
 
   // Phase 2
-  content: (lang: string, q = "", shelf: "watch" | "read" | "manga" = "watch") =>
+  content: (
+    lang: string,
+    q = "",
+    shelf: "watch" | "read" | "manga" = "watch",
+    opts: { state?: "all" | "watched" | "mine"; offset?: number; limit?: number } = {},
+  ) =>
     request<{ total: number; items: ContentItem[] }>(
-      `/api/content?lang=${encodeURIComponent(lang)}&shelf=${shelf}&limit=120${q ? `&q=${encodeURIComponent(q)}` : ""}`,
+      `/api/content?lang=${encodeURIComponent(lang)}&shelf=${shelf}&state=${opts.state ?? "all"}&limit=${opts.limit ?? 120}` +
+        `&offset=${opts.offset ?? 0}${q ? `&q=${encodeURIComponent(q)}` : ""}`,
     ),
+  feed: (lang: string, shelf: "watch" | "read", offset = 0, limit = 24) =>
+    request<FeedPage>(`/api/feed?lang=${encodeURIComponent(lang)}&shelf=${shelf}&offset=${offset}&limit=${limit}`),
   contentItem: (id: number) => request<ContentItem>(`/api/content/${id}`),
   addYouTube: (lang: string, url: string) =>
     request<ContentItem>("/api/content/youtube", { method: "POST", body: json({ lang, url }) }),
@@ -259,6 +270,7 @@ export const api = {
   // Phases 6–7
   speakingStart: (lang: string) => request<DictationStep>(`/api/level/${encodeURIComponent(lang)}/speaking/start`, { method: "POST" }),
   tutorOptions: (lang: string) => request<TutorOptions>(`/api/tutor/options?lang=${encodeURIComponent(lang)}`),
+  tutorTopics: (lang: string) => request<TutorTopic[]>(`/api/tutor/recent-items?lang=${encodeURIComponent(lang)}`),
   tutorSessions: (lang: string) => request<TutorSessionRow[]>(`/api/tutor/sessions?lang=${encodeURIComponent(lang)}`),
   tutorSession: (id: number) => request<TutorSession>(`/api/tutor/sessions/${id}`),
   tutorStart: (body: { lang: string; mode: TutorMode; scenario?: string; content_item_id?: number }) =>
@@ -295,6 +307,11 @@ export const api = {
   discoverRun: (lang?: string) =>
     request<{ job_id: number }>("/api/discover/run", { method: "POST", body: json(lang ? { lang } : {}) }),
   discoverStatus: () => request<{ job: Job | null; runs: ScrapeRun[] }>("/api/discover/status"),
+  discoverPool: (lang: string) => request<PoolStatus>(`/api/discover/pool?lang=${encodeURIComponent(lang)}`),
+  topUp: (lang: string, force = false) =>
+    request<PoolStatus>("/api/discover/top-up", { method: "POST", body: json({ lang, force }) }),
+  setDiscoverAuto: (enabled: boolean) =>
+    request<{ enabled: boolean }>("/api/discover/auto", { method: "PUT", body: json({ enabled }) }),
   sources: (lang: string) => request<ContentSource[]>(`/api/sources?lang=${encodeURIComponent(lang)}`),
   setSource: (id: number, enabled: boolean) =>
     request<{ enabled: boolean }>(`/api/sources/${id}`, { method: "PATCH", body: json({ enabled }) }),
