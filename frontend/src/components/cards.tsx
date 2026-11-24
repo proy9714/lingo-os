@@ -182,10 +182,11 @@ export function WatchedButton({ pick, className, labelled }: { pick: UpNextPick;
           { id: pick.id, watched: true },
           {
             onSuccess: () =>
-              showToast(pick.kind === "video" ? "Moved to Watched." : "Marked as read.", {
-                label: "Undo",
-                run: () => mark.mutate({ id: pick.id, watched: false }),
-              }),
+              showToast(
+                pick.kind === "video" ? "Moved to Watched." : "Marked as read.",
+                { label: "Undo", run: () => mark.mutate({ id: pick.id, watched: false }) },
+                { itemId: pick.id, kind: pick.kind === "video" ? "video" : "text" },
+              ),
             onError: (error) => {
               restore();
               showToast(`Couldn't mark it: ${error.message}`);

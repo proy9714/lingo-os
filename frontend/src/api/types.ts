@@ -17,6 +17,54 @@ export interface Language {
   level_alt: string | null;
 }
 
+export interface SearchResult {
+  state: "measuring" | "ready" | "no_captions" | "failed";
+  error: string | null;
+  title: string;
+  url: string | null;
+  site: string | null;
+  image: string | null;
+  item: {
+    id: number;
+    type: string;
+    kind: "video" | "reading";
+    title: string;
+    creator: string | null;
+    source: string;
+    external_id: string | null;
+    duration_sec: number | null;
+    word_count: number | null;
+    coverage: number | null;
+    band: string | null;
+    estimated: boolean;
+    expected_unknown: number | null;
+    image: string | null;
+    site: string | null;
+    watched: boolean;
+    speech_wpm: number | null;
+  } | null;
+}
+
+export interface SearchState {
+  id: string;
+  language: string;
+  kind: "video" | "article";
+  query: string;
+  results: SearchResult[];
+  pending: number;
+}
+
+export interface WordMove {
+  lexeme_id: number;
+  lemma: string;
+  reading: string;
+  from: "learning" | "familiar";
+  to: "familiar" | "known";
+  days: number;
+  times: number;
+  status: string;
+}
+
 export interface StartingPoint {
   language: string;
   self_level: string | null;
@@ -549,6 +597,7 @@ export interface ReaderParagraph {
   locator: string;
   text: string;
   tokens: AnnotatedToken[];
+  image?: string; // a picture from the article, shown between the paragraphs
 }
 
 export interface ReaderPage {

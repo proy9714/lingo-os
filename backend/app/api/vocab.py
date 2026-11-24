@@ -88,3 +88,12 @@ def patch_word(lexeme_id: int, body: WordPatch, conn: Connection = Depends(get_c
         return vocab.update_word(conn, lexeme_id, status=body.status, note=body.note, gloss=body.gloss)
     except vocab.VocabError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@router.get("/moves")
+def word_moves(lang: str = Query(..., min_length=2, max_length=8), conn: Connection = Depends(get_conn)) -> dict[str, Any]:
+    """Words that moved up by themselves recently (learning → familiar → known), with their status now."""
+    from app.services import word_progress
+
+    require_language(conn, lang)
+    return word_progress.recent_moves(conn, lang)

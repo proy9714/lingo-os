@@ -179,6 +179,10 @@ function useWordMutation<TVars, TData>(fn: (vars: TVars) => Promise<TData>) {
 }
 
 export const useSetStatus = () => useWordMutation(api.setStatus);
+
+/** Words that moved up by themselves recently (learning → familiar → known). */
+export const useWordMoves = (lang: string) =>
+  useQuery({ queryKey: ["words", "moves", lang], queryFn: () => api.wordMoves(lang), enabled: Boolean(lang) });
 export const usePatchWord = () =>
   useWordMutation((v: { id: number; patch: Parameters<typeof api.patchWord>[1] }) => api.patchWord(v.id, v.patch));
 export const useLevelMutation = <TVars, TData>(fn: (vars: TVars) => Promise<TData>) => useWordMutation(fn);

@@ -5,6 +5,7 @@ import { useTabParam } from "../lib/nav";
 import { api } from "../api/client";
 import { useActiveLanguage, useContentMutation, useLibrary, usePool } from "../api/hooks";
 import type { ContentItem } from "../api/types";
+import { ContentSearch } from "../components/ContentSearch";
 import { SuggestionGrid } from "../components/Suggestions";
 import { Button, Chip, Panel, PanelTitle, Skeleton, Tabs, cx } from "../components/ui";
 import { formatDay, localDayOf } from "../lib/format";
@@ -26,6 +27,7 @@ export function ReadPage() {
   const { code, language } = useActiveLanguage();
   const [tab, setTab] = useTabParam<ReadTab>(["for-you", "shelf"]);
   const [adding, setAdding] = useState(false);
+  const [searching, setSearching] = useState(false);
   const pool = usePool(code).data;
   const shelfCount = useLibrary(code, "read", "mine", "").data?.pages[0]?.total;
 
@@ -46,19 +48,25 @@ export function ReadPage() {
 
       {adding && <AddPanel lang={code} />}
 
-      <Tabs<ReadTab>
-        label="Reading"
-        value={tab}
-        onChange={setTab}
-        items={[
-          { value: "for-you", label: "For you", count: pool?.pools.read ?? null },
-          { value: "shelf", label: "Your shelf", count: shelfCount ?? null },
-        ]}
-      />
+      <ContentSearch key={code} lang={code} languageName={language?.name ?? ""} kind="article" onActive={setSearching} />
 
-      <div key={tab} className="anim-fade">
-        {tab === "for-you" ? <SuggestionGrid key={code} lang={code} shelf="read" /> : <ShelfTab lang={code} />}
-      </div>
+      {!searching && (
+        <>
+          <Tabs<ReadTab>
+            label="Reading"
+            value={tab}
+            onChange={setTab}
+            items={[
+              { value: "for-you", label: "For you", count: pool?.pools.read ?? null },
+              { value: "shelf", label: "Your shelf", count: shelfCount ?? null },
+            ]}
+          />
+
+          <div key={tab} className="anim-fade">
+            {tab === "for-you" ? <SuggestionGrid key={code} lang={code} shelf="read" /> : <ShelfTab lang={code} />}
+          </div>
+        </>
+      )}
     </div>
   );
 }

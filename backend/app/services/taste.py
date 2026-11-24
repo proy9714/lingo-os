@@ -66,6 +66,9 @@ def engagement(item: dict[str, Any]) -> float | None:
     if item["dismissed_by_you"]:
         return -1.0
     seconds = item["seconds"] or 0
+    if item.get("marked") and seconds < 60:
+        # "already watched / read" without doing it here: you chose it somewhere, but nothing says how much you liked it
+        return 0.4
     if item["type"] in WATCH_TYPES:
         if not seconds and not item["opened"]:
             return None
@@ -151,15 +154,17 @@ def _signals(conn: Connection, lang: str) -> list[dict[str, Any]]:
             "SELECT ci.id, ci.type, ci.creator, json_extract(ci.metadata_json, '$.site'), ci.duration_sec, ci.word_count, "
             "ci.status, ci.progress, COALESCE(json_extract(ci.metadata_json, '$.dismissed_by_you'), 0), ci.last_opened_at, "
             "COALESCE(SUM(s.active_seconds), 0), COUNT(s.id), MAX(s.started_at), "
-            "COALESCE(json_extract(ci.metadata_json, '$.dismissed_at'), ci.last_opened_at, ci.added_at) "
+            "COALESCE(json_extract(ci.metadata_json, '$.dismissed_at'), ci.last_opened_at, ci.added_at), "
+            "COALESCE(json_extract(ci.metadata_json, '$.marked_watched'), 0) "
             "FROM content_items ci LEFT JOIN activity_sessions s ON s.content_item_id = ci.id "
             "WHERE ci.language_code = :l AND (s.id IS NOT NULL OR ci.last_opened_at IS NOT NULL "
-            "OR json_extract(ci.metadata_json, '$.dismissed_by_you') = 1) GROUP BY ci.id"
+            "OR json_extract(ci.metadata_json, '$.dismissed_by_you') = 1 "
+            "OR json_extract(ci.metadata_json, '$.marked_watched') = 1) GROUP BY ci.id"
         ),
         {"l": lang},
     ).all()
     keys = ("id", "type", "creator", "site", "duration_sec", "word_count", "status", "progress", "dismissed_by_you", "last_opened_at",
-            "seconds", "sessions", "last_session", "other_time")
+            "seconds", "sessions", "last_session", "other_time", "marked")
     out = []
     for row in rows:
         item = dict(zip(keys, row))

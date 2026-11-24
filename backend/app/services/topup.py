@@ -140,6 +140,9 @@ def daily_refresh(conn: Connection, cfg: Any, lang: str) -> dict[str, Any]:
     if settings_store.get(conn, key) == today:
         return {"language": lang, "ran": False, "date": today, "reason": "already refreshed today"}
     settings_store.put(conn, key, today)
+    from app.services import word_progress
+
+    moved = word_progress.promote(conn, lang)  # words you kept meeting without looking them up move up
     sync_language(conn, cfg, lang)
     taste.invalidate(lang)
     recommend.invalidate()
@@ -147,4 +150,4 @@ def daily_refresh(conn: Connection, cfg: Any, lang: str) -> dict[str, Any]:
     found = maybe_top_up(conn, lang, force=True) if auto_enabled(conn) else {"queued": False, "reason": "automatic search is off"}
     if found.get("job_id"):
         jobs.append(found["job_id"])
-    return {"language": lang, "ran": True, "date": today, "jobs": jobs, "search": found.get("reason") or "queued"}
+    return {"language": lang, "ran": True, "date": today, "jobs": jobs, "search": found.get("reason") or "queued", "words_moved": len(moved)}

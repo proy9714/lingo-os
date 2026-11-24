@@ -1,6 +1,7 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { CompletedButton } from "../components/CompletedButton";
 import { BackLink } from "../lib/nav";
 import { api } from "../api/client";
 import { useContentItem, usePageList, useReaderPage } from "../api/hooks";
@@ -112,6 +113,7 @@ export function ReaderPage() {
           {item.data?.creator && <p className="mt-1 text-sm text-ink-2">{item.data.creator}</p>}
         </div>
         <div className="flex items-center gap-1.5">
+          {item.data && <CompletedButton id={item.data.id} kind="text" finished={item.data.status === "finished"} />}
           <Button variant="ghost" aria-label="Smaller text" disabled={size === SIZES[0]} onClick={() => changeSize(-1)}>
             A−
           </Button>
@@ -150,13 +152,18 @@ export function ReaderPage() {
             className={cx("mx-auto max-w-[680px] leading-[1.9]", ["ja", "zh", "ko", "hi", "bn", "ar"].includes(lang) ? "font-sans" : "font-serif")}
             style={{ fontSize: `${size}px` }}
           >
+            {data.page === 1 && typeof item.data?.metadata?.image === "string" && (
+              <Picture src={item.data.metadata.image} lead />
+            )}
             {data.title && (
               <h2 className="mb-6 text-[1.35em] leading-snug font-bold" lang={lang}>
                 {data.title}
               </h2>
             )}
             {data.paragraphs.map((paragraph) =>
-              data.title && paragraph.text === data.title ? null : (
+              paragraph.image ? (
+                <Picture key={paragraph.seq} src={paragraph.image} />
+              ) : data.title && paragraph.text === data.title ? null : (
                 <Paragraph key={paragraph.seq} lang={lang} paragraph={paragraph} contentItemId={id} />
               ),
             )}
@@ -189,6 +196,24 @@ export function ReaderPage() {
         )}
       </nav>
     </div>
+  );
+}
+
+/** A picture from the article: the lead picture on top of the first page, others where they were in the text. */
+function Picture({ src, lead = false }: { src: string; lead?: boolean }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return null;
+  return (
+    <figure className={cx("anim-fade mx-auto mb-[1.2em] overflow-hidden rounded-xl bg-black/5", lead ? "-mt-2" : "")}>
+      <img
+        src={src}
+        alt=""
+        loading={lead ? "eager" : "lazy"}
+        referrerPolicy="no-referrer"
+        onError={() => setFailed(true)}
+        className={cx("block w-full object-cover", lead ? "max-h-[420px]" : "max-h-[520px]")}
+      />
+    </figure>
   );
 }
 

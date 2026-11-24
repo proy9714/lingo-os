@@ -4,6 +4,8 @@ import type {
   VoiceList,
   CatalogLanguage,
   StartingPoint,
+  WordMove,
+  SearchState,
   HistoryImportReport,
   ImportHistory,
   FeedPage,
@@ -131,6 +133,10 @@ export const api = {
   addLanguage: (code: string, variant?: string) =>
     request<{ code: string; added: boolean; installing: boolean }>("/api/languages", { method: "POST", body: json({ code, variant }) }),
   removeLanguage: (code: string) => request<{ removed: boolean }>(`/api/languages/${encodeURIComponent(code)}`, { method: "DELETE" }),
+  search: (lang: string, kind: "video" | "article", q: string) =>
+    request<SearchState>("/api/search", { method: "POST", body: json({ lang, kind, q }) }),
+  searchResults: (id: string) => request<SearchState>(`/api/search/${encodeURIComponent(id)}`),
+  wordMoves: (lang: string) => request<{ at: string | null; moves: WordMove[] }>(`/api/vocab/moves?lang=${encodeURIComponent(lang)}`),
   languageStart: (code: string) => request<StartingPoint>(`/api/languages/${encodeURIComponent(code)}/start`),
   setLanguageLevel: (code: string, level: string | null) =>
     request<StartingPoint>(`/api/languages/${encodeURIComponent(code)}/level`, { method: "PUT", body: json({ level }) }),

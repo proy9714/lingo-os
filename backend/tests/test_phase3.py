@@ -157,3 +157,34 @@ def test_up_next_never_suggests_watched_videos_or_finished_items(client) -> None
         picks = up_next(conn, "de", 10)["picks"]
     assert {p["title"] for p in picks} == {"new video", "book in progress"}
     assert next(p for p in picks if p["title"] == "book in progress")["reasons"][-1] == "continue where you left off"
+
+
+def test_article_pictures_are_placed_between_paragraphs_and_junk_is_dropped() -> None:
+    from app.ingest.documents import article_images
+
+    paragraphs = ["Le maire a présenté le nouveau projet ce matin devant la presse.", "Les travaux commenceront en mars et dureront deux ans au total."]
+    markdown = (
+        "![Jean Dupont](https://cdn.example/avatars/jean.png)\n\nJean Dupont\n\n"
+        "Le maire a présenté le nouveau projet ce matin devant la presse.\n\n"
+        "![Le futur parc](https://cdn.example/photos/parc.jpg)\n\n"
+        "Les travaux commenceront en mars et dureront deux ans au total.\n\n"
+        "![Logo](https://cdn.example/logo.svg)"
+    )
+    assert article_images(markdown, paragraphs, lead=None) == [(0, "https://cdn.example/photos/parc.jpg")]
+    # the lead picture is shown at the top already: not repeated in the text
+    assert article_images(markdown, paragraphs, lead="https://cdn.example/photos/parc.jpg") == []
+
+
+def test_pictures_become_chunks_without_text(client) -> None:
+    from app.ingest.documents import Document, Section
+    from app.services import reading
+
+    doc = Document("Titel", None, "de", [Section(None, ["Erster Absatz mit ein paar Wörtern.", "Zweiter Absatz."])],
+                   images=[(0, "https://cdn.example/bild.jpg")])
+    with client.app.state.engine.begin() as conn:
+        item_id, _ = reading.import_document(conn, client.app.state.cfg, "de", doc, item_type="article", source="web",
+                                             source_url="https://example.de/a")
+        page = reading.page(conn, item_id, 1)
+    kinds = [p.get("image") or p["text"][:6] for p in page["paragraphs"]]
+    assert kinds == ["Erster", "https://cdn.example/bild.jpg", "Zweite"]
+    assert page["paragraphs"][1]["tokens"] == []

@@ -5,6 +5,7 @@ import { api } from "../api/client";
 import { useActiveLanguage, useContentMutation, useEvidence, useLibrary, useMarkWatched, usePool } from "../api/hooks";
 import type { ContentItem } from "../api/types";
 import { DifficultyRating } from "../components/DifficultyRating";
+import { ContentSearch } from "../components/ContentSearch";
 import { GRID, SuggestionGrid } from "../components/Suggestions";
 import { Button, Chip, Panel, PanelTitle, ProgressBar, Skeleton, Tabs } from "../components/ui";
 import { formatDay, localDayOf } from "../lib/format";
@@ -18,6 +19,7 @@ export function WatchPage() {
   const { code, language } = useActiveLanguage();
   const [tab, setTab] = useTabParam<WatchTab>(["for-you", "watched"]);
   const [adding, setAdding] = useState(false);
+  const [searching, setSearching] = useState(false);
   const pool = usePool(code).data;
   const watched = useLibrary(code, "watch", "watched", "").data?.pages[0]?.total;
 
@@ -42,19 +44,25 @@ export function WatchPage() {
         </div>
       )}
 
-      <Tabs<WatchTab>
-        label="Videos"
-        value={tab}
-        onChange={setTab}
-        items={[
-          { value: "for-you", label: "For you", count: pool?.pools.watch ?? null },
-          { value: "watched", label: "Watched", count: watched ?? null },
-        ]}
-      />
+      <ContentSearch key={code} lang={code} languageName={language?.name ?? ""} kind="video" onActive={setSearching} />
 
-      <div key={tab} className="anim-fade">
-        {tab === "for-you" ? <SuggestionGrid key={code} lang={code} shelf="watch" /> : <WatchedTab lang={code} />}
-      </div>
+      {!searching && (
+        <>
+          <Tabs<WatchTab>
+            label="Videos"
+            value={tab}
+            onChange={setTab}
+            items={[
+              { value: "for-you", label: "For you", count: pool?.pools.watch ?? null },
+              { value: "watched", label: "Watched", count: watched ?? null },
+            ]}
+          />
+
+          <div key={tab} className="anim-fade">
+            {tab === "for-you" ? <SuggestionGrid key={code} lang={code} shelf="watch" /> : <WatchedTab lang={code} />}
+          </div>
+        </>
+      )}
     </div>
   );
 }

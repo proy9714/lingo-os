@@ -21,6 +21,7 @@ import { FeaturedCard, PickRow } from "../components/cards";
 import { Spinner, SuggestionRow, relativeTime } from "../components/Suggestions";
 import { LevelChips } from "../components/StartingPoint";
 import { TasteCard } from "../components/TasteCard";
+import { WordMovesCard } from "../components/WordMovesCard";
 import { Button, Chip, Panel, PanelTitle, ProgressBar, Skeleton, cx } from "../components/ui";
 import {
   ACTIVITY_LABELS,
@@ -70,6 +71,7 @@ export function TodayPage() {
       </header>
 
       <StartPrompt lang={code} languageName={language?.name ?? ""} />
+      <WordMovesCard lang={code} />
 
       <Suggestions lang={code} />
 

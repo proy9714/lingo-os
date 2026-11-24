@@ -17,12 +17,15 @@ No flashcards and no streak pressure: the words you save come back through the v
 - **Today**: a daily pick and rows of videos and articles chosen for your level, your goal for the day, and your progress.
 - **Watch**: YouTube (or your own video and audio files) next to a synced transcript. Click any word: the video
   pauses and the dictionary opens. Replay a line, slow it down, or pause after each line.
-- **Read**: articles from news and learner sites, your own books (EPUB), PDFs and pasted texts, with every word
-  clickable and colour-coded by how likely you are to know it.
+- **Read**: articles from news and learner sites (with their pictures), your own books (EPUB), PDFs and pasted texts,
+  with every word clickable and colour-coded by how likely you are to know it.
 - **Look up any word**: its dictionary form (*rufe … an* → *anrufen*, 間に合わない → 間に合う), meanings, readings and a
   native voice reading it aloud. Save it with the sentence you met it in.
 - **Suggestions that learn**: picks get easier or harder as you rate them, favour the channels and topics you finish,
-  never repeat what you've watched, and new ones are found in the background.
+  never repeat what you've watched (mark anything as already watched or read), and new ones are found in the background.
+- **Search YouTube and the news** in your language: every result is rated for your level before you open it.
+- **Words move up on their own**: a word you keep meeting without looking it up goes from learning to familiar to known,
+  and you can move it back.
 - **Level Lab**: short tests (vocabulary, reading, listening, speaking) that give your level as a range.
 - **Speak**: an AI tutor that talks at your level (optional, needs a free Gemini key), and shadowing practice.
 - **Grammar**, **Manga** (Japanese, with clickable speech bubbles), **weekly reports**, and an **Android app**.

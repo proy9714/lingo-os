@@ -334,12 +334,17 @@ const TOPICS: Topic[] = [
           re-ranked. Rating a few videos you've already watched (Watch → Watched) is the quickest way to tune it. Click a rating
           again to remove it.
         </p>
-        <H3>Already watched it?</H3>
+        <H3>Already watched or read it?</H3>
         <p>
-          Hover a suggestion (or tap it on a phone) and press <strong>✓</strong>, or <strong>Already watched</strong> on Today's
-          top pick: it leaves your suggestions and moves to Watch → Watched. On a video's own page, <strong>Mark as
-          completed</strong> does the same. Both have an <strong>Undo</strong>, and <strong>Not watched yet</strong> on the
-          Watched tab brings a video back.
+          Hover a suggestion (or tap it on a phone) and press <strong>✓</strong>, or <strong>Already watched</strong> /{" "}
+          <strong>Already read</strong> on Today's top pick: it leaves your suggestions and joins your history. On a video's own
+          page, <strong>Mark as completed</strong> does the same, and in the reader, <strong>Mark as read</strong>. The message
+          that confirms it has an <strong>Undo</strong> and asks <em>How hard was it?</em>: one tap rates it, which tunes your
+          level just like the ratings below. <strong>Not watched yet</strong> on the Watched tab brings a video back.
+        </p>
+        <p>
+          Your taste learns from it too: something you chose to watch or read elsewhere counts as a mild "liked" for its channel or
+          site and topic (less than finishing it here, since the app can't see how much you enjoyed it).
         </p>
         <H3>A big catalogue, found in the background</H3>
         <p>
@@ -391,6 +396,14 @@ const TOPICS: Topic[] = [
             "Watching time counts only while the video actually plays.",
           ]}
         </Bullets>
+        <H3>Search YouTube</H3>
+        <p>
+          The search bar at the top of Watch searches YouTube in the language you're learning. Results show at once, like on
+          YouTube, and each one's level fills in a few seconds later: the app fetches its captions and measures them against
+          what you know, so every result carries the same <em>% known</em> label as a suggestion. Videos without captions in
+          your language are marked as such (they can still be watched, but nothing in them is clickable). Results you've
+          already watched say so. <strong>← Back to suggestions</strong> closes the search.
+        </p>
         <H3>Adding videos</H3>
         <p>
           <strong className="text-ink">+ Add a video</strong> takes a YouTube link. For your own files, put them in{" "}
@@ -418,7 +431,17 @@ const TOPICS: Topic[] = [
               <strong className="text-ink">+ Add something to read</strong>: an <Code>.epub</Code>, <Code>.pdf</Code> or{" "}
               <Code>.txt</Code> file (up to 80 MB), a link to a web article (its text is kept on this computer), or a pasted text.
             </>,
+            <>
+              <strong className="text-ink">Search the news</strong>: the search bar at the top of Read finds recent articles in your
+              language. Each result is downloaded and measured against what you know, so it gets a level label like a suggestion.
+              Articles behind a paywall or a bot check can't be read here; they're listed at the end with a link to their site.
+            </>,
             "The reader shows one page at a time. Every word is clickable, and your place is remembered.",
+            "Web articles keep their pictures: the lead picture on top, and the others where they were in the text.",
+            <>
+              <strong className="text-ink">Mark as read</strong> at the top of the reader moves a text to your history, with a quick
+              difficulty rating.
+            </>,
             "Reading time counts while the page is open and you're active on it (it stops after a while without scrolling or clicking).",
             "Scanned PDFs without a text layer, and books with DRM, can't be opened.",
           ]}
@@ -450,6 +473,28 @@ const TOPICS: Topic[] = [
         <p>
           There are no flashcards. Words you're learning come back naturally: suggestions favour content that contains them, and the
           tutor uses them in conversation. <Go to="/words">Words</Go> lists every word you've met, with its status.
+        </p>
+        <H3>Words move up on their own</H3>
+        <p>
+          Once a day, the app looks at where you've met each word you're learning, in videos and articles you spent at least a
+          minute on:
+        </p>
+        <Bullets>
+          {[
+            <>
+              <strong className="text-ink">Learning → Familiar</strong>: met on at least 3 different days (4 times in all), and you
+              haven't looked it up in the last 2 days.
+            </>,
+            <>
+              <strong className="text-ink">Familiar → Known</strong>: met on 3 more days, spread over at least a week, and not
+              looked up even once since it became familiar.
+            </>,
+            "A day you looked the word up doesn't count: that's a sign you didn't know it yet. Books and manga don't count, since the app can't tell which pages you read.",
+          ]}
+        </Bullets>
+        <p>
+          The card <em>Words you've got</em> on Today lists the latest moves. Disagree? <strong>Move back</strong> puts a word back
+          where it was, and you can always change any word's status yourself in the word panel or on the Words page.
         </p>
         <p>
           With an AI key (see <a href="#ai" className="font-semibold text-accent hover:underline">AI explanations</a>), the panel also

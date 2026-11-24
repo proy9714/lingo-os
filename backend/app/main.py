@@ -17,6 +17,7 @@ from app.ai.config import load_ai_config
 from app.ai.gateway import Gateway
 from app.api import activity, ai, automation, content, devices, imports, level, manga, nlp, settings, shadowing, stats, system, tts, tutor, vocab
 from app.api import languages as languages_api
+from app.api import search as search_api
 from app.jobs import languages as _language_jobs  # noqa: F401 - registers install_language
 from app.jobs.runner import Runner
 from app.config import AppConfig, load_config
@@ -82,7 +83,7 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
     app.state.ai = Gateway(load_ai_config(cfg.root), engine)
     app.state.sync_listener = Listener()
 
-    for module in (system, settings, stats, activity, imports, nlp, vocab, level, content, ai, manga, tutor, shadowing, automation, devices, tts, languages_api):
+    for module in (system, settings, stats, activity, imports, nlp, vocab, level, content, ai, manga, tutor, shadowing, automation, devices, tts, languages_api, search_api):
         app.include_router(module.router)
 
     _serve_frontend(app, cfg.frontend_dist)

@@ -38,6 +38,8 @@ class Document:
     sections: list[Section]
     image: str | None = None  # a web article's lead picture (og:image), shown on its card
     site: str | None = None  # a web article's site name
+    # pictures inside a web article: (index of the paragraph they follow in the first section, -1 = before it; url)
+    images: list[tuple[int, str]] = field(default_factory=list)
 
     @property
     def characters(self) -> int:
@@ -172,6 +174,42 @@ BLOCKED_TITLES = ("client challenge", "just a moment", "attention required", "ac
                   "verify you are human", "security check", "please enable javascript", "403 forbidden", "captcha")
 
 
+IMAGE_MD = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)[^)]*\)")
+# Pictures that aren't part of the story: authors' photos, logos, icons, tracking pixels, ads.
+JUNK_IMAGE = re.compile(r"avatar|author|logo|icon|sprite|pixel|badge|button|banner|placeholder|/ads?/|gravatar|emoji", re.I)
+MAX_IMAGES = 8
+
+
+def _norm(text: str) -> str:
+    return re.sub(r"\W+", "", text).casefold()[:40]
+
+
+def article_images(markdown: str, paragraphs: list[str], lead: str | None) -> list[tuple[int, str]]:
+    """Pictures in an article's body, each placed after the paragraph it followed on the page."""
+    starts = [_norm(p) for p in paragraphs]
+    out: list[tuple[int, str]] = []
+    after = -1
+    seen = {lead} if lead else set()
+    for block in re.split(r"\n\s*\n|\n", markdown or ""):
+        block = block.strip()
+        found = IMAGE_MD.search(block)
+        if found:
+            url = found.group(2)
+            if url.startswith("https://") and url not in seen and not JUNK_IMAGE.search(url) and not JUNK_IMAGE.search(found.group(1)):
+                seen.add(url)
+                out.append((after, url))
+            block = IMAGE_MD.sub("", block).strip()
+        key = _norm(re.sub(r"[#>*_`\[\]()-]", " ", block))
+        if len(key) >= 12:
+            for index in range(max(after, 0), len(starts)):
+                if starts[index] and (starts[index].startswith(key[:24]) or key.startswith(starts[index][:24])):
+                    after = index
+                    break
+        if len(out) >= MAX_IMAGES:
+            break
+    return out
+
+
 def fetch_article(url: str) -> Document:
     import trafilatura
 
@@ -190,13 +228,20 @@ def fetch_article(url: str) -> Document:
         raise DocumentError("no article text found on that page")
     paragraphs = [p for line in text.split("\n") if line.strip() for p in _split_long(line.strip())]
     image = data.get("image")
+    lead = image if isinstance(image, str) and image.startswith("https://") else None
+    try:  # the same page as Markdown keeps the pictures, so they can be put back between the paragraphs
+        markdown = trafilatura.extract(downloaded, url=url, output_format="markdown", include_images=True,
+                                       include_comments=False, include_tables=False) or ""
+    except Exception:  # noqa: BLE001 - pictures are a nicety: the article stands without them
+        markdown = ""
     return Document(
         (data.get("title") or url).strip(),
         data.get("author"),
         data.get("language"),
         [Section(None, paragraphs)],
-        image=image if isinstance(image, str) and image.startswith("https://") else None,
+        image=lead,
         site=data.get("sitename") or None,
+        images=article_images(markdown, paragraphs, lead),
     )
 
 

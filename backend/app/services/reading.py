@@ -30,6 +30,9 @@ def store_upload(cfg: AppConfig, lang: str, filename: str, data: bytes) -> Path:
     return target
 
 
+IMAGE_MARK = "@img:"  # in a chunk's locator: the chunk is a picture, this is its address
+
+
 def import_document(
     conn: Connection,
     cfg: AppConfig,
@@ -62,11 +65,24 @@ def import_document(
     ).lastrowid
     rows = []
     seq = 0
+    pictures: dict[int, list[str]] = {}
+    for after, url in getattr(doc, "images", []) or []:
+        pictures.setdefault(after, []).append(url)
+
+    def add_pictures(s_index: int, after: int) -> None:
+        nonlocal seq
+        for k, url in enumerate(pictures.get(after, []) if s_index == 0 else []):
+            # a picture is a chunk with no text (nothing to analyse); its address rides in the locator
+            rows.append({"id": item_id, "seq": seq, "loc": f"s{s_index}:p{after}i{k}{IMAGE_MARK}{url.replace('|', '%7C')}", "text": ""})
+            seq += 1
+
     for s_index, section in enumerate(doc.sections):
+        add_pictures(s_index, -1)
         for p_index, paragraph in enumerate(section.paragraphs):
             locator = f"s{s_index}:p{p_index}" + (f"|{section.title[:80]}" if p_index == 0 and section.title else "")
             rows.append({"id": item_id, "seq": seq, "loc": locator, "text": paragraph})
             seq += 1
+            add_pictures(s_index, p_index)
     conn.execute(text("INSERT INTO content_chunks (content_item_id, seq, locator, text) VALUES (:id, :seq, :loc, :text)"), rows)
     if doc.image or doc.site:
         set_metadata(conn, item_id, **{k: v for k, v in (("image", doc.image), ("site", doc.site)) if v})
@@ -110,6 +126,8 @@ def page(conn: Connection, item_id: int, number: int) -> dict[str, Any]:
     tokens, summary = annotate_segments(conn, item["language"], [p["text"] for p in paragraphs])
     for paragraph, own in zip(paragraphs, tokens):
         paragraph["tokens"] = own
+        if IMAGE_MARK in paragraph["locator"]:
+            paragraph["image"] = paragraph["locator"].split(IMAGE_MARK, 1)[1].replace("%7C", "|")
     conn.execute(
         text("UPDATE content_items SET position_ref = :pos, last_opened_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id = :id"),
         {"pos": f"page:{number}", "id": item_id},
