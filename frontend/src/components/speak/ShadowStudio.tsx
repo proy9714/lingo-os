@@ -345,7 +345,7 @@ function Practice({ lang, clip }: { lang: string; clip: ShadowClip }) {
                 {last.diff.map((piece, i) => (
                   <span key={i} className={cx(piece.ok ? "text-good" : "text-ink-3 underline decoration-dotted")}>
                     {piece.text}
-                    {lang === "ja" ? "" : " "}
+                    {lang === "ja" || lang === "zh" ? "" : " "}
                   </span>
                 ))}
               </p>

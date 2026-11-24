@@ -15,11 +15,55 @@ ROOT = Path(__file__).resolve().parents[2]
 
 @dataclass(frozen=True)
 class LanguageConfig:
+    """A language this learner has added, with its catalogue details (app/languages/registry.py)."""
+
     code: str
     name: str
     native_name: str
     accent: str
     writing_mode: str = "horizontal-tb"
+    direction: str = "ltr"
+    accent_ink: str = "#1a1300"
+    variant: str | None = None
+
+
+def language_config(code: str, variant: str | None = None) -> LanguageConfig:
+    from app.languages.registry import spec
+
+    s = spec(code)
+    return LanguageConfig(
+        code=s.code, name=s.name, native_name=s.native_name, accent=s.accent, writing_mode=s.writing_mode,
+        direction=s.direction, accent_ink=s.accent_ink, variant=s.variant(variant).id,
+    )
+
+
+def forget_added_languages() -> None:
+    """Kept for callers that change the languages; the list is read fresh every time."""
+
+
+def _added_languages(db_path: Path, starting: tuple[str, ...]) -> tuple[LanguageConfig, ...]:
+    import sqlite3
+
+    from app.languages.registry import get
+
+    # read fresh each time (about a millisecond): a cached list could go stale while a request that adds a language
+    # is still in its transaction
+    rows: list[tuple[str, str | None]] = []
+    if db_path.exists():
+        con = sqlite3.connect(f"file:{db_path.as_posix()}?mode=ro", uri=True)
+        try:
+            try:
+                rows = con.execute("SELECT code, variant FROM languages WHERE enabled = 1 ORDER BY position, rowid").fetchall()
+            except sqlite3.OperationalError:  # before migration 0004
+                rows = [(r[0], None) for r in con.execute("SELECT code FROM languages WHERE enabled = 1 ORDER BY rowid")]
+        except sqlite3.OperationalError:  # no languages table yet
+            rows = []
+        finally:
+            con.close()
+        found = tuple(language_config(code, variant) for code, variant in rows if get(code))
+    else:
+        found = tuple(language_config(code) for code in starting if get(code))
+    return found
 
 
 @dataclass(frozen=True)
@@ -28,7 +72,7 @@ class AppConfig:
     data_dir: Path
     host: str
     port: int
-    languages: tuple[LanguageConfig, ...]
+    starting_languages: tuple[str, ...]  # added to a brand-new database; empty: the first run asks
     default_language: str
     default_goal_minutes: int
     tracker_path: Path | None
@@ -41,6 +85,11 @@ class AppConfig:
     @property
     def dict_db_path(self) -> Path:
         return self.data_dir / "dictionaries.db"
+
+    @property
+    def languages(self) -> tuple[LanguageConfig, ...]:
+        """The languages this learner has added (Settings → Languages), in the order they were added."""
+        return _added_languages(self.db_path, self.starting_languages)
 
     @property
     def language_codes(self) -> list[str]:
@@ -83,26 +132,16 @@ def load_config(root: Path = ROOT, data_dir: str | Path | None = None) -> AppCon
     defaults = app_yaml.get("defaults", {})
     tracker = (app_yaml.get("immersion_tracker") or {}).get("path")
 
-    languages = tuple(
-        LanguageConfig(
-            code=item["code"],
-            name=item["name"],
-            native_name=item.get("native_name", item["name"]),
-            accent=item.get("accent", "#f5b443"),
-            writing_mode=item.get("writing_mode", "horizontal-tb"),
-        )
-        for item in app_yaml.get("languages", [])
-    )
-    if not languages:
-        raise ValueError("config/app.yaml must list at least one language")
+    # `languages:` lists codes (or {code: …} entries, as older configs did) to add to a brand-new database
+    starting = tuple(item["code"] if isinstance(item, dict) else str(item) for item in app_yaml.get("languages") or [])
 
     return AppConfig(
         root=root,
         data_dir=_resolve(root, chosen_data_dir),
         host=server.get("host", "127.0.0.1"),
         port=int(server.get("port", 8787)),
-        languages=languages,
-        default_language=defaults.get("active_language", languages[0].code),
+        starting_languages=starting,
+        default_language=defaults.get("active_language") or (starting[0] if starting else "de"),
         default_goal_minutes=int(defaults.get("daily_goal_minutes", 60)),
         tracker_path=_resolve(root, tracker) if tracker else None,
         baselines=baselines,

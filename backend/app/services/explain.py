@@ -11,7 +11,13 @@ from app.ai.gateway import Gateway
 from app.dictionary.lookup import lookup as dict_lookup
 from app.engine.profile import get_profile
 
-LANGUAGE_NAMES = {"de": "German", "es": "Spanish", "ja": "Japanese"}
+def _names() -> dict[str, str]:
+    from app.languages.registry import CATALOG
+
+    return {spec.code: spec.name for spec in CATALOG}
+
+
+LANGUAGE_NAMES = _names()
 MAX_SENSES = 8
 
 

@@ -25,11 +25,27 @@ from sqlalchemy import Connection
 from app.config import AppConfig
 from app.db import settings_store
 
-# The locale a language is spoken in by default. Voices for every language Lingo OS can add are listed here.
-LOCALES = {
-    "zh": "zh-CN", "hi": "hi-IN", "es": "es-ES", "ar": "ar-SA", "fr": "fr-FR", "bn": "bn-BD", "pt": "pt-BR",
-    "ru": "ru-RU", "de": "de-DE", "ja": "ja-JP", "ko": "ko-KR", "it": "it-IT",
-}
+def _default_locales() -> dict[str, str]:
+    from app.languages.registry import CATALOG
+
+    return {spec.code: spec.default_variant.locale for spec in CATALOG}
+
+
+# The locale each language is spoken in by default (its first variety in the catalogue).
+LOCALES = _default_locales()
+
+
+def locale_for(conn: Connection, lang: str) -> str | None:
+    """The locale of the variety this learner chose (Brazilian or European Portuguese, …)."""
+    from sqlalchemy import text
+
+    from app.languages.registry import get
+
+    spec = get(lang)
+    if not spec:
+        return None
+    variant = conn.execute(text("SELECT variant FROM languages WHERE code = :c"), {"c": lang}).scalar()
+    return spec.variant(variant).locale
 ENGINES = ("neural", "device")
 MAX_CHARS = 1500
 VOICE_LIST_TTL = 7 * 24 * 3600
@@ -83,9 +99,9 @@ async def all_voices(cfg: AppConfig) -> list[dict[str, Any]]:
         return voices
 
 
-async def voices_for(cfg: AppConfig, lang: str) -> list[dict[str, Any]]:
-    """The language's voices: its default locale first, then other regions (e.g. Mexican Spanish)."""
-    locale = LOCALES.get(lang)
+async def voices_for(cfg: AppConfig, lang: str, locale: str | None = None) -> list[dict[str, Any]]:
+    """The language's voices: the chosen variety's locale first, then other regions (e.g. Mexican Spanish)."""
+    locale = locale or LOCALES.get(lang)
     if not locale:
         return []
     prefix = locale.split("-")[0] + "-"

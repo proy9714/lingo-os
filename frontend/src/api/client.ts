@@ -2,6 +2,7 @@ import type {
   Annotation,
   ContentItem,
   VoiceList,
+  CatalogLanguage,
   FeedPage,
   DifficultyResult,
   GrammarReference,
@@ -123,6 +124,12 @@ export const api = {
   patchSettings: (patch: Partial<Pick<Settings, "active_language" | "goals">>) =>
     request<Settings>("/api/settings", { method: "PATCH", body: json(patch) }),
   languages: () => request<Language[]>("/api/languages"),
+  languageCatalog: () => request<CatalogLanguage[]>("/api/languages/catalog"),
+  addLanguage: (code: string, variant?: string) =>
+    request<{ code: string; added: boolean; installing: boolean }>("/api/languages", { method: "POST", body: json({ code, variant }) }),
+  removeLanguage: (code: string) => request<{ removed: boolean }>(`/api/languages/${encodeURIComponent(code)}`, { method: "DELETE" }),
+  setLanguageVariant: (code: string, variant: string) =>
+    request<{ variant: string }>(`/api/languages/${encodeURIComponent(code)}`, { method: "PATCH", body: json({ variant }) }),
   today: (lang: string) => request<TodayStats>(`/api/stats/today?lang=${encodeURIComponent(lang)}`),
   overview: () => request<Overview>("/api/stats/overview"),
   recent: (lang: string, limit = 8) =>

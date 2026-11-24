@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
+import { ApiError } from "../api/client";
 import { useActiveLanguage, useAnnotation, useGrammarReference } from "../api/hooks";
 import type { GrammarExample, GrammarKind, GrammarSection, GrammarTable } from "../api/types";
 import { TokenLine } from "../components/TokenLine";
@@ -37,14 +38,10 @@ const KINDS: Record<GrammarKind, { label: string; badge: string; accent: string;
   },
 };
 
-const LANGS: { value: string; label: string }[] = [
-  { value: "de", label: "German" },
-  { value: "es", label: "Spanish" },
-  { value: "ja", label: "Japanese" },
-];
-
 export function GrammarPage() {
-  const { code } = useActiveLanguage();
+  const { code, languages } = useActiveLanguage();
+  const tabs = languages.map((l) => ({ value: l.code, label: l.name }));
+  const languageName = languages.find((l) => l.code === lang)?.name ?? "this language";
   const [lang, setLang] = useState(code);
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<GrammarKind | "all">("all");
@@ -78,7 +75,7 @@ export function GrammarPage() {
                 "A working reference for beginners to intermediate learners: every pattern with real sentences and a translation."}
             </p>
           </div>
-          <Tabs label="Language" value={lang} onChange={setLang} items={LANGS} />
+          {tabs.length > 1 && <Tabs label="Language" value={lang} onChange={setLang} items={tabs} />}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <label className="flex min-w-[260px] flex-1 items-center gap-2 rounded-2xl border border-white/12 bg-black/25 px-4 sm:max-w-md">
@@ -117,9 +114,16 @@ export function GrammarPage() {
       {reference.isPending ? (
         <Skeleton className="h-96 rounded-[20px]" />
       ) : reference.isError ? (
-        <p role="alert" className="rounded-2xl bg-red-500/10 p-4 text-sm text-red-200">
-          Could not load the grammar: {reference.error.message}
-        </p>
+        reference.error instanceof ApiError && reference.error.status === 404 ? (
+          <p className="rounded-2xl border border-white/10 bg-white/[0.035] p-5 text-sm text-ink-2">
+            A grammar reference for {languageName} isn't written yet. Until it is, the tutor's notes and the lookup panel's grammar
+            breakdown (with an AI key) cover {languageName} too.
+          </p>
+        ) : (
+          <p role="alert" className="rounded-2xl bg-red-500/10 p-4 text-sm text-red-200">
+            Could not load the grammar: {reference.error.message}
+          </p>
+        )
       ) : (
         <>
           {reference.data.weak_spots.length > 0 && kind === "all" && !q && (

@@ -27,7 +27,11 @@ def band_for_size(baselines: dict[str, Any], lang: str, size: float) -> tuple[st
                 label = name
         return label
 
-    return pick(bands.get("cefr")), pick(bands.get("jlpt")) if lang == "ja" else None
+    from app.languages.registry import get
+
+    spec = get(lang)
+    alt = spec.level_alt if spec else None
+    return pick(bands.get("cefr")), pick(bands.get(alt)) if alt else None
 
 
 def total_seconds(conn: Connection, lang: str) -> int:

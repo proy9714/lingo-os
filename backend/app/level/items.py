@@ -13,9 +13,17 @@ from wordfreq import zipf_frequency
 
 from app.dictionary.lookup import display_gloss, lookup
 from app.languages.frequency import LIST_SIZE, rank_of, top_words, word_at
+from app.languages.registry import get as language_spec
 
 KANJI = re.compile(r"[㐀-鿿]")
 JAPANESE = re.compile(r"[぀-ヿ㐀-鿿]")
+HAN_WORD = re.compile(r"^[㐀-鿿]+$")
+HANGUL_WORD = re.compile(r"^[가-힣]+$")
+
+
+def _script(lang: str) -> str:
+    spec = language_spec(lang)
+    return spec.script if spec else "latin"
 
 ACCEPT = {"n", "v", "adj", "adv"}
 REJECT = {
@@ -55,8 +63,13 @@ def eligible(dict_conn: Connection, lang: str, rank: int) -> Candidate | None:
         cached = _ELIGIBLE[key]
         return Candidate(rank, cached.word, cached.reading, cached.gloss) if cached else None
     result: Candidate | None = None
+    script = _script(lang)
     if lang == "ja":
         ok = bool(JAPANESE.search(word)) and (len(word) >= 2 or bool(KANJI.search(word)))
+    elif script == "han":
+        ok = bool(HAN_WORD.match(word))
+    elif script == "hangul":
+        ok = bool(HANGUL_WORD.match(word))
     else:
         ok = len(word) >= 3 and word.isalpha()
     if ok:
@@ -110,8 +123,9 @@ def distractors(
 @lru_cache(maxsize=None)
 def _trigrams(lang: str) -> dict[str, Counter]:
     model: dict[str, Counter] = defaultdict(Counter)
+    shortest = 2 if _script(lang) == "hangul" else 4  # Korean counts syllables, not letters
     for word in top_words(lang)[:20_000]:
-        if not word.isalpha() or len(word) < 4:
+        if not word.isalpha() or len(word) < shortest:
             continue
         padded = f"^^{word}$"
         for i in range(len(padded) - 2):
@@ -120,9 +134,10 @@ def _trigrams(lang: str) -> dict[str, Counter]:
 
 
 @lru_cache(maxsize=None)
-def _kanji_pool() -> tuple[str, ...]:
+def _kanji_pool(lang: str = "ja") -> tuple[str, ...]:
+    """Common characters (kanji, hanzi) for two-character non-words."""
     pool: list[str] = []
-    for word in top_words("ja")[:4000]:
+    for word in top_words(lang)[:4000]:
         pool.extend(KANJI.findall(word))
     return tuple(dict.fromkeys(pool))
 
@@ -130,7 +145,7 @@ def _kanji_pool() -> tuple[str, ...]:
 def _is_real(dict_conn: Connection, lang: str, word: str) -> bool:
     if rank_of(lang, word) is not None:
         return True
-    if lang != "ja" and zipf_frequency(word, lang) > 0:
+    if _script(lang) in {"latin", "cyrillic"} and zipf_frequency(word, lang) > 0:  # CJK needs a tokenizer here
         return True
     found = lookup(dict_conn, lang, [word], limit=1)
     return bool(found["entries"] or found["inflections"])
@@ -138,8 +153,8 @@ def _is_real(dict_conn: Connection, lang: str, word: str) -> bool:
 
 def pseudo_word(dict_conn: Connection, lang: str, rng: random.Random) -> str | None:
     """A plausible-looking non-word: saying you know it reveals over-claiming."""
-    if lang == "ja":
-        pool = _kanji_pool()
+    if _script(lang) in {"japanese", "han"}:
+        pool = _kanji_pool(lang)
         for _ in range(300):
             word = rng.choice(pool) + rng.choice(pool)
             if word[0] != word[1] and not _is_real(dict_conn, lang, word):
@@ -158,6 +173,7 @@ def pseudo_word(dict_conn: Connection, lang: str, rng: random.Random) -> str | N
                 break
             word += nxt
             state = state[1] + nxt
-        if 6 <= len(word) <= 11 and not _is_real(dict_conn, lang, word):
+        low, high = (2, 4) if _script(lang) == "hangul" else (6, 11)
+        if low <= len(word) <= high and not _is_real(dict_conn, lang, word):
             return word.capitalize() if lang == "de" and rng.random() < 0.5 else word
     return None

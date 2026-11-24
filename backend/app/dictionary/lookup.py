@@ -27,13 +27,20 @@ def display_gloss(gloss: str, limit: int = 0) -> str:
     return gloss
 
 
+def _cased(lang: str) -> bool:
+    from app.languages.registry import get
+
+    spec = get(lang)
+    return bool(spec and spec.cased)
+
+
 def _variants(lang: str, forms: list[str]) -> list[str]:
     out: list[str] = []
     for form in forms:
         if not form:
             continue
         out.append(form)
-        if lang in {"de", "es"}:
+        if _cased(lang):  # German nouns are capitalised, sentence starts are too
             out.extend([form.lower(), form[:1].upper() + form[1:]])
     return list(dict.fromkeys(out))
 
@@ -102,3 +109,26 @@ def _entry(name: str, term: str, reading: str, data: dict[str, Any], via: bool =
 def first_gloss(conn: Connection, lang: str, forms: list[str], reading: str = "") -> str | None:
     result = lookup(conn, lang, forms, reading, limit=1)
     return result["entries"][0]["glosses"][0] if result["entries"] else None
+
+
+def lemma_resolver(engine):  # noqa: ANN001, ANN201 - an Engine on dictionaries.db
+    """For language packs whose model guesses lemmas badly: keep a lemma that is a dictionary headword, otherwise
+    use the lemma the dictionary gives for the word as written ("chiamo" is a form of "chiamare")."""
+    from functools import lru_cache
+
+    @lru_cache(maxsize=50_000)
+    def resolve(lang: str, surface: str, lemma: str) -> str | None:
+        with engine.connect() as conn:
+            rows = _rows(conn, lang, list(dict.fromkeys([lemma.lower(), surface])))
+        headwords = {r[2].lower() for r in rows if json.loads(r[5]).get("g")}
+        if lemma.lower() in headwords:
+            return None
+        for row in rows:
+            if row[2].lower() != surface:
+                continue
+            for form in json.loads(row[5]).get("f", []):
+                if form.get("lemma"):
+                    return form["lemma"].lower()
+        return None
+
+    return resolve

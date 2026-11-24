@@ -8,25 +8,11 @@ server:
   host: 127.0.0.1   # the laptop only; phone sync gets its own listener in Phase 9
   port: 8787
 
-languages:
-  - code: de
-    name: German
-    native_name: Deutsch
-    accent: "#f5b443"
-    writing_mode: horizontal-tb
-  - code: es
-    name: Spanish
-    native_name: Español
-    accent: "#ff8a73"
-    writing_mode: horizontal-tb
-  - code: ja
-    name: Japanese
-    native_name: 日本語
-    accent: "#a5b4fc"
-    writing_mode: vertical-rl
+# Languages are added in the app (first run, then Settings → Languages); the catalogue is in
+# backend/app/languages/registry.py. Codes listed here are added automatically to a brand-new data folder.
+languages: []
 
 defaults:
-  active_language: de
   daily_goal_minutes: 60
 
 # Optional: the data folder of the Immersion Tracker app, if you used it before.

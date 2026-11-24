@@ -15,7 +15,13 @@ import httpx
 
 from app.ingest.feeds import USER_AGENT
 
-PAGES = {"de": "German", "es": "Spanish", "ja": "Japanese"}
+def _pages() -> dict[str, str]:
+    from app.languages.registry import CATALOG
+
+    return {spec.code: spec.wiki_page for spec in CATALOG if spec.wiki_page}
+
+
+PAGES = _pages()
 BASE = "https://comprehensibleinputwiki.org/wiki/"
 
 ICONS = {

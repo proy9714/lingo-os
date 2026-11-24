@@ -19,27 +19,41 @@ class SettingsPatch(BaseModel):
 
 
 def _languages(conn: Connection) -> list[dict[str, Any]]:
+    """The languages this learner has added, in the order they added them, with what the app needs to show them."""
+    from app.languages import registry
+
     rows = conn.execute(
-        text("SELECT code, name, native_name, accent_color, writing_mode, enabled FROM languages ORDER BY rowid")
+        text(
+            "SELECT code, name, native_name, accent_color, writing_mode, enabled, variant, direction FROM languages "
+            "WHERE enabled = 1 ORDER BY position, rowid"
+        )
     ).all()
-    return [
-        {
-            "code": r[0],
-            "name": r[1],
-            "native_name": r[2],
-            "accent_color": r[3],
-            "writing_mode": r[4],
-            "enabled": bool(r[5]),
-        }
-        for r in rows
-    ]
+    out = []
+    for r in rows:
+        spec = registry.get(r[0])
+        if not spec:
+            continue
+        variant = spec.variant(r[6])
+        out.append(
+            {
+                "code": r[0], "name": r[1], "native_name": r[2], "accent_color": r[3], "writing_mode": r[4],
+                "enabled": bool(r[5]), "variant": variant.id, "variant_label": variant.label, "locale": variant.locale,
+                "direction": r[7] or spec.direction, "accent_ink": spec.accent_ink, "script": spec.script,
+                "spaced": spec.spaced, "level_alt": spec.level_alt,
+            }
+        )
+    return out
 
 
 def _settings(conn: Connection, cfg: AppConfig) -> dict[str, Any]:
+    from app.services.languages import added_codes
+
     goals = settings_store.get(conn, "goals", {}) or {}
+    codes = added_codes(conn)
+    active = settings_store.get(conn, "active_language", cfg.default_language)
     return {
-        "active_language": settings_store.get(conn, "active_language", cfg.default_language),
-        "goals": {code: int(goals.get(code, cfg.default_goal_minutes)) for code in cfg.language_codes},
+        "active_language": active if active in codes else (codes[0] if codes else None),
+        "goals": {code: int(goals.get(code, cfg.default_goal_minutes)) for code in codes},
         "tracker_path": str(cfg.tracker_path) if cfg.tracker_path else None,
     }
 
@@ -58,7 +72,9 @@ def get_settings(conn: Connection = Depends(get_conn), cfg: AppConfig = Depends(
 def patch_settings(
     patch: SettingsPatch, conn: Connection = Depends(get_conn), cfg: AppConfig = Depends(get_cfg)
 ) -> dict[str, Any]:
-    codes = set(cfg.language_codes)
+    from app.services.languages import added_codes
+
+    codes = set(added_codes(conn))
     if patch.active_language is not None:
         if patch.active_language not in codes:
             raise HTTPException(status_code=422, detail=f"unknown language '{patch.active_language}'")

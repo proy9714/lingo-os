@@ -16,6 +16,8 @@ from app import __version__
 from app.ai.config import load_ai_config
 from app.ai.gateway import Gateway
 from app.api import activity, ai, automation, content, devices, imports, level, manga, nlp, settings, shadowing, stats, system, tts, tutor, vocab
+from app.api import languages as languages_api
+from app.jobs import languages as _language_jobs  # noqa: F401 - registers install_language
 from app.jobs.runner import Runner
 from app.config import AppConfig, load_config
 from app.db import migrate
@@ -35,8 +37,20 @@ def bootstrap(cfg: AppConfig) -> Engine:
     engine = make_engine(cfg.db_path)
     with engine.begin() as conn:
         seed(conn, cfg)
+    with engine.begin() as conn:  # after the seed is committed: cfg.languages reads the languages it added
         sync_baselines(conn, cfg)
+    _wire_languages(cfg)
     return engine
+
+
+def _wire_languages(cfg: AppConfig) -> None:
+    """Language packs find downloaded models in data/models, and check weak lemmas against the dictionaries."""
+    from app.dictionary.lookup import lemma_resolver
+    from app.languages import set_lemma_resolver
+    from app.languages.spacy_pack import MODELS_DIR
+
+    MODELS_DIR[:] = [cfg.data_dir / "models"]
+    set_lemma_resolver(lemma_resolver(make_engine(cfg.dict_db_path)))
 
 
 def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAPI:
@@ -68,7 +82,7 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
     app.state.ai = Gateway(load_ai_config(cfg.root), engine)
     app.state.sync_listener = Listener()
 
-    for module in (system, settings, stats, activity, imports, nlp, vocab, level, content, ai, manga, tutor, shadowing, automation, devices, tts):
+    for module in (system, settings, stats, activity, imports, nlp, vocab, level, content, ai, manga, tutor, shadowing, automation, devices, tts, languages_api):
         app.include_router(module.router)
 
     _serve_frontend(app, cfg.frontend_dist)

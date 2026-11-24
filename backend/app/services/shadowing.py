@@ -36,7 +36,10 @@ def _fold(word: str) -> str:
 
 def word_diff(lang: str, expected: str, heard: str) -> list[dict[str, Any]]:
     """Each piece of the line, marked ok when the recogniser heard it. Japanese is compared character by character."""
-    if lang == "ja":
+    from app.languages.registry import get
+
+    spec = get(lang)
+    if spec and not spec.spaced:  # Japanese, Chinese: no spaces between words
         pieces = [c for c in expected if not c.isspace()]
         keys = [_fold(c) for c in pieces]
         got = [k for k in (_fold(c) for c in heard) if k]

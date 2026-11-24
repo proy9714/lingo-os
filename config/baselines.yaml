@@ -17,7 +17,9 @@ vocab_bands:
   cefr: [[0, "A1"], [1000, "A2"], [2000, "B1"], [3500, "B2"], [6000, "C1"], [10000, "C2"]]
   jlpt: [[0, "pre-N5"], [800, "N5"], [1500, "N4"], [3750, "N3"], [6000, "N2"], [10000, "N1"]]
 
-# Hours are divided by these to get "Spanish-equivalent hours".
+# Hours are divided by these to get "Spanish-equivalent hours". Languages not listed use the catalogue's value
+# (backend/app/languages/registry.py: French, Italian, Portuguese 1.0; Russian, Hindi, Bengali 1.83;
+# Arabic, Mandarin, Korean 3.0).
 # Ratios of FSI course lengths for English speakers; edit them if your
 # native language makes one of these easier or harder for you.
 difficulty_divisor:

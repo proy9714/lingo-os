@@ -147,7 +147,7 @@ export function ReaderPage() {
           )}
         >
           <div
-            className={cx("mx-auto max-w-[680px] leading-[1.9]", lang === "ja" ? "font-sans" : "font-serif")}
+            className={cx("mx-auto max-w-[680px] leading-[1.9]", ["ja", "zh", "ko", "hi", "bn", "ar"].includes(lang) ? "font-sans" : "font-serif")}
             style={{ fontSize: `${size}px` }}
           >
             {data.title && (

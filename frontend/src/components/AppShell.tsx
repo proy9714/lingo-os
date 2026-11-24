@@ -1,8 +1,9 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-import { useActiveLanguage, useSearchWatcher, useToday, useUpdateSettings, useVoices } from "../api/hooks";
-import { onSpeechUnavailable, setSpeechEngine } from "../lib/speech";
+import { useActiveLanguage, useLanguages, useSearchWatcher, useSettings, useToday, useUpdateSettings, useVoices } from "../api/hooks";
+import { onSpeechUnavailable, setSpeechEngine, setSpeechLocales } from "../lib/speech";
+import { FirstRun } from "./FirstRun";
 import { remoteConfig, useSyncState } from "../sync/remote";
 import { usePhoneSync } from "../sync/useSync";
 import { useLookupStore } from "../state/lookup";
@@ -16,8 +17,24 @@ import { SearchPill } from "./Suggestions";
 import { Toast } from "./Toast";
 import { Button, cx } from "./ui";
 
+/** "#f5b443" → "rgb(245 180 67 / 0.18)" */
+function tint(hex: string, alpha: number): string {
+  const n = Number.parseInt(hex.replace("#", ""), 16);
+  return `rgb(${(n >> 16) & 255} ${(n >> 8) & 255} ${n & 255} / ${alpha})`;
+}
+
+/** A new install has no language yet: ask for one first. */
 export function AppShell() {
-  const { code } = useActiveLanguage();
+  const settings = useSettings();
+  const languages = useLanguages();
+  if (settings.isPending || languages.isPending) return <div className="min-h-dvh bg-base" aria-busy="true" />;
+  if (languages.isSuccess && languages.data.length === 0) return <FirstRun />;
+  return <Shell />;
+}
+
+function Shell() {
+  const { code, languages } = useActiveLanguage();
+  const active = languages.find((l) => l.code === code);
   const openQuickLog = useUi((s) => s.openQuickLog);
   const lookupOpen = useLookupStore((s) => s.selection !== null);
   const closeLookup = useLookupStore((s) => s.close);
@@ -31,9 +48,19 @@ export function AppShell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
-    document.documentElement.dataset.lang = code;
+    const root = document.documentElement;
+    root.dataset.lang = code;
+    if (active) {
+      // each language tints the app with its own colour
+      root.style.setProperty("--accent", active.accent_color);
+      root.style.setProperty("--accent-ink", active.accent_ink);
+      root.style.setProperty("--glow-1", tint(active.accent_color, 0.2));
+    }
     closeLookup(); // a lookup belongs to the language it was opened in
-  }, [code, closeLookup]);
+  }, [code, active, closeLookup]);
+  useEffect(() => {
+    setSpeechLocales(Object.fromEntries(languages.map((l) => [l.code, l.locale])));
+  }, [languages]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -145,6 +172,30 @@ function TopBar() {
 function LanguageSwitcher() {
   const { code, languages } = useActiveLanguage();
   const update = useUpdateSettings();
+  const choose = (next: string) => next !== code && update.mutate({ active_language: next });
+  if (languages.length > 4) {
+    const active = languages.find((l) => l.code === code);
+    return (
+      <label className="flex items-center gap-2 rounded-xl bg-black/30 p-1 pr-2">
+        <span className="flex h-9 min-w-12 items-center justify-center rounded-[9px] bg-accent px-2 text-[13px] font-bold text-accent-ink">
+          {code.toUpperCase()}
+        </span>
+        <span className="sr-only">Language</span>
+        <select
+          value={code}
+          onChange={(e) => choose(e.target.value)}
+          className="min-h-9 max-w-[160px] rounded-lg bg-transparent text-sm font-semibold text-ink outline-none"
+          title={active ? `${active.name} · ${active.native_name}` : undefined}
+        >
+          {languages.map((lang) => (
+            <option key={lang.code} value={lang.code} className="bg-surface">
+              {lang.name} · {lang.native_name}
+            </option>
+          ))}
+        </select>
+      </label>
+    );
+  }
   return (
     <div role="group" aria-label="Language" className="flex gap-1 rounded-xl bg-black/30 p-1">
       {languages.map((lang) => {
@@ -155,7 +206,7 @@ function LanguageSwitcher() {
             type="button"
             aria-pressed={active}
             title={`${lang.name} · ${lang.native_name}`}
-            onClick={() => !active && update.mutate({ active_language: lang.code })}
+            onClick={() => choose(lang.code)}
             className={cx(
               "h-9 min-w-12 rounded-[9px] px-2 text-[13px] transition",
               active ? "bg-accent font-bold text-accent-ink" : "font-semibold text-ink-2 hover:bg-white/8 hover:text-ink",
@@ -165,6 +216,15 @@ function LanguageSwitcher() {
           </button>
         );
       })}
+      <Link
+        to="/settings"
+        hash="languages"
+        title="Add a language"
+        aria-label="Add a language"
+        className="flex h-9 w-8 items-center justify-center rounded-[9px] text-ink-3 transition hover:bg-white/8 hover:text-ink"
+      >
+        <Icon name="plus" size={16} />
+      </Link>
     </div>
   );
 }

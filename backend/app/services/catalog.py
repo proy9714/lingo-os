@@ -106,12 +106,14 @@ def _is_refusal(exc: Exception) -> bool:
 
 # ------------------------------------------------------------------ the right language
 
-# Names a title uses for each language you learn (in English, the language itself, and the other two).
-LANGUAGE_WORDS = {
-    "de": ("german", "deutsch", "allemand", "alemán", "aleman", "tedesco", "ドイツ語"),
-    "es": ("spanish", "español", "espanol", "spanisch", "castellano", "espagnol", "スペイン語"),
-    "ja": ("japanese", "japanisch", "japonés", "japones", "日本語", "nihongo", "にほんご"),
-}
+# Names a title uses for each language (in English, in the language itself, and in a few others): the catalogue's.
+def _language_words() -> dict[str, tuple[str, ...]]:
+    from app.languages.registry import CATALOG
+
+    return {spec.code: spec.names for spec in CATALOG}
+
+
+LANGUAGE_WORDS = _language_words()
 # Other languages channels often teach alongside (English only when it's clearly the subject).
 OTHER_WORDS = (
     "french", "français", "französisch", "francés", "italian", "italiano", "italienisch", "korean", "한국어",

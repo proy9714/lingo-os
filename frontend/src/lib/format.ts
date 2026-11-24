@@ -51,6 +51,46 @@ const GREETINGS: Record<string, [number, string][]> = {
     [18, "こんにちは"],
     [24, "こんばんは"],
   ],
+  zh: [
+    [11, "早上好"],
+    [18, "你好"],
+    [24, "晚上好"],
+  ],
+  hi: [
+    [12, "सुप्रभात"],
+    [18, "नमस्ते"],
+    [24, "शुभ संध्या"],
+  ],
+  ar: [
+    [12, "صباح الخير"],
+    [24, "مساء الخير"],
+  ],
+  fr: [
+    [18, "Bonjour"],
+    [24, "Bonsoir"],
+  ],
+  bn: [
+    [12, "সুপ্রভাত"],
+    [24, "নমস্কার"],
+  ],
+  pt: [
+    [12, "Bom dia"],
+    [19, "Boa tarde"],
+    [24, "Boa noite"],
+  ],
+  ru: [
+    [12, "Доброе утро"],
+    [18, "Добрый день"],
+    [24, "Добрый вечер"],
+  ],
+  ko: [
+    [24, "안녕하세요"],
+  ],
+  it: [
+    [13, "Buongiorno"],
+    [18, "Buon pomeriggio"],
+    [24, "Buonasera"],
+  ],
 };
 
 export function greeting(lang: string, hour = new Date().getHours()): string {

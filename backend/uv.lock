@@ -469,6 +469,15 @@ wheels = [
 ]
 
 [[package]]
+name = "dawg2-python"
+version = "0.9.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/2d/03/85171ce1e59088237aebf21943d1136463f6422820f096ac8cf9322aa851/dawg2_python-0.9.0.tar.gz", hash = "sha256:adea0312acd1a958659e8448ce6899046c0858d0b6c8949a51eebdeb5a113e4a", size = 10278, upload-time = "2025-02-17T13:22:24.261Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/84/3b/7fb4c1a8df59cb80f5f7ecb9646280e000f9ba2ccff8710205dc9aa4604f/dawg2_python-0.9.0-py3-none-any.whl", hash = "sha256:4fab6fc097bd176cd783cd8421b757348ea5a460789e53b0f6bb64831380bab5", size = 9331, upload-time = "2025-02-17T13:22:22.858Z" },
+]
+
+[[package]]
 name = "de-core-news-sm"
 version = "3.8.0"
 source = { url = "https://github.com/explosion/spacy-models/releases/download/de_core_news_sm-3.8.0/de_core_news_sm-3.8.0-py3-none-any.whl" }
@@ -744,12 +753,16 @@ dependencies = [
     { name = "fastapi" },
     { name = "fugashi" },
     { name = "pydantic" },
+    { name = "pymorphy3" },
+    { name = "pymorphy3-dicts-ru" },
     { name = "pypdf" },
+    { name = "pypinyin" },
     { name = "python-dotenv" },
     { name = "python-multipart" },
     { name = "pyyaml" },
     { name = "rich" },
     { name = "spacy" },
+    { name = "spacy-pkuseg" },
     { name = "sqlalchemy" },
     { name = "trafilatura" },
     { name = "typer" },
@@ -774,12 +787,16 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.115" },
     { name = "fugashi", specifier = ">=1.5" },
     { name = "pydantic", specifier = ">=2.9" },
+    { name = "pymorphy3", specifier = ">=2.0" },
+    { name = "pymorphy3-dicts-ru", specifier = ">=2.4" },
     { name = "pypdf", specifier = ">=5" },
+    { name = "pypinyin", specifier = ">=0.55" },
     { name = "python-dotenv", specifier = ">=1.0" },
     { name = "python-multipart", specifier = ">=0.0.12" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "rich", specifier = ">=13.9" },
     { name = "spacy", specifier = ">=3.8,<3.9" },
+    { name = "spacy-pkuseg", specifier = ">=1.0,<2" },
     { name = "sqlalchemy", specifier = ">=2.0.36" },
     { name = "trafilatura", specifier = ">=2" },
     { name = "typer", specifier = ">=0.15" },
@@ -1267,12 +1284,44 @@ wheels = [
 ]
 
 [[package]]
+name = "pymorphy3"
+version = "2.0.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "dawg2-python" },
+    { name = "pymorphy3-dicts-ru" },
+    { name = "setuptools" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/17/63/3a1eabd3a7e6e060b69a87fe9c28fe89f75f4d49e55f0caf2e29c943c003/pymorphy3-2.0.6.tar.gz", hash = "sha256:1603df3bc9e116967c990607f5b97d42fb1c572d6839b851af3501e51d7f5493", size = 97681, upload-time = "2025-10-09T16:06:18.718Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/18/4b/59bac03278033e293d1405ed42fb6c6252c25f40c50f509c615caeaa3b71/pymorphy3-2.0.6-py3-none-any.whl", hash = "sha256:0254317c02ce3ea17e080b7fc9d675e44662b3a5296bae68605b7a41d25b36c3", size = 53900, upload-time = "2025-10-09T16:06:17.721Z" },
+]
+
+[[package]]
+name = "pymorphy3-dicts-ru"
+version = "2.4.417150.4580142"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ba/13/02ffe6893a777add5c8a43f212f31a3f6a03e7d44a484cf7b5ac5381fddb/pymorphy3-dicts-ru-2.4.417150.4580142.tar.gz", hash = "sha256:39ab379d4ca905bafed50f5afc3a3de6f9643605776fbcabc4d3088d4ed382b0", size = 8381569, upload-time = "2022-01-08T22:17:37.581Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b0/67/469e9e52d046863f5959928794d3067d455a77f580bf4a662630a43eb426/pymorphy3_dicts_ru-2.4.417150.4580142-py2.py3-none-any.whl", hash = "sha256:718bac64c73c10c16073a199402657283d9b64c04188b694f6d3e9b0d85440f4", size = 8442043, upload-time = "2022-01-08T22:17:34.282Z" },
+]
+
+[[package]]
 name = "pypdf"
 version = "7.1.1"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/96/5f/f41984a8150ec37c6ee50fa6fa1868d065337b65ba510a155848b2ce0b62/pypdf-7.1.1.tar.gz", hash = "sha256:2eff4e2fc5fb22a6d6711e6f1166cdc9ab5765d90cd0d77dfea3f4aa91a27b1d", size = 7221452, upload-time = "2026-11-18T11:51:08.608Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5b/ef/11ed995bd10a1632f7fea3da38ae8d42bc3ccc5b9969fe04d8620c844408/pypdf-7.1.1-py3-none-any.whl", hash = "sha256:04c5680d4b4cfa04ab505b09393fc949860c34a4dad6565284d11a2f5c3ce8b1", size = 421026, upload-time = "2026-11-18T11:51:06.563Z" },
+]
+
+[[package]]
+name = "pypinyin"
+version = "0.55.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b4/a4/784cf98c09e0dc22776b0d7d8a4a5b761218bcae4608c2416ce1e167c8af/pypinyin-0.55.0.tar.gz", hash = "sha256:b5711b3a0c6f76e67408ec6b2e3c4987a3a806b7c528076e7c7b86fcf0eaa66b", size = 839836, upload-time = "2025-07-20T12:01:50.657Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b9/7b/4cabc76fcc21c3c7d5c671d8783984d30ac9d3bb387c4ba784fca3cdfa3a/pypinyin-0.55.0-py2.py3-none-any.whl", hash = "sha256:d53b1e8ad2cdb815fb2cb604ed3123372f5a28c6f447571244aca36fc62a286f", size = 840203, upload-time = "2025-07-20T12:01:48.535Z" },
 ]
 
 [[package]]
@@ -1523,6 +1572,34 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/67/3d/926db774c9c98acf66cb4ed7faf6c377746f3e00b84b700d0868b95d0712/spacy-loggers-1.0.5.tar.gz", hash = "sha256:d60b0bdbf915a60e516cc2e653baeff946f0cfc461b452d11a4d5458c6fe5f24", size = 20811, upload-time = "2023-09-11T12:26:52.323Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/33/78/d1a1a026ef3af911159398c939b1509d5c36fe524c7b644f34a5146c4e16/spacy_loggers-1.0.5-py3-none-any.whl", hash = "sha256:196284c9c446cc0cdb944005384270d775fdeaf4f494d8e269466cfa497ef645", size = 22343, upload-time = "2023-09-11T12:26:50.586Z" },
+]
+
+[[package]]
+name = "spacy-pkuseg"
+version = "1.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "srsly" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/da/55/9e9cd1063425bb9237196093b0586e221d307247a8dc25d2121882d65d73/spacy_pkuseg-1.0.2.tar.gz", hash = "sha256:20aea9aaece9fcba8e8f295b55b463bf80cd930039a8b600a51346fa73a58697", size = 2206160, upload-time = "2026-10-26T19:37:07.143Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/15/25/37f5bf50eb5b81bfd7284feeea5fb739c4f3966d7c2f7e789f9252447d67/spacy_pkuseg-1.0.2-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:ba11c23625f9e77d81f1956fbca651af20693dfcdb013b8b3384c59de1b46cfd", size = 2517042, upload-time = "2026-10-26T19:36:02.09Z" },
+    { url = "https://files.pythonhosted.org/packages/91/3a/b100b60a13afda6dc745ce4d58b56a1c05a50b02dd12359b0a8e5b3d3265/spacy_pkuseg-1.0.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:38c61cd113729eff6cb96609e154dca13bf43c49e6f5f15dae7de2a86541b61f", size = 2506610, upload-time = "2026-10-26T19:36:03.999Z" },
+    { url = "https://files.pythonhosted.org/packages/86/2b/6e4c5914fe4494aca0e393b2ba7df0f2c22f6429b9781d5cce124e6ade1e/spacy_pkuseg-1.0.2-cp312-cp312-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:2ecb1d65e17a4d97866e19a296efe3b26c087513fbd598c933c5e78d15b4672e", size = 4244193, upload-time = "2026-10-26T19:36:06.369Z" },
+    { url = "https://files.pythonhosted.org/packages/43/1a/d227b40182bf1b3e6ebe72ea4e5d1ac7ca94d8d5b670cd6633bcd78d2d9c/spacy_pkuseg-1.0.2-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:8bb338346b1ae92423f447f2fba4ab2dd3d7fc241ac99e0e993fbd7920db3a85", size = 4306932, upload-time = "2026-10-26T19:36:08.294Z" },
+    { url = "https://files.pythonhosted.org/packages/53/f6/cfac530328c488f3256e3c82d372b97e20bc322679404e18797659774d09/spacy_pkuseg-1.0.2-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:3b8a3acc41e580167fd138670d32d03cee34b4b625525bd9e9fcf5f48b60de56", size = 5194935, upload-time = "2026-10-26T19:36:10.438Z" },
+    { url = "https://files.pythonhosted.org/packages/a8/5e/ad4490079368f6054f84b23eb0cb1e6c1cbdfdf57058ce638b1d311a2ee3/spacy_pkuseg-1.0.2-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:a59a438cdb8179b5169630cca2e129860454a0f8e6d1b6e6f5e2efbf63aa916d", size = 5334241, upload-time = "2026-10-26T19:36:12.865Z" },
+    { url = "https://files.pythonhosted.org/packages/82/be/4fc018cbc706f36e7e2cefe2199e56c572aafd25c702550732da9da5ad89/spacy_pkuseg-1.0.2-cp312-cp312-win_amd64.whl", hash = "sha256:e1d68c61b820ce9f6a96fc5165bda77ed0686d26f78594d63c29a86c19f1e0cd", size = 2468005, upload-time = "2026-10-26T19:36:14.934Z" },
+    { url = "https://files.pythonhosted.org/packages/8b/b2/b0009d764e597f1b8b596abe270b102eb82bb4077452a7d0eb075f9af8e9/spacy_pkuseg-1.0.2-cp312-cp312-win_arm64.whl", hash = "sha256:9d144d090f6b581af6b62c6610c39e2418a0bed2b6d08f3efa190d2071395a8b", size = 2441502, upload-time = "2026-10-26T19:36:16.772Z" },
+    { url = "https://files.pythonhosted.org/packages/c9/d5/0b79321a1af26e2c77fe2f72bca9a91c1557a9593a775608e2354f24e865/spacy_pkuseg-1.0.2-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:50445e9dd779d3b24d7e580085667e726e3f47bc7142047fe269e2647f44af2a", size = 2518597, upload-time = "2026-10-26T19:36:18.651Z" },
+    { url = "https://files.pythonhosted.org/packages/7a/d2/404158014db818b1a4594476860ebb5fed7ffe9b21b26247c598e5b2f16d/spacy_pkuseg-1.0.2-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:437d34e1c667d374b18ed6932895198f28485409fe219dc565173601d16b3159", size = 2506551, upload-time = "2026-10-26T19:36:20.445Z" },
+    { url = "https://files.pythonhosted.org/packages/f1/b1/618c0977ca5b409057f97adc796b9322a1ff5c7fc6bbfaa77bb05f38b797/spacy_pkuseg-1.0.2-cp313-cp313-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:1d4864faa6354d4d7225ca69583f2bb25caeba3f9d08d18cbfd40552cba19bbe", size = 4233613, upload-time = "2026-10-26T19:36:22.214Z" },
+    { url = "https://files.pythonhosted.org/packages/2e/c4/a0dec5e6a56ed6f31bcbf321db83c99ac2918ff6c0b6574561e826f1ab72/spacy_pkuseg-1.0.2-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:354017e808b17df9f8f3c8b7c2f61c3e588a55f4e3c8ff28c2c2f0a5105f2642", size = 4300229, upload-time = "2026-10-26T19:36:24.12Z" },
+    { url = "https://files.pythonhosted.org/packages/8f/ea/4a7af7444b642107850c7e11fe22275fc557657da59edb3c5826f9f84514/spacy_pkuseg-1.0.2-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:c7e5ba1e3f9d41c5b02f69bed7f9d600abbf2b5044051367260d087b59b00872", size = 5181752, upload-time = "2026-10-26T19:36:26.041Z" },
+    { url = "https://files.pythonhosted.org/packages/fa/9e/f456c6bebc1539477140fefd4835da89a26bd025f132b9a3284138a544c6/spacy_pkuseg-1.0.2-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:45162ab1cc90e211d9823a5c7ef42ae4e27d2894b73ffb7dcb1fa2aa08c6ff56", size = 5321677, upload-time = "2026-10-26T19:36:28.513Z" },
+    { url = "https://files.pythonhosted.org/packages/34/b6/4b91c7f2b03d6d7fa3636b7333d8cafaa91f90fa52d15203f8f6d8524c39/spacy_pkuseg-1.0.2-cp313-cp313-win_amd64.whl", hash = "sha256:d2ef9b4ae208e5a69282d699711822e9211b0f2eee6c12224f68c3a5426a2e02", size = 2467242, upload-time = "2026-10-26T19:36:30.565Z" },
+    { url = "https://files.pythonhosted.org/packages/f9/ce/7d066528231091a338ea112b9c5e9ddc39a22ba7a007cbda7caf8f44c6a0/spacy_pkuseg-1.0.2-cp313-cp313-win_arm64.whl", hash = "sha256:272ca0932197cc2bd1849b060ff6b0912d3a86f153a384cc933e4b52dc0e3df5", size = 2441190, upload-time = "2026-10-26T19:36:32.303Z" },
 ]
 
 [[package]]

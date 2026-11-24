@@ -9,7 +9,10 @@ def hours_estimate(language: str, total_hours: float, baselines: dict[str, Any])
     roadmap = sorted(baselines.get("roadmap") or [], key=lambda step: step["hours"])
     if not roadmap:
         return {"basis": "hours only", "confidence": "none", "level": None}
-    divisor = float((baselines.get("difficulty_divisor") or {}).get(language, 1.0))
+    from app.languages.registry import get
+
+    spec = get(language)
+    divisor = float((baselines.get("difficulty_divisor") or {}).get(language) or (spec.divisor if spec else 1.0))
     adjusted = total_hours / divisor
 
     current, upcoming = roadmap[0], None

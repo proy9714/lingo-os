@@ -15,6 +15,11 @@ export const LOCALES: Record<string, string> = {
   ru: "ru-RU", de: "de-DE", ja: "ja-JP", ko: "ko-KR", it: "it-IT",
 };
 
+/** The regional variety each language was added with (pt-PT, fr-CA…): voices and speech recognition follow it. */
+export function setSpeechLocales(locales: Record<string, string>): void {
+  Object.assign(LOCALES, locales);
+}
+
 export type SpeechEngine = "neural" | "device";
 let engine: SpeechEngine = "neural";
 /** Set from Settings: neural voices from the laptop, or only this device's own voices. */

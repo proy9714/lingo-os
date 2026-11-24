@@ -32,9 +32,10 @@ async def speak(
     # a short read, not a transaction held open while the voice service answers
     with request.app.state.engine.connect() as conn:
         chosen = voice or tts.chosen_voice(conn, lang)
+        locale = tts.locale_for(conn, lang)
     try:
         if not chosen:
-            chosen = tts.default_voice(await tts.voices_for(cfg, lang))
+            chosen = tts.default_voice(await tts.voices_for(cfg, lang, locale))
         if not chosen:
             raise HTTPException(status_code=404, detail=f"no voice for '{lang}'")
         path = await tts.synthesize(cfg, text, chosen, rate)
@@ -49,8 +50,9 @@ async def voices(
 ) -> dict[str, Any]:
     with request.app.state.engine.connect() as conn:
         chosen, engine = tts.chosen_voice(conn, lang), tts.engine(conn)
+        locale = tts.locale_for(conn, lang)
     try:
-        options = await tts.voices_for(cfg, lang)
+        options = await tts.voices_for(cfg, lang, locale)
         error = None
     except tts.TtsError as exc:
         options, error = [], str(exc)

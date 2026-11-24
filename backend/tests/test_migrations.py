@@ -23,7 +23,7 @@ def _columns(con: sqlite3.Connection, table: str) -> list[tuple]:
 
 def test_migrations_build_the_reference_schema(tmp_path: Path) -> None:
     main_db, dict_db = tmp_path / "lingo.db", tmp_path / "dictionaries.db"
-    assert migrate.apply_migrations(main_db, "main") == ["0001_initial", "0002_job_kinds", "0003_catalog"]
+    assert migrate.apply_migrations(main_db, "main") == ["0001_initial", "0002_job_kinds", "0003_catalog", "0004_languages"]
     assert migrate.apply_migrations(dict_db, "dict") == ["0001_initial"]
 
     reference = sqlite3.connect(":memory:")
@@ -41,7 +41,7 @@ def test_migrations_run_once(tmp_path: Path) -> None:
     db = tmp_path / "lingo.db"
     migrate.apply_migrations(db, "main")
     assert migrate.apply_migrations(db, "main") == []
-    assert migrate.applied(db) == ["0001_initial", "0002_job_kinds", "0003_catalog"]
+    assert migrate.applied(db) == ["0001_initial", "0002_job_kinds", "0003_catalog", "0004_languages"]
 
 
 def test_constraints_match_the_reference_schema(tmp_path: Path) -> None:

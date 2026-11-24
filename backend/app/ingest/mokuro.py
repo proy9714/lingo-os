@@ -190,5 +190,8 @@ def find_volumes(root: Path) -> list[Path]:
 
 
 def block_text(lines: list[str], lang: str) -> str:
-    """Japanese lines join without spaces; other languages with one."""
-    return ("" if lang == "ja" else " ").join(line.strip() for line in lines)
+    """Lines of languages written without spaces (Japanese, Chinese) join directly; others with a space."""
+    from app.languages.registry import get
+
+    spec = get(lang)
+    return ("" if spec and not spec.spaced else " ").join(line.strip() for line in lines)

@@ -7,10 +7,37 @@ export interface Language {
   accent_color: string;
   writing_mode: string;
   enabled: boolean;
+  variant: string;
+  variant_label: string;
+  locale: string;
+  direction: "ltr" | "rtl";
+  accent_ink: string;
+  script: string;
+  spaced: boolean;
+  level_alt: string | null;
+}
+
+export interface CatalogLanguage {
+  code: string;
+  name: string;
+  native_name: string;
+  speakers_millions: number;
+  accent: string;
+  accent_ink: string;
+  direction: "ltr" | "rtl";
+  script: string;
+  available: boolean;
+  added: boolean;
+  variant: string;
+  variants: { id: string; label: string }[];
+  download_mb: number;
+  has_dictionary: boolean;
+  installing: boolean;
+  install: { id: number; status: string; progress: number; result: Record<string, unknown> | null; error: string | null } | null;
 }
 
 export interface Settings {
-  active_language: string;
+  active_language: string | null;
   goals: Record<string, number>;
   tracker_path: string | null;
 }

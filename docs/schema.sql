@@ -27,7 +27,7 @@ PRAGMA foreign_keys = ON;
 -- =====================================================================
 
 CREATE TABLE languages (
-  code             TEXT PRIMARY KEY,                     -- 'de' | 'es' | 'ja'
+  code             TEXT PRIMARY KEY,                     -- 'de', 'zh', 'fr', … (app/languages/registry.py)
   name             TEXT NOT NULL,                        -- 'German'
   native_name      TEXT NOT NULL,                        -- 'Deutsch'
   definition_lang  TEXT NOT NULL DEFAULT 'en',           -- language for glosses/explanations
@@ -35,7 +35,10 @@ CREATE TABLE languages (
                    CHECK (writing_mode IN ('horizontal-tb','vertical-rl')),
   accent_color     TEXT,                                 -- per-language UI tint
   enabled          INTEGER NOT NULL DEFAULT 1,
-  settings_json    TEXT NOT NULL DEFAULT '{}' CHECK (json_valid(settings_json))
+  settings_json    TEXT NOT NULL DEFAULT '{}' CHECK (json_valid(settings_json)),
+  variant          TEXT,                                 -- regional variety, e.g. 'br' Brazil (0004)
+  position         INTEGER NOT NULL DEFAULT 0,           -- order the learner added them in (0004)
+  direction        TEXT NOT NULL DEFAULT 'ltr' CHECK (direction IN ('ltr','rtl'))   -- (0004)
 );
 
 -- UI/runtime preferences editable in Settings. Provider credentials are NOT
@@ -759,7 +762,7 @@ CREATE TABLE jobs (
                 ('analyze_content','fetch_subtitles','transcribe','ocr_manga','extract_text',
                  'extract_clip','import_dictionary','rescore','tutor_postprocess','backup',
                  'fetch_history_captions','update_content','evolve_profile','build_offline_pack',
-                 'verify_candidates')),
+                 'verify_candidates','install_language')),
   lane          TEXT NOT NULL DEFAULT 'cpu' CHECK (lane IN ('cpu','gpu')),
   status        TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued','running','done','failed','cancelled')),
   priority      INTEGER NOT NULL DEFAULT 5,              -- lower runs first

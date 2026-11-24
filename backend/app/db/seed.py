@@ -14,24 +14,21 @@ from app.sync.ids import new_ulid
 
 
 def seed(conn: Connection, cfg: AppConfig) -> None:
-    for lang in cfg.languages:
-        conn.execute(
-            text(
-                "INSERT INTO languages (code, name, native_name, accent_color, writing_mode, enabled) "
-                "VALUES (:code, :name, :native, :accent, :mode, 1) "
-                "ON CONFLICT(code) DO UPDATE SET name = excluded.name, native_name = excluded.native_name, "
-                "accent_color = excluded.accent_color, writing_mode = excluded.writing_mode"
-            ),
-            {
-                "code": lang.code,
-                "name": lang.name,
-                "native": lang.native_name,
-                "accent": lang.accent,
-                "mode": lang.writing_mode,
-            },
-        )
-    settings_store.setdefault(conn, "active_language", cfg.default_language)
-    settings_store.setdefault(conn, "goals", {lang.code: cfg.default_goal_minutes for lang in cfg.languages})
+    from app.config import forget_added_languages
+    from app.services import languages
+
+    if not conn.execute(text("SELECT COUNT(*) FROM languages")).scalar():
+        for code in cfg.starting_languages:  # a brand-new data folder (tests, or codes listed in config/app.yaml)
+            languages.add_row(conn, code, None)
+    languages.refresh_details(conn)
+    forget_added_languages()
+    codes = languages.added_codes(conn)
+    if codes:
+        settings_store.setdefault(conn, "active_language", cfg.default_language if cfg.default_language in codes else codes[0])
+    goals = settings_store.get(conn, "goals", {}) or {}
+    missing = {code: cfg.default_goal_minutes for code in codes if code not in goals}
+    if missing or not settings_store.get(conn, "goals"):
+        settings_store.put(conn, "goals", {**goals, **missing})
     ensure_hub_device(conn, cfg.data_dir)
 
 

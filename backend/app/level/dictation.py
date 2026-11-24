@@ -71,6 +71,15 @@ def score(lang: str, expected: str, typed: str) -> float:
             return 0.0
         matched = sum(block.size for block in SequenceMatcher(None, want, got, autojunk=False).get_matching_blocks())
         return round(matched / len(want), 3)
+    from app.languages.registry import get
+
+    spec = get(lang)
+    if spec and not spec.spaced:  # Chinese: compare character by character
+        want_chars, got_chars = _fold(expected).replace(" ", ""), _fold(typed).replace(" ", "")
+        if not want_chars:
+            return 0.0
+        matched = sum(b.size for b in SequenceMatcher(None, want_chars, got_chars, autojunk=False).get_matching_blocks())
+        return round(matched / len(want_chars), 3)
     want, got = _fold(expected).split(), _fold(typed).split()
     if not want:
         return 0.0

@@ -15,7 +15,7 @@ FIXTURES = Path(__file__).parent / "fixtures"
 @pytest.fixture
 def cfg(tmp_path: Path) -> AppConfig:
     base = load_config(data_dir=tmp_path / "data")
-    return dataclasses.replace(base, tracker_path=FIXTURES / "tracker")
+    return dataclasses.replace(base, tracker_path=FIXTURES / "tracker", starting_languages=("de", "es", "ja"), default_language="de")
 
 
 @pytest.fixture

@@ -1,7 +1,7 @@
 import { type InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 
-import { api } from "./client";
+import { ApiError, api } from "./client";
 import type { FeedPage, Language, Settings, UpNext } from "./types";
 
 export const keys = {
@@ -19,6 +19,42 @@ const ACTIVITY_KEYS = [["today"], ["overview"], ["recent"], ["tracker-flags"]];
 
 export const useSettings = () => useQuery({ queryKey: keys.settings, queryFn: api.settings });
 export const useLanguages = () => useQuery({ queryKey: keys.languages, queryFn: api.languages, staleTime: Infinity });
+
+/** Every language Lingo OS can teach; polls while one is being downloaded, and refreshes yours when it's ready. */
+export function useLanguageCatalog() {
+  const qc = useQueryClient();
+  const query = useQuery({
+    queryKey: ["language-catalog"],
+    queryFn: api.languageCatalog,
+    refetchInterval: (q) => (q.state.data?.some((l) => l.installing) ? 1500 : false),
+  });
+  const installing = query.data?.filter((l) => l.installing).map((l) => l.code).join(",") ?? "";
+  const was = useRef(installing);
+  useEffect(() => {
+    if (was.current && was.current !== installing) {
+      for (const key of [keys.languages, keys.settings, ["today"], ["overview"], ["tts-voices"]]) void qc.invalidateQueries({ queryKey: key });
+    }
+    was.current = installing;
+  }, [installing, qc]);
+  return query;
+}
+
+function useLanguageMutation<TVars, TData>(fn: (vars: TVars) => Promise<TData>) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: fn,
+    onSuccess: () => {
+      for (const key of [keys.languages, keys.settings, ["language-catalog"], ["today"], ["overview"], ["tts-voices"]]) {
+        void qc.invalidateQueries({ queryKey: key });
+      }
+    },
+  });
+}
+
+export const useAddLanguage = () => useLanguageMutation((v: { code: string; variant?: string }) => api.addLanguage(v.code, v.variant));
+export const useRemoveLanguage = () => useLanguageMutation((code: string) => api.removeLanguage(code));
+export const useSetLanguageVariant = () =>
+  useLanguageMutation((v: { code: string; variant: string }) => api.setLanguageVariant(v.code, v.variant));
 export const useOverview = () => useQuery({ queryKey: keys.overview, queryFn: api.overview });
 export const useSystemStatus = () => useQuery({ queryKey: keys.system, queryFn: api.systemStatus });
 export const useTrackerFlags = () => useQuery({ queryKey: keys.flags, queryFn: api.trackerFlags });
@@ -44,7 +80,7 @@ export interface ActiveLanguage {
 export function useActiveLanguage(): ActiveLanguage {
   const settings = useSettings().data;
   const languages = useLanguages().data ?? [];
-  const code = settings?.active_language ?? "de";
+  const code = settings?.active_language ?? languages[0]?.code ?? "";
   return { code, language: languages.find((l) => l.code === code), languages, settings };
 }
 
@@ -397,4 +433,10 @@ export function useRateDifficulty() {
 export const useTaste = (lang: string) => useQuery({ queryKey: ["taste", lang], queryFn: () => api.taste(lang), staleTime: 60_000 });
 
 export const useGrammarReference = (lang: string) =>
-  useQuery({ queryKey: ["grammar", lang], queryFn: () => api.grammarReference(lang), staleTime: Infinity, enabled: Boolean(lang) });
+  useQuery({
+    queryKey: ["grammar", lang],
+    queryFn: () => api.grammarReference(lang),
+    staleTime: Infinity,
+    enabled: Boolean(lang),
+    retry: (count, error) => !(error instanceof ApiError && error.status === 404) && count < 2, // not written yet
+  });
