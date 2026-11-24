@@ -239,6 +239,8 @@ export const api = {
   readProgress: (id: number, page: number, total: number) =>
     request<{ ok: boolean }>(`/api/content/${id}/read-progress`, { method: "POST", body: json({ page, total }) }),
   dismiss: (id: number) => request<{ ok: boolean }>(`/api/content/${id}/dismiss`, { method: "POST" }),
+  markWatched: (id: number, watched = true) =>
+    request<ContentItem>(`/api/content/${id}/watched`, { method: "POST", body: json({ watched }) }),
 
   // Phase 4
   aiStatus: () => request<AiStatus>("/api/ai/status"),

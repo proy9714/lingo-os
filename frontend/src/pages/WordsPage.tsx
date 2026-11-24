@@ -24,12 +24,14 @@ const STATUS_LABEL: Record<WordStatus, string> = {
 
 export function WordsPage() {
   const { code } = useActiveLanguage();
-  const [filter, setFilter] = useState("saved");
+  const [chosen, setFilter] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [debounced, setDebounced] = useState("");
   const [limit, setLimit] = useState(50);
   const [openId, setOpenId] = useState<number | null>(null);
   const summary = useVocabSummary(code).data;
+  // open on Saved, unless nothing is saved yet: then show everything rather than an empty list
+  const filter = chosen ?? (summary && !summary.saved ? "" : "saved");
   const words = useWords(code, filter, debounced, limit);
 
   useEffect(() => {

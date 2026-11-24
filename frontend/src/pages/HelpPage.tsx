@@ -299,6 +299,13 @@ const TOPICS: Topic[] = [
           re-ranked. Rating a few videos you've already watched (Watch → Watched) is the quickest way to tune it. Click a rating
           again to remove it.
         </p>
+        <H3>Already watched it?</H3>
+        <p>
+          Hover a suggestion (or tap it on a phone) and press <strong>✓</strong>, or <strong>Already watched</strong> on Today's
+          top pick: it leaves your suggestions and moves to Watch → Watched. On a video's own page, <strong>Mark as
+          completed</strong> does the same. Both have an <strong>Undo</strong>, and <strong>Not watched yet</strong> on the
+          Watched tab brings a video back.
+        </p>
         <H3>A big catalogue, found in the background</H3>
         <p>
           The app lists whole YouTube channels: those from the Comprehensible Input Wiki, the ones you watch, and new ones whose
@@ -309,7 +316,9 @@ const TOPICS: Topic[] = [
           (a channel that teaches German and Japanese, say) are left out.
         </p>
         <p>
-          Searches start on their own when a list runs low or you scroll to its end, while you keep using the app. A badge{" "}
+          Searches start on their own as soon as you open the app (when a list is low), when a list runs low, or when you scroll
+          to its end, and run while you keep using the app. New finds join Today, Watch and Read as each channel or site is
+          read, without waiting for the whole search to finish. A badge{" "}
           <span className="rounded-lg bg-accent/14 px-2 py-0.5 text-xs font-semibold text-accent">Finding new content</span> shows in
           the top bar while one runs. Articles come from news and learner sites (RSS feeds); sites whose articles suit you get
           most of the reading, including their older articles, and sites that keep turning out too hard are read less. YouTube is

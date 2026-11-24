@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { api } from "../api/client";
-import { useContentMutation } from "../api/hooks";
+import { useDismiss, useMarkWatched } from "../api/hooks";
 import type { UpNextPick } from "../api/types";
+import { displayTitle } from "../lib/nav";
+import { useUi } from "../state/ui";
+import { Icon } from "./Icon";
 import { cx } from "./ui";
 
 /** How an item sits against your level, in plain words, with a colour. */
@@ -114,12 +116,39 @@ export function lengthLabel(pick: UpNextPick): string | null {
   return minutes ? `${minutes} min read` : null;
 }
 
+/** Fade a card out before it leaves the list. Returns a way to bring it back if the change fails. */
+function leave(target: EventTarget): Promise<() => void> {
+  const card = (target as HTMLElement).closest("article");
+  if (!card || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return Promise.resolve(() => {});
+  const animation = card.animate(
+    [
+      { opacity: 1, transform: "none" },
+      { opacity: 0, transform: "scale(0.94)" },
+    ],
+    { duration: 220, easing: "cubic-bezier(0.4, 0, 1, 1)", fill: "forwards" },
+  );
+  return animation.finished.then(
+    () => () => animation.cancel(),
+    () => () => animation.cancel(),
+  );
+}
+
 function DismissButton({ pick, className, labelled }: { pick: UpNextPick; className?: string; labelled?: boolean }) {
-  const dismiss = useContentMutation((id: number) => api.dismiss(id));
+  const dismiss = useDismiss();
+  const showToast = useUi((s) => s.showToast);
   return (
     <button
       type="button"
-      onClick={() => dismiss.mutate(pick.id)}
+      onClick={async (event) => {
+        const restore = await leave(event.currentTarget);
+        dismiss.mutate(pick.id, {
+          onSuccess: () => showToast("Hidden. You won't see it again."),
+          onError: (error) => {
+            restore();
+            showToast(`Couldn't hide it: ${error.message}`);
+          },
+        });
+      }}
       disabled={dismiss.isPending}
       aria-label={labelled ? undefined : `Not interested in ${pick.title}`}
       title="Not interested: hide it"
@@ -127,12 +156,65 @@ function DismissButton({ pick, className, labelled }: { pick: UpNextPick; classN
         "z-10 flex items-center justify-center text-white/85 backdrop-blur-md transition hover:text-white",
         labelled
           ? "min-h-11 rounded-xl bg-white/10 px-4 text-sm font-semibold hover:bg-white/16"
-          : "size-8 rounded-full bg-black/60 text-base opacity-0 hover:bg-black/80 focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100",
+          : HOVER_ICON,
         className,
       )}
     >
       {labelled ? "Not interested" : "×"}
     </button>
+  );
+}
+
+const HOVER_ICON =
+  "size-8 rounded-full bg-black/60 text-base opacity-0 hover:bg-black/80 focus-visible:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100";
+
+/** "Already watched" (or read): it leaves the suggestions and joins your history, with an Undo. */
+export function WatchedButton({ pick, className, labelled }: { pick: UpNextPick; className?: string; labelled?: boolean }) {
+  const mark = useMarkWatched();
+  const showToast = useUi((s) => s.showToast);
+  const label = pick.kind === "video" ? "Already watched" : "Already read";
+  return (
+    <button
+      type="button"
+      onClick={async (event) => {
+        const restore = await leave(event.currentTarget);
+        mark.mutate(
+          { id: pick.id, watched: true },
+          {
+            onSuccess: () =>
+              showToast(pick.kind === "video" ? "Moved to Watched." : "Marked as read.", {
+                label: "Undo",
+                run: () => mark.mutate({ id: pick.id, watched: false }),
+              }),
+            onError: (error) => {
+              restore();
+              showToast(`Couldn't mark it: ${error.message}`);
+            },
+          },
+        );
+      }}
+      disabled={mark.isPending}
+      aria-label={labelled ? undefined : `${label}: ${pick.title}`}
+      title={`${label}: take it off your suggestions`}
+      className={cx(
+        "z-10 flex items-center justify-center gap-1.5 text-white/85 backdrop-blur-md transition hover:text-white",
+        labelled ? "min-h-11 rounded-xl bg-white/10 px-4 text-sm font-semibold hover:bg-white/16" : HOVER_ICON,
+        className,
+      )}
+    >
+      <Icon name="check" size={labelled ? 16 : 15} />
+      {labelled && label}
+    </button>
+  );
+}
+
+/** The two quick actions in a card's top-right corner, shown on hover (always on touch screens). */
+function CardActions({ pick }: { pick: UpNextPick }) {
+  return (
+    <div className="absolute top-2 right-2 z-10 flex gap-1.5">
+      {pick.kind !== "manga" && <WatchedButton pick={pick} />}
+      <DismissButton pick={pick} />
+    </div>
   );
 }
 
@@ -166,12 +248,12 @@ export function PickCard({ pick, className }: { pick: UpNextPick; className?: st
           params={{ itemId: String(pick.id) }}
           className="line-clamp-2 text-[15px] leading-snug font-semibold outline-none after:absolute after:inset-0 after:content-[''] focus-visible:underline"
         >
-          {pick.title}
+          {displayTitle(pick.title)}
         </Link>
         <p className="truncate text-xs text-ink-3">{pick.site || pick.creator || TYPE_LABELS[pick.type]}</p>
         <p className="mt-auto pt-1 text-xs leading-snug text-ink-2">{reasonLine(pick)}</p>
       </div>
-      <DismissButton pick={pick} className="absolute top-2 right-2" />
+      <CardActions pick={pick} />
     </article>
   );
 }
@@ -203,7 +285,7 @@ export function FeaturedCard({ pick }: { pick: UpNextPick }) {
           </span>
           <LevelChip band={pick.band} coverage={pick.coverage} estimated={pick.estimated} className="bg-black/50 text-xs" />
         </div>
-        <h2 className="line-clamp-3 max-w-3xl text-2xl leading-tight font-bold text-white md:text-[32px]">{pick.title}</h2>
+        <h2 className="line-clamp-3 max-w-3xl text-2xl leading-tight font-bold text-white md:text-[32px]">{displayTitle(pick.title)}</h2>
         <p className="text-sm text-white/75">
           {[pick.site || pick.creator, length, ...pick.reasons.filter((r) => !r.endsWith("% known"))].filter(Boolean).join(" · ")}
         </p>
@@ -215,6 +297,7 @@ export function FeaturedCard({ pick }: { pick: UpNextPick }) {
           >
             {pick.kind === "video" && <span aria-hidden="true">▶</span>} {verb}
           </Link>
+          {pick.kind !== "manga" && <WatchedButton pick={pick} labelled />}
           <DismissButton pick={pick} labelled />
         </div>
       </div>
@@ -237,12 +320,16 @@ export function PickRow({ pick }: { pick: UpNextPick }) {
           params={{ itemId: String(pick.id) }}
           className="line-clamp-2 text-sm leading-snug font-semibold outline-none after:absolute after:inset-0 after:content-[''] focus-visible:underline"
         >
-          {pick.title}
+          {displayTitle(pick.title)}
         </Link>
         <div className="flex min-w-0 items-center gap-2">
           <LevelChip band={pick.band} coverage={null} estimated={pick.estimated} />
           <span className="truncate text-xs text-ink-3">{pick.site || pick.creator}</span>
         </div>
+      </div>
+      <div className="absolute top-3 left-3 z-10 flex gap-1">
+        {pick.kind !== "manga" && <WatchedButton pick={pick} className="size-7" />}
+        <DismissButton pick={pick} className="size-7" />
       </div>
     </article>
   );

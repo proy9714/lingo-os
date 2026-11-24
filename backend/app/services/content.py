@@ -138,8 +138,14 @@ def list_items(
     types = ", ".join(f"'{t}'" for t in SHELVES.get(shelf, WATCH_TYPES))
     where = ["ci.language_code = :l", f"ci.type IN ({types})", "ci.status NOT IN ('dismissed', 'archived')"]
     params: dict[str, Any] = {"l": lang, "limit": limit, "offset": offset}
+    order = "COALESCE(ci.last_opened_at, (SELECT MAX(s.started_at) FROM activity_sessions s WHERE s.content_item_id = ci.id), ci.added_at)"
     if state == "watched":
-        where.append("EXISTS (SELECT 1 FROM activity_sessions s WHERE s.content_item_id = ci.id)")
+        # played here or in the tracker, or marked "already watched" / finished
+        where.append("(ci.status = 'finished' OR EXISTS (SELECT 1 FROM activity_sessions s WHERE s.content_item_id = ci.id))")
+        order = (
+            "MAX(COALESCE(ci.finished_at, ''), COALESCE(ci.last_opened_at, ''), "
+            "COALESCE((SELECT MAX(s.started_at) FROM activity_sessions s WHERE s.content_item_id = ci.id), ''), ci.added_at)"
+        )
     elif state == "mine":  # leave out suggestions you haven't opened yet
         where.append(
             "(ci.origin != 'scraper' OR ci.last_opened_at IS NOT NULL "
@@ -157,8 +163,7 @@ def list_items(
     rows = conn.execute(
         text(
             f"SELECT {_ITEM_COLUMNS} {_ITEM_FROM} WHERE {clause} "
-            "ORDER BY COALESCE(ci.last_opened_at, (SELECT MAX(s.started_at) FROM activity_sessions s "
-            "WHERE s.content_item_id = ci.id), ci.added_at) DESC, ci.id DESC LIMIT :limit OFFSET :offset"
+            f"ORDER BY {order} DESC, ci.id DESC LIMIT :limit OFFSET :offset"
         ),
         params,
     ).all()
@@ -178,6 +183,39 @@ def record_progress(conn: Connection, item_id: int, position_ms: int | None, dur
         ),
         {"pos": f"ms:{int(position_ms)}", "prog": progress, "now": to_iso(utc_now()), "id": item_id},
     )
+
+
+def set_watched(conn: Connection, item_id: int, watched: bool) -> dict[str, Any]:
+    """Mark an item as already watched/finished (it leaves the suggestions and joins Watched), or undo that.
+
+    Marking keeps the item's previous status and progress in its metadata, so undoing puts it back exactly.
+    """
+    item = get_item(conn, item_id)
+    meta = item["metadata"]
+    if watched:
+        if item["status"] != "finished":
+            set_metadata(conn, item_id, marked_watched=1, before_mark={"status": item["status"], "progress": item["progress"]})
+        conn.execute(
+            text(
+                "UPDATE content_items SET status = 'finished', progress = 1.0, "
+                "finished_at = COALESCE(finished_at, :now) WHERE id = :id"
+            ),
+            {"now": to_iso(utc_now()), "id": item_id},
+        )
+    elif item["status"] == "finished":
+        before = meta.get("before_mark") or {}
+        status = before.get("status")
+        if status in (None, "finished"):
+            status = "in_progress" if 0.02 < float(before.get("progress") or 0) < 0.9 else "library"
+        progress = float(before.get("progress") or 0) if before else 0.0
+        conn.execute(
+            text("UPDATE content_items SET status = :s, progress = :p, finished_at = NULL WHERE id = :id"),
+            {"s": status, "p": min(progress, 0.89), "id": item_id},
+        )
+        meta.pop("before_mark", None)
+        meta.pop("marked_watched", None)
+        conn.execute(text("UPDATE content_items SET metadata_json = :m WHERE id = :id"), {"m": json.dumps(meta), "id": item_id})
+    return get_item(conn, item_id)
 
 
 def mark_opened(conn: Connection, item_id: int) -> None:

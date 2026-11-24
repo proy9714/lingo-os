@@ -270,6 +270,7 @@ def list_channels(
         with engine.begin() as conn:
             known = known_ids(conn, "youtube", [v.video_id for v in fresh])
             new = 0
+            added: list[int] = []
             for video in fresh:
                 if video.video_id in known or title_key(video.title) in seen_titles or other_language_title(video.title, lang):
                     continue
@@ -279,8 +280,11 @@ def list_channels(
                 )
                 conn.execute(text("UPDATE content_items SET source_id = :s WHERE id = :i"), {"s": source["id"], "i": item_id})
                 content.set_metadata(conn, item_id, discovered_via=f"channel: {source['name']}", channel_url=video.channel_url or source["target"])
+                added.append(item_id)
                 new += 1
             stats["new"] += new
+            # estimate right away, so this channel's finds join the suggestions while the search goes on
+            estimate_scores(conn, lang, added)
             config = {**source["config"], "depth": min(MAX_DEPTH, depth + LIST_PAGE) if found else depth}
             conn.execute(
                 text("UPDATE content_sources SET last_fetched_at = :t, last_status = :s, config_json = :c WHERE id = :i"),
@@ -299,6 +303,7 @@ def add_listings(engine: Engine, lang: str, listings: list[tuple[youtube.Listing
         known = known_ids(conn, "youtube", [v.video_id for v, _ in listings])
         seen_titles = watched_titles(conn, lang)
         new = 0
+        added: list[int] = []
         for video, via in listings:
             if video.video_id in known or title_key(video.title) in seen_titles or other_language_title(video.title, lang):
                 continue
@@ -310,7 +315,9 @@ def add_listings(engine: Engine, lang: str, listings: list[tuple[youtube.Listing
             )
             content.set_metadata(conn, item_id, discovered_via=via, channel_url=video.channel_url)
             known.add(video.video_id)
+            added.append(item_id)
             new += 1
+        estimate_scores(conn, lang, added)
     return new
 
 
@@ -325,8 +332,13 @@ def _label_offset(label: str | None) -> float | None:
     return None
 
 
-def estimate_scores(conn: Connection, lang: str) -> int:
-    """(Re)estimate the level of every candidate video that hasn't been measured. Returns how many have an estimate."""
+def estimate_scores(conn: Connection, lang: str, item_ids: list[int] | None = None) -> int:
+    """(Re)estimate the level of every candidate video that hasn't been measured. Returns how many have an estimate.
+
+    `item_ids` limits it to those videos: used while a search runs, so new finds show up as soon as they're listed.
+    """
+    if item_ids is not None and not item_ids:
+        return 0
     ideal = calibration.ideal(conn, lang, "listening")
     lo, hi = calibration.window(conn, lang, "youtube")
     measured = conn.execute(
@@ -365,6 +377,9 @@ def estimate_scores(conn: Connection, lang: str) -> int:
         ),
         {"l": lang},
     ).all()
+    if item_ids is not None:
+        wanted = set(item_ids)
+        pending = [row for row in pending if row[0] in wanted]
     count = 0
     for item_id, creator, source_id, duration, title in pending:
         if other_language_title(title, lang):

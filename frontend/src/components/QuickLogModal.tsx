@@ -61,12 +61,12 @@ export function QuickLogModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/55 p-3 backdrop-blur-sm sm:items-center" onClick={close}>
+    <div className="anim-fade fixed inset-0 z-40 flex items-end justify-center bg-black/55 p-3 backdrop-blur-sm sm:items-center" onClick={close}>
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="glass-strong max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-3xl p-6"
+        className="anim-dialog glass-strong max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-3xl p-6"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="mb-5 flex items-center justify-between">

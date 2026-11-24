@@ -51,7 +51,9 @@ export function SpeakPage() {
           ))}
         </div>
       </header>
-      {tab === "tutor" ? <TutorPanel lang={code} /> : <ShadowStudio key={code} lang={code} initialClip={clip} />}
+      <div key={tab} className="anim-fade">
+        {tab === "tutor" ? <TutorPanel lang={code} /> : <ShadowStudio key={code} lang={code} initialClip={clip} />}
+      </div>
       <span className="sr-only">{language?.name}</span>
     </div>
   );

@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
+import { BackLink } from "../lib/nav";
 import { api, mangaImage, mediaUrl } from "../api/client";
 import { useContentItem, useContentMutation, useMangaPage, useMangaVocab } from "../api/hooks";
 import type { AnnotatedToken, MangaBlock, MangaPageData, MangaVocabWord } from "../api/types";
@@ -123,9 +124,7 @@ export function MangaViewerPage() {
     <div className="flex flex-col gap-3">
       <header className="flex flex-wrap items-center justify-between gap-2 px-1 pt-1">
         <div className="min-w-0">
-          <Link to="/manga" className="text-xs font-medium text-ink-3 hover:text-ink">
-            ← Volumes
-          </Link>
+          <BackLink to="/manga" label="Volumes" className="text-xs font-medium text-ink-3 hover:text-ink" />
           <h1 className="truncate text-xl font-bold tracking-tight">{item.data?.title ?? " "}</h1>
         </div>
         <div className="flex flex-wrap items-center gap-1.5" role="toolbar" aria-label="Viewer options">

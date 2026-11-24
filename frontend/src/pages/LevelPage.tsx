@@ -192,9 +192,9 @@ function SummaryCard({ data }: { data: LevelOverview }) {
         </>
       ) : (
         <>
-          <div className="text-3xl font-bold">≈ {profile?.vocab_size.toLocaleString("en")} words</div>
+          <div className="text-3xl font-bold">{guessRange(profile?.vocab_size, profile?.confidence)} words</div>
           <p className="mt-1 text-sm text-ink-2">
-            A starting guess from {data.hours_estimate.adjusted_hours} difficulty-adjusted hours (roadmap level {data.hours_estimate.level} of{" "}
+            A rough range (confidence {Math.round((profile?.confidence ?? 0) * 100)}%), guessed from {data.hours_estimate.adjusted_hours} difficulty-adjusted hours (roadmap level {data.hours_estimate.level} of{" "}
             {data.hours_estimate.max_level}). The vocabulary test replaces it with a measurement.
           </p>
         </>
@@ -698,4 +698,12 @@ function SpeakingRunner({ lang, id, initial, onExit }: { lang: string; id: numbe
       )}
     </div>
   );
+}
+
+/** An unmeasured guess as a range that narrows with confidence: never a single exact-looking number. */
+function guessRange(size: number | undefined, confidence: number | undefined): string {
+  if (!size) return "–";
+  const spread = 0.6 * (1 - Math.max(0, Math.min(1, confidence ?? 0)));
+  const round = (n: number) => Math.round(n / 100) * 100;
+  return `${round(size * (1 - spread)).toLocaleString("en")}–${round(size * (1 + spread)).toLocaleString("en")}`;
 }

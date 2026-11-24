@@ -93,6 +93,114 @@ body {
   }
 }
 
+/* ---------- Motion: short, eased, and off for reduced motion (below) ---------- */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes pop {
+  0% {
+    transform: scale(0.92);
+  }
+  60% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+.anim-page {
+  animation: rise-in 0.32s var(--ease-out) both;
+}
+/* cards entering a list; --i staggers them a little */
+.anim-in {
+  animation: rise-in 0.4s var(--ease-out) both;
+  animation-delay: calc(min(var(--i, 0), 12) * 35ms);
+}
+.anim-fade {
+  animation: fade-in 0.25s ease-out both;
+}
+.anim-pop {
+  animation: pop 0.35s var(--ease-spring) both;
+}
+.anim-toast {
+  animation: slide-up 0.3s var(--ease-out) both;
+}
+.anim-dialog {
+  animation: dialog-in 0.28s var(--ease-out) both;
+}
+.anim-panel {
+  animation: slide-up 0.3s var(--ease-out) both;
+}
+@media (min-width: 768px) {
+  .anim-panel {
+    animation-name: slide-in-right;
+  }
+}
+.shimmer {
+  background-image: linear-gradient(100deg, rgb(255 255 255 / 0.04) 30%, rgb(255 255 255 / 0.1) 50%, rgb(255 255 255 / 0.04) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

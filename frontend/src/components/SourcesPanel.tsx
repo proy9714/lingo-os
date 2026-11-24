@@ -55,8 +55,9 @@ export function SourcesPanel({ lang, languageName }: { lang: string; languageNam
         <span>
           Search automatically in the background when suggestions run low
           <span className="block text-xs text-ink-3">
-            Below {pool?.targets.watch ?? 24} videos or {pool?.targets.read ?? 12} articles; at most every 2 hours (12 hours after
-            YouTube refuses).
+            Starts when you open the app and whenever there are fewer than {pool?.targets.watch ?? 150} videos or{" "}
+            {pool?.targets.read ?? 40} articles to suggest: videos at most every 45 minutes, articles every 30 (videos wait 12
+            hours after YouTube refuses). New finds appear while it runs.
             {pool && ` Now: ${pool.pools.watch} videos, ${pool.pools.read} articles suggested.`}
           </span>
         </span>

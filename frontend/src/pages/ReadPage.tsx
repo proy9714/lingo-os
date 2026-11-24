@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { useTabParam } from "../lib/nav";
 import { api } from "../api/client";
 import { useActiveLanguage, useContentMutation, useLibrary, usePool } from "../api/hooks";
 import type { ContentItem } from "../api/types";
@@ -23,7 +24,7 @@ type ReadTab = "for-you" | "shelf";
 
 export function ReadPage() {
   const { code, language } = useActiveLanguage();
-  const [tab, setTab] = useState<ReadTab>("for-you");
+  const [tab, setTab] = useTabParam<ReadTab>(["for-you", "shelf"]);
   const [adding, setAdding] = useState(false);
   const pool = usePool(code).data;
   const shelfCount = useLibrary(code, "read", "mine", "").data?.pages[0]?.total;
@@ -55,7 +56,9 @@ export function ReadPage() {
         ]}
       />
 
-      {tab === "for-you" ? <SuggestionGrid key={code} lang={code} shelf="read" /> : <ShelfTab lang={code} />}
+      <div key={tab} className="anim-fade">
+        {tab === "for-you" ? <SuggestionGrid key={code} lang={code} shelf="read" /> : <ShelfTab lang={code} />}
+      </div>
     </div>
   );
 }

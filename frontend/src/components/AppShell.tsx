@@ -1,4 +1,4 @@
-import { Link, Outlet } from "@tanstack/react-router";
+import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import { useActiveLanguage, useSearchWatcher, useToday, useUpdateSettings } from "../api/hooks";
@@ -21,6 +21,7 @@ export function AppShell() {
   const lookupOpen = useLookupStore((s) => s.selection !== null);
   const closeLookup = useLookupStore((s) => s.close);
   usePhoneSync();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
     document.documentElement.dataset.lang = code;
@@ -52,7 +53,9 @@ export function AppShell() {
         <div className={cx("flex min-w-0 flex-1 flex-col gap-4 transition-[margin]", lookupOpen && "md:mr-[396px]")}>
           <TopBar />
           <main id="main" className="min-w-0">
-            <Outlet />
+            <div key={pathname} className="anim-page">
+              <Outlet />
+            </div>
           </main>
         </div>
       </div>
@@ -71,7 +74,7 @@ function SideRail() {
   return (
     <nav
       aria-label="Main"
-      className="glass sticky top-4 hidden h-[calc(100dvh-2rem)] w-[88px] shrink-0 flex-col items-center gap-1.5 overflow-y-auto rounded-[20px] py-4 md:flex"
+      className="glass sticky top-4 hidden h-[calc(100dvh-2rem)] w-[88px] shrink-0 flex-col items-center gap-1.5 overflow-x-hidden overflow-y-auto rounded-[20px] py-4 [scrollbar-width:none] md:flex [&::-webkit-scrollbar]:hidden"
     >
       <div
         aria-hidden="true"

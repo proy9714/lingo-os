@@ -223,3 +223,27 @@ def test_videos_about_another_language_are_left_out() -> None:
     assert not catalog.other_language_title("Japanisch für Deutsche: Folge 3 | Deutsch", "de")  # names German too
     assert catalog.other_language_title("Aprende alemán: Lección 1", "es")
     assert not catalog.other_language_title("Mi vida en Japón", "es")
+
+
+def test_already_watched_leaves_the_suggestions_and_can_be_undone(client) -> None:
+    engine = client.app.state.engine
+    with engine.begin() as conn:
+        a = _video(conn, "Reise 1", "Reisekanal", coverage=0.93, status="candidate", origin="scraper")
+        conn.execute(text("UPDATE content_items SET progress = 0.4 WHERE id = :i"), {"i": a})
+
+    def feed_ids() -> list[int]:
+        return [i["id"] for i in client.get("/api/feed", params={"lang": "de", "shelf": "watch"}).json()["items"]]
+
+    def watched_ids() -> list[int]:
+        params = {"lang": "de", "shelf": "watch", "state": "watched"}
+        return [i["id"] for i in client.get("/api/content", params=params).json()["items"]]
+
+    assert a in feed_ids() and a not in watched_ids()
+    marked = client.post(f"/api/content/{a}/watched", json={"watched": True}).json()
+    assert marked["status"] == "finished" and marked["metadata"]["marked_watched"] == 1
+    assert a not in feed_ids() and a in watched_ids()
+
+    undone = client.post(f"/api/content/{a}/watched", json={"watched": False}).json()
+    assert undone["status"] == "candidate" and undone["progress"] == 0.4 and "marked_watched" not in undone["metadata"]
+    assert a in feed_ids() and a not in watched_ids()
+    assert client.post("/api/content/999999/watched", json={"watched": True}).status_code == 404

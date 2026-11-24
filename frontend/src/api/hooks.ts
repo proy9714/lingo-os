@@ -1,8 +1,8 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { type InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 
 import { api } from "./client";
-import type { Language, Settings } from "./types";
+import type { FeedPage, Language, Settings, UpNext } from "./types";
 
 export const keys = {
   settings: ["settings"] as const,
@@ -157,6 +157,43 @@ export function useContentMutation<TVars, TData>(fn: (vars: TVars) => Promise<TD
   });
 }
 
+const SUGGESTION_KEYS = [["feed"], ["recommend"], ["content"], ["content-item"], ["discover-pool"], ["taste"], ["evidence"]];
+
+/** Take an item off every suggestion list in the cache at once, before the server answers. */
+async function removeFromSuggestions(qc: ReturnType<typeof useQueryClient>, id: number) {
+  await Promise.all([qc.cancelQueries({ queryKey: ["feed"] }), qc.cancelQueries({ queryKey: ["recommend"] })]);
+  qc.setQueriesData<InfiniteData<FeedPage>>({ queryKey: ["feed"] }, (data) =>
+    data ? { ...data, pages: data.pages.map((p) => ({ ...p, items: p.items.filter((i) => i.id !== id) })) } : data,
+  );
+  qc.setQueriesData<UpNext>({ queryKey: ["recommend"] }, (data) => (data ? { ...data, picks: data.picks.filter((i) => i.id !== id) } : data));
+}
+
+/** Not interested: hidden from suggestions for good. */
+export function useDismiss() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => api.dismiss(id),
+    onMutate: (id) => removeFromSuggestions(qc, id),
+    onSettled: () => {
+      for (const key of SUGGESTION_KEYS) void qc.invalidateQueries({ queryKey: key });
+    },
+  });
+}
+
+/** Mark something as already watched (or undo it). It leaves the suggestions at once and joins the Watched tab. */
+export function useMarkWatched() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (v: { id: number; watched: boolean }) => api.markWatched(v.id, v.watched),
+    onMutate: async ({ id, watched }) => {
+      if (watched) await removeFromSuggestions(qc, id);
+    },
+    onSettled: () => {
+      for (const key of SUGGESTION_KEYS) void qc.invalidateQueries({ queryKey: key });
+    },
+  });
+}
+
 export const useLogManual = () => useActivityMutation(api.logManual);
 export const useImportTracker = () => useActivityMutation((path?: string) => api.importTracker(path));
 export const useCountFlag = () => useActivityMutation(api.countFlag);
@@ -270,30 +307,70 @@ export function useTopUp(lang: string) {
   });
 }
 
-/** Ask for a background top-up once when a page with suggestions opens (the server decides if one is needed). */
+/**
+ * Ask for a background top-up once per language when the app opens (the server decides if one is needed). Retried
+ * until the server answers: on a cold start the page often loads before the API is up.
+ */
 export function useAutoTopUp(lang: string) {
-  const topUp = useTopUp(lang);
+  const qc = useQueryClient();
   const asked = useRef<string | null>(null);
+  const topUp = useMutation({
+    mutationFn: (code: string) => api.topUp(code, {}),
+    retry: 8,
+    retryDelay: (attempt) => Math.min(1500 * 2 ** attempt, 15_000),
+    onSuccess: (data, code) => {
+      qc.setQueryData(["discover-pool", code], data);
+      void qc.invalidateQueries({ queryKey: ["discover-status"] });
+    },
+    onError: (_error, code) => {
+      if (asked.current === code) asked.current = null; // try again on the next render
+    },
+  });
+  const { mutate } = topUp;
   useEffect(() => {
     if (lang && asked.current !== lang) {
       asked.current = lang;
-      topUp.mutate({});
+      mutate(lang);
     }
-  }, [lang, topUp]);
+  }, [lang, mutate]);
 }
 
-/** When a background search finishes, refresh everything that shows suggestions. Mounted once, in the app shell. */
+/**
+ * The background search, mounted once in the app shell: asks for a top-up as soon as the app opens (the server decides
+ * if one is needed), pulls new finds into the suggestion lists while the search is still running, and refreshes
+ * everything when it finishes.
+ */
 export function useSearchWatcher(lang: string) {
   const qc = useQueryClient();
   const pool = usePool(lang);
+  useAutoTopUp(lang);
   const searching = pool.data?.searching;
+  const sizes = pool.data ? `${pool.data.pools.watch}/${pool.data.pools.read}/${pool.data.estimated}` : "";
   const was = useRef(searching);
+  const seen = useRef(sizes);
+  const lastPull = useRef(0);
+
   useEffect(() => {
     if (was.current && searching === false) {
       for (const key of [["feed"], ["recommend"], ["content"], ["discover-status"]]) void qc.invalidateQueries({ queryKey: key });
     }
     was.current = searching;
   }, [searching, qc]);
+
+  // While it runs: each time the pool grows, show the new finds (at most every 8 s, so lists don't jump constantly).
+  useEffect(() => {
+    if (!searching || !sizes) {
+      seen.current = sizes;
+      return;
+    }
+    if (sizes === seen.current || Date.now() - lastPull.current < 8000) return;
+    seen.current = sizes;
+    lastPull.current = Date.now();
+    void qc.invalidateQueries({ queryKey: ["feed", lang] });
+    // keep Today's big pick steady while you look at it; only fill it in when it's still empty
+    const upNext = qc.getQueryData<UpNext>(["recommend", lang]);
+    if (!upNext || upNext.picks.length < 5) void qc.invalidateQueries({ queryKey: ["recommend", lang] });
+  }, [searching, sizes, pool.dataUpdatedAt, lang, qc]);
   return pool;
 }
 

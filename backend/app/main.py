@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+import threading
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -51,6 +53,9 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
             port = int(settings_store.get(conn, "sync.port", SYNC_PORT))
         if sync_on:
             devices.start_listener(app_, cfg, port)
+        if runner:
+            # in a thread: ranking a big catalogue the first time takes a few seconds, the server shouldn't wait
+            threading.Thread(target=_top_up_on_start, args=(engine, cfg.default_language), daemon=True).start()
         yield
         app_.state.sync_listener.stop()
         if runner:
@@ -68,6 +73,19 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
 
     _serve_frontend(app, cfg.frontend_dist)
     return app
+
+
+def _top_up_on_start(engine: Engine, default_language: str) -> None:
+    """Opening the app starts the background search for new content at once (if suggestions are low and it's due),
+    so new finds trickle in while you use the app instead of waiting for a page to ask."""
+    from app.services import topup
+
+    try:
+        with engine.begin() as conn:
+            lang = settings_store.get(conn, "active_language", default_language)
+            topup.maybe_top_up(conn, lang)
+    except Exception:  # noqa: BLE001 - never stop the app from starting over a search
+        logging.getLogger(__name__).exception("starting the background search failed")
 
 
 def _serve_frontend(app: FastAPI, dist: Path) -> None:

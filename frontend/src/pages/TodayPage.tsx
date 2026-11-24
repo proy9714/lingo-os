@@ -3,7 +3,6 @@ import { useMemo } from "react";
 
 import {
   useActiveLanguage,
-  useAutoTopUp,
   useFeed,
   useImportTracker,
   useLevelOverview,
@@ -39,7 +38,6 @@ export function TodayPage() {
   const today = useToday(code);
   const overview = useOverview();
   const recent = useRecent(code);
-  useAutoTopUp(code);
 
   const all = overview.data?.languages ?? [];
   const current = all.find((entry) => entry.language === code);

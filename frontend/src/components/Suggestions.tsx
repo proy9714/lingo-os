@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef } from "react";
 
-import { useAutoTopUp, useFeed, usePool, useTopUp } from "../api/hooks";
+import { useFeed, usePool, useTopUp } from "../api/hooks";
 import type { PoolStatus, UpNextPick } from "../api/types";
 import { useInfiniteSentinel } from "../lib/useInfiniteSentinel";
 import { PickCard } from "./cards";
@@ -35,11 +35,11 @@ export function SearchPill({ pool }: { pool: PoolStatus | undefined }) {
   return (
     <div
       role="status"
-      title={`Looking for new content at your level: ${message}`}
+      title={`${pool.job?.kind === "verify_candidates" ? "Measuring the best new videos" : "Looking for new content at your level"}: ${message}`}
       className="flex min-h-10 items-center gap-2 rounded-xl bg-accent/14 px-3 text-xs font-semibold text-accent"
     >
       <Spinner />
-      <span className="hidden sm:inline">Finding new content</span>
+      <span className="hidden sm:inline">{pool.job?.kind === "verify_candidates" ? "Checking levels" : "Finding new content"}</span>
       <span className="tabular-nums">{Math.round((pool.job?.progress ?? 0) * 100)}%</span>
     </div>
   );
@@ -67,7 +67,6 @@ export function SuggestionGrid({ lang, shelf }: { lang: string; shelf: "watch" |
   const feed = useFeed(lang, shelf);
   const pool = usePool(lang);
   const topUp = useTopUp(lang);
-  useAutoTopUp(lang);
   const items = useMemo(() => flatten(feed.data?.pages), [feed.data]);
   const sentinel = useInfiniteSentinel(
     () => {
@@ -86,15 +85,6 @@ export function SuggestionGrid({ lang, shelf }: { lang: string; shelf: "watch" |
       topUp.mutate({ shelf, atEnd: true });
     }
   }, [atEnd, items.length, topUp]);
-
-  // While a search runs and there's little to show, pick up new finds as they arrive.
-  const searching = pool.data?.searching;
-  const refetch = feed.refetch;
-  useEffect(() => {
-    if (!searching || items.length >= 12) return;
-    const timer = window.setInterval(() => void refetch(), 12_000);
-    return () => window.clearInterval(timer);
-  }, [searching, items.length, refetch]);
 
   if (feed.isError) {
     return (
@@ -125,8 +115,8 @@ export function SuggestionGrid({ lang, shelf }: { lang: string; shelf: "watch" |
       ) : (
         items.length > 0 && (
           <ul className={GRID}>
-            {items.map((pick) => (
-              <li key={pick.id}>
+            {items.map((pick, n) => (
+              <li key={pick.id} className="anim-in" style={{ "--i": n % 24 } as React.CSSProperties}>
                 <PickCard pick={pick} />
               </li>
             ))}
@@ -167,7 +157,7 @@ function FeedEnd({
           <Spinner /> Looking for more {noun} at your level…
         </div>
         <p className="mt-1.5 text-sm text-ink-2">
-          This runs in the background: keep browsing or watching. New finds appear here {count > 0 ? "when it's done" : "as they're found"}.
+          This runs in the background: keep browsing or watching. New finds join the list as they're found.
         </p>
         <div className="mt-3 max-w-md">
           <ProgressBar value={pool.job?.progress ?? 0} label="Search progress" />
@@ -269,8 +259,8 @@ export function SuggestionRow({
           ref={scroller}
           className="-mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-3 [scrollbar-color:rgb(255_255_255/0.18)_transparent] [scrollbar-width:thin]"
         >
-          {items.map((pick) => (
-            <li key={pick.id} className="w-[min(78vw,280px)] shrink-0 snap-start">
+          {items.map((pick, n) => (
+            <li key={pick.id} className="anim-in w-[min(78vw,280px)] shrink-0 snap-start" style={{ "--i": n } as React.CSSProperties}>
               <PickCard pick={pick} />
             </li>
           ))}

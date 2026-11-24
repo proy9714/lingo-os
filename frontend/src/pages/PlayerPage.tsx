@@ -1,18 +1,21 @@
 import { useMutation } from "@tanstack/react-query";
-import { Link, useNavigate, useParams } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { api } from "../api/client";
-import { useContentItem, useContentMutation, useTranscript } from "../api/hooks";
+import { useContentItem, useContentMutation, useMarkWatched, useTranscript } from "../api/hooks";
 import type { TranscriptCue } from "../api/types";
 import { BANDS } from "../components/cards";
 import { DifficultyRating } from "../components/DifficultyRating";
 import { MediaPlayer, type PlayerControls } from "../components/MediaPlayer";
 import { TokenLine } from "../components/TokenLine";
+import { Icon } from "../components/Icon";
 import { Button, Chip, Panel, Skeleton, cx } from "../components/ui";
+import { BackLink, displayTitle } from "../lib/nav";
 import { useTracker } from "../lib/useTracker";
 import { useLookupStore } from "../state/lookup";
 import { useShadowTarget } from "../state/shadow";
+import { useUi } from "../state/ui";
 
 const SPEEDS = [0.75, 0.9, 1, 1.25];
 
@@ -148,23 +151,24 @@ export function PlayerPage() {
     <div className="flex flex-col gap-4">
       <header className="flex flex-wrap items-start justify-between gap-3 px-1 pt-1">
         <div className="min-w-0">
-          <Link to="/watch" className="text-sm text-ink-2 hover:text-ink">
-            ← All videos
-          </Link>
-          <h1 className="mt-1 text-xl leading-snug font-bold md:text-2xl">{data.title}</h1>
+          <BackLink to="/watch" label="All videos" className="text-sm text-ink-2 hover:text-ink" />
+          <h1 className="mt-1 text-xl leading-snug font-bold md:text-2xl">{displayTitle(data.title)}</h1>
           <p className="mt-1 text-sm text-ink-2">
             {data.creator ?? "Local file"}
             {data.transcript_kind && ` · transcript: ${data.transcript_kind === "auto_caption" ? "YouTube automatic captions" : data.transcript_kind === "manual" ? "uploaded subtitles" : "your subtitle file"}`}
           </p>
         </div>
-        {summary?.known_share != null && (
-          <div className="flex flex-wrap gap-1.5">
-            <Chip tone="accent">≈ {Math.round(summary.known_share * 100)}% known</Chip>
-            {data.band && BANDS[data.band] && <Chip>{BANDS[data.band].label} for you</Chip>}
-            <Chip>{summary.new_words} likely new</Chip>
-            {data.speech_wpm && <Chip>{Math.round(data.speech_wpm)} words/min</Chip>}
-          </div>
-        )}
+        <div className="flex flex-wrap items-center gap-1.5">
+          {summary?.known_share != null && (
+            <>
+              <Chip tone="accent">≈ {Math.round(summary.known_share * 100)}% known</Chip>
+              {data.band && BANDS[data.band] && <Chip>{BANDS[data.band].label} for you</Chip>}
+              <Chip>{summary.new_words} likely new</Chip>
+              {data.speech_wpm && <Chip>{Math.round(data.speech_wpm)} words/min</Chip>}
+            </>
+          )}
+          <CompletedButton id={id} finished={data.status === "finished"} onDone={() => controls.current?.pause()} />
+        </div>
       </header>
 
       <div className="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
@@ -291,6 +295,44 @@ export function PlayerPage() {
       </div>
       <p className="px-1 text-xs text-ink-3">Space play/pause · ← → previous/next line · R replay line. Watching time counts only while playing.</p>
     </div>
+  );
+}
+
+/** Mark the video completed (it joins Watched and is never suggested again), or take that back. */
+function CompletedButton({ id, finished, onDone }: { id: number; finished: boolean; onDone: () => void }) {
+  const mark = useMarkWatched();
+  const showToast = useUi((s) => s.showToast);
+  const toggle = () =>
+    mark.mutate(
+      { id, watched: !finished },
+      {
+        onSuccess: () => {
+          if (finished) showToast("Marked as not completed.");
+          else {
+            onDone();
+            showToast("Completed: it's in your Watched list.", { label: "Undo", run: () => mark.mutate({ id, watched: false }) });
+          }
+        },
+        onError: (error) => showToast(`Couldn't save that: ${error.message}`),
+      },
+    );
+  return (
+    <button
+      type="button"
+      aria-pressed={finished}
+      onClick={toggle}
+      disabled={mark.isPending}
+      title={finished ? "Completed. Click to undo" : "Mark this video as completed"}
+      className={cx(
+        "ml-1 inline-flex min-h-10 items-center gap-2 rounded-xl px-3.5 text-sm font-semibold transition disabled:opacity-60",
+        finished
+          ? "anim-pop border border-emerald-400/40 bg-emerald-400/15 text-good hover:bg-emerald-400/22"
+          : "border border-white/16 bg-white/8 text-ink hover:bg-white/12",
+      )}
+    >
+      <Icon name="check" size={16} />
+      {finished ? "Completed" : "Mark as completed"}
+    </button>
   );
 }
 

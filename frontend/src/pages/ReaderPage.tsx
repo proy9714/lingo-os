@@ -1,6 +1,7 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { BackLink } from "../lib/nav";
 import { api } from "../api/client";
 import { useContentItem, usePageList, useReaderPage } from "../api/hooks";
 import { DifficultyRating } from "../components/DifficultyRating";
@@ -106,9 +107,7 @@ export function ReaderPage() {
     <div ref={top} className="flex scroll-mt-24 flex-col gap-4">
       <header className="flex flex-wrap items-end justify-between gap-3 px-1 pt-1">
         <div className="min-w-0">
-          <Link to="/read" className="text-xs font-medium text-ink-3 hover:text-ink">
-            ← Shelf
-          </Link>
+          <BackLink to="/read" label="Read" className="text-xs font-medium text-ink-3 hover:text-ink" />
           <h1 className="mt-1 text-2xl font-bold tracking-tight">{item.data?.title ?? " "}</h1>
           {item.data?.creator && <p className="mt-1 text-sm text-ink-2">{item.data.creator}</p>}
         </div>

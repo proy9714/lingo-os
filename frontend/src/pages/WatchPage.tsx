@@ -2,19 +2,21 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 
 import { api } from "../api/client";
-import { useActiveLanguage, useContentMutation, useEvidence, useLibrary, usePool } from "../api/hooks";
+import { useActiveLanguage, useContentMutation, useEvidence, useLibrary, useMarkWatched, usePool } from "../api/hooks";
 import type { ContentItem } from "../api/types";
 import { DifficultyRating } from "../components/DifficultyRating";
 import { GRID, SuggestionGrid } from "../components/Suggestions";
 import { Button, Chip, Panel, PanelTitle, ProgressBar, Skeleton, Tabs } from "../components/ui";
 import { formatDay, localDayOf } from "../lib/format";
+import { displayTitle, useTabParam } from "../lib/nav";
+import { useUi } from "../state/ui";
 import { useInfiniteSentinel } from "../lib/useInfiniteSentinel";
 
 type WatchTab = "for-you" | "watched";
 
 export function WatchPage() {
   const { code, language } = useActiveLanguage();
-  const [tab, setTab] = useState<WatchTab>("for-you");
+  const [tab, setTab] = useTabParam<WatchTab>(["for-you", "watched"]);
   const [adding, setAdding] = useState(false);
   const pool = usePool(code).data;
   const watched = useLibrary(code, "watch", "watched", "").data?.pages[0]?.total;
@@ -34,7 +36,11 @@ export function WatchPage() {
         </Button>
       </header>
 
-      {adding && <AddVideoPanel lang={code} />}
+      {adding && (
+        <div className="anim-in">
+          <AddVideoPanel lang={code} />
+        </div>
+      )}
 
       <Tabs<WatchTab>
         label="Videos"
@@ -46,7 +52,9 @@ export function WatchPage() {
         ]}
       />
 
-      {tab === "for-you" ? <SuggestionGrid key={code} lang={code} shelf="watch" /> : <WatchedTab lang={code} />}
+      <div key={tab} className="anim-fade">
+        {tab === "for-you" ? <SuggestionGrid key={code} lang={code} shelf="watch" /> : <WatchedTab lang={code} />}
+      </div>
     </div>
   );
 }
@@ -159,8 +167,8 @@ function WatchedTab({ lang }: { lang: string }) {
         </Panel>
       ) : (
         <ul className={GRID}>
-          {items.map((item) => (
-            <VideoCard key={item.id} item={item} />
+          {items.map((item, n) => (
+            <VideoCard key={item.id} item={item} index={n % 36} />
           ))}
         </ul>
       )}
@@ -170,11 +178,11 @@ function WatchedTab({ lang }: { lang: string }) {
   );
 }
 
-function VideoCard({ item }: { item: ContentItem }) {
+function VideoCard({ item, index }: { item: ContentItem; index: number }) {
   const minutes = item.duration_sec ? Math.round(item.duration_sec / 60) : null;
   const thumb = item.source === "youtube" && item.external_id ? `https://i.ytimg.com/vi/${item.external_id}/mqdefault.jpg` : null;
   return (
-    <li>
+    <li className="anim-in" style={{ "--i": index } as React.CSSProperties}>
       <Link
         to="/watch/$itemId"
         params={{ itemId: String(item.id) }}
@@ -194,11 +202,12 @@ function VideoCard({ item }: { item: ContentItem }) {
           )}
         </div>
         <div className="flex flex-1 flex-col gap-2 p-3">
-          <div className="line-clamp-2 text-sm leading-snug font-semibold">{item.title}</div>
+          <div className="line-clamp-2 text-sm leading-snug font-semibold">{displayTitle(item.title)}</div>
           <div className="text-xs text-ink-3">
             {item.creator ?? (item.source === "local" ? "Local file" : "")}
             {item.times_watched > 0 && ` · watched ${item.times_watched}×`}
             {item.last_watched_at && ` · ${formatDay(localDayOf(item.last_watched_at))}`}
+            {item.times_watched === 0 && item.status === "finished" && " · marked as watched"}
           </div>
           <div className="mt-auto flex flex-wrap gap-1.5">
             {item.coverage !== null ? (
@@ -215,12 +224,36 @@ function VideoCard({ item }: { item: ContentItem }) {
           </div>
         </div>
       </Link>
-      {item.coverage !== null && (
-        <div className="mt-1.5 px-1">
-          <DifficultyRating itemId={item.id} value={item.difficulty} compact />
-        </div>
-      )}
+      <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2 px-1">
+        {item.coverage !== null ? <DifficultyRating itemId={item.id} value={item.difficulty} compact /> : <span />}
+        {Boolean(item.metadata?.marked_watched) && <UnmarkButton id={item.id} title={item.title} />}
+      </div>
     </li>
+  );
+}
+
+/** Take back an "Already watched": the video can be suggested again. */
+function UnmarkButton({ id, title }: { id: number; title: string }) {
+  const mark = useMarkWatched();
+  const showToast = useUi((s) => s.showToast);
+  return (
+    <button
+      type="button"
+      disabled={mark.isPending}
+      onClick={() =>
+        mark.mutate(
+          { id, watched: false },
+          {
+            onSuccess: () => showToast("Moved back to your suggestions.", { label: "Undo", run: () => mark.mutate({ id, watched: true }) }),
+            onError: (error) => showToast(`Couldn't change it: ${error.message}`),
+          },
+        )
+      }
+      aria-label={`Not watched yet: ${title}`}
+      className="rounded-lg px-2 py-1 text-xs font-semibold text-ink-3 transition hover:bg-white/8 hover:text-ink"
+    >
+      Not watched yet
+    </button>
   );
 }
 
@@ -236,7 +269,7 @@ function HistoryCard({ lang }: { lang: string }) {
         What your videos contained
       </PanelTitle>
       {!data ? (
-        <Skeleton className="h-28" />
+        <Skeleton className="h-[236px]" />
       ) : (
         <>
           {data.videos_analysed > 0 ? (

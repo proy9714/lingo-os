@@ -270,6 +270,22 @@ def dismiss(item_id: int, conn: Connection = Depends(get_conn)) -> dict[str, boo
     return {"ok": True}
 
 
+class Watched(BaseModel):
+    watched: bool = True
+
+
+@router.post("/content/{item_id}/watched")
+def mark_watched(item_id: int, body: Watched, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
+    """Already watched / completed: the item leaves the suggestions and shows under Watched. `watched: false` undoes it."""
+    try:
+        item = content.set_watched(conn, item_id, body.watched)
+    except content.ContentError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    taste.invalidate(item["language"])
+    ranking.invalidate()
+    return item
+
+
 class Difficulty(BaseModel):
     value: int | None = Field(default=None, ge=1, le=5)
 

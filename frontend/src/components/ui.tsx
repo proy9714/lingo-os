@@ -64,7 +64,7 @@ export function Button({
 }
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div aria-hidden="true" className={cx("animate-pulse rounded-xl bg-white/6", className)} />;
+  return <div aria-hidden="true" className={cx("shimmer rounded-xl", className)} />;
 }
 
 export function ProgressBar({ value, label }: { value: number; label: string }) {
@@ -78,7 +78,7 @@ export function ProgressBar({ value, label }: { value: number; label: string }) 
       aria-valuenow={Math.round(pct)}
       className="h-2 overflow-hidden rounded-full bg-white/10"
     >
-      <div className="h-full rounded-full bg-accent transition-[width]" style={{ width: `${pct}%` }} />
+      <div className="h-full rounded-full bg-accent transition-[width] duration-700 ease-out" style={{ width: `${pct}%` }} />
     </div>
   );
 }
