@@ -43,3 +43,70 @@ languages:
       - { name: 和タのＣ (watanoc, JLPT N5–N4), url: "https://watanoc.com/feed" }
       - { name: MATCHA やさしい日本語, url: "https://matcha-jp.com/easy/feed" }
       - { name: NHKニュース, url: "https://www3.nhk.or.jp/rss/news/cat0.xml" }
+  zh:
+    searches:
+      - "中文 可理解输入 {level} {topic}"
+      - "comprehensible input Chinese {topic}"
+      - "慢速中文 {topic}"
+    topics: [日常生活, 旅行, 美食, 历史, 文化, 科学, 工作]
+    feeds:
+      - { name: BBC 中文 (简体), url: "https://feeds.bbci.co.uk/zhongwen/simp/rss.xml" }
+      - { name: DW 中文, url: "https://rss.dw.com/rdf/rss-chi-all" }
+      - { name: RFI 华语, url: "https://www.rfi.fr/cn/rss" }
+      - { name: BBC 中文 (繁體), url: "https://feeds.bbci.co.uk/zhongwen/trad/rss.xml" }
+  fr:
+    searches:
+      - "français facile {level} {topic}"
+      - "comprehensible input French {topic}"
+      - "apprendre le français {level} {topic}"
+    topics: [vie quotidienne, voyages, cuisine, histoire, culture, science, travail]
+    feeds:
+      - { name: 20 Minutes, url: "https://www.20minutes.fr/feeds/rss-une.xml" }
+      - { name: franceinfo, url: "https://www.francetvinfo.fr/titres.rss" }
+      - { name: Futura Sciences, url: "https://www.futura-sciences.com/rss/actualites.xml" }
+      - { name: RFI, url: "https://www.rfi.fr/fr/rss" }
+      - { name: Le Monde, url: "https://www.lemonde.fr/rss/une.xml" }
+  pt:
+    searches:
+      - "português compreensível {level} {topic}"
+      - "comprehensible input Portuguese {topic}"
+      - "aprender português {level} {topic}"
+    topics: [dia a dia, viagens, comida, história, cultura, ciência, trabalho]
+    feeds:
+      - { name: Ciência Hoje das Crianças, url: "https://chc.org.br/feed/" }
+      - { name: Agência Brasil, url: "https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml" }
+      - { name: BBC News Brasil, url: "https://feeds.bbci.co.uk/portuguese/rss.xml" }
+      - { name: Nexo Jornal, url: "https://www.nexojornal.com.br/rss.xml" }
+      - { name: Público (Portugal), url: "https://feeds.feedburner.com/PublicoRSS" }
+  ru:
+    searches:
+      - "русский язык понятный вход {level} {topic}"
+      - "comprehensible input Russian {topic}"
+      - "медленный русский {topic}"
+    topics: [повседневная жизнь, путешествия, еда, история, культура, наука, работа]
+    feeds:
+      - { name: Би-би-си Русская служба, url: "https://feeds.bbci.co.uk/russian/rss.xml" }
+      - { name: DW на русском, url: "https://rss.dw.com/rdf/rss-ru-all" }
+      - { name: N + 1 (наука), url: "https://nplus1.ru/rss" }
+      - { name: Meduza, url: "https://meduza.io/rss/all" }
+  ko:
+    searches:
+      - "한국어 이해 가능한 입력 {level} {topic}"
+      - "comprehensible input Korean {topic}"
+      - "쉬운 한국어 {topic}"
+    topics: [일상생활, 여행, 음식, 역사, 문화, 과학, 일]
+    feeds:
+      - { name: BBC 코리아, url: "https://feeds.bbci.co.uk/korean/rss.xml" }
+      - { name: 연합뉴스, url: "https://www.yna.co.kr/rss/news.xml" }
+      - { name: 한겨레, url: "https://www.hani.co.kr/rss/" }
+  it:
+    searches:
+      - "italiano facile {level} {topic}"
+      - "comprehensible input Italian {topic}"
+      - "imparare l'italiano {level} {topic}"
+    topics: [vita quotidiana, viaggi, cucina, storia, cultura, scienza, lavoro]
+    feeds:
+      - { name: Focus Junior, url: "https://www.focusjunior.it/feed/" }
+      - { name: ANSA, url: "https://www.ansa.it/sito/ansait_rss.xml" }
+      - { name: Wired Italia, url: "https://www.wired.it/feed/rss" }
+      - { name: Internazionale, url: "https://www.internazionale.it/sitemaps/rss.xml" }
