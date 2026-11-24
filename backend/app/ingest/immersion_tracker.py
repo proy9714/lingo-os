@@ -1,4 +1,4 @@
-"""Import from the Immersion Tracker (D:\\Language-Immersion): immersion_log_<lang>.csv + settings.json.
+"""Import from the Immersion Tracker app's data folder: immersion_log_<lang>.csv + settings.json.
 
 Rules (ARCHITECTURE §6.10):
 - `entry_id` becomes `external_ref`, so re-syncing a grown CSV never double-counts.

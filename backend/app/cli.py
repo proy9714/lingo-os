@@ -567,7 +567,7 @@ def recommend(
 
 @app.command("import-tracker")
 def import_tracker(
-    path: Optional[Path] = typer.Option(None, help="Folder with immersion_log_*.csv. Default: config/app.yaml."),
+    path: Optional[Path] = typer.Option(None, help="Folder with immersion_log_*.csv. Default: config/app.local.yaml or config/app.yaml."),
     as_json: bool = typer.Option(False, "--json", help="Machine-readable output."),
 ) -> None:
     """Import or re-sync your Immersion Tracker CSVs (safe to run repeatedly)."""
@@ -577,7 +577,7 @@ def import_tracker(
     cfg = load_config()
     folder = path or cfg.tracker_path
     if folder is None:
-        console.print("[red]No folder given and none configured in config/app.yaml[/]")
+        console.print("[red]No folder given and none configured (immersion_tracker.path in config/app.local.yaml)[/]")
         raise typer.Exit(code=2)
     engine = bootstrap(cfg)
     with engine.begin() as conn:

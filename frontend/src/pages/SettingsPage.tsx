@@ -103,7 +103,7 @@ function TrackerPanel() {
         Re-sync whenever your old tracker has new entries. Rows already imported are skipped, so nothing is counted twice.
       </p>
       <p className="well mt-3 truncate rounded-xl px-3 py-2 font-mono text-xs text-ink-2" title={settings?.tracker_path ?? ""}>
-        {settings?.tracker_path ?? "No folder configured in config/app.yaml"}
+        {settings?.tracker_path ?? "No folder configured (set immersion_tracker.path in config/app.local.yaml)"}
       </p>
       <div className="mt-3 flex items-center gap-3">
         <Button

@@ -1,6 +1,7 @@
 # Personal data and secrets never go into git
 data/
 .env
+config/*.local.yaml
 
 # Python
 .venv/

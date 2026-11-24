@@ -63,10 +63,19 @@ def _resolve(root: Path, value: str | Path) -> Path:
     return path if path.is_absolute() else root / path
 
 
+def _merge(base: dict[str, Any], local: dict[str, Any]) -> dict[str, Any]:
+    """Local values win; nested sections are merged key by key."""
+    out = dict(base)
+    for key, value in local.items():
+        out[key] = _merge(out[key], value) if isinstance(value, dict) and isinstance(out.get(key), dict) else value
+    return out
+
+
 def load_config(root: Path = ROOT, data_dir: str | Path | None = None) -> AppConfig:
     """Load settings. `data_dir` (or LINGO_DATA_DIR) overrides config/app.yaml."""
     load_dotenv(root / ".env", override=False)
-    app_yaml = _read_yaml(root / "config" / "app.yaml")
+    # config/app.local.yaml (git-ignored) holds this computer's own settings, such as a tracker folder
+    app_yaml = _merge(_read_yaml(root / "config" / "app.yaml"), _read_yaml(root / "config" / "app.local.yaml"))
     baselines = _read_yaml(root / "config" / "baselines.yaml")
 
     chosen_data_dir = data_dir or os.environ.get("LINGO_DATA_DIR") or app_yaml.get("data_dir", "data")

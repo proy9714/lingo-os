@@ -29,10 +29,13 @@ defaults:
   active_language: de
   daily_goal_minutes: 60
 
-# Your existing tracker. `lingo import-tracker` (or Settings → Sync now)
-# reads immersion_log_{de,es,ja}.csv and settings.json from this folder.
+# Optional: the data folder of the Immersion Tracker app, if you used it before.
+# `lingo import-tracker` (or Settings → Sync now) reads immersion_log_<lang>.csv and settings.json from it.
+# Put your own path in config/app.local.yaml (not committed), for example:
+#   immersion_tracker:
+#     path: C:/path/to/Language-Immersion/data
 immersion_tracker:
-  path: D:/Language-Immersion/data
+  path: null
 
 tracking:
   heartbeat_seconds: 15

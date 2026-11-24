@@ -25,7 +25,7 @@ def import_tracker(
 ) -> dict[str, Any]:
     folder = Path(body.path) if body and body.path else cfg.tracker_path
     if folder is None:
-        raise HTTPException(status_code=422, detail="No Immersion Tracker folder configured in config/app.yaml")
+        raise HTTPException(status_code=422, detail="No Immersion Tracker folder configured (immersion_tracker.path in config/app.local.yaml)")
     try:
         summary = tracker.import_tracker_folder(conn, cfg.data_dir, folder, cfg.language_codes)
         sync_baselines(conn, cfg)  # new hours can move an untested starting estimate

@@ -90,7 +90,7 @@ Phase 0, the foundation:
 - Glass app shell for desktop and phone widths, with a DE / ES / JA switcher that re-themes the app
 - Today dashboard on your real history: daily goal, last 7 days, tracked hours by month, all languages, recent sessions
 - A starting level range per language (hours only, low confidence) on your tracker's 7-level roadmap
-- Import and re-sync of your Immersion Tracker CSVs (`D:\Language-Immersion\data`). It is idempotent, and a probable
+- Import and re-sync of your Immersion Tracker CSVs (its `data` folder, set in `config/app.local.yaml`). It is idempotent, and a probable
   double-log is held back until you confirm it.
 - Manual time logging (`+ Log` or Ctrl+L)
 - Settings: daily goals, tracker sync, system checks, this laptop's device id
@@ -137,7 +137,8 @@ only through the `lingo` CLI, never by touching the database files.
 
 ## Configuration
 
-- `config/app.yaml`: data folder, languages, default goal, Immersion Tracker path
+- `config/app.yaml`: data folder, languages, default goal
+- `config/app.local.yaml` (optional, not committed): this computer's own overrides, e.g. `immersion_tracker: { path: ... }`
 - `config/baselines.yaml`: hours → level roadmap and per-language difficulty divisors
 - `config/llm.yaml`: AI providers and task routing (Gemini by default)
 - `.env`: API keys only (copy `.env.example`)
@@ -158,3 +159,9 @@ backend/   FastAPI + SQLite (Python, uv)     frontend/  React + Vite + Tailwind
 config/    YAML settings                     docs/      architecture + schema
 modes/     /lingo playbooks for AI terminals data/      your personal data (git-ignored)
 ```
+
+## License
+
+Lingo OS is free software under the [GNU Affero General Public License v3.0](LICENSE) or later. You may use, study,
+change and share it; if you distribute a changed version, or run one as a service others use over a network, you must
+share its source under the same license.

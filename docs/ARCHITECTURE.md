@@ -41,7 +41,7 @@
 | ffmpeg | 8.0 | Ready for clip extraction and audio conversion. |
 | SQLite | 3.45.3 | Supports FTS5 trigram, partial indexes and JSON functions. |
 | Ollama / LM Studio | not installed | Not needed: Gemini is the default for every AI task. A local model can be added later for offline use. |
-| Existing tracker | `D:\Language-Immersion` (Node, CSV-backed) | Its CSVs are imported natively and can be re-synced until this app replaces it (§6.10). |
+| Existing tracker | Immersion Tracker (Node, CSV-backed) | Its CSVs are imported natively and can be re-synced until this app replaces it (§6.10). |
 
 ---
 
@@ -395,7 +395,7 @@ i1_score   = fit × (0.6 + 0.4·interest) × (0.8 + 0.2·learnability) × (1 + 0
 - **Stats:** daily and weekly charts by language and modality, streaks, goals, and lifetime hours including imported history.
 
 ### 6.10 CSV importer
-**Native format: your Immersion Tracker** (`D:\Language-Immersion\data\immersion_log_{de,es,ja}.csv`). The importer recognises it from its header and needs no mapping step:
+**Native format: your Immersion Tracker** (`<tracker folder>/data/immersion_log_{de,es,ja}.csv`). The importer recognises it from its header and needs no mapping step:
 
 | Tracker column | Becomes |
 |---|---|
