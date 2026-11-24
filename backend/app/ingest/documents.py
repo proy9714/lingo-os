@@ -167,6 +167,11 @@ def parse_pdf(path: Path) -> Document:
     return Document((meta.get("/Title") or path.stem).strip(), (meta.get("/Author") or "").strip() or None, None, sections)
 
 
+# Pages a site shows to automated visitors instead of the article (bot checks, consent walls).
+BLOCKED_TITLES = ("client challenge", "just a moment", "attention required", "access denied", "are you a robot",
+                  "verify you are human", "security check", "please enable javascript", "403 forbidden", "captcha")
+
+
 def fetch_article(url: str) -> Document:
     import trafilatura
 
@@ -178,6 +183,8 @@ def fetch_article(url: str) -> Document:
     if not result:
         raise DocumentError("no article text found on that page")
     data = result if isinstance(result, dict) else result.as_dict()
+    if any(blocked in (data.get("title") or "").casefold() for blocked in BLOCKED_TITLES):
+        raise DocumentError("the site showed a bot check instead of the article")
     text = (data.get("text") or "").strip()
     if len(text) < 200:
         raise DocumentError("no article text found on that page")
