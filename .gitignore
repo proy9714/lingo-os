@@ -13,6 +13,9 @@ __pycache__/
 node_modules/
 frontend/dist/
 
+# Release builds (lingo release publish)
+release/
+
 # Editors / OS
 .vscode/
 .idea/

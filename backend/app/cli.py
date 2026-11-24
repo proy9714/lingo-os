@@ -610,5 +610,64 @@ def import_tracker(
         )
 
 
+# ------------------------------------------------------------------ releases
+
+release_app = typer.Typer(help="Publish a release to GitHub (with the Android APK).", no_args_is_help=True)
+app.add_typer(release_app, name="release")
+
+
+@release_app.command("check")
+def release_check(as_json: bool = typer.Option(False, "--json", help="Machine-readable output.")) -> None:
+    """What changed since the last GitHub release, and whether it's worth a new one."""
+    from app.release import ReleaseError, check
+
+    try:
+        state = check(load_config().root)
+    except ReleaseError as exc:
+        if as_json:
+            _emit_json({"error": str(exc)})
+        else:
+            console.print(f"[red]{exc}[/]")
+        raise typer.Exit(1) from exc
+    if as_json:
+        _emit_json(state)
+        return
+    last = state["last_release"]
+    console.print(f"Last release: {last['tagName'] + ' (' + last['publishedAt'][:10] + ')' if last else 'none yet'}")
+    console.print(f"Commits since: {len(state['commits'])} · app files changed: {len(state['app_files_changed'])}")
+    for commit in state["commits"][:20]:
+        console.print(f"  {commit['sha']} {commit['subject']}")
+    verdict = "[green]worth a release[/]" if state["should_release"] else "[yellow]nothing to release[/]"
+    console.print(f"{verdict}: {state['reason']}. Suggested version: v{state['suggested_version']} ({state['suggested_bump']})")
+
+
+@release_app.command("publish")
+def release_publish(
+    version: str = typer.Option(..., "--version", help="The new version, e.g. 0.3.0."),
+    notes: Path = typer.Option(..., "--notes", exists=True, dir_okay=False, help="Markdown file with the release notes."),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Test and build the signed APK, but commit and publish nothing."),
+    skip_tests: bool = typer.Option(False, "--skip-tests", help="Don't run the test suite first."),
+    as_json: bool = typer.Option(False, "--json", help="Machine-readable output."),
+) -> None:
+    """Test, set the version, build and sign the APK, commit, tag, push and create the GitHub release."""
+    from app.release import ReleaseError, publish
+
+    say = (lambda message: None) if as_json else (lambda message: console.print(f"[dim]… {message}[/]"))
+    try:
+        result = publish(load_config().root, version, notes, dry_run=dry_run, skip_tests=skip_tests, say=say)
+    except ReleaseError as exc:
+        if as_json:
+            _emit_json({"error": str(exc)})
+        else:
+            console.print(f"[red]{exc}[/]")
+        raise typer.Exit(1) from exc
+    if as_json:
+        _emit_json(result)
+    elif result["dry_run"]:
+        console.print(f"[green]Dry run OK[/]: signed {result['apk']} ({result['apk_bytes'] // 1024} KB). Nothing was committed or published.")
+    else:
+        console.print(f"[green]Published v{result['version']}[/]: {result['url']}")
+
+
 if __name__ == "__main__":
     app()

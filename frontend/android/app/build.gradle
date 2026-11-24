@@ -1,5 +1,20 @@
 apply plugin: 'com.android.application'
 
+import groovy.json.JsonSlurper
+
+// One version for the whole app: the "version" in the root package.json (set by `lingo release publish`).
+// versionCode must grow with every release for Android (and Obtainium) to accept an update: 0.2.0 -> 200, 1.4.3 -> 10403.
+def appVersion = new JsonSlurper().parse(file('../../../package.json')).version as String
+def versionParts = appVersion.tokenize('.-+')
+def appVersionCode = (versionParts[0] as int) * 10000 + (versionParts[1] as int) * 100 + (versionParts[2] as int)
+
+// The release signing key lives outside the repository (never committed): see docs/RELEASING.md.
+def keystorePropertiesFile = file(System.getenv('LINGO_KEYSTORE_PROPERTIES') ?: "${System.getProperty('user.home')}/.lingo/release-keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+
 android {
     namespace = "app.lingoos.phone"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,8 +22,8 @@ android {
         applicationId "app.lingoos.phone"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode appVersionCode
+        versionName appVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,8 +31,20 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
+    }
     buildTypes {
         release {
+            // without the key file the release build comes out unsigned (fine for testing, refused by `lingo release`)
+            signingConfig keystorePropertiesFile.exists() ? signingConfigs.release : null
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

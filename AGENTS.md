@@ -27,6 +27,7 @@ The router is `modes/_shared.md`; each mode's playbook is `modes/<mode>.md`.
 | `update-content [de\|es\|ja]` | ready | Discover new videos and articles at your level |
 | `evolve` | ready | Weekly recalibration and progress report (you propose, the app validates) |
 | `plan-week`, `tutor-brief` | ready | Plan the week; edit next week's tutor brief |
+| `release` | ready | Maintainers: publish a GitHub release with the signed APK, only if the app changed, after a yes |
 
 If asked for a mode that is not ready, say which phase delivers it and offer what is available now.
 

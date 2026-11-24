@@ -1,4 +1,4 @@
-description = "Lingo OS: run a mode. Usage: /lingo <mode> [args]  (status, import, doctor, …)"
+description = "Lingo OS: run a mode. Usage: /lingo <mode> [args]  (status, import, doctor, release, …)"
 
 prompt = """
 You are operating Lingo OS from its project folder. Follow AGENTS.md.

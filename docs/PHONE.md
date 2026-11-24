@@ -11,21 +11,33 @@ over your Wi-Fi; away from home it keeps working with the texts you saved for of
 3. Only the sync listener (port 8788) is reachable from the Wi-Fi. It answers paired phones only, and every request
    and reply is encrypted with a key that never leaves the QR code. The rest of the app stays bound to the laptop.
 
-## 2. Build and install the app (once)
+## 2. Install the app
 
-Building needs **Android Studio** (it brings the Android SDK and a JDK; a large download, a few GB).
+**The easy way: Obtainium (recommended).** It installs the app from GitHub releases and updates it whenever a new
+release comes out.
+
+1. Install [Obtainium](https://github.com/ImranR98/Obtainium) (from its releases page, or F-Droid).
+2. In Obtainium: **Add app** → paste `https://github.com/proy9714/lingo-os` → **Add** → **Install**.
+3. Android asks to allow installs from Obtainium the first time: allow it.
+
+New versions then show up in Obtainium (it checks in the background, or pull down to refresh): tap **Update**.
+
+**Or by hand:** open the [latest release](https://github.com/proy9714/lingo-os/releases/latest) on the phone,
+download `lingo-os-vX.Y.Z.apk`, open it and allow the install. To update, install the newer APK over the old one;
+your paired laptop and offline texts are kept.
+
+Every release is signed with the same key. Android refuses an update signed with a different one, so only install
+APKs from this repository's releases. The certificate's SHA-256 is listed in [RELEASING.md](RELEASING.md).
+
+**Or build it yourself** (developers): needs Android Studio, or JDK 21 and the Android SDK.
 
 ```powershell
 npm run phone
 ```
 
-This builds the web app, copies it into `frontend/android`, and opens the project in Android Studio. Then:
-
-1. Plug the phone in with USB debugging on (Settings → About phone → tap *Build number* seven times → Developer
-   options → USB debugging), or use Build → Build App Bundle(s) / APK(s) → Build APK(s) and copy the APK over.
-2. Press **Run**. The app installs as "Lingo OS".
-
-After changing the app's code, run `npm run phone` again and press Run.
+This builds the web app, copies it into `frontend/android`, and opens the project in Android Studio. Plug the phone
+in with USB debugging on and press **Run**. A self-built app is signed with your own debug key, so uninstall it before
+switching to the release APK (and the other way round).
 
 ## 3. Pair
 

@@ -632,8 +632,7 @@ const TOPICS: Topic[] = [
           reach.
         </p>
         <Tip>
-          <strong>What you need:</strong> an Android phone, the laptop running Lingo OS, both on the <strong>same Wi-Fi</strong>, and,
-          once, <strong>Android Studio</strong> on the laptop to build the app (a free download of a few GB).
+          <strong>What you need:</strong> an Android phone and the laptop running Lingo OS, both on the <strong>same Wi-Fi</strong>.
         </Tip>
 
         <H3>Step 1 · Turn on syncing on the laptop</H3>
@@ -654,29 +653,23 @@ const TOPICS: Topic[] = [
           ]}
         </Steps>
 
-        <H3>Step 2 · Build and install the app (once)</H3>
+        <H3>Step 2 · Install the app</H3>
         <Steps>
           {[
             <>
-              Install <strong className="text-ink">Android Studio</strong> from developer.android.com and open it once so it finishes
-              setting up.
+              Install <strong className="text-ink">Obtainium</strong> on the phone (from github.com/ImranR98/Obtainium or F-Droid). It
+              installs apps from GitHub and keeps them up to date.
             </>,
             <>
-              In the project folder run <Code>npm run phone</Code>. It builds the app and opens it in Android Studio.
+              In Obtainium: <em>Add app</em> → paste <Code>https://github.com/proy9714/lingo-os</Code> → <em>Add</em> →{" "}
+              <em>Install</em>. Allow installs from Obtainium when Android asks.
             </>,
-            <>
-              On the phone, turn on USB debugging: Settings → About phone → tap <em>Build number</em> seven times → back to Settings →
-              Developer options → <em>USB debugging</em>.
-            </>,
-            <>
-              Connect the phone by USB, accept the “Allow USB debugging?” prompt, choose it in Android Studio's device list and press{" "}
-              <strong className="text-ink">Run ▶</strong>. “Lingo OS” is installed on the phone.
-            </>,
+            <>New versions then appear in Obtainium: tap <em>Update</em>. Your pairing and offline texts are kept.</>,
           ]}
         </Steps>
         <p className="text-sm text-ink-3">
-          No cable? Android Studio → Build → Build App Bundle(s) / APK(s) → Build APK(s), copy the APK to the phone and open it (allow
-          installing from that source). After updating Lingo OS, run <Code>npm run phone</Code> again and press Run.
+          Without Obtainium: open github.com/proy9714/lingo-os/releases/latest on the phone, download the <Code>.apk</Code> and open it.
+          Developers can also build it themselves with <Code>npm run phone</Code> (needs Android Studio; see docs/PHONE.md).
         </p>
 
         <H3>Step 3 · Pair the phone</H3>
@@ -757,7 +750,7 @@ const TOPICS: Topic[] = [
           <Faq q="Android Studio can't see my phone">
             <p>
               Check USB debugging is on, use a data cable (not a charge-only one), unlock the phone and accept the “Allow USB
-              debugging?” prompt. Or build an APK and copy it over (see Step 2).
+              debugging?” prompt. Or install the released app with Obtainium instead (see Step 2).
             </p>
           </Faq>
           <Faq q="I lost my phone, or want to stop syncing">

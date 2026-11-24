@@ -21,6 +21,7 @@ uv run --project backend lingo <command> [options] --json
 | `/lingo update-content [lang]` | yes | Find new content at your level |
 | `/lingo evolve` | yes | Weekly recalibration and report |
 | `/lingo plan-week`, `/lingo tutor-brief` | yes | Plan the week, edit the tutor brief |
+| `/lingo release` | yes | Publish a GitHub release with the Android APK (maintainer only; asks before publishing) |
 
 ## Rules for every mode
 

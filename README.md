@@ -98,6 +98,13 @@ Phase 0, the foundation:
 
 Pages for Watch, Read, Manga, Speak, Words and Level describe what each phase will add.
 
+## Install on Android
+
+Get the app from the [latest release](https://github.com/proy9714/lingo-os/releases/latest), or add
+`https://github.com/proy9714/lingo-os` to [Obtainium](https://github.com/ImranR98/Obtainium) to be updated
+automatically. The phone pairs with your laptop over Wi-Fi: see [docs/PHONE.md](docs/PHONE.md).
+Maintainers publish releases with `/lingo release` ([docs/RELEASING.md](docs/RELEASING.md)).
+
 ## Requirements
 
 Windows with Node 18+ and [uv](https://docs.astral.sh/uv/). uv installs Python 3.12 for the backend if needed.
