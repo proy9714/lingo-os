@@ -1,4 +1,4 @@
-# /lingo tutor-brief [de|es|ja]
+# /lingo tutor-brief [lang]
 
 Show or edit the brief the AI tutor follows next week.
 

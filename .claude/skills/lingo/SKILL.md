@@ -1,6 +1,6 @@
 ---
 name: lingo
-description: Operate Lingo OS (the language-immersion app in this folder) - /lingo status, import, doctor, recommend, update-content, evolve, plan-week, tutor-brief, release. Use when the user types /lingo or asks about their German, Spanish or Japanese immersion data.
+description: Operate Lingo OS (the language-immersion app in this folder) - /lingo status, import, doctor, recommend, update-content, evolve, plan-week, tutor-brief, release. Use when the user types /lingo or asks about their language-immersion data (any language added in the app).
 ---
 
 # /lingo router

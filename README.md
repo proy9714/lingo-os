@@ -2,7 +2,8 @@
 
 **Learn a language by watching, reading and listening to things you enjoy, at the right level for you.**
 
-Lingo OS is a free, local-first app for learning **German, Spanish and Japanese** through comprehensible input. It
+Lingo OS is a free, local-first app for learning languages through comprehensible input: **Mandarin Chinese,
+Spanish, French, Portuguese, Russian, German, Japanese, Korean and Italian** (Hindi, Arabic and Bengali are coming). It
 finds YouTube videos and articles matched to your level, gives every video a clickable transcript and every text
 clickable words, tracks your immersion time, and estimates your level from what you actually understand. It runs on
 your computer, keeps your data there, and comes with an Android app that syncs over your home Wi-Fi.
@@ -53,22 +54,7 @@ npm run setup
 `setup` installs everything and creates your (empty) database in the `data` folder. It takes a few minutes the first
 time.
 
-### 3. Add dictionaries
-
-Download the dictionary for each language you're learning and put the `.zip` files, unopened, in `data\dictionaries\`:
-
-- **German / Spanish**: `wty-de-en.zip` / `wty-es-en.zip` from the
-  [Wiktionary-to-Yomitan downloads page](https://yomidevs.github.io/wiktionary-to-yomitan/download/)
-  (the "target language → English" dictionaries).
-- **Japanese**: `jitendex-yomitan.zip` from [jitendex.org](https://jitendex.org/).
-
-Then import them (takes a minute or two):
-
-```powershell
-npm run lingo -- dict import
-```
-
-### 4. Start it
+### 3. Start it
 
 ```powershell
 npm run start
@@ -77,12 +63,14 @@ npm run start
 Open **http://127.0.0.1:8787** in your browser. Keep the terminal open while you use the app; press Ctrl+C there to
 stop it. Next time, `npm run start` is all you need.
 
-### 5. First steps in the app
+### 4. First steps in the app
 
-1. Pick your language with the **DE / ES / JA** buttons at the top, and set your daily goal in **Settings**.
-2. Take the 5-minute vocabulary test in **Level**. It measures where you are, so suggestions fit you from day one
-   (especially if you've been learning for a while). Entering the hours you studied before using the app is planned
-   for a coming release.
+1. Choose the language you want to learn (and its variety, e.g. Brazilian or European Portuguese). Lingo OS downloads
+   what it needs for it, a language model and a dictionary (about 10 to 70 MB), in the background. Add more languages
+   any time in **Settings → Languages**, or with the **+** next to the language buttons at the top.
+2. Set your daily goal in **Settings**, then take the 5-minute vocabulary test in **Level**. It measures where you
+   are, so suggestions fit you from day one (especially if you've been learning for a while). Entering the hours you
+   studied before using the app is planned for a coming release.
 3. Go to **Today** or **Watch**. Suggestions are found in the background in your first minutes; they appear as they're
    found.
 4. Time you spend away from the app (a podcast, a class) can be added with **Log time** (or Ctrl+L).

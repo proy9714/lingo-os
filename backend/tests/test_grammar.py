@@ -38,3 +38,22 @@ def test_reference_endpoint_links_tutor_notes(client) -> None:
     assert spot["title"] == "dative after mit"
     assert "akk-dat" in spot["sections"] or "cases" in spot["sections"]
     assert client.get("/api/tutor/reference/xx").status_code in (404, 422)
+
+
+def test_every_grammar_reference_loads_and_is_well_formed() -> None:
+    from pathlib import Path
+
+    from app.services import grammar
+
+    files = sorted(Path(grammar.__file__).resolve().parents[1].joinpath("grammar").glob("*.yaml"))
+    assert {f.stem for f in files} >= {"de", "es", "ja", "fr", "it", "pt", "ru", "ko", "zh"}
+    for path in files:
+        ref = grammar.reference(path.stem)
+        assert ref["title"] and len(ref["sections"]) >= 10, path.stem
+        ids = [s["id"] for s in ref["sections"]]
+        assert len(ids) == len(set(ids)), path.stem
+        assert any(s["kind"] == "summary" for s in ref["sections"]), path.stem
+        for section in ref["sections"]:
+            assert section["kind"] in {"structure", "verbs", "contrast", "summary"}, (path.stem, section["id"])
+            for example in section["examples"]:
+                assert example["text"] and example["translation"], (path.stem, section["id"])

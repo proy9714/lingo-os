@@ -1,0 +1,261 @@
+# Portuguese grammar reference (Brazilian usage first, European differences noted), beginner to intermediate.
+# Cells: "target | translation"; several in one cell are separated by " ;; "; {…} marks an ending to highlight.
+# Examples: [sentence, translation, optional note].  kind: structure | verbs | contrast | summary
+
+language: pt
+title: Portuguese grammar
+intro: >-
+  A working reference for beginners to intermediate learners, with Brazilian usage first and Portugal's differences
+  noted. Every pattern comes with real sentences and a translation: read a section, notice the shape, then listen for
+  it in what you watch and read.
+
+sections:
+  - id: nouns
+    title: Nouns, articles & gender
+    kind: structure
+    level: A1
+    tags: [gender, article, o, a, os, as, um, uma, plural, noun]
+    tables:
+      - head: ["", "Definite", "Indefinite"]
+        rows:
+          - ["masculine", "o livro | the book", "um livro | a book"]
+          - ["feminine", "a casa | the house", "uma casa | a house"]
+          - ["masc. plural", "os livros", "uns livros | some books"]
+          - ["fem. plural", "as casas", "umas casas"]
+    text: >-
+      Most nouns in **-o** are masculine and most in **-a** feminine; **-ção, -dade, -gem** are feminine (a canção, a
+      cidade, a viagem). Plurals: add **-s**; **-ão → -ões** (usually), **-l → -is** (animal → animais), **-m → -ns**
+      (homem → homens). Prepositions merge with articles: **de + o = do, em + a = na, a + o = ao, por + o = pelo**.
+    examples:
+      - ["A cidade é muito bonita.", "The city is very pretty."]
+      - ["Moro no centro.", "I live in the centre.", "em + o = no"]
+      - ["O preço do pão subiu.", "The price of bread went up.", "de + o = do"]
+      - ["Comprei dois pães.", "I bought two bread rolls.", "pão → pães"]
+
+  - id: pronouns
+    title: Pronouns, você & tu, a gente
+    kind: structure
+    level: A1
+    tags: [pronoun, eu, você, tu, ele, ela, nós, a gente, vocês, eles]
+    tables:
+      - head: ["Meaning", "Pronoun", "Verb form"]
+        rows:
+          - ["I", "eu", "falo"]
+          - ["you", "você (Brazil) / tu (Portugal, parts of Brazil)", "fala / falas"]
+          - ["he / she", "ele / ela", "fala"]
+          - ["we", "nós ;; a gente (spoken)", "falamos ;; fala"]
+          - ["you all", "vocês", "falam"]
+          - ["they", "eles / elas", "falam"]
+    text: >-
+      In Brazil **você** (with the third-person verb) is the normal "you"; in Portugal **tu** is used with friends and
+      **você** can sound distant (people use the name or o senhor / a senhora). In everyday Brazilian speech **a gente**
+      replaces nós and takes the singular verb: **A gente vai.**
+    examples:
+      - ["Você mora aqui?", "Do you live here?", "Brazil"]
+      - ["Tu vens connosco?", "Are you coming with us?", "Portugal"]
+      - ["A gente se vê amanhã.", "See you tomorrow.", "a gente = we"]
+
+  - id: present
+    title: Present tense (regular verbs)
+    kind: verbs
+    level: A1
+    tags: [present, presente, conjugation, -ar, -er, -ir]
+    rule: Drop -ar, -er or -ir and add the ending for the person.
+    tables:
+      - head: ["Person", "falar | to speak", "comer | to eat", "abrir | to open"]
+        rows:
+          - ["eu", "fal{o}", "com{o}", "abr{o}"]
+          - ["você / ele / ela / a gente", "fal{a}", "com{e}", "abr{e}"]
+          - ["tu", "fal{as}", "com{es}", "abr{es}"]
+          - ["nós", "fal{amos}", "com{emos}", "abr{imos}"]
+          - ["vocês / eles / elas", "fal{am}", "com{em}", "abr{em}"]
+    text: >-
+      For "right now": Brazil uses **estar + gerund** (**estou comendo**), Portugal **estar a + infinitive** (**estou a
+      comer**). Both are understood everywhere.
+    examples:
+      - ["Falo um pouco de português.", "I speak a little Portuguese."]
+      - ["Onde você trabalha?", "Where do you work?"]
+      - ["Estou lendo um livro.", "I'm reading a book (right now).", "Portugal: estou a ler"]
+
+  - id: ser-estar
+    title: ser vs. estar (and ficar)
+    kind: contrast
+    level: A1
+    tags: [ser, estar, ficar, to be]
+    tables:
+      - head: ["", "ser", "estar"]
+        rows:
+          - ["Forms", "sou, é, somos, são", "estou, está, estamos, estão"]
+          - ["Use", "identity, origin, job, character, time", "states, moods, temporary location"]
+          - ["Examples", "Ela é médica. | She's a doctor. ;; São três horas. | It's three o'clock.", "Estou cansado. | I'm tired. ;; Ele está em casa. | He's at home."]
+    text: >-
+      For the permanent location of buildings and places Portuguese often uses **ficar**: **Onde fica o banco?** (Where
+      is the bank?). ficar also means "to become" or "to stay": **Fiquei feliz** (I was happy), **Fica aqui** (Stay
+      here).
+    examples:
+      - ["Sou do Brasil, mas estou em Lisboa.", "I'm from Brazil, but I'm in Lisbon."]
+      - ["Onde fica a estação?", "Where is the station?", "ficar for fixed places"]
+      - ["Ele ficou surpreso.", "He was surprised."]
+
+  - id: irregular
+    title: Key irregular verbs
+    kind: verbs
+    level: A1
+    tags: [ir, ter, fazer, poder, querer, dizer, irregular]
+    tables:
+      - head: ["Person", "ir | to go", "ter | to have", "fazer | to do", "poder | can"]
+        rows:
+          - ["eu", "vou", "tenho", "faço", "posso"]
+          - ["você / ele / ela", "vai", "tem", "faz", "pode"]
+          - ["nós", "vamos", "temos", "fazemos", "podemos"]
+          - ["vocês / eles", "vão", "têm", "fazem", "podem"]
+    text: >-
+      Also common: **querer** (quero, quer), **dizer** (digo, diz), **ver** (vejo, vê), **vir** (venho, vem), **saber**
+      (sei, sabe), **dar** (dou, dá). **ter que + infinitive** = to have to: **Tenho que trabalhar.** **ir +
+      infinitive** is the everyday future.
+    examples:
+      - ["Vou viajar amanhã.", "I'm going to travel tomorrow.", "ir + infinitive"]
+      - ["Tenho que sair cedo.", "I have to leave early."]
+      - ["Faz calor hoje.", "It's hot today.", "fazer for weather"]
+
+  - id: negation-questions
+    title: Negation & questions
+    kind: structure
+    level: A1
+    tags: [negation, não, nunca, nada, ninguém, questions, onde, quando, como, por que]
+    tables:
+      - head: ["", "Example"]
+        rows:
+          - ["not", "Não sei. | I don't know."]
+          - ["never / nothing / nobody", "Nunca como carne. ;; Não vi nada. ;; Não tem ninguém."]
+          - ["question words", "onde | where ;; quando | when ;; como | how ;; por que | why ;; quanto | how much ;; quem | who ;; o que | what"]
+          - ["tag question", "Você vem, né? | You're coming, right?"]
+    text: >-
+      **não** goes before the verb, and double negatives are correct: **Não vi ninguém.** Questions usually keep normal
+      word order with a rising voice. In Brazil **né?** (não é?) ends many sentences. "Why" is **por que** in a
+      question and **porque** in the answer (Portugal: porque in both).
+    examples:
+      - ["Não tenho tempo.", "I don't have time."]
+      - ["Por que você não veio?", "Why didn't you come?"]
+      - ["Porque estava doente.", "Because I was ill."]
+
+  - id: preterite
+    title: Pretérito perfeito (what happened)
+    kind: verbs
+    level: A2
+    tags: [past, pretérito perfeito, preterite]
+    tables:
+      - head: ["Person", "falar", "comer", "abrir", "ir / ser"]
+        rows:
+          - ["eu", "fal{ei}", "com{i}", "abr{i}", "fui"]
+          - ["você / ele / ela", "fal{ou}", "com{eu}", "abr{iu}", "foi"]
+          - ["nós", "fal{amos}", "com{emos}", "abr{imos}", "fomos"]
+          - ["vocês / eles", "fal{aram}", "com{eram}", "abr{iram}", "foram"]
+    text: >-
+      This is the simple past for completed actions; Portuguese doesn't use a "have done" tense for this. **ir** and
+      **ser** share the same forms (fui = I went / I was). Other irregulars: **ter → tive, teve; fazer → fiz, fez;
+      estar → estive, esteve; poder → pude, pôde; dizer → disse**.
+    examples:
+      - ["Ontem assisti a um filme.", "Yesterday I watched a film."]
+      - ["Fomos à praia no sábado.", "We went to the beach on Saturday."]
+      - ["Ela fez o jantar.", "She made dinner."]
+
+  - id: imperfect
+    title: Imperfeito vs. pretérito perfeito
+    kind: contrast
+    level: B1
+    tags: [imperfeito, past, habit, background]
+    tables:
+      - head: ["", "imperfeito", "pretérito perfeito"]
+        rows:
+          - ["Formation", "-ar → -ava ;; -er / -ir → -ia (fal{ava}, com{ia})", "see above"]
+          - ["Use", "background, description, habits", "single completed events"]
+          - ["Examples", "Chovia muito. | It was raining a lot. ;; Quando era criança, jogava futebol. | As a child I used to play football.", "O telefone tocou. | The phone rang."]
+    text: >-
+      Irregular imperfeito: **ser → era, ter → tinha, vir → vinha, pôr → punha**. The imperfeito is also a polite
+      present: **Queria um café** (I'd like a coffee).
+    examples:
+      - ["Eu estava lendo quando você ligou.", "I was reading when you called."]
+      - ["Aos domingos íamos à casa da minha avó.", "On Sundays we used to go to my grandmother's.", "habit"]
+      - ["Queria saber o horário do ônibus.", "I'd like to know the bus timetable.", "polite imperfeito"]
+
+  - id: object-pronouns
+    title: Object pronouns & their position
+    kind: structure
+    level: B1
+    tags: [pronoun, me, te, o, a, lhe, se, nos, placement, ênclise, próclise]
+    tables:
+      - head: ["", "Direct", "Indirect"]
+        rows:
+          - ["me / you", "me, te", "me, te"]
+          - ["him, her, it, you (você)", "o, a", "lhe"]
+          - ["us", "nos", "nos"]
+          - ["them, you all", "os, as", "lhes"]
+    text: >-
+      Brazil puts pronouns **before the verb** (**Me dá o livro**, **Eu te amo**) and in speech often uses ele / ela as
+      objects (**Vi ele ontem**). Portugal puts them **after the verb with a hyphen** in plain statements (**Dá-me o
+      livro**, **Vi-o ontem**) but before it after negations and question words (**Não o vi**). After an -r infinitive,
+      o / a become **lo / la**: **Vou fazê-lo.**
+    examples:
+      - ["Me liga mais tarde!", "Call me later!", "Brazil"]
+      - ["Liga-me mais tarde!", "Call me later!", "Portugal"]
+      - ["Não te preocupes.", "Don't worry.", "before the verb after não"]
+
+  - id: subjunctive
+    title: The subjunctive
+    kind: verbs
+    level: B2
+    tags: [subjuntivo, subjunctive, que, wish, doubt, future subjunctive, quando, se]
+    tables:
+      - head: ["", "Example"]
+        rows:
+          - ["present: after que (wishes, feelings, doubt)", "Espero que você venha. | I hope you come."]
+          - ["imperfect: imagined if", "Se eu tivesse tempo, viajaria. | If I had time, I'd travel."]
+          - ["future: when / if about the future", "Quando você chegar, me avisa. | When you arrive, let me know."]
+    text: >-
+      Present subjunctive: take the eu form, drop -o, swap the vowel (falo → **que eu fale**, como → **que eu coma**).
+      Irregular: **ser → seja, estar → esteja, ir → vá, ter → tenha, fazer → faça**. Portuguese also has a **future
+      subjunctive** after quando, se, assim que about the future: **Se der, eu vou** (If it works out, I'll go).
+    examples:
+      - ["É melhor que a gente saia agora.", "We'd better leave now."]
+      - ["Se eu fosse você, não faria isso.", "If I were you, I wouldn't do that."]
+      - ["Assim que puder, eu te ligo.", "As soon as I can, I'll call you.", "future subjunctive"]
+
+  - id: comparison
+    title: Comparing
+    kind: structure
+    level: A2
+    tags: [comparison, mais, menos, tão, melhor, pior, superlative, -íssimo]
+    tables:
+      - head: ["", "Pattern", "Example"]
+        rows:
+          - ["more / less", "mais / menos … (do) que", "São Paulo é maior que o Rio."]
+          - ["as", "tão … quanto / como", "Ele é tão alto quanto eu."]
+          - ["the most", "o / a mais …", "a cidade mais bonita"]
+          - ["very", "-íssimo", "lindíssimo, caríssimo"]
+          - ["irregular", "bom → melhor ;; mau → pior ;; grande → maior ;; pequeno → menor", ""]
+    text: >-
+      **melhor** works as both "better" (adjective) and "better" (adverb): **Este é melhor. Ela canta melhor.**
+    examples:
+      - ["O metrô é mais rápido do que o ônibus.", "The metro is faster than the bus."]
+      - ["É o melhor restaurante do bairro.", "It's the best restaurant in the neighbourhood."]
+      - ["A comida estava ótima!", "The food was great!"]
+
+  - id: memory-map
+    title: One-page memory map
+    kind: summary
+    level: all
+    tags: [summary, overview]
+    points:
+      - Learn o or a with every noun; prepositions merge with articles (do, na, ao, pelo).
+      - "você (+ 3rd-person verb) is the Brazilian 'you'; tu in Portugal; a gente = we in speech."
+      - "ser for what something is; estar for states; ficar for where places are."
+      - "ir + infinitive is the everyday future."
+      - "Pretérito perfeito tells what happened; imperfeito paints the background and habits."
+      - "Brazil: pronoun before the verb (me dá); Portugal: after with a hyphen (dá-me)."
+      - "Double negatives are correct: não vi ninguém."
+      - "The subjunctive follows que after wishes and doubt; se + imperfect subjunctive for imagined situations."
+      - "quando / se about the future take the future subjunctive: quando você chegar."
+    tip: >-
+      Listening strategy: vowels shrink in unstressed syllables, especially in Portugal (telefone → "tlfon"). Hold on
+      to the stressed syllable and the verb ending, and the nasal sounds (-ão, -em, -im) that mark many endings.

@@ -1,4 +1,4 @@
-# /lingo update-content [de|es|ja]
+# /lingo update-content [lang]
 
 Find new videos and articles near the learner's level. The script does the fetching and scoring; you explain the result.
 

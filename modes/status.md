@@ -1,4 +1,4 @@
-# /lingo status [de|es|ja]
+# /lingo status [lang]
 
 1. Run `uv run --project backend lingo status --json` (add `--lang <code>` if the user named a language).
 2. For each language in the result, report in a compact table:

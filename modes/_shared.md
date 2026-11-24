@@ -14,7 +14,7 @@ uv run --project backend lingo <command> [options] --json
 
 | Mode | Ready? | Use it to |
 |---|---|---|
-| `/lingo status [de\|es\|ja]` | yes | See hours, today vs goal, recent trend and starting level range |
+| `/lingo status [lang]` | yes | See hours, today vs goal, recent trend and starting level range |
 | `/lingo import` | yes | Re-sync the Immersion Tracker CSVs |
 | `/lingo doctor` | yes | Check the setup and fix problems |
 | `/lingo recommend [lang]` | yes | Get i+1 picks with reasons |

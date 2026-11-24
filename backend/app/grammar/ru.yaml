@@ -1,0 +1,262 @@
+# Russian grammar reference, beginner to intermediate. Shown on the Grammar page.
+# Cells: "target | translation"; several in one cell are separated by " ;; "; {…} marks an ending to highlight.
+# Examples: [sentence, translation, optional note].  kind: structure | verbs | contrast | summary
+
+language: ru
+title: Russian grammar
+intro: >-
+  A working reference for beginners to intermediate learners. Russian shows a word's role with its ending (case), so
+  most sections are about endings. Read a section, notice the shape, then listen for it in what you watch and read.
+
+sections:
+  - id: gender
+    title: Gender, no articles, and "to be"
+    kind: structure
+    level: A1
+    tags: [gender, noun, no article, быть, to be, plural]
+    tables:
+      - head: ["Gender", "Typical ending", "Examples"]
+        rows:
+          - ["masculine", "consonant, -й, (some -ь)", "дом | house ;; музей | museum ;; день | day"]
+          - ["feminine", "-а, -я, (some -ь)", "мама | mum ;; неделя | week ;; ночь | night"]
+          - ["neuter", "-о, -е", "окно | window ;; море | sea"]
+          - ["plural", "-ы / -и (masc., fem.) ;; -а / -я (neuter)", "дома, мамы, книги, окна"]
+    text: >-
+      Russian has **no articles**: книга = a book / the book. In the present tense **"to be" is left out**: **Я
+      студент** (I am a student); in writing a dash may stand for it: **Москва — столица России**. Words in **-ь** must
+      be learned (день is masculine, ночь feminine). After **г, к, х, ж, ш, ч, щ** write **и**, not ы: книги.
+    examples:
+      - ["Это мой брат.", "This is my brother.", "no 'is'"]
+      - ["Москва — большой город.", "Moscow is a big city."]
+      - ["Где книги?", "Where are the books?"]
+
+  - id: present
+    title: Present tense (two conjugations)
+    kind: verbs
+    level: A1
+    tags: [present, conjugation, -ать, -ить, first conjugation, second conjugation]
+    tables:
+      - head: ["Person", "читать | to read (1st)", "говорить | to speak (2nd)"]
+        rows:
+          - ["я", "чита{ю}", "говор{ю}"]
+          - ["ты", "чита{ешь}", "говор{ишь}"]
+          - ["он / она / оно", "чита{ет}", "говор{ит}"]
+          - ["мы", "чита{ем}", "говор{им}"]
+          - ["вы", "чита{ете}", "говор{ите}"]
+          - ["они", "чита{ют}", "говор{ят}"]
+    text: >-
+      Most **-ать / -ять** verbs follow читать (e-endings); most **-ить** verbs follow говорить (и-endings). Watch for
+      consonant changes in the я form of 2nd-conjugation verbs: **любить → люблю, любишь; видеть → вижу, видишь**.
+      Russian has one present tense for "I read" and "I'm reading".
+    examples:
+      - ["Я читаю интересную книгу.", "I'm reading an interesting book."]
+      - ["Ты говоришь по-русски?", "Do you speak Russian?"]
+      - ["Мы живём в Петербурге.", "We live in St Petersburg.", "жить → живу, живёшь"]
+
+  - id: cases-overview
+    title: The six cases at a glance
+    kind: summary
+    level: A1
+    tags: [cases, nominative, accusative, genitive, dative, instrumental, prepositional, endings]
+    tables:
+      - head: ["Case", "Question", "Main uses", "Example"]
+        rows:
+          - ["Nominative", "кто? что?", "subject", "Мама дома. | Mum is at home."]
+          - ["Accusative", "кого? что?", "direct object; в / на + direction", "Я вижу маму. ;; Я иду в школу."]
+          - ["Genitive", "кого? чего?", "of; absence (нет); after numbers 5+ and quantities; у / из / от / без / для", "чашка чая ;; У меня нет времени."]
+          - ["Dative", "кому? чему?", "to / for someone; age; нравиться; к, по", "Я пишу маме. ;; Мне двадцать лет."]
+          - ["Instrumental", "кем? чем?", "with (с); by means of; after быть / стать / работать", "кофе с молоком ;; Он работает врачом."]
+          - ["Prepositional", "о ком? о чём? где?", "about (о); location (в / на)", "Я живу в Москве. ;; Мы говорим о фильме."]
+    text: >-
+      Every noun, adjective and pronoun changes its ending to show its role. Don't learn all tables at once: notice the
+      question each case answers, and pick up endings from fixed phrases you hear again and again (в Москве, у меня,
+      мне нравится).
+    examples:
+      - ["Я дал книгу брату.", "I gave the book to my brother.", "книгу = accusative, брату = dative"]
+      - ["Мы гуляли с другом в парке.", "We walked in the park with a friend.", "instrumental, prepositional"]
+
+  - id: accusative
+    title: Accusative (direct object, direction)
+    kind: structure
+    level: A1
+    tags: [accusative, object, в, на, direction]
+    tables:
+      - head: ["", "Nominative", "Accusative"]
+        rows:
+          - ["feminine -а / -я", "мама, неделя", "мам{у}, недел{ю}"]
+          - ["masculine thing", "дом, стол", "дом, стол (no change)"]
+          - ["masculine person / animal", "брат, кот", "брат{а}, кот{а}"]
+          - ["neuter", "окно", "окно (no change)"]
+    text: >-
+      Only feminine nouns in -а/-я and masculine **living** beings change. **в / на + accusative** answers "where to?":
+      **Я иду в магазин.** (compare prepositional "where?": **Я в магазине**).
+    examples:
+      - ["Я люблю музыку.", "I love music."]
+      - ["Ты видишь брата?", "Can you see your brother?", "animate masculine: -а"]
+      - ["Завтра мы едем на море.", "Tomorrow we're going to the seaside.", "direction: accusative"]
+
+  - id: prepositional
+    title: Prepositional (location, "about")
+    kind: structure
+    level: A1
+    tags: [prepositional, location, в, на, о, about, where]
+    rule: Most nouns take -е; feminine -ь and nouns in -ия / -ие take -и.
+    tables:
+      - head: ["Nominative", "Prepositional"]
+        rows:
+          - ["Москва | Moscow", "в Москв{е}"]
+          - ["парк | park", "в парк{е}"]
+          - ["Россия | Russia", "в Росси{и}"]
+          - ["площадь | square", "на площад{и}"]
+    text: >-
+      **в** = in (inside, towns, countries); **на** = on, and also for open spaces, events and some places: **на
+      работе, на улице, на концерте, на вокзале**. A few masculine nouns take stressed **-у**: **в лесу, в саду, на
+      полу**.
+    examples:
+      - ["Я живу в Москве.", "I live in Moscow."]
+      - ["Он сейчас на работе.", "He's at work now.", "на for work"]
+      - ["О чём ты думаешь?", "What are you thinking about?"]
+
+  - id: genitive
+    title: Genitive (of, absence, quantities)
+    kind: structure
+    level: A2
+    tags: [genitive, нет, у меня, of, numbers, quantity]
+    tables:
+      - head: ["", "Nominative", "Genitive singular"]
+        rows:
+          - ["masculine", "брат, музей", "брат{а}, музе{я}"]
+          - ["feminine", "мама, неделя", "мам{ы}, недел{и}"]
+          - ["neuter", "окно, море", "окн{а}, мор{я}"]
+    text: >-
+      Uses: "of" (**машина брата**, my brother's car), **у + genitive** for having (**У меня есть кошка**), absence
+      with **нет** (**У меня нет машины**), after **много, мало, сколько**, and after prepositions **из, от, до, без,
+      для, около**. Numbers: **1 + nominative** (один час), **2–4 + genitive singular** (два часа), **5+ + genitive
+      plural** (пять часов).
+    examples:
+      - ["У тебя есть время?", "Do you have time?"]
+      - ["Нет, у меня нет времени.", "No, I don't have time.", "нет + genitive"]
+      - ["Дайте, пожалуйста, чашку кофе.", "A cup of coffee, please."]
+
+  - id: dative-instrumental
+    title: Dative & instrumental
+    kind: structure
+    level: A2
+    tags: [dative, instrumental, мне, нравиться, с, with, age]
+    tables:
+      - head: ["", "Dative (to / for)", "Instrumental (with / by)"]
+        rows:
+          - ["masculine / neuter", "брат{у}, окн{у}", "брат{ом}, окн{ом}"]
+          - ["feminine", "мам{е}", "мам{ой}"]
+          - ["pronouns", "мне, тебе, ему, ей, нам, вам, им", "мной, тобой, им, ей, нами, вами, ими"]
+    text: >-
+      Dative: the receiver (**Я звоню маме**), feelings and states (**Мне холодно**, I'm cold; **Мне нравится этот
+      фильм**, I like this film), age (**Мне тридцать лет**), and after **к** and **по**. Instrumental: **с** = with
+      (**чай с лимоном**), the tool (**писать ручкой**), and jobs after **работать / быть / стать**: **Она работает
+      учителем.**
+    examples:
+      - ["Мне нравится Москва.", "I like Moscow.", "the thing liked is the subject"]
+      - ["Позвони мне вечером.", "Call me in the evening."]
+      - ["Я пью кофе с молоком.", "I drink coffee with milk."]
+
+  - id: past
+    title: Past tense
+    kind: verbs
+    level: A1
+    tags: [past, -л, -ла, -ло, -ли, gender]
+    rule: Infinitive stem + -л (he), -ла (she), -ло (it), -ли (plural); the ending follows the subject's gender.
+    tables:
+      - head: ["Subject", "читать", "быть | to be"]
+        rows:
+          - ["он / я (man)", "чита{л}", "был"]
+          - ["она / я (woman)", "чита{ла}", "была"]
+          - ["оно", "чита{ло}", "было"]
+          - ["они / мы / вы", "чита{ли}", "были"]
+    text: >-
+      The past doesn't change for person, only for gender and number: a woman says **я читала**, a man **я читал**. A
+      few irregulars: **идти → шёл, шла, шли; мочь → мог, могла; есть → ел, ела**.
+    examples:
+      - ["Вчера я была в театре.", "Yesterday I was at the theatre.", "a woman speaking"]
+      - ["Мы долго говорили.", "We talked for a long time."]
+      - ["Он шёл домой.", "He was walking home."]
+
+  - id: aspect
+    title: "Aspect: imperfective vs. perfective"
+    kind: contrast
+    level: A2
+    tags: [aspect, imperfective, perfective, делать, сделать, future]
+    tables:
+      - head: ["", "Imperfective", "Perfective"]
+        rows:
+          - ["Meaning", "process, repetition, 'was doing'", "single completed result, 'did / will have done'"]
+          - ["Pair", "делать, читать, писать, покупать", "сделать, прочитать, написать, купить"]
+          - ["Past", "Я читал книгу. | I was reading / used to read the book.", "Я прочитал книгу. | I read (finished) the book."]
+          - ["Future", "Я буду читать. | I'll be reading.", "Я прочитаю. | I'll read it (finish it)."]
+    text: >-
+      Most verbs come in pairs. The perfective has **no present**: its present-tense forms mean the future (**Я
+      позвоню** = I'll call). The imperfective future uses **буду, будешь, будет… + infinitive**. Signal words:
+      **часто, всегда, каждый день, долго** → imperfective; **уже, наконец, вдруг** → often perfective.
+    examples:
+      - ["Я каждый день читаю новости.", "I read the news every day.", "repetition: imperfective"]
+      - ["Я уже прочитал эту статью.", "I've already read this article.", "result: perfective"]
+      - ["Я позвоню тебе завтра.", "I'll call you tomorrow.", "perfective present = future"]
+
+  - id: motion
+    title: Verbs of motion (идти / ходить, ехать / ездить)
+    kind: contrast
+    level: B1
+    tags: [motion, идти, ходить, ехать, ездить, going]
+    tables:
+      - head: ["", "One way, now (unidirectional)", "Round trips, habits (multidirectional)"]
+        rows:
+          - ["on foot", "идти: иду, идёшь, идут", "ходить: хожу, ходишь, ходят"]
+          - ["by vehicle", "ехать: еду, едешь, едут", "ездить: езжу, ездишь, ездят"]
+          - ["Examples", "Я иду в магазин. | I'm going to the shop (now).", "Я хожу в спортзал. | I go to the gym (regularly)."]
+    text: >-
+      Russian distinguishes walking from travelling by transport, and one trip now from repeated or round trips.
+      Prefixes add direction and make perfective verbs: **пойти** (set off), **прийти** (arrive on foot), **уйти**
+      (leave), **приехать** (arrive by transport).
+    examples:
+      - ["Куда ты идёшь?", "Where are you going?"]
+      - ["Летом мы ездили на дачу.", "In summer we went (and came back) to the dacha."]
+      - ["Он придёт в семь.", "He'll come at seven."]
+
+  - id: adjectives
+    title: Adjectives & possessives
+    kind: structure
+    level: A1
+    tags: [adjective, agreement, мой, твой, наш, ваш, его, её, их, possessive]
+    tables:
+      - head: ["", "masculine", "feminine", "neuter", "plural"]
+        rows:
+          - ["new", "нов{ый}", "нов{ая}", "нов{ое}", "нов{ые}"]
+          - ["big (stressed ending)", "больш{ой}", "больш{ая}", "больш{ое}", "больш{ие}"]
+          - ["my", "мой", "моя", "моё", "мои"]
+          - ["our", "наш", "наша", "наше", "наши"]
+          - ["his / her / their", "его / её / их (never change)", "", "", ""]
+    text: >-
+      Adjectives agree with the noun in gender, number and case. **свой** (one's own) replaces мой / его / её when the
+      owner is the subject: **Он любит свою работу** (his own job).
+    examples:
+      - ["Это моя новая квартира.", "This is my new flat."]
+      - ["У нас большая семья.", "We have a big family."]
+      - ["Она взяла свою сумку.", "She took her (own) bag."]
+
+  - id: memory-map
+    title: One-page memory map
+    kind: summary
+    level: all
+    tags: [summary, overview]
+    points:
+      - "No articles, and no 'to be' in the present: Я студент."
+      - "Endings show roles: subject, object, of, to, with, in."
+      - "в / на + accusative = where to; + prepositional = where."
+      - "у меня есть = I have; у меня нет + genitive = I don't have."
+      - "Мне нравится + the thing liked (in the nominative)."
+      - "Past tense agrees with gender: я читал (man), я читала (woman)."
+      - "Imperfective for process and habits; perfective for one finished result."
+      - "Perfective present = future: я позвоню."
+      - "идти / ехать: one trip now; ходить / ездить: habits and round trips."
+    tip: >-
+      Listening strategy: unstressed о sounds like а (молоко → "malako"), so trust the stress. Catch the preposition and
+      the word's last syllable together: в Москве, к маме, с другом tell you where, to whom and with whom.

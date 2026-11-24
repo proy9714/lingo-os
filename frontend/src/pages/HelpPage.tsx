@@ -189,8 +189,8 @@ const TOPICS: Topic[] = [
         <Steps>
           {[
             <>
-              <strong className="text-ink">Pick a language</strong> with the DE / ES / JA buttons at the top. Everything (suggestions,
-              words, time, level) is kept separately per language, and the colours change with it.
+              <strong className="text-ink">Pick a language</strong> with the buttons at the top (add more with <strong>+</strong>).
+              Everything (suggestions, words, time, level) is kept separately per language, and the colours change with it.
             </>,
             <>
               <strong className="text-ink">Bring in your history</strong> (optional): <Go to="/settings">Settings</Go> → Immersion
@@ -213,6 +213,41 @@ const TOPICS: Topic[] = [
         <Tip>
           The app runs on this computer. Start it with <Code>npm run dev</Code> (or <Code>npm run start</Code>) in the project folder
           and keep that window open while you use it.
+        </Tip>
+      </>
+    ),
+  },
+  {
+    id: "languages",
+    title: "Languages",
+    summary: "Add, switch and remove the languages you learn.",
+    keywords: "language add remove switch french italian portuguese russian korean chinese mandarin variety download dictionary",
+    body: (
+      <>
+        <p>
+          Lingo OS teaches Mandarin Chinese, Spanish, French, Portuguese, Russian, German, Japanese, Korean and Italian; Hindi,
+          Arabic and Bengali are coming. <Go to="/settings">Settings</Go> → Languages lists them by number of speakers.
+        </p>
+        <Steps>
+          {[
+            <>
+              Press <em>+ Add a language</em> (or the <strong>+</strong> next to the language buttons), pick one and its variety
+              (Brazilian or European Portuguese, Mainland or Taiwan Chinese, …). The variety sets the voices and where videos and
+              articles come from.
+            </>,
+            <>
+              The app downloads what the language needs once, in the background: a language model that finds each word's
+              dictionary form, and a dictionary (10 to 70 MB together). The language appears as soon as it's ready, and the
+              first suggestions start arriving a few minutes later.
+            </>,
+            <>
+              <em>Remove</em> hides a language. Your words, time and history in it are kept: add it again and everything is back.
+            </>,
+          ]}
+        </Steps>
+        <Tip>
+          Mandarin words show their pinyin in the lookup panel; Korean verbs are looked up by their dictionary form (먹었어요 →
+          먹다). The Grammar page has a reference for each language.
         </Tip>
       </>
     ),

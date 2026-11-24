@@ -1,0 +1,318 @@
+# Italian grammar reference, beginner to intermediate. Shown on the Grammar page.
+# Cells: "target | translation"; several in one cell are separated by " ;; "; {…} marks an ending to highlight.
+# Examples: [sentence, translation, optional note].  kind: structure | verbs | contrast | summary
+
+language: it
+title: Italian grammar
+intro: >-
+  A working reference for beginners to intermediate learners. Every pattern comes with real sentences and a translation:
+  read a section, notice the shape, then listen for it in what you watch and read.
+
+sections:
+  - id: nouns
+    title: Nouns, articles & gender
+    kind: structure
+    level: A1
+    tags: [gender, article, il, lo, la, gli, le, un, uno, una, plural, noun]
+    tables:
+      - head: ["", "Singular (the / a)", "Plural (the)"]
+        rows:
+          - ["masculine", "il libro, un libro | the / a book", "i libri"]
+          - ["masculine before s+consonant, z, gn, ps", "lo studente, uno zaino", "gli studenti, gli zaini"]
+          - ["masculine before a vowel", "l'amico, un amico", "gli amici"]
+          - ["feminine", "la casa, una casa", "le case"]
+          - ["feminine before a vowel", "l'idea, un'idea", "le idee"]
+    text: >-
+      Most nouns in **-o** are masculine (plural **-i**) and most in **-a** are feminine (plural **-e**). Nouns in **-e**
+      can be either: il fiore, la chiave (plural **-i**: i fiori, le chiavi). Some -a nouns are masculine: il problema,
+      il sistema. Prepositions merge with the article: **di + il = del, a + la = alla, in + il = nel, su + i = sui**.
+    examples:
+      - ["La città è molto bella.", "The city is very beautiful."]
+      - ["Ho comprato uno zaino nuovo.", "I bought a new backpack.", "uno before z-"]
+      - ["Andiamo al mare.", "We're going to the seaside.", "a + il = al"]
+      - ["Il prezzo del pane è aumentato.", "The price of bread has gone up.", "di + il = del"]
+
+  - id: pronouns
+    title: Subject pronouns, tu & Lei
+    kind: structure
+    level: A1
+    tags: [pronoun, io, tu, lui, lei, Lei, noi, voi, loro]
+    tables:
+      - head: ["Meaning", "Pronoun"]
+        rows:
+          - ["I", "io"]
+          - ["you (friend)", "tu"]
+          - ["he / she", "lui / lei"]
+          - ["you (polite)", "Lei (takes the lei verb form)"]
+          - ["we", "noi"]
+          - ["you (plural)", "voi"]
+          - ["they", "loro"]
+    text: >-
+      The verb ending shows who is acting, so subject pronouns are usually left out: **Parlo italiano.** Use them for
+      emphasis or contrast. The polite **Lei** uses the third-person form: **Lei è italiano?** (Are you Italian?).
+    examples:
+      - ["Sono di Milano.", "I'm from Milan.", "no io needed"]
+      - ["Io lavoro, tu riposi.", "I work, you rest.", "pronouns for contrast"]
+      - ["Scusi, Lei sa dov'è la stazione?", "Excuse me, do you know where the station is?", "polite Lei"]
+
+  - id: present
+    title: Present tense (regular verbs)
+    kind: verbs
+    level: A1
+    tags: [present, presente, conjugation, -are, -ere, -ire, -isc-]
+    rule: Drop -are, -ere or -ire and add the ending; many -ire verbs add -isc- in four forms.
+    tables:
+      - head: ["Person", "parlare | to speak", "prendere | to take", "dormire | to sleep", "finire | to finish"]
+        rows:
+          - ["io", "parl{o}", "prend{o}", "dorm{o}", "fin{isco}"]
+          - ["tu", "parl{i}", "prend{i}", "dorm{i}", "fin{isci}"]
+          - ["lui / lei", "parl{a}", "prend{e}", "dorm{e}", "fin{isce}"]
+          - ["noi", "parl{iamo}", "prend{iamo}", "dorm{iamo}", "fin{iamo}"]
+          - ["voi", "parl{ate}", "prend{ete}", "dorm{ite}", "fin{ite}"]
+          - ["loro", "parl{ano}", "prend{ono}", "dorm{ono}", "fin{iscono}"]
+    text: >-
+      The present covers habits, facts and the near future. For "right now", use **stare + gerund**: **sto mangiando,
+      sta piovendo**.
+    examples:
+      - ["Parlo un po' di italiano.", "I speak a little Italian."]
+      - ["Domani partiamo presto.", "Tomorrow we're leaving early.", "present for the near future"]
+      - ["Sto leggendo un libro.", "I'm reading a book (right now)."]
+
+  - id: irregular
+    title: Key irregular verbs
+    kind: verbs
+    level: A1
+    tags: [essere, avere, andare, fare, stare, volere, potere, irregular]
+    tables:
+      - head: ["Person", "essere | to be", "avere | to have", "andare | to go", "fare | to do"]
+        rows:
+          - ["io", "sono", "ho", "vado", "faccio"]
+          - ["tu", "sei", "hai", "vai", "fai"]
+          - ["lui / lei", "è", "ha", "va", "fa"]
+          - ["noi", "siamo", "abbiamo", "andiamo", "facciamo"]
+          - ["voi", "siete", "avete", "andate", "fate"]
+          - ["loro", "sono", "hanno", "vanno", "fanno"]
+    text: >-
+      Also very common: **stare** (sto, stai, sta…: Come stai?), **volere** (voglio, vuoi, vuole), **potere** (posso,
+      puoi, può), **dovere** (devo, devi, deve), **venire** (vengo, vieni, viene), **dire** (dico, dici, dice). Hunger,
+      thirst and age use avere: **ho fame, ho sete, ho vent'anni**.
+    examples:
+      - ["Ho fame, andiamo a mangiare?", "I'm hungry, shall we go and eat?"]
+      - ["Fa freddo oggi.", "It's cold today.", "fare for weather"]
+      - ["Posso aiutarti?", "Can I help you?"]
+
+  - id: negation
+    title: Negation
+    kind: structure
+    level: A1
+    tags: [negation, non, mai, niente, nessuno, più, double negative]
+    tables:
+      - head: ["", "Pattern", "Example"]
+        rows:
+          - ["not", "non + verb", "Non lo so. | I don't know."]
+          - ["never", "non … mai", "Non mangio mai carne. | I never eat meat."]
+          - ["nothing", "non … niente", "Non vedo niente. | I can't see anything."]
+          - ["nobody", "non … nessuno", "Non c'è nessuno. | There's nobody here."]
+          - ["no longer", "non … più", "Non fuma più. | He doesn't smoke any more."]
+    text: >-
+      **non** goes before the verb (and before object pronouns). Double negatives are correct and normal: **Non ho
+      visto nessuno.** When niente or nessuno comes first, non disappears: **Nessuno lo sa.**
+    examples:
+      - ["Non ho capito.", "I didn't understand."]
+      - ["Non abbiamo più latte.", "We're out of milk."]
+      - ["Niente è impossibile.", "Nothing is impossible.", "no non when niente comes first"]
+
+  - id: adjectives
+    title: Adjectives & agreement
+    kind: structure
+    level: A1
+    tags: [adjective, agreement, bello, buono, position]
+    tables:
+      - head: ["", "masc. singular", "fem. singular", "masc. plural", "fem. plural"]
+        rows:
+          - ["-o adjectives", "rosso", "rossa", "rossi", "rosse"]
+          - ["-e adjectives", "grande", "grande", "grandi", "grandi"]
+    text: >-
+      Adjectives agree with the noun and usually come after it: **una macchina rossa**. A few common ones often come
+      before: **bello, buono, grande, piccolo, nuovo, vecchio**. **bello** and **buono** change like the article: **un
+      bel posto, un bell'albero, i bei libri, un buon amico**.
+    examples:
+      - ["È un'idea interessante.", "That's an interesting idea."]
+      - ["Che bel tempo!", "What lovely weather!", "bello → bel"]
+      - ["Le scarpe nuove sono comode.", "The new shoes are comfortable."]
+
+  - id: passato-prossimo
+    title: Passato prossimo (what happened)
+    kind: verbs
+    level: A2
+    tags: [past, passato prossimo, avere, essere, participle, agreement]
+    rule: avere or essere in the present + past participle (-are → -ato, -ere → -uto, -ire → -ito).
+    tables:
+      - head: ["", "with avere", "with essere"]
+        rows:
+          - ["io", "ho mangiato | I ate", "sono andato/a | I went"]
+          - ["tu", "hai finito", "sei venuto/a"]
+          - ["lui / lei", "ha venduto", "è partito / partita"]
+          - ["noi", "abbiamo visto", "siamo arrivati/e"]
+          - ["loro", "hanno preso", "sono rimasti/e"]
+    text: >-
+      Most verbs use **avere**. Verbs of movement and change (andare, venire, partire, arrivare, uscire, entrare,
+      nascere, morire, diventare, rimanere, stare) and all reflexive verbs use **essere**, and then the participle
+      agrees: **Maria è partita, i ragazzi sono usciti**. Irregular participles: **fatto, detto, preso, messo, visto,
+      letto, scritto, aperto, venuto, stato**.
+    examples:
+      - ["Ieri ho guardato un film.", "Yesterday I watched a film."]
+      - ["Siamo arrivati in ritardo.", "We arrived late.", "essere + agreement"]
+      - ["Mi sono svegliata alle sette.", "I woke up at seven.", "reflexive: essere"]
+
+  - id: imperfetto
+    title: Imperfetto vs. passato prossimo
+    kind: contrast
+    level: B1
+    tags: [imperfetto, passato prossimo, past, background, habit]
+    tables:
+      - head: ["", "imperfetto", "passato prossimo"]
+        rows:
+          - ["Formation", "stem + -avo, -evo, -ivo… (parl{avo}, prend{evo}, dorm{ivo})", "avere / essere + participle"]
+          - ["Use", "background, description, habits, ongoing states", "single completed events"]
+          - ["Examples", "Pioveva. | It was raining. ;; Da bambino giocavo a calcio. | As a child I played football.", "È suonato il telefono. | The phone rang. ;; Ho aperto la porta. | I opened the door."]
+    text: >-
+      The imperfetto sets the scene; the passato prossimo moves the story forward. **essere** is irregular: **ero,
+      eri, era, eravamo, eravate, erano**. Signal words: **sempre, di solito, ogni giorno** → imperfetto; **un giorno,
+      all'improvviso, poi** → passato prossimo.
+    examples:
+      - ["Leggevo quando hai chiamato.", "I was reading when you called."]
+      - ["La domenica andavamo dai nonni.", "On Sundays we used to go to our grandparents'.", "habit"]
+      - ["Faceva freddo, così ho messo il cappotto.", "It was cold, so I put on my coat."]
+
+  - id: object-pronouns
+    title: Object pronouns, ci & ne
+    kind: structure
+    level: B1
+    tags: [pronoun, lo, la, li, le, gli, ci, ne, object, combined]
+    tables:
+      - head: ["", "Direct", "Indirect"]
+        rows:
+          - ["me / you", "mi, ti", "mi, ti"]
+          - ["him / it", "lo", "gli"]
+          - ["her / it", "la", "le"]
+          - ["us / you all", "ci, vi", "ci, vi"]
+          - ["them", "li (masc.), le (fem.)", "gli"]
+          - ["there / of it", "ci | there, about it", "ne | of it, some, about it"]
+    text: >-
+      Pronouns go before the conjugated verb (**Lo vedo, Gli parlo**) and attach to infinitives and commands
+      (**Voglio vederlo, Dimmi!**). Together, indirect + direct combine: **me lo, te la, glielo** (to him/her + it):
+      **Glielo dico** (I'll tell him/her). **ne** stands for "some / of it": **Ne voglio due.**
+    examples:
+      - ["Conosci Marco? Sì, lo conosco.", "Do you know Marco? Yes, I know him."]
+      - ["Le ho scritto un messaggio.", "I wrote her a message."]
+      - ["Te lo do domani.", "I'll give it to you tomorrow.", "te + lo"]
+      - ["Quanti caffè? Ne prendo due.", "How many coffees? I'll have two."]
+
+  - id: piacere
+    title: piacere (to like)
+    kind: structure
+    level: A1
+    tags: [piacere, mi piace, mi piacciono, like]
+    rule: "Literally \"it pleases me\": the verb agrees with the thing liked; the person is an indirect object."
+    tables:
+      - head: ["", "one thing / an activity", "several things"]
+        rows:
+          - ["I like", "mi piace la pizza", "mi piacciono i libri"]
+          - ["you like", "ti piace", "ti piacciono"]
+          - ["he / she likes", "gli / le piace", "gli / le piacciono"]
+          - ["we like", "ci piace", "ci piacciono"]
+    text: >-
+      With a verb use the singular: **Mi piace leggere.** In the past it takes essere and agrees with the thing: **Mi è
+      piaciuto il film, mi sono piaciute le foto.**
+    examples:
+      - ["Ti piace il caffè?", "Do you like coffee?"]
+      - ["Non mi piacciono i film dell'orrore.", "I don't like horror films."]
+      - ["Ci è piaciuta molto la mostra.", "We really liked the exhibition.", "past: essere + agreement"]
+
+  - id: future-conditional
+    title: Future & conditional
+    kind: verbs
+    level: B1
+    tags: [future, futuro, conditional, condizionale, would, se]
+    tables:
+      - head: ["Person", "future: parlare", "conditional: parlare"]
+        rows:
+          - ["io", "parler{ò}", "parler{ei}"]
+          - ["tu", "parler{ai}", "parler{esti}"]
+          - ["lui / lei", "parler{à}", "parler{ebbe}"]
+          - ["noi", "parler{emo}", "parler{emmo}"]
+          - ["voi", "parler{ete}", "parler{este}"]
+          - ["loro", "parler{anno}", "parler{ebbero}"]
+    text: >-
+      Irregular stems are shared by both: **essere → sar-, avere → avr-, andare → andr-, fare → far-, potere → potr-,
+      volere → vorr-, venire → verr-**. The future also guesses: **Saranno le tre** (It's probably three o'clock).
+      The conditional makes requests polite: **Vorrei un caffè. Potrebbe aiutarmi?**
+    examples:
+      - ["Domani pioverà.", "It will rain tomorrow."]
+      - ["Vorrei prenotare un tavolo.", "I'd like to book a table.", "polite conditional"]
+      - ["Al tuo posto, partirei subito.", "In your place I'd leave right away."]
+
+  - id: congiuntivo
+    title: The subjunctive (congiuntivo)
+    kind: verbs
+    level: B2
+    tags: [congiuntivo, subjunctive, che, penso che, wish, doubt, se]
+    tables:
+      - head: ["Trigger", "Example"]
+        rows:
+          - ["opinion, belief", "Penso che sia vero. | I think it's true."]
+          - ["wish, will", "Voglio che tu venga. | I want you to come."]
+          - ["emotion, doubt", "Ho paura che sia troppo tardi. | I'm afraid it's too late."]
+          - ["some conjunctions", "benché, affinché, prima che, a meno che"]
+          - ["imagined if", "Se avessi tempo, viaggerei. | If I had time, I'd travel."]
+    text: >-
+      Italian uses the congiuntivo after verbs of opinion too (**penso che, credo che, mi sembra che**). Present forms:
+      -are → **-i** (che io parli), -ere/-ire → **-a** (che io prenda, dorma). Irregular: **essere → sia, avere → abbia,
+      fare → faccia, andare → vada, potere → possa**. For imagined situations: **se + congiuntivo imperfetto,
+      conditional**.
+    examples:
+      - ["Credo che abbia ragione.", "I think he's right."]
+      - ["È meglio che tu parta subito.", "You'd better leave right away."]
+      - ["Se fossi in te, non lo farei.", "If I were you, I wouldn't do it."]
+
+  - id: comparison
+    title: Comparing
+    kind: structure
+    level: A2
+    tags: [comparison, più, meno, come, migliore, meglio, superlative, -issimo]
+    tables:
+      - head: ["", "Pattern", "Example"]
+        rows:
+          - ["more / less", "più / meno … di", "Roma è più grande di Firenze."]
+          - ["as", "(così) … come / (tanto) … quanto", "È alto come me."]
+          - ["the most", "il / la più …", "la città più bella d'Italia"]
+          - ["very", "-issimo", "bellissimo, buonissimo"]
+          - ["irregular", "buono → migliore ;; bene → meglio", "Questo vino è migliore. ;; Sto meglio."]
+    text: >-
+      Use **che** instead of di when comparing two adjectives, verbs or quantities: **È più facile leggere che
+      parlare.** **-issimo** is everywhere in speech: **grazie mille, bravissimo!**
+    examples:
+      - ["Il treno è più veloce dell'autobus.", "The train is faster than the bus."]
+      - ["È il miglior ristorante della zona.", "It's the best restaurant in the area."]
+      - ["La pizza era buonissima!", "The pizza was delicious!"]
+
+  - id: memory-map
+    title: One-page memory map
+    kind: summary
+    level: all
+    tags: [summary, overview]
+    points:
+      - Learn the article with every noun; lo / gli before s+consonant and z.
+      - The verb ending says who's acting, so subject pronouns are usually dropped.
+      - "Prepositions merge with articles: del, al, nel, sul."
+      - "essere verbs (movement, reflexive) agree in the passato prossimo: è partita."
+      - "Passato prossimo tells what happened; imperfetto paints the background."
+      - "mi piace + one thing, mi piacciono + several."
+      - "Pronouns go before the verb and attach to infinitives: lo vedo, voglio vederlo."
+      - "Double negatives are normal: non ho visto nessuno."
+      - "The congiuntivo follows che after opinions, wishes, feelings and doubt."
+      - "se + congiuntivo imperfetto, then the conditional: se avessi tempo, viaggerei."
+    tip: >-
+      Listening strategy: Italian keeps every vowel, so the endings are audible: listen to the last vowel of the verb
+      (who) and of the adjective (gender, number). Double consonants matter too: pala (shovel) vs palla (ball).

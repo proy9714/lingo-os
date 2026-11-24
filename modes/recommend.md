@@ -1,4 +1,4 @@
-# /lingo recommend [de|es|ja]
+# /lingo recommend [lang]
 
 1. Run `uv run --project backend lingo recommend --json` (add `--lang <code>` if the user named a language).
 2. Show the picks as a numbered list: title, channel or author, and the `reasons` joined with " · ".

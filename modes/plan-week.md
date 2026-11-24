@@ -1,4 +1,4 @@
-# /lingo plan-week [de|es|ja]
+# /lingo plan-week [lang]
 
 Plan the coming week from goals and gaps. Read-only: nothing is written.
 
