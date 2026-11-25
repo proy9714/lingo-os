@@ -430,6 +430,55 @@ def reply(gateway: Gateway, engine: Engine, session_id: int, user_text: str, inp
         }
 
 
+def reply_stream(gateway: Gateway, engine: Engine, session_id: int, user_text: str, input_mode: str = "text"):  # noqa: ANN201
+    """The tutor's reply as it's written: yields {"delta": text} pieces, then {"done": …} with both saved messages.
+    The vocabulary governor still runs on the finished reply; if it simplifies, "done" carries the simpler text."""
+    with engine.connect() as conn:
+        row = conn.execute(
+            text("SELECT language_code, system_prompt, ended_at FROM tutor_sessions WHERE id = :s"), {"s": session_id}
+        ).first()
+        if not row:
+            raise TutorError("no such session")
+        lang, system, ended = row
+        if ended:
+            raise TutorError("this conversation has ended; start a new one")
+        profile = get_profile(conn, lang) or {}
+        level = profile.get("level_alt") if lang == "ja" and profile.get("level_alt") else profile.get("level") or "A2"
+        meta = {"level": level, "max_words": MAX_WORDS.get(str(level), 12), "language": _language(conn, lang)}
+        history = _history(conn, session_id)
+    message = user_text.strip()
+    pieces: list[str] = []
+    call: dict[str, Any] = {}
+    for piece in gateway.chat_stream("tutor.chat", system, history, message):
+        if isinstance(piece, dict):
+            call = piece
+        else:
+            pieces.append(piece)
+            yield {"delta": piece}
+    answer = _clean("".join(pieces))
+    coverage = _coverage(engine, lang, answer)
+    if coverage is not None and coverage < MIN_COVERAGE:  # the governor, on the finished reply
+        prompt = load_prompt("tutor_rewrite")
+        variables = {"language": meta["language"], "level": meta["level"], "max_words": meta["max_words"], "message": answer}
+        simpler, _ = gateway.chat(
+            "tutor.chat", Template(prompt.system).substitute(variables), [], Template(prompt.user).substitute(variables)
+        )
+        simpler = _clean(simpler)
+        new_coverage = _coverage(engine, lang, simpler)
+        if simpler and new_coverage is not None and new_coverage > coverage:
+            answer, coverage = simpler, new_coverage
+            call["simplified"] = True
+    with engine.begin() as conn:
+        user_id = _add_message(conn, session_id, "user", message, input_mode=input_mode)
+        assistant_id = _add_message(conn, session_id, "assistant", answer, coverage=coverage, **call)
+        messages = {m["id"]: m for m in _messages(conn, session_id)}
+        yield {"done": {
+            "user": message_view(conn, lang, messages[user_id]),
+            "assistant": message_view(conn, lang, messages[assistant_id]),
+            "simplified": bool(call.get("simplified")),
+        }}
+
+
 def end_session(conn: Connection, session_id: int) -> dict[str, Any]:
     from app.jobs.runner import enqueue
 

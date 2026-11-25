@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from typing import Any
 
@@ -129,6 +129,30 @@ class GeminiProvider(_HTTPProvider):
         usage = data.get("usageMetadata") or {}
         return LLMResponse(text, usage.get("promptTokenCount"), usage.get("candidatesTokenCount"))
 
+    def stream(self, req: LLMRequest) -> Iterator[str]:
+        """The answer in pieces as it's written (server-sent events)."""
+        key = self.cfg.api_key
+        if not key:
+            raise ProviderError(f"no {self.cfg.api_key_env} set")
+        url = f"/models/{req.model}:streamGenerateContent"
+        try:
+            with self.client.stream("POST", url, params={"alt": "sse"}, json=self._body(req, extras=True),
+                                    headers={"x-goog-api-key": key}, timeout=req.timeout) as response:
+                if response.status_code != 200:
+                    response.read()
+                    raise ProviderError(f"Gemini {response.status_code}: {_error_text(response)}", status=response.status_code,
+                                        model_missing=response.status_code == 404)
+                for line in response.iter_lines():
+                    if not line.startswith("data:"):
+                        continue
+                    data = json.loads(line[5:].strip() or "{}")
+                    for candidate in data.get("candidates") or []:
+                        for part in (candidate.get("content") or {}).get("parts") or []:
+                            if part.get("text") and not part.get("thought"):
+                                yield part["text"]
+        except httpx.HTTPError as exc:
+            raise ProviderError(f"network error: {exc}") from exc
+
     def list_models(self) -> list[str]:
         try:
             response = self.client.get("/models", headers={"x-goog-api-key": self.cfg.api_key or ""}, params={"pageSize": 200})
@@ -197,6 +221,34 @@ class OpenAICompatibleProvider(_HTTPProvider):
         usage = data.get("usage") or {}
         return LLMResponse(text, usage.get("prompt_tokens"), usage.get("completion_tokens"))
 
+    def stream(self, req: LLMRequest) -> Iterator[str]:
+        """The answer in pieces as it's written (stream: true)."""
+        messages = (
+            ([{"role": "system", "content": req.system}] if req.system else [])
+            + [{"role": role, "content": text} for role, text in (req.history or [])]
+            + [{"role": "user", "content": req.prompt}]
+        )
+        body: dict[str, Any] = {"model": req.model, "messages": messages, "stream": True}
+        if req.temperature is not None and not self.is_openai:  # newer OpenAI models take only the default
+            body["temperature"] = req.temperature
+        headers = {"Authorization": f"Bearer {self.cfg.api_key}"} if self.cfg.api_key else {}
+        try:
+            with self.client.stream("POST", "/chat/completions", json=body, headers=headers, timeout=req.timeout) as response:
+                if response.status_code != 200:
+                    response.read()
+                    raise ProviderError(f"{self.cfg.name} {response.status_code}: {_error_text(response)}", status=response.status_code,
+                                        model_missing=response.status_code == 404)
+                for line in response.iter_lines():
+                    if not line.startswith("data:") or line.strip() == "data: [DONE]":
+                        continue
+                    data = json.loads(line[5:].strip() or "{}")
+                    for choice in data.get("choices") or []:
+                        piece = (choice.get("delta") or {}).get("content")
+                        if piece:
+                            yield piece
+        except httpx.HTTPError as exc:
+            raise ProviderError(f"network error: {exc}") from exc
+
     @property
     def is_openai(self) -> bool:
         return "api.openai.com" in self.base_url
@@ -227,6 +279,11 @@ class FakeProvider:
     def complete(self, req: LLMRequest) -> LLMResponse:
         self.requests.append(req)
         return LLMResponse(self.script(req), len(req.prompt) // 4, 20)
+
+    def stream(self, req: LLMRequest) -> Iterator[str]:
+        text = self.complete(req).text
+        for start in range(0, len(text), 7):
+            yield text[start : start + 7]
 
 
 def make_provider(cfg: ProviderConfig, transport: httpx.BaseTransport | None = None):

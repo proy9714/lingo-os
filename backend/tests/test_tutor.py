@@ -109,3 +109,29 @@ def test_review_records_corrections_and_grammar(client) -> None:
     with client.app.state.engine.connect() as conn:
         assert conn.execute(text("SELECT COUNT(*) FROM grammar_evidence")).scalar() == 1
     assert client.post(f"/api/tutor/sessions/{session['id']}/messages", json={"text": "noch was"}).status_code == 422
+
+
+def test_replies_stream_as_they_are_written(client) -> None:
+    tutor_gateway(client, lambda req: "Sehr gut! Und was machst du heute Abend?" if req.history is not None else EASY)
+    session = client.post("/api/tutor/sessions", json={"lang": "de", "mode": "conversation"}).json()
+    with client.stream("POST", f"/api/tutor/sessions/{session['id']}/messages/stream", json={"text": "Mir geht es gut."}) as response:
+        assert response.status_code == 200 and response.headers["content-type"].startswith("text/event-stream")
+        events = [json.loads(line[6:]) for line in response.iter_lines() if line.startswith("data: ")]
+    deltas = [e["delta"] for e in events if "delta" in e]
+    assert len(deltas) > 1 and "".join(deltas) == "Sehr gut! Und was machst du heute Abend?"
+    done = events[-1]["done"]
+    assert done["user"]["text"] == "Mir geht es gut." and done["assistant"]["text"].startswith("Sehr gut!")
+    saved = client.get(f"/api/tutor/sessions/{session['id']}").json()["messages"]
+    assert [m["role"] for m in saved] == ["assistant", "user", "assistant"]
+
+
+def test_a_streamed_reply_that_is_too_hard_is_still_simplified(client) -> None:
+    def script(req: LLMRequest) -> str:
+        return EASY if "Rewrite this" in req.prompt else HARD
+
+    tutor_gateway(client, script)
+    session = client.post("/api/tutor/sessions", json={"lang": "de", "mode": "conversation"}).json()
+    with client.stream("POST", f"/api/tutor/sessions/{session['id']}/messages/stream", json={"text": "Hallo"}) as response:
+        events = [json.loads(line[6:]) for line in response.iter_lines() if line.startswith("data: ")]
+    done = events[-1]["done"]
+    assert done["simplified"] and done["assistant"]["text"] == EASY

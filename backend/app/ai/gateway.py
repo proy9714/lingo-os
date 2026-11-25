@@ -244,6 +244,39 @@ class Gateway:
             return response.text.strip(), meta
         raise AIUnavailable("; ".join(errors) or "no provider answered")
 
+    def chat_stream(self, task: str, system: str, history: list[tuple[str, str]], message: str):  # noqa: ANN201
+        """Like `chat`, in pieces as they're written: yields text, then a final dict with the call's details.
+        A provider that fails before its first piece hands over to the next one; one that fails later raises."""
+        errors: list[str] = []
+        for name, route in self.route(task):
+            provider_cfg = self.cfg.providers[name]
+            provider = self.providers[name]
+            request = LLMRequest(system, message, route.model or provider_cfg.default_model or "", route.temperature, None,
+                                 route.thinking, route.timeout, history)
+            if not hasattr(provider, "stream"):  # a provider that can't stream answers in one piece
+                text_out, meta = self.chat(task, system, history, message)
+                yield text_out
+                yield meta
+                return
+            started = time.perf_counter()
+            pieces: list[str] = []
+            try:
+                for piece in provider.stream(request):
+                    pieces.append(piece)
+                    yield piece
+            except ProviderError as exc:
+                if pieces:
+                    self._log(task, provider_cfg, request.model, ok=False, started=started, error=str(exc))
+                    raise
+                errors.append(str(exc))
+                continue
+            reply = "".join(pieces)
+            self._log(task, provider_cfg, request.model, ok=True, started=started,
+                      response=LLMResponse(reply, None, None))
+            yield {"provider": name, "model": request.model, "latency_ms": int((time.perf_counter() - started) * 1000)}
+            return
+        raise AIUnavailable("; ".join(errors) or "no provider answered")
+
     def _ask(
         self, task: str, name: str, provider_cfg: ProviderConfig, request: LLMRequest, schema: type[T]
     ) -> tuple[T, str]:

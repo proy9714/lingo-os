@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from typing import Any
 
 import anthropic
@@ -99,6 +100,28 @@ class AnthropicProvider:
             raise ProviderError(f"Claude returned an empty answer ({message.stop_reason})")
         usage = message.usage
         return LLMResponse(text, getattr(usage, "input_tokens", None), getattr(usage, "output_tokens", None))
+
+    def stream(self, req: LLMRequest) -> Iterator[str]:
+        """The answer in pieces as it's written (the SDK's message stream)."""
+        client = self.client().with_options(timeout=req.timeout)
+        params = self.params(req, structured=False)
+        try:
+            if params["model"] in FALLBACK_MODELS:
+                manager = client.beta.messages.stream(**params, betas=[FALLBACK_BETA], fallbacks="default")
+            else:
+                manager = client.messages.stream(**params)
+            with manager as stream:
+                yield from stream.text_stream
+        except anthropic.NotFoundError as exc:
+            raise ProviderError(f"Claude: model '{req.model}' not found", status=404, model_missing=True) from exc
+        except anthropic.AuthenticationError as exc:
+            raise ProviderError("Claude: the API key was not accepted", status=401) from exc
+        except anthropic.RateLimitError as exc:
+            raise ProviderError("Claude: rate limit or credit limit reached; try again later", status=429) from exc
+        except anthropic.APIStatusError as exc:
+            raise ProviderError(f"Claude {exc.status_code}: {exc.message}"[:300], status=exc.status_code) from exc
+        except anthropic.APIConnectionError as exc:
+            raise ProviderError(f"network error: {exc}") from exc
 
     def list_models(self) -> list[str]:
         try:

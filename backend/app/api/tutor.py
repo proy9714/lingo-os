@@ -90,6 +90,23 @@ def say(session_id: int, body: Say, engine: Engine = Depends(get_engine), ai: Ga
         raise _fail(exc) from exc
 
 
+@router.post("/sessions/{session_id}/messages/stream")
+def say_streaming(session_id: int, body: Say, engine: Engine = Depends(get_engine), ai: Gateway = Depends(get_ai)):  # noqa: ANN201
+    """The reply as it's written, as server-sent events: `delta` pieces, then `done` (or `error`)."""
+    import json as _json
+
+    from fastapi.responses import StreamingResponse
+
+    def events():  # noqa: ANN202
+        try:
+            for event in tutor.reply_stream(ai, engine, session_id, body.text, body.input_mode):
+                yield f"data: {_json.dumps(event, ensure_ascii=False)}\n\n"
+        except (AIUnavailable, tutor.TutorError) as exc:
+            yield f"data: {_json.dumps({'error': _fail(exc).detail}, ensure_ascii=False)}\n\n"
+
+    return StreamingResponse(events(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"})
+
+
 @router.post("/sessions/{session_id}/end")
 def end(session_id: int, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
     return tutor.end_session(conn, session_id)

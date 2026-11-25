@@ -225,3 +225,26 @@ def test_chatgpt_drops_settings_the_model_rejects(no_keys) -> None:
     assert response.text == '{"ok": true}' and len(bodies) == 2
     assert bodies[0]["reasoning_effort"] == "minimal" and "temperature" not in bodies[1]
     assert bodies[1]["response_format"]["type"] == "json_schema"
+
+
+def test_gemini_and_chatgpt_streams_are_read_piece_by_piece(no_keys) -> None:
+    from app.ai.providers import GeminiProvider
+
+    no_keys.setenv("GEMINI_API_KEY", "g-test-0000000000")
+    no_keys.setenv("OPENAI_API_KEY", "sk-test-0000000000")
+    gemini_sse = "".join(
+        f"data: {json.dumps({'candidates': [{'content': {'parts': [{'text': t}]}}]})}\r\n\r\n" for t in ("Hal", "lo!")
+    )
+    gemini = GeminiProvider(parse_ai_config(RAW).providers["gemini"],
+                            httpx.MockTransport(lambda r: httpx.Response(200, text=gemini_sse)))
+    assert list(gemini.stream(LLMRequest("", "Hi", "g-flash"))) == ["Hal", "lo!"]
+
+    openai_sse = "".join(f"data: {json.dumps({'choices': [{'delta': {'content': t}}]})}\n\n" for t in ("Wie ", "geht's?")) + "data: [DONE]\n\n"
+    chatgpt = OpenAICompatibleProvider(parse_ai_config(RAW).providers["chatgpt"],
+                                       httpx.MockTransport(lambda r: httpx.Response(200, text=openai_sse)))
+    assert "".join(chatgpt.stream(LLMRequest("", "Hi", "gpt-5-mini"))) == "Wie geht's?"
+
+    failing = GeminiProvider(parse_ai_config(RAW).providers["gemini"],
+                             httpx.MockTransport(lambda r: httpx.Response(429, json={"error": {"message": "quota"}})))
+    with pytest.raises(ProviderError, match="429"):
+        list(failing.stream(LLMRequest("", "Hi", "g-flash")))

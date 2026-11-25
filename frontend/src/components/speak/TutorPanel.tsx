@@ -248,12 +248,20 @@ function ChatView({ lang, initial, speechRate, onClose }: { lang: string; initia
   const list = useRef<HTMLOListElement>(null);
   const qc = useQueryClient();
 
+  // the reply as it's being written (streamed), shown until the saved message replaces it
+  const [streaming, setStreaming] = useState<{ user: string; reply: string } | null>(null);
   const say = useMutation({
-    mutationFn: (v: { text: string; mode: "text" | "voice" }) => api.tutorSay(initial.id, v.text, v.mode),
+    mutationFn: (v: { text: string; mode: "text" | "voice" }) => {
+      setStreaming({ user: v.text, reply: "" });
+      return api.tutorSayStream(initial.id, v.text, v.mode, (piece) =>
+        setStreaming((prev) => (prev ? { ...prev, reply: prev.reply + piece } : prev)),
+      );
+    },
     onSuccess: (data) => {
       setMessages((prev) => [...prev, data.user, data.assistant]);
       if (autoSpeak) speak(data.assistant.text, lang, speechRate);
     },
+    onSettled: () => setStreaming(null),
   });
   const end = useMutation({
     mutationFn: () => api.tutorEnd(initial.id),
@@ -286,7 +294,7 @@ function ChatView({ lang, initial, speechRate, onClose }: { lang: string; initia
 
   useEffect(() => {
     list.current?.lastElementChild?.scrollIntoView({ block: "end", behavior: "smooth" });
-  }, [messages.length, say.isPending]);
+  }, [messages.length, say.isPending, streaming?.reply.length]);
 
   const engaged = useEngagement(120_000);
   useTracker({ lang, activity: "tutor", label: "Speaking", active: !ended && engaged });
@@ -348,8 +356,16 @@ function ChatView({ lang, initial, speechRate, onClose }: { lang: string; initia
         {messages.map((m) => (
           <MessageBubble key={m.id} lang={lang} message={m} speechRate={speechRate} />
         ))}
-        {say.isPending && (
-          <li className="glass self-start rounded-2xl px-4 py-3 text-sm text-ink-3">…</li>
+        {say.isPending && streaming && (
+          <>
+            <li className="self-end rounded-2xl bg-accent/15 px-4 py-2.5 text-[15px] text-ink" lang={lang}>
+              {streaming.user}
+            </li>
+            <li className="glass self-start rounded-2xl px-4 py-3 text-[15px] leading-relaxed text-ink" lang={lang} aria-busy="true">
+              {streaming.reply || <span className="text-ink-3">…</span>}
+              {streaming.reply && <span aria-hidden="true" className="ml-0.5 inline-block w-2 animate-pulse text-accent">▍</span>}
+            </li>
+          </>
         )}
       </ol>
 

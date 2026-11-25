@@ -354,6 +354,44 @@ export const api = {
   tutorSession: (id: number) => request<TutorSession>(`/api/tutor/sessions/${id}`),
   tutorStart: (body: { lang: string; mode: TutorMode; scenario?: string; content_item_id?: number }) =>
     request<TutorSession>("/api/tutor/sessions", { method: "POST", body: json(body) }),
+  /** The tutor's reply as it's written (laptop only: through the phone channel, replies come whole). */
+  tutorSayStream: async (
+    id: number,
+    text: string,
+    inputMode: "text" | "voice",
+    onDelta: (piece: string) => void,
+  ): Promise<{ user: TutorMessage; assistant: TutorMessage; simplified: boolean }> => {
+    if (remoteConfig()) return api.tutorSay(id, text, inputMode);
+    const response = await fetch(`/api/tutor/sessions/${id}/messages/stream`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: json({ text, input_mode: inputMode }),
+    });
+    if (!response.ok || !response.body) throw new ApiError(response.status, response.statusText);
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    for (;;) {
+      const { value, done } = await reader.read();
+      buffer += decoder.decode(value ?? new Uint8Array(), { stream: !done });
+      let end = buffer.indexOf("\n\n");
+      while (end >= 0) {
+        const line = buffer.slice(0, end).replace(/^data: ?/, "");
+        buffer = buffer.slice(end + 2);
+        end = buffer.indexOf("\n\n");
+        if (!line) continue;
+        const event = JSON.parse(line) as {
+          delta?: string;
+          error?: string;
+          done?: { user: TutorMessage; assistant: TutorMessage; simplified: boolean };
+        };
+        if (event.delta) onDelta(event.delta);
+        if (event.error) throw new ApiError(503, event.error);
+        if (event.done) return event.done;
+      }
+      if (done) throw new ApiError(0, "The reply stopped before it was finished.");
+    }
+  },
   tutorSay: (id: number, text: string, inputMode: "text" | "voice") =>
     request<{ user: TutorMessage; assistant: TutorMessage; simplified: boolean }>(`/api/tutor/sessions/${id}/messages`, {
       method: "POST",
