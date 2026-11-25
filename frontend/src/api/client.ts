@@ -39,6 +39,7 @@ import type {
   AiStatus,
   AiUsage,
   AiProviders,
+  WhisperSettings,
   ContextGloss,
   GrammarBreakdown,
   ReaderPage,
@@ -275,6 +276,10 @@ export const api = {
     request<{ to: string; available: boolean; source: "youtube" | "ai" | null; reason: string | null; cues: { start_ms: number; end_ms: number; text: string }[] }>(
       `/api/content/${id}/translation?to=en`,
     ),
+  job: (id: number) => request<Job>(`/api/jobs/${id}`),
+  transcribe: (id: number) => request<{ job_id: number }>(`/api/content/${id}/transcribe`, { method: "POST" }),
+  whisper: () => request<WhisperSettings>("/api/whisper"),
+  chooseWhisper: (model: string | null) => request<WhisperSettings>("/api/whisper", { method: "PUT", body: json({ model }) }),
   recommendSeen: (ids: number[]) => request<{ counted: number }>("/api/recommend/seen", { method: "POST", body: json({ ids }) }),
   restoreBackup: async (file: File) => {
     const form = new FormData();

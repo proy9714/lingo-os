@@ -468,6 +468,11 @@ export interface TranscriptData {
   summary: Annotation["summary"] | null;
 }
 
+export interface WhisperSettings {
+  model: string | null;
+  models: { id: string; label: string; size_mb: number; downloaded: boolean; repo: string }[];
+}
+
 export interface Job {
   id: number;
   kind: string;

@@ -12,7 +12,7 @@ from app.config import AppConfig
 from app.engine.evidence import content_evidence
 from app.ingest import documents
 from app.ingest.youtube import YouTubeError, fetch_captions, fetch_info, parse_video_id
-from app.jobs import analysis, history  # noqa: F401 - registers the job handlers
+from app.jobs import analysis, history, transcribe  # noqa: F401 - registers the job handlers
 from app.jobs.runner import enqueue, get_job, latest_job
 from app.services import calibration, content, reading, taste
 from app.services import recommend as ranking
@@ -240,6 +240,55 @@ def refetch_captions(item_id: int, conn: Connection = Depends(get_conn)) -> dict
     content.set_metadata(conn, item_id, captions=captions.kind, caption_track=captions.track_lang)
     content.analyze_item(conn, item_id)
     return content.get_item(conn, item_id)
+
+
+@router.post("/content/{item_id}/transcribe", status_code=202)
+def start_transcription(item_id: int, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
+    """Make a transcript with Whisper on this laptop (videos without captions in the language, your own media)."""
+    from app.db import settings_store
+    from app.ingest import whisper
+
+    try:
+        item = content.get_item(conn, item_id)
+    except content.ContentError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    if settings_store.get(conn, whisper.SETTING) not in whisper.MODELS:
+        raise HTTPException(status_code=409, detail="Transcription is off: choose a model in Settings → Transcription.")
+    if item["type"] not in content.WATCH_TYPES:
+        raise HTTPException(status_code=422, detail="Only videos and audio can be transcribed.")
+    running = conn.execute(
+        text("SELECT id FROM jobs WHERE kind = 'transcribe' AND status IN ('queued', 'running') "
+             "AND json_extract(payload_json, '$.item_id') = :i ORDER BY id DESC LIMIT 1"),
+        {"i": item_id},
+    ).scalar()
+    if running:
+        return {"job_id": running}
+    return {"job_id": enqueue(conn, "transcribe", {"item_id": item_id}, dedupe=False)}
+
+
+@router.get("/whisper")
+def whisper_settings(conn: Connection = Depends(get_conn), cfg: AppConfig = Depends(get_cfg)) -> dict[str, Any]:
+    from app.db import settings_store
+    from app.ingest import whisper
+
+    chosen = settings_store.get(conn, whisper.SETTING)
+    return {
+        "model": chosen if chosen in whisper.MODELS else None,
+        "models": [{"id": k, **v, "downloaded": whisper.model_ready(cfg, k)} for k, v in whisper.MODELS.items()],
+    }
+
+
+class WhisperChoice(BaseModel):
+    model: str | None = Field(default=None, pattern="^(base|small)$")
+
+
+@router.put("/whisper")
+def choose_whisper(body: WhisperChoice, conn: Connection = Depends(get_conn), cfg: AppConfig = Depends(get_cfg)) -> dict[str, Any]:
+    from app.db import settings_store
+    from app.ingest import whisper
+
+    settings_store.put(conn, whisper.SETTING, body.model)
+    return whisper_settings(conn, cfg)
 
 
 @router.get("/content/{item_id}/transcript")

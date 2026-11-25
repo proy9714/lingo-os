@@ -30,6 +30,7 @@ dependencies = [
   "spacy-pkuseg>=1.0,<2",
   "pypinyin>=0.55",
   "anthropic>=2.13.0",
+  "faster-whisper>=1.1",
 ]
 
 [project.scripts]

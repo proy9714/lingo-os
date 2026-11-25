@@ -20,6 +20,7 @@ import { SourcesPanel } from "../components/SourcesPanel";
 import { LanguagesPanel } from "../components/LanguagesPanel";
 import { StartingPointPanel } from "../components/StartingPoint";
 import { VoicesPanel } from "../components/VoicesPanel";
+import { WhisperPanel } from "../components/Whisper";
 
 export function SettingsPage() {
   return (
@@ -35,6 +36,7 @@ export function SettingsPage() {
         <TrackerPanel />
         <AiPanel />
         <VoicesPanel />
+        {!isNativeApp() && <WhisperPanel />}
         <SourcesSection />
         <SystemPanel />
         <PhonePanel />

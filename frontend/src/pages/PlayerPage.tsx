@@ -6,6 +6,7 @@ import { api } from "../api/client";
 import { useContentItem, useContentMutation, useTranscript } from "../api/hooks";
 import type { TranscriptCue } from "../api/types";
 import { FuriganaToggle } from "../lib/furigana";
+import { TranscribeButton } from "../components/Whisper";
 import { BANDS } from "../components/cards";
 import { CompletedButton } from "../components/CompletedButton";
 import { DifficultyRating } from "../components/DifficultyRating";
@@ -212,7 +213,7 @@ export function PlayerPage() {
           <h1 className="mt-1 text-xl leading-snug font-bold md:text-2xl">{displayTitle(data.title)}</h1>
           <p className="mt-1 text-sm text-ink-2">
             {data.creator ?? "Local file"}
-            {data.transcript_kind && ` · transcript: ${data.transcript_kind === "auto_caption" ? "YouTube automatic captions" : data.transcript_kind === "manual" ? "uploaded subtitles" : "your subtitle file"}`}
+            {data.transcript_kind && ` · transcript: ${data.transcript_kind === "auto_caption" ? "YouTube automatic captions" : data.transcript_kind === "manual" ? "uploaded subtitles" : data.transcript_kind === "whisper" ? "made by Whisper on this laptop" : "your subtitle file"}`}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
@@ -361,6 +362,7 @@ export function PlayerPage() {
                 </Button>
               )}
               {fetchCaptions.isError && <p className="text-red-200">{fetchCaptions.error.message}</p>}
+              <TranscribeButton itemId={id} />
             </div>
           ) : (
             <ol ref={listRef} className="flex-1 overflow-y-auto p-2">
