@@ -164,6 +164,47 @@ def _queries(spec: dict[str, Any], level: str, run_number: int, count: int = 3) 
     return out
 
 
+AI_QUERIES = 4
+
+
+def ai_queries(engine: Engine, cfg: AppConfig, lang: str, level: str) -> list[str]:
+    """Searches written by the AI provider you chose, from what you enjoy and your level: once a day per language.
+    Empty when AI is off, so discovery carries on with the template searches."""
+    from pydantic import BaseModel
+
+    from app.ai.config import load_ai_config
+    from app.ai.gateway import AIUnavailable, Gateway
+    from app.db import settings_store
+    from app.services import taste
+    from app.services.explain import _language_name
+
+    class Queries(BaseModel):
+        queries: list[str]
+
+    today = utc_now().strftime("%Y-%m-%d")
+    key = f"discover.ai_queries.{lang}"
+    with engine.connect() as conn:
+        cached = settings_store.get(conn, key) or {}
+        if cached.get("day") == today:
+            return list(cached.get("queries") or [])
+        profile = taste.profile(conn, lang)
+        language = _language_name(conn, lang)
+    summary = profile.summary()
+    variables = {
+        "language": language, "level": level or "beginner", "count": AI_QUERIES,
+        "topics": ", ".join(summary["topics"][:12]) or "everyday life",
+        "channels": ", ".join(c["name"] for c in summary["channels"][:5]) or "none yet",
+    }
+    try:
+        result, _meta = Gateway(load_ai_config(cfg.root), engine).structured("content.query_gen", "query_gen", variables, Queries)
+        queries = [" ".join(q.split())[:80] for q in result.queries if q.strip()][:AI_QUERIES]
+    except (AIUnavailable, Exception):  # noqa: BLE001 - AI is a nicety here: discovery works without it
+        queries = []
+    with engine.begin() as conn:
+        settings_store.put(conn, key, {"day": today, "queries": queries})
+    return queries
+
+
 def discover_language(
     engine: Engine,
     cfg: AppConfig,
@@ -179,6 +220,7 @@ def discover_language(
     """Look for new videos (`videos`) and articles (`articles`) for one language."""
     from app.services import taste
 
+    use_ai = fetchers is None and not dry_run  # tests and dry runs pass their own fetchers: never call a real AI
     fetchers = fetchers or Fetchers()
     sources = load_sources(cfg)
     settings, spec = sources["defaults"], sources["languages"].get(lang, {})
@@ -236,7 +278,13 @@ def discover_language(
         # 2. Searches at your level: new channels come from here.
         if not refused:
             listings: list[tuple[youtube.Listing, str]] = []
-            for query in _queries(spec, level, run_number):
+            # two template searches, then up to two written by your AI provider from what you enjoy
+            searches = _queries(spec, level, run_number, count=2 if use_ai else 3)
+            if use_ai:
+                say(0.37, "asking your AI provider for searches")
+                written = ai_queries(engine, cfg, lang, level)
+                searches += [q for q in written[run_number % 2 :: 2][:2] if q not in searches] or _queries(spec, level, run_number + 7, 1)
+            for query in searches:
                 say(0.38, f"searching: {query[:50]}")
                 try:
                     listings += [(item, f"search: {query}") for item in fetchers.search(query, 20)]
