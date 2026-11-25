@@ -143,6 +143,11 @@ export const api = {
   languageStart: (code: string) => request<StartingPoint>(`/api/languages/${encodeURIComponent(code)}/start`),
   setLanguageLevel: (code: string, level: string | null) =>
     request<StartingPoint>(`/api/languages/${encodeURIComponent(code)}/level`, { method: "PUT", body: json({ level }) }),
+  setLanguageExam: (code: string, exam: { exam: string; level: string; passed_on?: string } | null) =>
+    request<StartingPoint>(`/api/languages/${encodeURIComponent(code)}/exam`, {
+      method: "PUT",
+      body: json(exam ?? { exam: null }),
+    }),
   setLanguageBaseline: (code: string, hours: number) =>
     request<StartingPoint>(`/api/languages/${encodeURIComponent(code)}/baseline`, { method: "PUT", body: json({ hours }) }),
   importHistory: async (code: string, file: File) => {

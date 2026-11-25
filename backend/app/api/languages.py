@@ -101,6 +101,21 @@ def set_level(code: str, body: LevelBody, conn: Connection = Depends(get_conn), 
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
+class ExamBody(BaseModel):
+    exam: str | None = Field(default=None, max_length=40)  # null removes it
+    level: str | None = Field(default=None, max_length=40)
+    passed_on: str | None = Field(default=None, max_length=10)  # YYYY-MM-DD
+
+
+@router.put("/{code}/exam")
+def set_exam(code: str, body: ExamBody, conn: Connection = Depends(get_conn), cfg: AppConfig = Depends(get_cfg)) -> dict[str, Any]:
+    """An official exam you passed (Goethe B1, DELE B2, JLPT N3…): a firmer starting point than a level you chose."""
+    try:
+        return starting.set_exam(conn, cfg, _known(conn, code), body.exam, body.level, body.passed_on)
+    except starting.StartingPointError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
 class BaselineBody(BaseModel):
     hours: float = Field(ge=0, le=starting.MAX_BASELINE_HOURS)
 

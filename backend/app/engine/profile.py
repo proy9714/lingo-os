@@ -7,6 +7,7 @@ from typing import Any
 
 from sqlalchemy import Connection, text
 
+from app.engine import exams
 from app.config import AppConfig
 from app.engine.evidence import blend_with_hours, content_evidence
 from app.engine.vocab_model import DEFAULT_K, solve_r50
@@ -77,6 +78,13 @@ def self_level(conn: Connection, lang: str) -> str | None:
     return value if value in SELF_LEVEL_WORDS else None
 
 
+def exam_result(conn: Connection, lang: str) -> dict[str, Any] | None:
+    from app.db import settings_store
+
+    value = settings_store.get(conn, f"exam.{lang}")
+    return value if isinstance(value, dict) and value.get("level") in SELF_LEVEL_WORDS else None
+
+
 def sync_baselines(conn: Connection, cfg: AppConfig) -> None:
     """Create missing profiles; refresh untested ones from current hours (after an import, say)."""
     for lang in cfg.language_codes:
@@ -93,13 +101,19 @@ def sync_language(conn: Connection, cfg: AppConfig, lang: str) -> None:
     chosen = self_level(conn, lang)
     if chosen:
         hours_words = SELF_LEVEL_WORDS[chosen]
+    exam = exam_result(conn, lang)
+    exam_weight = exams.weight(exam.get("passed_on")) if exam else 0.0
+    if exam and exam_weight > 0:  # a passed exam outranks a level you chose, until it's old
+        hours_words = SELF_LEVEL_WORDS[exam["level"]]
     words, confidence = blend_with_hours(hours_words, content_evidence(conn, lang))
+    if exam_weight > 0:
+        confidence = round(max(confidence, confidence + (exams.EXAM_CONFIDENCE - confidence) * exam_weight), 3)
     words = round(words)
     r50 = solve_r50(words, DEFAULT_K)
     level, alt = band_for_size(cfg.baselines, lang, words)
     if profile and abs(profile["vocab_size"] - words) < 5 and abs(profile["confidence"] - confidence) < 0.01:
         return
-    reason = "baseline" if confidence <= 0.2 else "recompute"
+    reason = "exam" if exam_weight > 0 else "baseline" if confidence <= 0.2 else "recompute"
     _write(conn, lang, r50=r50, k=DEFAULT_K, size=words, level=level, alt=alt, confidence=confidence, reason=reason)
 
 

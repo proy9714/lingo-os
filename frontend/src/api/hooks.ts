@@ -75,6 +75,8 @@ function useStartMutation<TVars, TData>(fn: (vars: TVars) => Promise<TData>) {
   });
 }
 
+export const useSetExam = () =>
+  useStartMutation((v: { code: string; exam: { exam: string; level: string; passed_on?: string } | null }) => api.setLanguageExam(v.code, v.exam));
 export const useSetLevel = () => useStartMutation((v: { code: string; level: string | null }) => api.setLanguageLevel(v.code, v.level));
 export const useSetBaseline = () => useStartMutation((v: { code: string; hours: number }) => api.setLanguageBaseline(v.code, v.hours));
 export const useImportHistory = () => useStartMutation((v: { code: string; file: File }) => api.importHistory(v.code, v.file));

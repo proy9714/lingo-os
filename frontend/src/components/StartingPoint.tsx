@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
-import { useImportHistory, useImportHistoryList, useSetBaseline, useSetLevel, useStartingPoint } from "../api/hooks";
+import { useImportHistory, useImportHistoryList, useSetBaseline, useSetExam, useSetLevel, useStartingPoint } from "../api/hooks";
+import type { StartingPoint } from "../api/types";
 import type { HistoryImportReport } from "../api/types";
 import { formatDay, localDayOf } from "../lib/format";
 import { isNativeApp } from "../sync/remote";
@@ -222,6 +223,7 @@ export function StartingPointPanel({ lang, languageName }: { lang: string; langu
               onChange={(level) => setLevel.mutate({ code: lang, level })}
             />
           </div>
+          <ExamPicker lang={lang} data={data} />
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -270,5 +272,85 @@ export function StartingPointPanel({ lang, languageName }: { lang: string; langu
         </div>
       </div>
     </Panel>
+  );
+}
+
+/** A passed official exam: a firmer starting point than your own guess (a Level Lab test still measures you now). */
+function ExamPicker({ lang, data }: { lang: string; data: StartingPoint }) {
+  const save = useSetExam();
+  const [exam, setExam] = useState(data.exam?.exam ?? "");
+  const [level, setLevel] = useState(data.exam?.level_id ?? "");
+  const [passedOn, setPassedOn] = useState(data.exam?.passed_on ?? "");
+  const options = data.exams.find((e) => e.id === exam)?.levels ?? [];
+  const field = "min-h-10 rounded-lg border border-white/14 bg-surface px-2 text-sm text-ink";
+  return (
+    <div>
+      <h3 className="mb-1 text-sm font-semibold">Passed an exam?</h3>
+      <p className="mb-2 text-xs text-ink-3">
+        {data.exam
+          ? `${data.exam.name} ${data.exam.label}${data.exam.passed_on ? ` (${data.exam.passed_on})` : ""} anchors your starting estimate${data.measured ? "; your Level Lab result now counts instead" : ""}.`
+          : "An official certificate is firmer evidence than a guess. It counts fully for two years, then less."}
+      </p>
+      <form
+        className="flex flex-wrap items-center gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (exam && level) save.mutate({ code: lang, exam: { exam, level, passed_on: passedOn || undefined } });
+        }}
+      >
+        <select
+          aria-label="Exam"
+          value={exam}
+          onChange={(e) => {
+            setExam(e.target.value);
+            setLevel("");
+          }}
+          className={field}
+        >
+          <option value="">Choose an exam…</option>
+          {data.exams.map((e) => (
+            <option key={e.id} value={e.id}>
+              {e.name}
+            </option>
+          ))}
+        </select>
+        <select aria-label="Level passed" value={level} onChange={(e) => setLevel(e.target.value)} disabled={!exam} className={field}>
+          <option value="">Level…</option>
+          {options.map((lv) => (
+            <option key={lv.id} value={lv.id}>
+              {lv.label}
+              {lv.label !== lv.level ? ` (≈ ${lv.level})` : ""}
+            </option>
+          ))}
+        </select>
+        <input
+          type="date"
+          aria-label="When you passed it"
+          value={passedOn}
+          max={new Date().toISOString().slice(0, 10)}
+          onChange={(e) => setPassedOn(e.target.value)}
+          className={field}
+        />
+        <Button type="submit" disabled={!exam || !level || save.isPending}>
+          {save.isPending ? "Saving…" : "Save"}
+        </Button>
+        {data.exam && (
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={save.isPending}
+            onClick={() => {
+              setExam("");
+              setLevel("");
+              setPassedOn("");
+              save.mutate({ code: lang, exam: null });
+            }}
+          >
+            Remove
+          </Button>
+        )}
+      </form>
+      {save.isError && <p className="mt-1 text-xs text-red-200">{save.error.message}</p>}
+    </div>
   );
 }

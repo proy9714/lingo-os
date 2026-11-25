@@ -21,7 +21,8 @@ from sqlalchemy import Connection, text
 
 from app.config import AppConfig
 from app.db import settings_store
-from app.engine.profile import SELF_LEVEL_WORDS, get_profile, self_level, sync_language
+from app.engine import exams
+from app.engine.profile import SELF_LEVEL_WORDS, exam_result, get_profile, self_level, sync_language
 from app.ingest import immersion_tracker as tracker
 from app.ingest.youtube import parse_video_id
 from app.sync.ids import new_ulid
@@ -62,12 +63,14 @@ def summary(conn: Connection, lang: str) -> dict[str, Any]:
         "language": lang,
         "self_level": self_level(conn, lang),
         "levels": list(SELF_LEVEL_WORDS),
+        "exam": exam_result(conn, lang),
+        "exams": exams.catalogue(lang),
         "measured": bool(profile.get("measured")),
         "baseline_hours": round(sum(by.values()) / 3600, 1),
         "imported_baseline_hours": round(by.get("import", 0) / 3600, 1),
         "tracked_hours": round(tracked / 3600, 1),
         "imported_session_hours": round(imported_sessions / 3600, 1),
-        "has_start": bool(self_level(conn, lang) or by or tracked or imported_sessions or profile.get("measured")),
+        "has_start": bool(self_level(conn, lang) or exam_result(conn, lang) or by or tracked or imported_sessions or profile.get("measured")),
     }
 
 
@@ -75,6 +78,28 @@ def set_level(conn: Connection, cfg: AppConfig, lang: str, level: str | None) ->
     if level is not None and level not in SELF_LEVEL_WORDS:
         raise StartingPointError(f"unknown level '{level}'")
     settings_store.put(conn, f"self_level.{lang}", level)
+    _refresh(conn, cfg, lang)
+    return summary(conn, lang)
+
+
+def set_exam(conn: Connection, cfg: AppConfig, lang: str, exam: str | None, level: str | None, passed_on: str | None) -> dict[str, Any]:
+    """A passed official exam (or None to remove it)."""
+    if exam is None:
+        settings_store.put(conn, f"exam.{lang}", None)
+    else:
+        try:
+            stored = exams.resolve(lang, exam, level or "")
+        except ValueError as exc:
+            raise StartingPointError(str(exc)) from exc
+        if passed_on:
+            try:
+                when = date.fromisoformat(passed_on[:10])
+            except ValueError as exc:
+                raise StartingPointError("the date should look like 2025-06-30") from exc
+            if when > date.today():
+                raise StartingPointError("that date is in the future")
+            stored["passed_on"] = when.isoformat()
+        settings_store.put(conn, f"exam.{lang}", stored)
     _refresh(conn, cfg, lang)
     return summary(conn, lang)
 

@@ -65,10 +65,18 @@ export interface WordMove {
   status: string;
 }
 
+export interface ExamOption {
+  id: string;
+  name: string;
+  levels: { id: string; label: string; level: string }[];
+}
+
 export interface StartingPoint {
   language: string;
   self_level: string | null;
   levels: string[];
+  exam: { exam: string; name: string; level_id: string; label: string; level: string; passed_on?: string } | null;
+  exams: ExamOption[];
   measured: boolean;
   baseline_hours: number;
   imported_baseline_hours: number;
