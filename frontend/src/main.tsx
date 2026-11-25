@@ -26,7 +26,8 @@ const queryClient = new QueryClient({
 
 // The last answers are saved in this browser, so reopening the app shows your pages at once instead of loading
 // screens; each is refreshed in the background as soon as it shows. A new version of the app starts afresh.
-const NOT_SAVED = new Set(["search", "search-suggest", "ai-models", "annotate", "transcript", "manga-page", "shadow-clip", "pages"]);
+// settings and languages are always asked afresh: a new data folder or another laptop must never start in old languages
+const NOT_SAVED = new Set(["settings", "languages", "language-catalog", "search", "search-suggest", "ai-models", "annotate", "transcript", "manga-page", "shadow-clip", "pages"]);
 const persister = createSyncStoragePersister({
   storage: typeof window === "undefined" ? undefined : window.localStorage,
   key: "lingo.query-cache",

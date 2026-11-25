@@ -4,7 +4,8 @@ import { useEffect } from "react";
 import { useActiveLanguage, useLanguages, useSearchWatcher, useSettings, useToday, useUpdateSettings, useVoices } from "../api/hooks";
 import { onSpeechUnavailable, setSpeechEngine, setSpeechLocales } from "../lib/speech";
 import { FirstRun } from "./FirstRun";
-import { remoteConfig, useSyncState } from "../sync/remote";
+import { PhoneWelcome } from "./PhoneWelcome";
+import { isNativeApp, remoteConfig, useSyncState } from "../sync/remote";
 import { usePhoneSync } from "../sync/useSync";
 import { useLookupStore } from "../state/lookup";
 import { useTrackerStore } from "../state/tracker";
@@ -24,8 +25,16 @@ function tint(hex: string, alpha: number): string {
   return `rgb(${(n >> 16) & 255} ${(n >> 8) & 255} ${n & 255} / ${alpha})`;
 }
 
-/** A new install has no language yet: ask for one first. */
+/**
+ * First run: the Android app starts by pairing with a computer (PhoneWelcome); a computer, or a phone paired with a
+ * computer that has no language yet, starts by choosing one (FirstRun).
+ */
 export function AppShell() {
+  if (isNativeApp() && !remoteConfig()) return <PhoneWelcome />;
+  return <SetupGate />;
+}
+
+function SetupGate() {
   const settings = useSettings();
   const languages = useLanguages();
   if (settings.isPending || languages.isPending) return <div className="min-h-dvh bg-canvas" aria-busy="true" />;

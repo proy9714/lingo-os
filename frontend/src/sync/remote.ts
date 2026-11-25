@@ -77,7 +77,24 @@ function saveConfig(cfg: RemoteConfig | null) {
   cachedKey = null;
 }
 
-export const disconnect = () => saveConfig(null);
+/**
+ * Answers saved from a laptop (the page cache and the offline copies of settings and languages) belong to that laptop:
+ * pairing with another one, or disconnecting, starts clean so its languages never show up again.
+ */
+export function forgetLaptopAnswers(): void {
+  try {
+    for (const key of Object.keys(window.localStorage)) {
+      if (key === "lingo.query-cache" || key.startsWith("lingo.cache.")) window.localStorage.removeItem(key);
+    }
+  } catch {
+    // storage unavailable: nothing saved to forget
+  }
+}
+
+export const disconnect = () => {
+  saveConfig(null);
+  forgetLaptopAnswers();
+};
 
 let cachedKey: { raw: string; key: CryptoKey } | null = null;
 async function keyFor(cfg: RemoteConfig): Promise<CryptoKey> {
@@ -149,7 +166,9 @@ export async function pairWith(code: string, name: string): Promise<RemoteConfig
   }
   const cfg: RemoteConfig = { hubs: parsed.hub, device: parsed.device, token: parsed.token, key: parsed.key, hubName: parsed.name };
   await hubCall("/sync/pair", { name }, 15_000, cfg);
-  saveConfig({ ...cfg, active: remoteConfig()?.active ?? cfg.hubs[0] });
+  const before = remoteConfig();
+  if (!before || before.device !== cfg.device) forgetLaptopAnswers();
+  saveConfig({ ...cfg, active: before?.active ?? cfg.hubs[0] });
   return cfg;
 }
 
