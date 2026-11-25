@@ -62,6 +62,8 @@ def _status(request: Request, conn: Connection) -> dict[str, Any]:
         "error": listener.error,
         "port": port,
         "addresses": [f"http://{a}:{port}" for a in hub.lan_addresses()],
+        "tailscale": hub.tailscale_addresses(),
+        "extra_addresses": hub.extra_addresses(conn),
         "devices": hub.list_devices(conn),
     }
 
@@ -83,6 +85,20 @@ def enable(body: EnableRequest, request: Request, conn: Connection = Depends(get
         start_listener(request.app, cfg, int(settings_store.get(conn, "sync.port", hub.SYNC_PORT)))
     else:
         listener.stop()
+    return _status(request, conn)
+
+
+class AddressesRequest(BaseModel):
+    addresses: list[str] = Field(default_factory=list, max_length=5)
+
+
+@router.put("/sync/addresses")
+def set_addresses(body: AddressesRequest, request: Request, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
+    """Addresses for syncing away from home (a Tailscale name, say); phones learn them on their next sync."""
+    try:
+        hub.set_extra_addresses(conn, body.addresses)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     return _status(request, conn)
 
 

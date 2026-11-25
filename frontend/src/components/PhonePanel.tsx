@@ -4,6 +4,7 @@ import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 
 import { syncApi } from "../api/client";
+import type { SyncStatus } from "../api/types";
 import { formatDay, localDayOf } from "../lib/format";
 import { Button, Chip, Panel, PanelTitle, Skeleton } from "./ui";
 
@@ -120,8 +121,9 @@ export function PhonePanel() {
               </li>
             ))}
           </ul>
+          {data.enabled && <AwayFromHome data={data} onSaved={(next) => qc.setQueryData(["sync-status"], next)} />}
           <p className="text-xs text-ink-3">
-            The phone app is built from this project with Android Studio.{" "}
+            Install the phone app from GitHub releases (Obtainium keeps it updated).{" "}
             <Link to="/help" hash="phone" className="font-semibold text-accent hover:underline">
               Step-by-step guide
             </Link>
@@ -129,5 +131,45 @@ export function PhonePanel() {
         </div>
       )}
     </Panel>
+  );
+}
+
+/** Syncing away from home: Tailscale (free) puts the laptop and the phone on one private network anywhere. */
+function AwayFromHome({ data, onSaved }: { data: SyncStatus; onSaved: (status: SyncStatus) => void }) {
+  const [text, setText] = useState(data.extra_addresses.join("\n"));
+  const save = useMutation({
+    mutationFn: () => syncApi.setAddresses(text.split(/[\s,]+/).filter(Boolean)),
+    onSuccess: onSaved,
+  });
+  return (
+    <details className="well rounded-xl p-3 text-sm" open={data.tailscale.length > 0 || data.extra_addresses.length > 0}>
+      <summary className="cursor-pointer font-semibold">Sync away from home</summary>
+      <div className="mt-2 flex flex-col gap-2 text-ink-2">
+        <p className="text-xs leading-relaxed">
+          Install <strong>Tailscale</strong> (free) on this laptop and on the phone, and sign in to the same account on both. The
+          phone then reaches the laptop over mobile data too, still encrypted end to end.{" "}
+          {data.tailscale.length > 0
+            ? `Tailscale is running here (${data.tailscale.join(", ")}): paired phones learn this address on their next sync.`
+            : "Once Tailscale runs here, its address is found by itself."}
+        </p>
+        <label className="flex flex-col gap-1 text-xs">
+          Other addresses for this laptop (optional, one per line), such as its Tailscale name
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            rows={2}
+            placeholder="laptop.tail1234.ts.net"
+            className="rounded-lg border border-white/14 bg-surface p-2 font-mono text-xs text-ink"
+          />
+        </label>
+        <div className="flex items-center gap-2">
+          <Button disabled={save.isPending} onClick={() => save.mutate()}>
+            {save.isPending ? "Saving…" : "Save addresses"}
+          </Button>
+          {save.isSuccess && <span className="text-xs text-good">Saved: phones pick them up on their next sync.</span>}
+          {save.isError && <span className="text-xs text-red-200">{save.error.message}</span>}
+        </div>
+      </div>
+    </details>
   );
 }

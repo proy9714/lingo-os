@@ -5,6 +5,7 @@ from __future__ import annotations
 import hmac
 import json
 import os
+import re
 import socket
 from datetime import timedelta
 from pathlib import Path
@@ -60,6 +61,51 @@ def lan_addresses() -> list[str]:
     return private or found
 
 
+def tailscale_addresses() -> list[str]:
+    """This laptop's Tailscale addresses (100.64.0.0/10), if Tailscale runs here: reachable from the phone anywhere."""
+    import ipaddress
+
+    network = ipaddress.ip_network("100.64.0.0/10")
+    found: list[str] = []
+    try:
+        for info in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET):
+            address = info[4][0]
+            if ipaddress.ip_address(address) in network and address not in found:
+                found.append(address)
+    except (OSError, ValueError):
+        pass
+    return found
+
+
+HOST = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9.-]{0,251}[A-Za-z0-9])?$")
+
+
+def extra_addresses(conn: Connection) -> list[str]:
+    """Addresses you added for away from home (a Tailscale name like laptop.tail1234.ts.net, or any you route)."""
+    value = settings_store.get(conn, "sync.extra_addresses", []) or []
+    return [a for a in value if isinstance(a, str) and HOST.match(a)]
+
+
+def set_extra_addresses(conn: Connection, addresses: list[str]) -> list[str]:
+    clean: list[str] = []
+    for raw in addresses:
+        host = raw.strip().removeprefix("http://").removeprefix("https://").split("/")[0].split(":")[0]
+        if not host:
+            continue
+        if not HOST.match(host):
+            raise ValueError(f"'{raw}' isn't an address (use a name like laptop.tail1234.ts.net or an IP like 100.101.102.103)")
+        if host not in clean:
+            clean.append(host)
+    settings_store.put(conn, "sync.extra_addresses", clean[:5])
+    return clean[:5]
+
+
+def hub_urls(conn: Connection, port: int) -> list[str]:
+    """Every address a phone may reach this laptop at: home Wi-Fi first, then Tailscale and your own."""
+    hosts = list(dict.fromkeys([*lan_addresses(), *tailscale_addresses(), *extra_addresses(conn)]))
+    return [f"http://{h}:{port}" for h in hosts]
+
+
 def start_pairing(conn: Connection, cfg: AppConfig, name: str = "Phone") -> dict[str, Any]:
     """A one-time offer for the QR code: valid for ten minutes, used once."""
     device_id = new_ulid()
@@ -67,11 +113,12 @@ def start_pairing(conn: Connection, cfg: AppConfig, name: str = "Phone") -> dict
     expires = utc_now() + PAIRING_VALID
     settings_store.put(conn, f"sync.pending.{device_id}", {"token_hash": hash_token(token), "expires": to_iso(expires), "name": name})
     key = derive_key(hub_secret(cfg.data_dir), device_id)
-    addresses = lan_addresses()
     port = int(settings_store.get(conn, "sync.port", SYNC_PORT))
+    urls = hub_urls(conn, port)
+    addresses = [u.removeprefix("http://").rsplit(":", 1)[0] for u in urls]
     payload = {
         "v": 1,
-        "hub": [f"http://{a}:{port}" for a in addresses] or [f"http://127.0.0.1:{port}"],
+        "hub": urls or [f"http://127.0.0.1:{port}"],
         "device": device_id,
         "token": token,
         "key": b64e(key),

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { mediaUrl } from "../api/client";
 import { flush, pending } from "./outbox";
-import { isNativeApp, remoteConfig, useSyncState } from "./remote";
+import { isNativeApp, refreshHubs, remoteConfig, useSyncState } from "./remote";
 
 /**
  * On the phone: send queued changes when the app opens, comes back to the foreground, gets a connection, and every
@@ -20,6 +20,7 @@ export function usePhoneSync() {
   useEffect(() => {
     if (!remoteConfig()) return;
     useSyncState.getState().set({ pending: pending().length });
+    void refreshHubs();
     const run = () => void flush().catch(() => undefined);
     const onVisible = () => document.visibilityState === "visible" && run();
     run();

@@ -435,5 +435,6 @@ export const syncApi = {
   pair: (name: string) =>
     request<{ device_id: string; expires: string; qr: string; addresses: string[] }>("/api/sync/pair", { method: "POST", body: json({ name }) }),
   remove: (id: string) => request<{ removed: boolean }>(`/api/devices/${encodeURIComponent(id)}`, { method: "DELETE" }),
+  setAddresses: (addresses: string[]) => request<SyncStatus>("/api/sync/addresses", { method: "PUT", body: json({ addresses }) }),
   pack: (itemId: number) => request<Pack>(`/api/packs/${itemId}`),
 };

@@ -895,6 +895,8 @@ export interface SyncStatus {
   error: string | null;
   port: number;
   addresses: string[];
+  tailscale: string[]; // this laptop's Tailscale addresses, if Tailscale runs here
+  extra_addresses: string[]; // addresses you added for syncing away from home
   devices: DeviceRow[];
 }
 

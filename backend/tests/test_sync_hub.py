@@ -154,3 +154,20 @@ def test_a_test_server_never_takes_a_phone(client, monkeypatch) -> None:
     assert refused.status_code == 409 and "LINGO_PHONE_SYNC" in refused.json()["detail"]
     status = client.get("/api/sync/status").json()
     assert status["allowed"] is False and status["enabled"] is False
+
+
+def test_away_from_home_addresses_reach_paired_phones(client, paired, monkeypatch) -> None:
+    from app.sync import hub
+
+    monkeypatch.setattr(hub, "tailscale_addresses", lambda: ["100.101.102.103"])
+    status = client.put("/api/sync/addresses", json={"addresses": ["laptop.tail1234.ts.net", " https://laptop.tail1234.ts.net/ "]}).json()
+    assert status["extra_addresses"] == ["laptop.tail1234.ts.net"] and status["tailscale"] == ["100.101.102.103"]
+    assert client.put("/api/sync/addresses", json={"addresses": ["not a host!"]}).status_code == 422
+
+    code, hello = paired.call("/sync/where", {})  # a phone paired before: learns the new addresses
+    assert code == 200
+    assert any("100.101.102.103" in h for h in hello["hubs"]) and any("laptop.tail1234.ts.net" in h for h in hello["hubs"])
+    assert hello["hubs"][0] not in {h for h in hello["hubs"] if "100.101" in h or "ts.net" in h}  # home Wi-Fi first
+
+    qr = json.loads(client.post("/api/sync/pair", json={"name": "Tablet"}).json()["qr"])
+    assert any("ts.net" in h for h in qr["hub"])  # and a phone paired now gets them in its code

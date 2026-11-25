@@ -154,6 +154,21 @@ export const rpc = (method: string, path: string, query: Record<string, string> 
   hubCall<RpcResult>("/sync/rpc", { method, path, query, body }, timeoutMs);
 
 /** Finish pairing with the text of the QR code shown in the laptop's Settings. */
+/** Ask the laptop for its current addresses (home Wi-Fi, Tailscale, your own) and remember any new ones. */
+export async function refreshHubs(): Promise<void> {
+  const cfg = remoteConfig();
+  if (!cfg) return;
+  try {
+    const { hubs } = await hubCall<{ hubs: string[] }>("/sync/where", {}, 10_000);
+    const now = remoteConfig();
+    if (!now || !Array.isArray(hubs) || !hubs.length) return;
+    const merged = Array.from(new Set([...hubs, ...now.hubs])).slice(0, 8);
+    if (merged.join() !== now.hubs.join()) saveConfig({ ...now, hubs: merged });
+  } catch {
+    // out of reach: try again next time
+  }
+}
+
 export async function pairWith(code: string, name: string): Promise<RemoteConfig> {
   let parsed: PairingCode;
   try {

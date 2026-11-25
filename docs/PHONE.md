@@ -55,6 +55,13 @@ switching to the release APK (and the other way round).
   logs work; changes wait in an outbox and sync automatically when the laptop is back in reach (or press
   **Sync now**). Each change is applied exactly once; if a word was changed on both devices, the later change wins.
 
+## Away from home
+
+Install [Tailscale](https://tailscale.com/) (free) on the laptop and on the phone and sign in to the same account on
+both. Lingo OS finds the laptop's Tailscale address by itself, and paired phones learn it on their next sync at home,
+so the phone then reaches the laptop over mobile data too (still encrypted end to end). Settings → Phone → **Sync away
+from home** shows it, and takes other addresses, such as the laptop's Tailscale name (`laptop.tail1234.ts.net`).
+
 ## The phone shows the wrong languages, or none of your progress
 
 The phone shows the Lingo OS it's paired with. If it was paired with another copy (a test install, or another data
@@ -70,7 +77,6 @@ temporary test copy. Test servers can refuse phones altogether with `LINGO_PHONE
   comparison in shadowing need typing or the laptop for now (recording yourself still works). A native speech plugin
   can be added later.
 - Gemini isn't called from the phone directly; AI explanations work at home through the laptop.
-- Away from home over mobile data, the phone can't reach the laptop. Tailscale could be added later for that.
 
 ## Remove a phone
 

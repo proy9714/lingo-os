@@ -27,7 +27,9 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import Engine
 
 from app.config import AppConfig
+from app.db import settings_store
 from app.sync import apply as sync_apply
+from app.sync import hub
 from app.sync.crypto import EnvelopeError, open_envelope, seal
 from app.sync.hub import SyncAuthError, authenticate, confirm_pairing, device_key, pending_key
 
@@ -112,6 +114,18 @@ def create_sync_app(main_app: FastAPI, engine: Engine, cfg: AppConfig) -> FastAP
         except (EnvelopeError, SyncAuthError, ValueError) as exc:
             return fail(403, str(exc))
         return seal(key, device, result)
+
+    @app.post("/sync/where")
+    async def where(request: Request):
+        """The laptop's current addresses: a phone paired at home learns a Tailscale address added later."""
+        try:
+            device, key, _message = unwrap(await request.json())
+            with engine.connect() as conn:
+                port = int(settings_store.get(conn, "sync.port", hub.SYNC_PORT))
+                hubs = hub.hub_urls(conn, port)
+        except (EnvelopeError, SyncAuthError, ValueError) as exc:
+            return fail(403, str(exc))
+        return seal(key, device, {"hubs": hubs})
 
     @app.post("/sync/pull")
     async def pull(request: Request):
