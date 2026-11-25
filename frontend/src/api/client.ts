@@ -266,6 +266,21 @@ export const api = {
     }
     return (await response.json()) as AddedDocument;
   },
+  restoreBackup: async (file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    const response = await fetch("/api/data/import", { method: "POST", body: form });
+    if (!response.ok) {
+      const body = (await response.json().catch(() => ({}))) as { detail?: unknown };
+      throw new ApiError(response.status, typeof body.detail === "string" ? body.detail : response.statusText);
+    }
+    return (await response.json()) as {
+      restored: boolean;
+      previous_data: string;
+      downloading: string[];
+      manifest: { created_at: string; languages: string[]; words: number; sessions: number };
+    };
+  },
   addArticle: (lang: string, url: string) =>
     request<AddedDocument>("/api/content/article", { method: "POST", body: json({ lang, url }) }),
   addText: (lang: string, title: string, text: string) =>

@@ -13,6 +13,8 @@ import { Button, Chip, Panel, PanelTitle, Skeleton, cx } from "../components/ui"
 import { formatDay, formatMinutes } from "../lib/format";
 import { useUi } from "../state/ui";
 import { AiPanel } from "../components/AiPanel";
+import { DataPanel } from "../components/DataPanel";
+import { isNativeApp } from "../sync/remote";
 import { PhonePanel } from "../components/PhonePanel";
 import { SourcesPanel } from "../components/SourcesPanel";
 import { LanguagesPanel } from "../components/LanguagesPanel";
@@ -36,6 +38,7 @@ export function SettingsPage() {
         <SourcesSection />
         <SystemPanel />
         <PhonePanel />
+        {!isNativeApp() && <DataPanel />}
       </div>
     </div>
   );

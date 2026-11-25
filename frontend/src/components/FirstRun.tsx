@@ -1,3 +1,5 @@
+import { isNativeApp } from "../sync/remote";
+import { RestoreBackup } from "./DataPanel";
 import { LanguagePicker } from "./LanguagePicker";
 import { Logo } from "./Logo";
 
@@ -15,6 +17,12 @@ export function FirstRun() {
             clickable, and keeps track of your progress. You can add more languages later in Settings.
           </p>
         </header>
+        {!isNativeApp() && (
+          <section className="flex flex-wrap items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+            <p className="text-sm text-ink-2">Coming from another computer? Bring everything back from a Lingo OS backup:</p>
+            <RestoreBackup compact />
+          </section>
+        )}
         <LanguagePicker />
         <p className="text-xs text-ink-3">
           Languages are listed by number of speakers (approximate). Adding one downloads its language model and dictionary

@@ -858,8 +858,11 @@ const TOPICS: Topic[] = [
     body: (
       <>
         <p>
-          Your words, history, levels, notes and recordings stay in the <Code>data</Code> folder on this computer. The app goes online
-          only to:
+          Your words, history, levels, notes and recordings stay in the <Code>data</Code> folder on this computer.{" "}
+          <strong className="text-ink">Settings → Your data</strong> saves all of it in one <Code>.lingo</Code> backup file, to keep safe
+          or to restore on another computer (a new install offers <em>Restore from a backup</em> on its first screen). Restoring saves the
+          data it replaces as a backup first. Dictionaries and language models aren't in a backup: they download again. The app goes
+          online only to:
         </p>
         <Bullets>
           {[

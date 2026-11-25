@@ -387,6 +387,58 @@ def manga_scan(as_json: bool = typer.Option(False, "--json", help="Machine-reada
         console.print("  Nothing new.")
 
 
+data_app = typer.Typer(help="Back up all your data to one file, or restore it.", no_args_is_help=True)
+app.add_typer(data_app, name="data")
+
+
+@data_app.command("export")
+def data_export(
+    path: Optional[Path] = typer.Argument(None, help="Where to write the backup (default: data/backups/)."),
+    as_json: bool = typer.Option(False, "--json", help="Machine-readable output."),
+) -> None:
+    """Write everything (database, library, recordings, reports) to one .lingo file."""
+    from app.main import bootstrap
+    from app.services import backup
+
+    cfg = load_config()
+    bootstrap(cfg)
+    target = backup.export(cfg, path)
+    if as_json:
+        _emit_json({"path": str(target), **backup.inspect(target)})
+        return
+    console.print(f"Backup written: {target} ({target.stat().st_size // 1024 // 1024} MB)")
+
+
+@data_app.command("import")
+def data_import(
+    path: Path = typer.Argument(..., exists=True, dir_okay=False, help="A .lingo backup file."),
+    yes: bool = typer.Option(False, "--yes", help="Don't ask for confirmation."),
+    as_json: bool = typer.Option(False, "--json", help="Machine-readable output."),
+) -> None:
+    """Replace this computer's data with a backup (the current data is saved in data/backups first)."""
+    from app.main import bootstrap
+    from app.services import backup
+
+    cfg = load_config()
+    try:
+        manifest = backup.inspect(path)
+    except backup.BackupError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(1) from exc
+    if not yes and not typer.confirm(
+        f"Replace this computer's data with the backup from {manifest['created_at'][:10]} "
+        f"({', '.join(manifest.get('languages') or []) or 'no languages'})?"
+    ):
+        raise typer.Exit(1)
+    result = backup.restore(cfg, bootstrap(cfg), path)
+    if as_json:
+        _emit_json(result)
+        return
+    console.print(f"Restored. Your previous data was saved as {result['previous_data']}.")
+    if result["downloading"]:
+        console.print("Dictionaries and language models download again when the app runs: " + ", ".join(result["downloading"]))
+
+
 ai_app = typer.Typer(help="AI gateway (config/llm.yaml).", no_args_is_help=True)
 app.add_typer(ai_app, name="ai")
 

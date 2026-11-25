@@ -165,8 +165,10 @@ Your data in `data\` is kept, and the database is upgraded automatically. The ph
 
 ## Your data and privacy
 
-Everything you do (words, history, levels, notes, recordings) stays in the `data` folder on your computer. Back that
-folder up to keep it safe. The app goes online only to play and search YouTube, read the article sites in
+Everything you do (words, history, levels, notes, recordings) stays in the `data` folder on your computer. To keep it
+safe or move to another computer, **Settings → Your data → Download a backup** saves it all in one `.lingo` file;
+**Restore from a backup** (also offered on a new install's first screen) brings it back. `npm run lingo -- data export`
+and `data import` do the same from a terminal. The app goes online only to play and search YouTube, read the article sites in
 `config/sources.yaml`, read a sentence aloud the first time (Microsoft's speech service; can be turned off), ask the AI
 provider you set up when you ask for an explanation, and talk to your own phone over your Wi-Fi, encrypted.
 
