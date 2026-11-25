@@ -316,15 +316,28 @@ const TOPICS: Topic[] = [
         </Bullets>
         <H3>What comes first</H3>
         <p>
-          Picks that fit your level best come first. Things that bring back words you're learning get a boost, and so do books you've
-          started. One channel never fills the screen: others are mixed in.
+          Picks that fit your level best come first, then the ranking weighs what each one would do for you:
+        </p>
+        <Bullets>
+          {[
+            "What it teaches: a video whose new words are common, useful ones ranks above one full of rare words.",
+            "Words due again: words you're learning come back through content, spaced out the way memory works (a day after you first meet one, then 2, 4, 8… days). Each is weighted by how long since you last met it. Still no flashcards.",
+            "Speed: a video spoken much faster than the ones you usually finish counts as harder than its words alone say.",
+            "Cards you pass by: a suggestion you've scrolled past a few times without opening sinks a little each time, and so, slowly, does a channel you always skip.",
+            "Books and articles you've started come first, so you can carry on.",
+          ]}
+        </Bullets>
+        <p>
+          Then the list is mixed for variety: no run of the same channel, topic or length. On Today, when little of your daily goal is
+          left, things that fit the time left come first.
         </p>
         <H3>Your taste: learned from what you do</H3>
         <p>
           Like a video site's feed, suggestions learn what you enjoy, with no likes needed. Videos you finish or come back to, and
           articles you read most of, count for their channel or site, their topic and their length. Things you leave after a few
-          seconds, or mark <em>Not interested</em>, count against. Recent behaviour counts most. Channels you've never tried still
-          turn up now and then, so the list doesn't narrow to the same few. The card <em>What your suggestions learned</em> on Today
+          seconds, or mark <em>Not interested</em>, count against. Recent behaviour counts most. Channels you've never tried get tried:
+          each channel has an estimate of how likely you are to enjoy it, sure for ones you know well and open for new ones, and each
+          day the ranking draws from it, so promising new channels get their chance and ones you've given up on stop appearing. The card <em>What your suggestions learned</em> on Today
           shows what it has picked up, and the reasons on each card say why it was suggested ("you often watch …", "similar to
           things you enjoyed").
         </p>

@@ -266,6 +266,7 @@ export const api = {
     }
     return (await response.json()) as AddedDocument;
   },
+  recommendSeen: (ids: number[]) => request<{ counted: number }>("/api/recommend/seen", { method: "POST", body: json({ ids }) }),
   restoreBackup: async (file: File) => {
     const form = new FormData();
     form.append("file", file);

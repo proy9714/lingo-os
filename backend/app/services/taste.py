@@ -8,12 +8,17 @@ From these the model learns:
   length               which lengths you tend to finish
   topics               the words of what you enjoyed (topic words, not grammar words), compared with each candidate
 Each suggestion's rank is multiplied by exp(0.55·channel + 0.3·length + 0.6·topic), kept between ×0.45 and ×2.2.
-Channels you've never tried get a small bonus, so new ones keep turning up.
+
+Channels and sites are explored by Thompson sampling: each has a Beta belief of how likely you are to enjoy its next
+video (from what you did with its others, recent ones counting most, and cards of it you kept scrolling past). Each
+day the ranking draws once from every belief: a channel you love draws high every time, one you've given up on draws
+low, and one you've never tried draws anywhere, so promising unknowns get their chance without a fixed bonus.
 """
 
 from __future__ import annotations
 
 import math
+import random
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -27,7 +32,7 @@ from app.timeutil import from_iso, utc_now
 HALF_LIFE_DAYS = 120.0
 CHANNEL_SHRINK, LENGTH_SHRINK = 1.5, 3.0
 WEIGHTS = {"channel": 0.55, "length": 0.3, "topic": 0.6}
-NOVELTY = 0.05
+PRIOR = 1.5  # Beta(1.5, 1.5): an untried channel could be anything, but not wildly so
 CLIP = (0.45, 2.2)
 TOPIC_RANKS = (400, 40000)  # frequency ranks that carry topics (common grammar words and rare names left out)
 TOPIC_TERMS = 80  # strongest topic words kept per item
@@ -94,6 +99,8 @@ class TasteProfile:
     channels: dict[str, float] = field(default_factory=dict)
     channel_names: dict[str, str] = field(default_factory=dict)
     channel_evidence: dict[str, float] = field(default_factory=dict)
+    channel_beliefs: dict[str, tuple[float, float]] = field(default_factory=dict)  # Beta(α, β) of enjoying the next one
+    day: str = ""
     lengths: dict[str, float] = field(default_factory=dict)
     topics: dict[int, float] = field(default_factory=dict)
     topic_words: list[str] = field(default_factory=list)
@@ -106,6 +113,15 @@ class TasteProfile:
     def knows_channel(self, name: str | None) -> bool:
         return name_key(name) in self.channels
 
+    def sampled_channel(self, name: str | None) -> float:
+        """Today's draw from the channel's belief, from −1 (won't enjoy it) to +1. The same all day, so lists stay put."""
+        if not name:
+            return 0.0
+        key = name_key(name)
+        alpha, beta = self.channel_beliefs.get(key, (PRIOR, PRIOR))
+        draw = random.Random(f"{self.lang}|{key}|{self.day}").betavariate(alpha, beta)
+        return 2 * draw - 1
+
     def similarity(self, vector: dict[int, float] | None) -> float:
         if not vector or not self.topics:
             return 0.0
@@ -114,11 +130,12 @@ class TasteProfile:
     def multiplier(self, item: dict[str, Any], vector: dict[int, float] | None = None) -> tuple[float, list[str]]:
         owner = owner_of(item["type"], item.get("creator"), item.get("site"))
         channel = self.channel_affinity(owner)
+        sampled = self.sampled_channel(owner) if self.signals >= 3 else channel
         bucket = length_bucket(item["type"], item.get("duration_sec"), item.get("word_count"))
         length = self.lengths.get(bucket, 0.0) if bucket else 0.0
         topic = max(-0.5, min(0.8, self.similarity(vector)))
-        novelty = NOVELTY if owner and self.signals >= 5 and not self.knows_channel(owner) else 0.0
-        raw = WEIGHTS["channel"] * channel + WEIGHTS["length"] * length + WEIGHTS["topic"] * topic + novelty
+        trying = bool(owner) and self.signals >= 3 and not self.knows_channel(owner) and sampled > 0.3
+        raw = WEIGHTS["channel"] * sampled + WEIGHTS["length"] * length + WEIGHTS["topic"] * topic
         factor = max(CLIP[0], min(CLIP[1], math.exp(raw)))
         reasons = []
         if channel >= 0.35 and owner:
@@ -127,7 +144,7 @@ class TasteProfile:
             reasons.append("similar to things you enjoyed")
         if length >= 0.3 and bucket:
             reasons.append(f"a length you usually finish ({bucket})")
-        if novelty and not reasons:
+        if trying and not reasons:
             reasons.append(f"new {'channel' if item['type'] in WATCH_TYPES else 'source'} for you")
         return factor, reasons
 
@@ -223,8 +240,12 @@ def vectors(conn: Connection, item_ids: list[int], idf: dict[int, float]) -> dic
 
 
 def build(conn: Connection, lang: str) -> TasteProfile:
-    profile = TasteProfile(lang)
+    from app.services.ranker import skipped_owners
+
     now = utc_now()
+    profile = TasteProfile(lang, day=now.strftime("%Y-%m-%d"))
+    alphas: dict[str, float] = defaultdict(lambda: PRIOR)
+    betas: dict[str, float] = defaultdict(lambda: PRIOR)
     signals = _signals(conn, lang)
     channel_sum: dict[str, float] = defaultdict(float)
     channel_weight: dict[str, float] = defaultdict(float)
@@ -245,13 +266,23 @@ def build(conn: Connection, lang: str) -> TasteProfile:
             profile.channel_names.setdefault(key, owner)
             channel_sum[key] += w * e
             channel_weight[key] += w
+            enjoyed = max(0.0, min(1.0, (e + 1) / 2.3))  # −1 → 0, +1.3 → 1
+            alphas[key] += w * enjoyed
+            betas[key] += w * (1 - enjoyed)
         bucket = length_bucket(item["type"], item["duration_sec"], item["word_count"])
         if bucket:
             length_sum[bucket] += w * e
             length_weight[bucket] += w
         if e != 0:
             weighted.append((item["id"], w * e))
-    profile.channels = {k: max(-1.0, min(1.0, channel_sum[k] / (channel_weight[k] + CHANNEL_SHRINK))) for k in channel_sum}
+    skipped = skipped_owners(conn, lang)  # cards passed by again and again count against their channel
+    for key, weight in skipped.items():
+        betas[key] += weight
+        channel_sum[key] -= weight
+    profile.channels = {
+        k: max(-1.0, min(1.0, channel_sum[k] / (channel_weight[k] + skipped.get(k, 0.0) + CHANNEL_SHRINK))) for k in channel_sum
+    }
+    profile.channel_beliefs = {k: (alphas[k], betas[k]) for k in set(alphas) | set(betas)}
     profile.channel_evidence = dict(channel_weight)
     profile.lengths = {k: max(-1.0, min(1.0, length_sum[k] / (length_weight[k] + LENGTH_SHRINK))) for k in length_sum}
 

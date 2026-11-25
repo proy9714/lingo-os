@@ -519,6 +519,14 @@ CREATE TABLE content_lemmas (
 ) WITHOUT ROWID;
 CREATE INDEX ix_content_lemmas_lexeme ON content_lemmas(lexeme_id);
 
+-- What the suggestions showed you: things you keep scrolling past without opening sink (services/ranker.py).
+CREATE TABLE item_impressions (
+  content_item_id  INTEGER PRIMARY KEY REFERENCES content_items(id) ON DELETE CASCADE,
+  shown            INTEGER NOT NULL DEFAULT 0,       -- times on screen, counted at most once every 6 hours
+  first_shown_at   TEXT,
+  last_shown_at    TEXT
+);
+
 -- Materialised ranking, recomputed when the profile version changes.
 CREATE TABLE content_scores (
   content_item_id   INTEGER PRIMARY KEY REFERENCES content_items(id) ON DELETE CASCADE,

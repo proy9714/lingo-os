@@ -90,6 +90,18 @@ def recommend(
     return up_next(conn, lang, n)
 
 
+class SeenRequest(BaseModel):
+    ids: list[int] = Field(min_length=1, max_length=200)
+
+
+@router.post("/recommend/seen")
+def seen(body: SeenRequest, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
+    """Suggestion cards that were on screen: ones you keep passing by without opening slowly sink."""
+    from app.services import ranker
+
+    return {"counted": ranker.record_seen(conn, body.ids)}
+
+
 @router.post("/content/upload", status_code=201)
 async def upload(
     lang: str = Form(..., min_length=2, max_length=8),

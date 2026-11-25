@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { useDismiss, useMarkWatched } from "../api/hooks";
 import type { UpNextPick } from "../api/types";
 import { displayTitle } from "../lib/nav";
+import { useSeen } from "../lib/seen";
 import { useUi } from "../state/ui";
 import { Icon } from "./Icon";
 import { cx } from "./ui";
@@ -223,8 +224,11 @@ function CardActions({ pick }: { pick: UpNextPick }) {
 export function PickCard({ pick, className }: { pick: UpNextPick; className?: string }) {
   const length = lengthLabel(pick);
   const inProgress = (pick.progress ?? 0) > 0.02 && (pick.progress ?? 0) < 0.9;
+  const card = useRef<HTMLElement>(null);
+  useSeen(card, pick.id);
   return (
     <article
+      ref={card}
       className={cx(
         "group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.045] transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.08]",
         className,
@@ -272,8 +276,10 @@ export function FeaturedCard({ pick }: { pick: UpNextPick }) {
   const length = lengthLabel(pick);
   const verb = pick.kind === "video" ? "Watch now" : pick.kind === "manga" ? "Read the volume" : "Read now";
   const inProgress = (pick.progress ?? 0) > 0.02 && (pick.progress ?? 0) < 0.9;
+  const card = useRef<HTMLElement>(null);
+  useSeen(card, pick.id);
   return (
-    <article className="group relative isolate flex min-h-[320px] flex-col justify-end overflow-hidden rounded-[22px] border border-white/12 bg-black/40 md:min-h-[380px]">
+    <article ref={card} className="group relative isolate flex min-h-[320px] flex-col justify-end overflow-hidden rounded-[22px] border border-white/12 bg-black/40 md:min-h-[380px]">
       <div className="absolute inset-0 -z-10">
         <Picture pick={pick} size="maxres" />
       </div>
@@ -309,8 +315,10 @@ export function FeaturedCard({ pick }: { pick: UpNextPick }) {
 /** A compact row: thumbnail, title, level. Used beside the featured card. */
 export function PickRow({ pick }: { pick: UpNextPick }) {
   const length = lengthLabel(pick);
+  const card = useRef<HTMLElement>(null);
+  useSeen(card, pick.id);
   return (
-    <article className="group relative flex gap-3 rounded-2xl border border-white/8 bg-white/[0.04] p-2 transition hover:border-white/16 hover:bg-white/[0.08]">
+    <article ref={card} className="group relative flex gap-3 rounded-2xl border border-white/8 bg-white/[0.04] p-2 transition hover:border-white/16 hover:bg-white/[0.08]">
       <div className="relative aspect-video w-[132px] shrink-0 overflow-hidden rounded-xl bg-black/40">
         <Picture pick={pick} />
         {length && <span className="absolute right-1 bottom-1 rounded bg-black/75 px-1 text-[10px] font-semibold">{length}</span>}
