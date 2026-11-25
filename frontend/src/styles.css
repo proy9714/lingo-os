@@ -275,3 +275,40 @@ body {
 input[type="number"]::-webkit-inner-spin-button {
   opacity: 0.5;
 }
+
+/* Right-to-left languages: every piece of text in the language being learned carries its lang attribute. Each piece
+   takes its direction from its first letter, so Arabic reads right to left (aligned to its own start) while a mixed
+   cell such as "لا + present" or the app around it stays left to right. */
+[lang="ar"] {
+  unicode-bidi: plaintext;
+}
+/* Paragraphs, transcript lines and headings in Arabic are right to left outright: their words are clickable
+   inline-block buttons, which don't count when the browser looks for the first letter. */
+p[lang="ar"],
+div[lang="ar"],
+li[lang="ar"],
+h1[lang="ar"],
+h2[lang="ar"],
+h3[lang="ar"] {
+  direction: rtl;
+  unicode-bidi: isolate;
+  text-align: start;
+}
+/* sentences and words inside such a block follow it */
+[lang="ar"] [lang="ar"] {
+  unicode-bidi: normal;
+}
+
+/* Scripts Inter doesn't cover: the system's own fonts, with a little more line height for their marks */
+:lang(ar) {
+  font-family: "Noto Naskh Arabic", "Segoe UI", "Geeza Pro", Tahoma, sans-serif;
+  line-height: 1.8;
+}
+:lang(hi) {
+  font-family: "Noto Sans Devanagari", "Nirmala UI", "Kohinoor Devanagari", "Mangal", sans-serif;
+  line-height: 1.75;
+}
+:lang(bn) {
+  font-family: "Noto Sans Bengali", "Nirmala UI", "Kohinoor Bangla", "Vrinda", sans-serif;
+  line-height: 1.75;
+}

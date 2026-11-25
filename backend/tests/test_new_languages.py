@@ -31,7 +31,7 @@ def test_catalog_is_ordered_by_speakers(client) -> None:
     assert speakers == sorted(speakers, reverse=True) and len(catalog) == 12
     by_code = {c["code"]: c for c in catalog}
     assert by_code["de"]["added"] and not by_code["fr"]["added"]
-    assert by_code["fr"]["available"] and not by_code["hi"]["available"]  # Hindi: a later version
+    assert all(c["available"] for c in catalog)  # Hindi, Arabic and Bengali too, since 0.5
     assert [v["id"] for v in by_code["pt"]["variants"]] == ["br", "pt"]
     assert by_code["ar"]["direction"] == "rtl"
 
@@ -89,7 +89,6 @@ def test_last_language_cant_be_removed_and_unknown_ones_are_refused(client) -> N
         assert client.delete(f"/api/languages/{code}").status_code == 200
     assert client.delete("/api/languages/de").status_code == 422
     assert client.post("/api/languages", json={"code": "xx"}).status_code == 422
-    assert client.post("/api/languages", json={"code": "hi"}).status_code == 422  # not available yet
     assert client.post("/api/languages", json={"code": "pt", "variant": "zz"}).status_code == 422
 
 

@@ -35,6 +35,10 @@ REGISTER = {
     "ru": "Address the learner with ты.",
     "ko": "Use the polite 해요 style (존댓말).",
     "it": "Address the learner with tu.",
+    "hi": "Address the learner with आप; write in Devanagari, with everyday words rather than Sanskritised ones.",
+    "bn": "Address the learner with আপনি; write in Bengali script, in standard colloquial Bengali (চলিত ভাষা).",
+    "ar": "Use Modern Standard Arabic (فصحى) without vowel marks except where a word would be ambiguous; if the learner "
+          "chose Egyptian Arabic, speak Egyptian colloquial instead. Address the learner with أنت.",
 }
 MAX_WORDS = {"A1": 6, "A2": 8, "B1": 12, "B2": 16, "C1": 20, "C2": 22, "N5": 6, "N4": 8, "N3": 12, "N2": 16, "N1": 20}
 
@@ -131,6 +135,36 @@ SCENARIOS: dict[str, list[dict[str, str]]] = {
          "setting": "a flat in Bologna", "you": "the landlord", "learner": "a student"},
         {"id": "farmacia", "title": "At the pharmacy",
          "setting": "a pharmacy in Naples", "you": "the pharmacist", "learner": "a customer with a sore throat"},
+    ],
+    "hi": [
+        {"id": "sabzi", "title": "Buying vegetables at the market",
+         "setting": "a vegetable stall in a Delhi market", "you": "the vegetable seller", "learner": "a customer"},
+        {"id": "auto", "title": "Taking an auto-rickshaw",
+         "setting": "outside a metro station in Jaipur", "you": "the auto driver", "learner": "a passenger"},
+        {"id": "train", "title": "Asking about a train",
+         "setting": "the enquiry counter at Lucknow station", "you": "the railway clerk", "learner": "a traveller"},
+        {"id": "doctor", "title": "At the doctor's",
+         "setting": "a clinic in Mumbai", "you": "the doctor", "learner": "a patient with a fever"},
+    ],
+    "bn": [
+        {"id": "bazar", "title": "Shopping for fish at the bazaar",
+         "setting": "a fish market in Dhaka", "you": "the fishmonger", "learner": "a customer"},
+        {"id": "rickshaw", "title": "Hiring a rickshaw",
+         "setting": "a street in Kolkata", "you": "the rickshaw puller", "learner": "a passenger"},
+        {"id": "cha", "title": "At a tea stall",
+         "setting": "a roadside tea stall", "you": "the tea seller", "learner": "a regular customer"},
+        {"id": "bari", "title": "Renting a room",
+         "setting": "a flat in Chattogram", "you": "the landlord", "learner": "a student looking for a room"},
+    ],
+    "ar": [
+        {"id": "souk", "title": "Bargaining in the souk",
+         "setting": "a spice shop in an old market", "you": "the shopkeeper", "learner": "a customer"},
+        {"id": "taxi", "title": "Taking a taxi",
+         "setting": "a taxi in Cairo", "you": "the taxi driver", "learner": "a passenger going to the museum"},
+        {"id": "restaurant", "title": "Ordering at a restaurant",
+         "setting": "a family restaurant in Amman", "you": "the waiter", "learner": "a customer"},
+        {"id": "pharmacy", "title": "At the pharmacy",
+         "setting": "a pharmacy in Rabat", "you": "the pharmacist", "learner": "a customer with a headache"},
     ],
 }
 

@@ -1,0 +1,297 @@
+# Hindi grammar reference, beginner to intermediate. Shown on the Grammar page.
+# Cells: "target | translation"; several in one cell are separated by " ;; "; {…} marks an ending to highlight.
+# Examples: [sentence, translation, optional note].  kind: structure | verbs | contrast | summary
+
+language: hi
+title: Hindi grammar
+intro: >-
+  A working reference for beginners to intermediate learners, in Devanagari with translations. Hindi puts the verb at
+  the end, uses postpositions instead of prepositions, and marks gender on verbs and adjectives: read a section, notice
+  the shape, then listen for it in what you watch and read.
+
+sections:
+  - id: word-order
+    title: Word order (subject, object, verb)
+    kind: structure
+    level: A1
+    tags: [word order, SOV, verb last, question, क्या]
+    text: >-
+      The verb comes last: **मैं चाय पीता हूँ** (I tea drink am). Time and place usually come early. A yes/no question
+      starts with **क्या** or simply rises in tone; question words (कौन, क्या, कहाँ, कब, क्यों, कैसे) stay where the
+      answer would be.
+    examples:
+      - ["मैं हर दिन हिंदी पढ़ता हूँ।", "I study Hindi every day."]
+      - ["क्या आप चाय पीएँगे?", "Will you have some tea?", "क्या opens a yes/no question"]
+      - ["आप कहाँ रहते हैं?", "Where do you live?"]
+      - ["कल हम दिल्ली जा रहे हैं।", "Tomorrow we're going to Delhi."]
+
+  - id: nouns-gender
+    title: Nouns, gender & plural
+    kind: structure
+    level: A1
+    tags: [gender, masculine, feminine, plural, noun, लड़का, लड़की]
+    tables:
+      - head: ["", "Singular", "Plural"]
+        rows:
+          - ["masculine in -आ", "लड़{का} | boy", "लड़{के}"]
+          - ["other masculine", "घर | house", "घर"]
+          - ["feminine in -ई", "लड़{की} | girl", "लड़{कियाँ}"]
+          - ["other feminine", "किताब | book", "किताब{ें}"]
+    text: >-
+      Every noun is masculine or feminine, and adjectives and verbs agree with it. Most nouns in **-आ** are masculine,
+      most in **-ई** feminine, but learn the gender with each word (पानी, water, is masculine; बात, matter, is feminine).
+      Adjectives in **-आ** change: **अच्छा लड़का, अच्छे लड़के, अच्छी लड़की**; others never change: **सुंदर घर**.
+    examples:
+      - ["यह कमरा बड़ा है।", "This room is big."]
+      - ["ये कमरे बड़े हैं।", "These rooms are big.", "masculine plural -े"]
+      - ["मेरी किताबें मेज़ पर हैं।", "My books are on the table.", "feminine plural -ें"]
+
+  - id: pronouns
+    title: Pronouns, तू / तुम / आप
+    kind: structure
+    level: A1
+    tags: [pronoun, मैं, तू, तुम, आप, वह, ये, वे, politeness]
+    tables:
+      - head: ["Meaning", "Pronoun", "with है/हूँ/हैं"]
+        rows:
+          - ["I", "मैं", "मैं हूँ"]
+          - ["you (very close, or children)", "तू", "तू है"]
+          - ["you (friends, family)", "तुम", "तुम हो"]
+          - ["you (polite, strangers, elders)", "आप", "आप हैं"]
+          - ["he / she / it (this, that)", "यह / वह", "वह है"]
+          - ["we", "हम", "हम हैं"]
+          - ["they / he, she (respectful)", "ये / वे", "वे हैं"]
+    text: >-
+      Choose **आप** with anyone you don't know well; it takes plural verbs even for one person. **तुम** is for friends,
+      **तू** for very close people (and can sound rude to others). **यह/ये** point near, **वह/वे** far; a single person
+      you respect is referred to with the plural **वे**.
+    examples:
+      - ["आप कैसे हैं?", "How are you? (polite)"]
+      - ["तुम कल क्या कर रहे हो?", "What are you doing tomorrow? (to a friend)"]
+      - ["वे हमारे अध्यापक हैं।", "He is our teacher.", "respectful plural for one person"]
+
+  - id: postpositions
+    title: Postpositions & the oblique form
+    kind: structure
+    level: A2
+    tags: [postposition, में, पर, से, को, तक, के लिए, oblique, case]
+    tables:
+      - head: ["Postposition", "Meaning", "Example"]
+        rows:
+          - ["में", "in", "घर में | in the house"]
+          - ["पर", "on, at", "मेज़ पर | on the table"]
+          - ["से", "from, with, by", "दिल्ली से | from Delhi"]
+          - ["को", "to (person), object marker", "राम को | to Ram"]
+          - ["तक", "up to, until", "शाम तक | until evening"]
+          - ["के लिए", "for", "आपके लिए | for you"]
+          - ["के साथ", "with (together)", "दोस्तों के साथ | with friends"]
+    text: >-
+      Postpositions come **after** the noun, and the noun before them takes its **oblique** form: masculine **-आ** becomes
+      **-े** (कमरा → **कमरे में**), plurals end in **-ों** (लड़के → **लड़कों को**, किताबें → **किताबों में**). Pronouns too:
+      मैं → **मुझ**, तुम → **तुम्ह**, वह → **उस**, यह → **इस** (**उससे**, **मुझसे**).
+    examples:
+      - ["वह कमरे में बैठा है।", "He is sitting in the room.", "कमरा → कमरे in front of में"]
+      - ["मैं बच्चों के लिए खाना बना रही हूँ।", "I'm cooking for the children.", "बच्चे → बच्चों"]
+      - ["उससे पूछो।", "Ask him.", "वह → उस + से"]
+
+  - id: possession
+    title: का / के / की (of), possessives
+    kind: contrast
+    level: A2
+    tags: [possessive, का, के, की, मेरा, मेरी, मेरे, हमारा, आपका]
+    tables:
+      - head: ["Owned thing", "का form", "Example"]
+        rows:
+          - ["masculine singular", "{का} / मेरा", "राम का घर ;; मेरा भाई"]
+          - ["masculine plural or oblique", "{के} / मेरे", "राम के दोस्त ;; मेरे घर में"]
+          - ["feminine", "{की} / मेरी", "राम की बहन ;; मेरी किताबें"]
+    text: >-
+      **का** means "of" and agrees with the **thing owned**, not the owner, like an adjective in -आ. The possessive
+      pronouns behave the same way: **मेरा/मेरे/मेरी**, **तुम्हारा**, **आपका**, **उसका**, **हमारा**, **उनका**.
+    examples:
+      - ["यह सीता का घर है।", "This is Sita's house."]
+      - ["यह सीता की गाड़ी है।", "This is Sita's car.", "गाड़ी is feminine → की"]
+      - ["मेरे माता-पिता गाँव में रहते हैं।", "My parents live in the village.", "plural → मेरे"]
+
+  - id: hona
+    title: "होना (to be): है, था"
+    kind: verbs
+    level: A1
+    tags: [to be, होना, है, हैं, हूँ, हो, था, थी, थे]
+    tables:
+      - head: ["", "Present", "Past"]
+        rows:
+          - ["मैं", "हूँ", "था / थी"]
+          - ["तू, यह, वह", "है", "था / थी"]
+          - ["तुम", "हो", "थे / थीं"]
+          - ["हम, आप, ये, वे", "हैं", "थे / थीं"]
+    text: >-
+      **है** (is) and **था** (was) close most sentences and also build the tenses below. The past agrees in gender:
+      **था** (masculine), **थी** (feminine), **थे** (masculine plural or polite), **थीं** (feminine plural).
+    examples:
+      - ["मैं थका हुआ हूँ।", "I'm tired."]
+      - ["कल बहुत ठंड थी।", "It was very cold yesterday.", "ठंड is feminine → थी"]
+      - ["वे घर पर नहीं थे।", "They weren't at home."]
+
+  - id: present
+    title: Present habitual (करता हूँ) & continuous (कर रहा हूँ)
+    kind: verbs
+    level: A1
+    tags: [present, habitual, continuous, ता, ती, ते, रहा, रही, रहे]
+    tables:
+      - head: ["", "Habitual: stem + ता/ती/ते + है", "Continuous: stem + रहा/रही/रहे + है"]
+        rows:
+          - ["मैं (man)", "मैं काम कर{ता} हूँ", "मैं काम कर {रहा} हूँ"]
+          - ["मैं (woman)", "मैं काम कर{ती} हूँ", "मैं काम कर {रही} हूँ"]
+          - ["हम / आप", "हम काम कर{ते} हैं", "हम काम कर {रहे} हैं"]
+    text: >-
+      Take the stem (करना → **कर**) and add **-ता/-ती/-ते** for things you do regularly, or **रहा/रही/रहे** for what is
+      happening now; **है/हूँ/हैं** comes last. The ending agrees with the subject's gender. With **था** instead of है you
+      get the past: **करता था** (used to do), **कर रहा था** (was doing).
+    examples:
+      - ["वह हर सुबह दौड़ती है।", "She runs every morning."]
+      - ["हम अभी खाना खा रहे हैं।", "We're eating right now."]
+      - ["बचपन में मैं क्रिकेट खेलता था।", "As a child I used to play cricket.", "habitual past"]
+
+  - id: past
+    title: Simple past & ने
+    kind: verbs
+    level: A2
+    tags: [past, perfective, ने, गया, किया, खाया, ergative, agreement]
+    tables:
+      - head: ["Verb", "Past (masc.)", "Past (fem.)"]
+        rows:
+          - ["जाना (go)", "गया / गए", "गई / गईं"]
+          - ["आना (come)", "आया / आए", "आई / आईं"]
+          - ["करना (do)", "किया / किए", "की / कीं"]
+          - ["खाना (eat)", "खाया / खाए", "खाई / खाईं"]
+          - ["देखना (see)", "देखा / देखे", "देखी / देखीं"]
+    text: >-
+      The simple past is stem + **-आ/-ए/-ई/-ईं**. With verbs that take an object (खाना, देखना, करना…), the subject gets
+      **ने** and the verb agrees with the **object** instead: **मैंने रोटी खाई** (roti is feminine → खाई). Without an
+      object, or with को, the verb stays masculine singular: **उसने मुझे देखा**. Verbs without an object (जाना, आना) take no
+      ने and agree with the subject: **वह आई।**
+    examples:
+      - ["मैं कल बाज़ार गया।", "I went to the market yesterday.", "no object: no ने"]
+      - ["सीता ने चाय बनाई।", "Sita made tea.", "verb agrees with चाय (feminine)"]
+      - ["हमने फ़िल्म देखी।", "We watched a film.", "हम + ने = हमने"]
+
+  - id: future
+    title: Future & subjunctive
+    kind: verbs
+    level: A2
+    tags: [future, गा, गी, गे, subjunctive, शायद, चाहिए]
+    tables:
+      - head: ["", "Future", "Subjunctive (maybe, let's)"]
+        rows:
+          - ["मैं", "करूँ{गा} / करूँ{गी}", "करूँ"]
+          - ["तुम", "करो{गे} / करो{गी}", "करो"]
+          - ["वह", "करे{गा} / करे{गी}", "करे"]
+          - ["हम, आप, वे", "करें{गे} / करें{गी}", "करें"]
+    text: >-
+      The **subjunctive** (stem + ऊँ/ए/ओ/एँ) expresses wishes, suggestions and possibilities: **चलें?** (shall we go?),
+      **शायद वह आए** (maybe he'll come). Add **-गा/-गी/-गे** to it for the future. **होना** has a short future too:
+      **होगा** also means "must be" (**वह घर पर होगा** – he's probably at home).
+    examples:
+      - ["मैं कल फ़ोन करूँगा।", "I'll call tomorrow."]
+      - ["क्या हम थोड़ी देर रुकें?", "Shall we wait a little?", "subjunctive suggestion"]
+      - ["बारिश होगी।", "It will rain."]
+
+  - id: imperative
+    title: Imperatives & polite requests
+    kind: verbs
+    level: A1
+    tags: [imperative, command, request, कीजिए, करो, कर, please, ज़रा]
+    tables:
+      - head: ["Addressing", "Form", "Example"]
+        rows:
+          - ["तू", "stem", "बैठ | sit"]
+          - ["तुम", "stem + ओ", "बैठो"]
+          - ["आप", "stem + इए", "बैठिए"]
+          - ["आप (very polite)", "stem + इएगा", "बैठिएगा"]
+    text: >-
+      Match the request to the pronoun you use with the person. Irregular polite forms: **कीजिए** (करना), **दीजिए**
+      (देना), **लीजिए** (लेना), **पीजिए** (पीना). **ज़रा** softens a request; **मत** makes it negative: **मत जाओ**.
+    examples:
+      - ["कृपया यहाँ बैठिए।", "Please sit here."]
+      - ["ज़रा पानी दीजिए।", "Could you give me some water?"]
+      - ["शोर मत करो!", "Don't make noise!"]
+
+  - id: ko-constructions
+    title: "मुझे... (to me): likes, needs and feelings"
+    kind: structure
+    level: A2
+    tags: [को, मुझे, पसंद, चाहिए, पता, लगना, dative subject, need, like]
+    tables:
+      - head: ["Pattern", "Meaning", "Example"]
+        rows:
+          - ["मुझे … पसंद है", "I like …", "मुझे चाय पसंद है"]
+          - ["मुझे … चाहिए", "I need / want …", "मुझे मदद चाहिए"]
+          - ["मुझे पता है", "I know (a fact)", "मुझे पता नहीं"]
+          - ["मुझे … लगता है", "it seems to me / I feel", "मुझे ठंड लग रही है"]
+          - ["मुझे … करना है", "I have to …", "मुझे काम करना है"]
+    text: >-
+      Many everyday feelings are said "to someone": the person takes **को** (मुझे = मुझको, तुम्हें, उसे, हमें, आपको), and
+      the thing liked or needed is the grammatical subject. **चाहिए** alone means "should": **आपको आराम करना चाहिए**.
+    examples:
+      - ["मुझे हिंदी फ़िल्में बहुत पसंद हैं।", "I really like Hindi films.", "verb agrees with फ़िल्में"]
+      - ["आपको डॉक्टर के पास जाना चाहिए।", "You should go to the doctor."]
+      - ["उसे भूख लगी है।", "He's hungry."]
+
+  - id: compound-verbs
+    title: Compound verbs (जाना, लेना, देना) & सकना
+    kind: verbs
+    level: B1
+    tags: [compound verb, जाना, लेना, देना, सकना, चुकना, पाना, ability]
+    tables:
+      - head: ["Pattern", "Adds", "Example"]
+        rows:
+          - ["stem + जाना", "completion, change", "वह सो गया | he fell asleep"]
+          - ["stem + लेना", "for yourself", "खा लो | go ahead and eat"]
+          - ["stem + देना", "for someone else", "बता दो | tell (me)"]
+          - ["stem + सकना", "can", "मैं तैर सकता हूँ | I can swim"]
+          - ["stem + चुकना", "already", "मैं खा चुका हूँ | I've already eaten"]
+    text: >-
+      Hindi often pairs a verb stem with a second verb that adds a nuance; the second verb carries the tense. Compounds
+      with लेना and देना are very common in requests and finished actions. With **सकना** and **चुकना** the subject takes
+      no ने even in the past.
+    examples:
+      - ["दूध गिर गया।", "The milk got spilled."]
+      - ["मैंने सारा काम कर लिया।", "I've finished all the work."]
+      - ["क्या आप मेरी मदद कर सकते हैं?", "Can you help me?"]
+
+  - id: negation-questions
+    title: Negation & question words
+    kind: contrast
+    level: A1
+    tags: [negation, नहीं, न, मत, question, कौन, क्या, कहाँ, कब, क्यों, कैसे, कितना]
+    tables:
+      - head: ["Word", "Use", "Example"]
+        rows:
+          - ["नहीं", "ordinary not (है often dropped)", "मैं नहीं जानता"]
+          - ["न", "in subjunctive, 'neither…nor', tag", "अच्छा है न?"]
+          - ["मत", "don't (commands)", "मत रोओ"]
+          - ["कौन / क्या", "who / what", "यह कौन है?"]
+          - ["कहाँ / कब / क्यों / कैसे / कितना", "where / when / why / how / how much", "यह कितने का है?"]
+    text: >-
+      **नहीं** goes just before the verb; in the present the final है is usually dropped: **मैं नहीं जाता** (I don't
+      go). A tag **न?** at the end asks for agreement, like "isn't it?".
+    examples:
+      - ["मुझे नहीं पता।", "I don't know."]
+      - ["आप कब आएँगे?", "When will you come?"]
+      - ["यह कितने का है?", "How much is this?"]
+
+  - id: summary
+    title: "Summary: building a sentence"
+    kind: summary
+    level: B1
+    tags: [summary, overview, agreement, tense]
+    points:
+      - "Verb last; postpositions after the noun, which takes its oblique form (कमरे में, लड़कों को)."
+      - "Gender everywhere: adjectives in -आ, का/के/की and most verb forms agree."
+      - "Tenses: करता है (habitually), कर रहा है (now), किया (did; ने + object agreement), करेगा (will)."
+      - "Politeness: आप with plural verbs and -इए requests (बैठिए, कीजिए)."
+      - "'To me' constructions with को: मुझे पसंद है, मुझे चाहिए, मुझे करना है."
+    examples:
+      - ["कल मैंने अपने दोस्तों के साथ एक अच्छी फ़िल्म देखी।", "Yesterday I watched a good film with my friends."]
+      - ["अगर आपको समय मिले, तो ज़रूर आइए।", "If you get the time, do come."]

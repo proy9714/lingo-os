@@ -4,8 +4,8 @@
 
 **Learn a language by watching, reading and listening to things you enjoy, at the right level for you.**
 
-Lingo OS is a free, local-first app for learning languages through comprehensible input: **Mandarin Chinese,
-Spanish, French, Portuguese, Russian, German, Japanese, Korean and Italian** (Hindi, Arabic and Bengali are coming). It
+Lingo OS is a free, local-first app for learning languages through comprehensible input: **Mandarin Chinese, Hindi,
+Spanish, Arabic, French, Bengali, Portuguese, Russian, German, Japanese, Korean and Italian** (Arabic right to left). It
 finds YouTube videos and articles matched to your level, gives every video a clickable transcript and every text
 clickable words, tracks your immersion time, and estimates your level from what you actually understand. It runs on
 your computer, keeps your data there, and comes with an Android app that syncs over your home Wi-Fi.

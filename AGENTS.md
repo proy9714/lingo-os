@@ -1,7 +1,7 @@
 # Lingo OS: instructions for AI terminals
 
 This folder is **Lingo OS**, a local-first language-immersion app. A learner adds languages from a catalogue
-(`backend/app/languages/registry.py`): `zh`, `es`, `fr`, `pt`, `ru`, `de`, `ja`, `ko`, `it` today. Commands that take a
+(`backend/app/languages/registry.py`): `zh`, `hi`, `es`, `ar`, `fr`, `bn`, `pt`, `ru`, `de`, `ja`, `ko`, `it`. Commands that take a
 language accept any added code; `uv run --project backend lingo status --json` shows which are added.
 You (Gemini CLI, Claude Code, Codex, …) can operate it through `/lingo <mode>`.
 

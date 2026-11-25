@@ -1,0 +1,272 @@
+# Arabic grammar reference (Modern Standard Arabic), beginner to intermediate. Shown on the Grammar page.
+# Cells: "target | translation"; several in one cell are separated by " ;; "; {…} marks an ending to highlight.
+# Examples: [sentence, translation, optional note].  kind: structure | verbs | contrast | summary
+
+language: ar
+title: Arabic grammar
+intro: >-
+  A working reference for Modern Standard Arabic (الفصحى), the Arabic of news, books and subtitles, from beginner to
+  intermediate. Arabic is written right to left, usually without short vowels, and builds words from three-letter
+  roots: read a section, notice the shape, then listen for it in what you watch and read.
+
+sections:
+  - id: script
+    title: The script & short vowels
+    kind: structure
+    level: A1
+    tags: [script, alphabet, harakat, vowels, fatha, kasra, damma, sukun, shadda, right to left]
+    tables:
+      - head: ["Mark", "Sound", "Example"]
+        rows:
+          - ["fatha  َ", "a", "كَتَبَ | kataba (he wrote)"]
+          - ["kasra  ِ", "i", "مِن | min (from)"]
+          - ["damma  ُ", "u", "كُتُب | kutub (books)"]
+          - ["sukun  ْ", "no vowel", "بَيْت | bayt (house)"]
+          - ["shadda  ّ", "doubled consonant", "مُدَرِّس | mudarris (teacher)"]
+    text: >-
+      Arabic has 28 letters, written right to left, most joined to the next letter. Long vowels are letters (**ا** ā,
+      **و** ū, **ي** ī); short vowels are small marks that are usually **left out** in normal text, so readers rely on
+      knowing the word. Lingo OS looks words up without the marks, so كَتَبَ and كتب find the same entry.
+    examples:
+      - ["هذا كتاب جديد.", "This is a new book."]
+      - ["هَذَا كِتَابٌ جَدِيدٌ.", "This is a new book.", "the same sentence with all vowel marks"]
+
+  - id: article
+    title: The article ال & sun letters
+    kind: structure
+    level: A1
+    tags: [article, al, ال, definite, sun letters, moon letters, assimilation]
+    tables:
+      - head: ["", "Written", "Said"]
+        rows:
+          - ["moon letter (ق، ك، ب…)", "القمر | the moon", "al-qamar"]
+          - ["sun letter (ش، س، ت، د، ر، ن…)", "الشمس | the sun", "ash-shams"]
+    text: >-
+      **ال** is "the" for every gender and number, written joined to its noun. Before "sun letters" (t, th, d, dh, r, z,
+      s, sh, ṣ, ḍ, ṭ, ẓ, l, n) the l is not pronounced and the next consonant doubles. There is no word for "a": a noun
+      without ال is indefinite.
+    examples:
+      - ["البيت كبير.", "The house is big."]
+      - ["في السوق ناس كثيرون.", "There are many people in the market.", "as-sūq: sun letter"]
+
+  - id: gender
+    title: Gender & ة
+    kind: structure
+    level: A1
+    tags: [gender, feminine, ta marbuta, ة, masculine, adjective agreement]
+    tables:
+      - head: ["Masculine", "Feminine"]
+        rows:
+          - ["طالب | (male) student", "طالب{ة} | (female) student"]
+          - ["كبير | big", "كبير{ة}"]
+          - ["مدرس | teacher", "مدرس{ة}"]
+    text: >-
+      Nouns are masculine or feminine; most feminine nouns end in **ة** (tā' marbūṭa, pronounced -a, or -at before
+      another word). Adjectives follow the noun and agree in gender, number and definiteness: **بيت كبير** (a big house),
+      **البيت الكبير** (the big house), **مدينة كبيرة** (a big city). Plurals of things take feminine singular
+      adjectives: **سيارات جديدة** (new cars).
+    examples:
+      - ["هذه مدينة جميلة.", "This is a beautiful city."]
+      - ["الطالبة الجديدة من مصر.", "The new (female) student is from Egypt."]
+      - ["عندي سيارات قديمة.", "I have old cars.", "non-human plural → feminine singular"]
+
+  - id: nominal-sentence
+    title: Sentences without a verb (is / are)
+    kind: structure
+    level: A1
+    tags: [nominal sentence, is, to be, هذا, هذه, جملة اسمية, كان]
+    text: >-
+      In the present, "is/are" isn't said: **البيت كبير** (the house [is] big), **أنا طالب** (I [am a] student). The
+      subject is definite, the description indefinite; compare **البيت الكبير** (the big house, a phrase). For the past
+      or future, use **كان / يكون**: **كان البيت كبيرا**.
+    examples:
+      - ["أنا من المغرب.", "I'm from Morocco."]
+      - ["الجو جميل اليوم.", "The weather is nice today."]
+      - ["كان المطعم مزدحما.", "The restaurant was crowded.", "كان for the past"]
+
+  - id: pronouns
+    title: Pronouns & attached endings
+    kind: structure
+    level: A1
+    tags: [pronoun, أنا, أنت, هو, هي, نحن, هم, possessive, suffix, ي, ك, ه, ها]
+    tables:
+      - head: ["Meaning", "Pronoun", "Ending (my, your…)"]
+        rows:
+          - ["I", "أنا", "كتاب{ي} | my book"]
+          - ["you (m.)", "أنتَ", "كتاب{ك}"]
+          - ["you (f.)", "أنتِ", "كتاب{ك} (-ki)"]
+          - ["he / it", "هو", "كتاب{ه}"]
+          - ["she / it", "هي", "كتاب{ها}"]
+          - ["we", "نحن", "كتاب{نا}"]
+          - ["you (pl.)", "أنتم", "كتاب{كم}"]
+          - ["they", "هم", "كتاب{هم}"]
+    text: >-
+      Possessives are endings on the noun (**بيتي** my house) and the same endings mark objects on verbs (**يحبك** he
+      loves you) and follow prepositions (**معي** with me, **لها** for her). On a word in ة, the ة becomes ت:
+      **مدرسة → مدرستي**. "I have" is **عندي** (literally "at me").
+    examples:
+      - ["اسمي سارة.", "My name is Sara."]
+      - ["عندنا امتحان غدا.", "We have an exam tomorrow.", "عند + نا"]
+      - ["أين حقيبتك؟", "Where is your bag?", "حقيبة → حقيبتك"]
+
+  - id: past
+    title: Past tense
+    kind: verbs
+    level: A2
+    tags: [past, perfect, الماضي, كتب, ذهب, conjugation, suffix]
+    tables:
+      - head: ["Subject", "كتب (write)", "Ending"]
+        rows:
+          - ["أنا", "كتب{تُ}", "-tu"]
+          - ["أنتَ / أنتِ", "كتب{تَ} / كتب{تِ}", "-ta / -ti"]
+          - ["هو / هي", "كتب / كتب{تْ}", "-a / -at"]
+          - ["نحن", "كتب{نا}", "-nā"]
+          - ["أنتم", "كتب{تم}", "-tum"]
+          - ["هم", "كتب{وا}", "-ū"]
+    text: >-
+      The past adds **endings** to the stem. The basic form is the "he" form (كَتَبَ), which is also how dictionaries
+      list verbs. When the verb comes first, it stays singular even with a plural subject: **ذهب الطلاب** (the students
+      went).
+    examples:
+      - ["ذهبت إلى السوق أمس.", "I went to the market yesterday."]
+      - ["هل شربتِ القهوة؟", "Did you (f.) drink the coffee?"]
+      - ["سافر أصدقائي إلى دبي.", "My friends travelled to Dubai.", "verb first stays singular"]
+
+  - id: present
+    title: Present tense & future
+    kind: verbs
+    level: A2
+    tags: [present, imperfect, المضارع, يكتب, future, سوف, سـ, prefix]
+    tables:
+      - head: ["Subject", "يكتب (writes)", "Pattern"]
+        rows:
+          - ["أنا", "{أ}كتب", "a-"]
+          - ["أنتَ / أنتِ", "{ت}كتب / {ت}كتب{ين}", "ta- / ta-…-īn"]
+          - ["هو / هي", "{ي}كتب / {ت}كتب", "ya- / ta-"]
+          - ["نحن", "{ن}كتب", "na-"]
+          - ["أنتم", "{ت}كتب{ون}", "ta-…-ūn"]
+          - ["هم", "{ي}كتب{ون}", "ya-…-ūn"]
+    text: >-
+      The present uses **prefixes** (and some endings). It covers "does" and "is doing". For the future add **سـ**
+      (joined) or **سوف** before it: **سأكتب** / **سوف أكتب** (I will write).
+    examples:
+      - ["أعمل في مستشفى.", "I work in a hospital."]
+      - ["ماذا تفعلين الآن؟", "What are you (f.) doing now?"]
+      - ["سنسافر الأسبوع القادم.", "We'll travel next week.", "سـ + نسافر"]
+
+  - id: negation
+    title: "Negation: لا، لم، لن، ليس، ما"
+    kind: contrast
+    level: A2
+    tags: [negation, لا, لم, لن, ليس, ما, not, jussive]
+    tables:
+      - head: ["Word", "Use", "Example"]
+        rows:
+          - ["لا + present", "doesn't (now, habit)", "لا أعرف | I don't know"]
+          - ["لم + present (jussive)", "didn't", "لم أذهب | I didn't go"]
+          - ["لن + present (subjunctive)", "won't", "لن أنسى | I won't forget"]
+          - ["ليس", "isn't (sentences without a verb)", "ليس هنا | he isn't here"]
+          - ["ما + past", "didn't (spoken, older style)", "ما رأيته | I didn't see him"]
+          - ["لا + present (command)", "don't!", "لا تقلق | don't worry"]
+    text: >-
+      Each time has its own "not". The past is negated with **لم + the present form**, not with the past form; the
+      future with **لن**. **ليس** conjugates like a past verb: لستُ، لستَ، ليست، لسنا.
+    examples:
+      - ["لا أفهم هذه الكلمة.", "I don't understand this word."]
+      - ["لم يتصل بي أحد.", "Nobody called me."]
+      - ["لستُ متأكدا.", "I'm not sure."]
+
+  - id: idafa
+    title: The idafa (X of Y)
+    kind: structure
+    level: A2
+    tags: [idafa, إضافة, construct state, possession, of, genitive]
+    text: >-
+      Two nouns side by side mean "the X of Y": **باب البيت** (the door of the house). The first noun never takes ال and
+      is definite through the second; ة on the first noun is pronounced -at: **مدينة نيويورك** (madīnat New York). An
+      adjective comes after the whole phrase: **باب البيت الكبير** (the door of the big house).
+    examples:
+      - ["هذه سيارة أبي.", "This is my father's car."]
+      - ["جامعة القاهرة قديمة جدا.", "Cairo University is very old."]
+      - ["فنجان قهوة من فضلك.", "A cup of coffee, please.", "indefinite idafa"]
+
+  - id: plurals
+    title: "Plurals: sound & broken"
+    kind: structure
+    level: B1
+    tags: [plural, sound plural, broken plural, ون, ين, ات, dual, ان, جمع]
+    tables:
+      - head: ["Type", "Singular", "Plural"]
+        rows:
+          - ["sound masculine (people)", "مهندس | engineer", "مهندس{ون} / مهندس{ين}"]
+          - ["sound feminine", "سيارة | car", "سيار{ات}"]
+          - ["broken", "كتاب | book", "كُتُب"]
+          - ["broken", "ولد | boy", "أولاد"]
+          - ["dual (two)", "كتاب", "كتاب{ان} / كتاب{ين}"]
+    text: >-
+      Some plurals add an ending (**-ūn/-īn** for groups of male people, **-āt** for many feminine nouns), but most
+      everyday nouns have a **broken plural** that rearranges the vowels around the root: learn it with the word.
+      Arabic also has a **dual** for exactly two: **-ān** (**-ayn** after prepositions).
+    examples:
+      - ["المعلمون في الصف.", "The teachers are in the classroom."]
+      - ["اشتريت ثلاثة كتب.", "I bought three books.", "broken plural كتب"]
+      - ["عندي أخوان.", "I have two brothers.", "dual"]
+
+  - id: roots
+    title: Roots & verb forms
+    kind: verbs
+    level: B1
+    tags: [root, pattern, form, وزن, derived forms, كتب, مكتب, كاتب]
+    tables:
+      - head: ["Pattern", "Meaning", "From k-t-b (write)"]
+        rows:
+          - ["فَعَلَ (I)", "basic verb", "كتب | wrote"]
+          - ["فاعِل", "the one who does", "كاتب | writer"]
+          - ["مَفْعَل", "place", "مكتب | office, desk"]
+          - ["مَفْعُول", "done (passive participle)", "مكتوب | written"]
+          - ["فاعَلَ (III)", "do with someone", "كاتب | correspond with"]
+          - ["اِسْتَفْعَلَ (X)", "seek, consider", "استكتب | ask to write"]
+    text: >-
+      Most words come from a **three-consonant root** poured into patterns. Knowing a root helps you guess new words:
+      d-r-s (study) → **درس** (lesson), **مدرسة** (school), **مدرّس** (teacher), **دراسة** (studies). Dictionaries often
+      list verbs by their basic form and derived forms II–X.
+    examples:
+      - ["يعمل أخي في مطعم.", "My brother works in a restaurant.", "ع-م-ل: work"]
+      - ["هذا العمل مهم.", "This work is important.", "same root"]
+
+  - id: msa-dialects
+    title: Standard Arabic & the dialects
+    kind: contrast
+    level: B1
+    tags: [dialect, MSA, فصحى, Egyptian, عامية, spoken, colloquial]
+    tables:
+      - head: ["Meaning", "Standard (فصحى)", "Egyptian (مصري)"]
+        rows:
+          - ["what?", "ماذا؟", "إيه؟"]
+          - ["I want", "أريد", "عايز / عايزة"]
+          - ["now", "الآن", "دلوقتي"]
+          - ["how are you?", "كيف حالك؟", "إزيك؟"]
+          - ["there is", "يوجد / هناك", "فيه"]
+    text: >-
+      News, books, documentaries and many subtitles use Modern Standard Arabic; daily conversation, films and vlogs use a
+      dialect (Egyptian, Levantine, Gulf, Maghrebi…). Grammar is close, but common words differ. Lingo OS teaches the
+      variety you chose when adding Arabic; the tutor follows it too.
+    examples:
+      - ["ماذا تريد أن تأكل؟", "What do you want to eat? (Standard)"]
+      - ["عايز تاكل إيه؟", "What do you want to eat? (Egyptian)"]
+
+  - id: summary
+    title: "Summary: building a sentence"
+    kind: summary
+    level: B1
+    tags: [summary, overview]
+    points:
+      - "Right to left, short vowels usually unwritten; words come from three-letter roots."
+      - "ال = the; adjectives follow the noun and agree in gender, number and definiteness."
+      - "No 'is' in the present (أنا طالب); كان for the past."
+      - "Past = endings (كتبتُ); present = prefixes (أكتب); future = سـ / سوف."
+      - "Negation by time: لا (now), لم (past), لن (future), ليس (no verb)."
+      - "Two nouns side by side = 'X of Y' (idafa); possessives are endings (بيتي)."
+    examples:
+      - ["سافرتُ مع أصدقائي إلى الإسكندرية الأسبوع الماضي.", "I travelled to Alexandria with my friends last week."]
+      - ["لم أفهم السؤال، هل يمكنك أن تعيده؟", "I didn't understand the question; can you repeat it?"]

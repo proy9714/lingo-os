@@ -225,8 +225,9 @@ const TOPICS: Topic[] = [
     body: (
       <>
         <p>
-          Lingo OS teaches Mandarin Chinese, Spanish, French, Portuguese, Russian, German, Japanese, Korean and Italian; Hindi,
-          Arabic and Bengali are coming. <Go to="/settings">Settings</Go> → Languages lists them by number of speakers.
+          Lingo OS teaches Mandarin Chinese, Hindi, Spanish, Arabic, French, Bengali, Portuguese, Russian, German, Japanese, Korean and
+          Italian. <Go to="/settings">Settings</Go> → Languages lists them by number of speakers. Arabic reads right to left, and its
+          words are looked up without vowel marks and without the article or pronoun endings glued to them (والناس → ناس).
         </p>
         <Steps>
           {[

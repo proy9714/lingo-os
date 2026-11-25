@@ -25,7 +25,7 @@ class LookupRequest(BaseModel):
     lemma: str = Field(min_length=1, max_length=200)
     reading: str = Field(default="", max_length=200)
     pos: str = Field(default="", max_length=16)
-    forms: list[str] = Field(default_factory=list, max_length=8)
+    forms: list[str] = Field(default_factory=list, max_length=16)  # Arabic: with and without prefixes, endings, hamza seats
     record: bool = True  # count it as a lookup (lowers the word's known-probability)
 
 

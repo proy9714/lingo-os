@@ -88,7 +88,7 @@ CATALOG: tuple[LanguageSpec, ...] = (
     ),
     LanguageSpec(
         "hi", "Hindi", "हिन्दी", 609, "#fb923c", "#2a1203", "devanagari", 1.83, "hi",
-        (Variant("in", "India", "hi-IN"),), _wty("hi", 5), wiki_page="Hindi",
+        (Variant("in", "India", "hi-IN"),), _wty("hi", 5), wiki_page="Hindi", cased=False, dictionary_lemmas=True,
         names=("hindi", "हिन्दी", "हिंदी", "ヒンディー語", "힌디어", "印地语"),
     ),
     LanguageSpec(
@@ -99,7 +99,7 @@ CATALOG: tuple[LanguageSpec, ...] = (
     LanguageSpec(
         "ar", "Arabic", "العربية", 335, "#34d399", "#04241a", "arabic", 3.0, "ar",
         (Variant("msa", "Modern Standard Arabic", "ar-SA"), Variant("eg", "Egyptian Arabic", "ar-EG")), _wty("ar", 13),
-        direction="rtl", cased=False, wiki_page="Arabic",
+        direction="rtl", cased=False, wiki_page="Arabic", dictionary_lemmas=True,
         names=("arabic", "العربية", "arabisch", "árabe", "arabe", "арабский", "아랍어", "アラビア語", "阿拉伯语"),
     ),
     LanguageSpec(
@@ -111,7 +111,7 @@ CATALOG: tuple[LanguageSpec, ...] = (
     LanguageSpec(
         "bn", "Bengali", "বাংলা", 284, "#2dd4bf", "#032420", "bengali", 1.83, "bn",
         (Variant("bd", "Bangladesh", "bn-BD"), Variant("in", "India (West Bengal)", "bn-IN")), _wty("bn", 1),
-        cased=False, names=("bengali", "bangla", "বাংলা", "ベンガル語", "벵골어", "孟加拉语"),
+        cased=False, dictionary_lemmas=True, names=("bengali", "bangla", "বাংলা", "ベンガル語", "벵골어", "孟加拉语"),
     ),
     LanguageSpec(
         "pt", "Portuguese", "Português", 267, "#a3e635", "#172204", "latin", 1.0, "spacy",
@@ -153,7 +153,7 @@ CATALOG: tuple[LanguageSpec, ...] = (
 
 BY_CODE: dict[str, LanguageSpec] = {spec.code: spec for spec in CATALOG}
 # Languages whose word splitter is built (the rest are listed as "coming soon").
-AVAILABLE = frozenset({"zh", "es", "fr", "pt", "ru", "de", "ja", "ko", "it"})
+AVAILABLE = frozenset({"zh", "hi", "es", "ar", "fr", "bn", "pt", "ru", "de", "ja", "ko", "it"})
 
 
 def spec(code: str) -> LanguageSpec:

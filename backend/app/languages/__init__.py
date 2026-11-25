@@ -44,6 +44,10 @@ def _build(code: str) -> LanguagePack:
         from app.languages.spacy_pack import ChinesePack
 
         return ChinesePack()
+    if s.pack in {"hi", "bn", "ar"}:
+        from app.languages.script_pack import ScriptPack
+
+        return ScriptPack(code)
     if s.pack == "spacy" and s.model:
         from app.languages.spacy_pack import SpacyPack
 
@@ -75,10 +79,13 @@ def _repair(code: str, tokens: list[Token]) -> list[Token]:
     s = registry.get(code)
     if not (_resolver and s and s.dictionary_lemmas):
         return tokens
+    from app.languages.script_pack import guessed_forms, strip_marks
+
     out = []
     for token in tokens:
         if token.is_word and token.lemma:
-            better = _resolver[0](code, token.text.lower(), token.lemma)
+            others = tuple(f for f in token.lookup_forms if f != token.lemma)
+            better = _resolver[0](code, strip_marks(code, token.text.lower()), token.lemma, others, guessed_forms(code, token.text))
             if better and better != token.lemma:
                 token = dataclasses.replace(token, lemma=better, lookup_forms=tuple(dict.fromkeys((*token.lookup_forms, better))))
         out.append(token)

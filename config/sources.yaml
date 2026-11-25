@@ -110,3 +110,36 @@ languages:
       - { name: ANSA, url: "https://www.ansa.it/sito/ansait_rss.xml" }
       - { name: Wired Italia, url: "https://www.wired.it/feed/rss" }
       - { name: Internazionale, url: "https://www.internazionale.it/sitemaps/rss.xml" }
+  hi:
+    searches:
+      - "easy hindi {level} {topic}"
+      - "comprehensible input Hindi {topic}"
+      - "आसान हिंदी {topic}"
+    topics: [रोज़मर्रा की ज़िंदगी, यात्रा, खाना, इतिहास, संस्कृति, विज्ञान, काम]
+    feeds:
+      - { name: BBC हिंदी, url: "https://feeds.bbci.co.uk/hindi/rss.xml" }
+      - { name: अमर उजाला, url: "https://www.amarujala.com/rss/breaking-news.xml" }
+      - { name: दैनिक भास्कर, url: "https://www.bhaskar.com/rss-v1--category-1061.xml" }
+      - { name: News18 हिंदी, url: "https://hindi.news18.com/rss/khabar/nation/nation.xml" }
+  bn:
+    searches:
+      - "easy bengali {level} {topic}"
+      - "comprehensible input Bengali {topic}"
+      - "সহজ বাংলা {topic}"
+    topics: [দৈনন্দিন জীবন, ভ্রমণ, খাবার, ইতিহাস, সংস্কৃতি, বিজ্ঞান, কাজ]
+    feeds:
+      - { name: BBC বাংলা, url: "https://feeds.bbci.co.uk/bengali/rss.xml" }
+      - { name: প্রথম আলো, url: "https://www.prothomalo.com/feed" }
+      - { name: ইত্তেফাক, url: "https://www.ittefaq.com.bd/feed/" }
+      - { name: ঢাকা পোস্ট, url: "https://www.dhakapost.com/rss/rss.xml" }
+  ar:
+    searches:
+      - "learn arabic {level} {topic}"
+      - "comprehensible input Arabic {topic}"
+      - "عربي سهل {topic}"
+    topics: [الحياة اليومية, السفر, الطعام, التاريخ, الثقافة, العلوم, العمل]
+    feeds:
+      - { name: BBC عربي, url: "https://feeds.bbci.co.uk/arabic/rss.xml" }
+      - { name: DW عربية, url: "https://rss.dw.com/xml/rss-ar-all" }
+      - { name: فرانس 24, url: "https://www.france24.com/ar/rss" }
+      - { name: CNN بالعربية, url: "https://arabic.cnn.com/api/v1/rss/rss.xml" }

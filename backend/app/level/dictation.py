@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import json
 import random
-import re
 import unicodedata
 from difflib import SequenceMatcher
 from typing import Any
@@ -48,7 +47,8 @@ def available(lang: str) -> bool:
 def _fold(value: str) -> str:
     value = unicodedata.normalize("NFKC", value).lower().replace("ß", "ss")
     value = "".join(c for c in unicodedata.normalize("NFD", value) if unicodedata.category(c) != "Mn")
-    return re.sub(r"[^\w\s]", " ", value)
+    # punctuation and symbols become spaces; vowel signs of Hindi and Bengali (Mc) stay part of their word
+    return "".join(" " if unicodedata.category(c)[0] in "PS" else c for c in value)
 
 
 def _kana(value: str) -> str:

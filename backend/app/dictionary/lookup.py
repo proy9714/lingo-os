@@ -117,18 +117,24 @@ def lemma_resolver(engine):  # noqa: ANN001, ANN201 - an Engine on dictionaries.
     from functools import lru_cache
 
     @lru_cache(maxsize=50_000)
-    def resolve(lang: str, surface: str, lemma: str) -> str | None:
+    def resolve(lang: str, surface: str, lemma: str, others: tuple[str, ...] = (), guesses: frozenset[str] = frozenset()) -> str | None:
+        """`others`: more spellings to try in order (Arabic without its glued article, …); the first that the dictionary
+        knows as a word, or as a form of one, wins. `guesses` count only as words, never through "form of"."""
+        candidates = list(dict.fromkeys([lemma.lower(), surface, *(o.lower() for o in others)]))
         with engine.connect() as conn:
-            rows = _rows(conn, lang, list(dict.fromkeys([lemma.lower(), surface])))
+            rows = _rows(conn, lang, candidates)
         headwords = {r[2].lower() for r in rows if json.loads(r[5]).get("g")}
         if lemma.lower() in headwords:
             return None
-        for row in rows:
-            if row[2].lower() != surface:
-                continue
-            for form in json.loads(row[5]).get("f", []):
-                if form.get("lemma"):
-                    return form["lemma"].lower()
+        for candidate in dict.fromkeys([surface, *(o.lower() for o in others)]):
+            for row in rows if candidate not in guesses else ():
+                if row[2].lower() != candidate:
+                    continue
+                for form in json.loads(row[5]).get("f", []):
+                    if form.get("lemma"):
+                        return form["lemma"].lower()
+            if candidate in headwords and candidate != surface:
+                return candidate
         return None
 
     return resolve

@@ -11,7 +11,14 @@ import re
 from functools import lru_cache
 
 LATIN = ("de", "es", "fr", "pt", "it", "en")
-WORD = re.compile(r"[^\W\d_]+", re.UNICODE)
+# languages sharing a script, told apart by their common words
+SAME_SCRIPT = {"hi": ("hi", "mr", "ne"), "ar": ("ar", "fa", "ur")}
+SCRIPTS = {
+    "hi": r"[ऀ-ॿ]",  # Devanagari
+    "bn": r"[ঀ-৿]",  # Bengali
+    "ar": r"[؀-ۿݐ-ݿﭐ-﷿ﹰ-﻿]",  # Arabic
+}
+PUNCT = ".,;:!?\"'()[]{}«»“”‘’…–—-।॥،؛؟·"
 
 
 @lru_cache(maxsize=None)
@@ -42,13 +49,24 @@ def looks_like(lang: str, text: str) -> bool:
         return _share(sample, r"[가-힯ᄀ-ᇿ]") >= 0.4
     if lang == "ru":
         return _share(sample, r"[Ѐ-ӿ]") >= 0.5
+    if lang in SCRIPTS:
+        if _share(sample, SCRIPTS[lang]) < 0.5:
+            return False
+        return _most_like(lang, sample, SAME_SCRIPT.get(lang, (lang,)), floor=0.08)
     if lang not in LATIN:
         return True  # no check for this language yet
     if _share(sample, r"[A-Za-zÀ-ɏ]") < 0.6:
         return False
-    words = [w.lower() for w in WORD.findall(sample)]
-    if len(words) < 15:
+    return _most_like(lang, sample, LATIN, floor=0.12)
+
+
+def _most_like(lang: str, sample: str, rivals: tuple[str, ...], floor: float) -> bool:
+    """`lang`'s common words make up at least `floor` of the text, and about as much as any rival language's."""
+    # split on spaces, not \w: Hindi and Bengali vowel signs aren't "word" characters to Python's regex
+    words = [w.strip(PUNCT).lower() for w in sample.split()]
+    words = [w for w in words if w and any(c.isalpha() for c in w)]
+    if len(words) < 15 or len(rivals) < 2:
         return True
-    shares = {code: sum(1 for w in words if w in _stop_words(code)) / len(words) for code in LATIN}
+    shares = {code: sum(1 for w in words if w in _stop_words(code)) / len(words) for code in rivals}
     mine = shares[lang]
-    return mine >= 0.12 and mine >= 0.85 * max(shares.values())
+    return mine >= floor and mine >= 0.85 * max(shares.values())

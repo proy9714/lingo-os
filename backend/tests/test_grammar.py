@@ -46,7 +46,7 @@ def test_every_grammar_reference_loads_and_is_well_formed() -> None:
     from app.services import grammar
 
     files = sorted(Path(grammar.__file__).resolve().parents[1].joinpath("grammar").glob("*.yaml"))
-    assert {f.stem for f in files} >= {"de", "es", "ja", "fr", "it", "pt", "ru", "ko", "zh"}
+    assert {f.stem for f in files} >= {"de", "es", "ja", "fr", "it", "pt", "ru", "ko", "zh", "hi", "bn", "ar"}
     for path in files:
         ref = grammar.reference(path.stem)
         assert ref["title"] and len(ref["sections"]) >= 10, path.stem
