@@ -12,18 +12,53 @@ your computer, keeps your data there, and comes with an Android app that syncs o
 
 No flashcards and no streak pressure: the words you save come back through the videos and articles you're shown.
 
+<p align="center">
+  <img src="docs/screenshots/today.jpg" alt="The Today page for a French learner: a top pick (a TV5MONDE video, Stretch, 86% known), four more videos up next with their level, and a row of videos for you" width="100%" />
+</p>
+
+<p align="center">
+  <a href="#install-it-on-your-computer"><b>Install</b></a> ·
+  <a href="#the-android-app"><b>Android app</b></a> ·
+  <a href="#optional-extras"><b>Extras</b></a> ·
+  <a href="#your-data-and-privacy"><b>Privacy</b></a> ·
+  <a href="#for-developers"><b>Developers</b></a>
+</p>
+
 ## What you can do
 
-- **Today**: a daily pick and rows of videos and articles chosen for your level, your goal for the day, and your progress.
-- **Watch**: YouTube (or your own video and audio files) next to a synced transcript. Click any word: the video
-  pauses and the dictionary opens. Replay a line, slow it down, or pause after each line.
-- **Read**: articles from news and learner sites (with their pictures), your own books (EPUB), PDFs and pasted texts,
-  with every word clickable and colour-coded by how likely you are to know it.
+### Today: what to watch and read next
+
+A daily top pick and rows of videos and articles chosen for your level, with your goal for the day and your progress.
+Every card says how much of it you should understand (**% known**) and whether it's comfortable, a stretch or hard.
+Picks get easier or harder as you rate them, favour the channels and topics you finish, never repeat what you've
+watched (mark anything as already watched or read), and new ones are found in the background.
+
+### Watch: every word in the transcript is clickable
+
+<img src="docs/screenshots/player.jpg" alt="The player: a French video on the left, its transcript beside it with likely-new words highlighted, and the word panel for 'raconter' on the right with its meaning, the sentence and buttons to mark it New, Learning, Known or Ignore" width="100%" />
+
+YouTube (or your own video and audio files) next to a synced transcript. Click any word: the video pauses and the
+dictionary opens. Replay a line, slow it down, pause after each line, or send it to shadowing practice. Rate how hard
+the video was and your suggestions adjust.
+
+### Read: articles, books and PDFs with their pictures
+
+<img src="docs/screenshots/reader.jpg" alt="The reader: a French article about travelling Europe by train, with its photo of a TGV, words you probably don't know highlighted in yellow, and the panel for 'transporteur' open" width="100%" />
+
+Articles from news and learner sites (pictures included), your own books (EPUB), PDFs and pasted texts. Every word is
+clickable and colour-coded by how likely you are to know it, and the page tells you how much of it you should follow.
+
+### Search YouTube and the news, rated for you
+
+<img src="docs/screenshots/search.jpg" alt="Searching YouTube for 'recette crêpes': 18 results, each with a level label such as 'Stretch · 81% known' or 'Hard · 77% known' and the number of new words, while the rest are still being rated" width="100%" />
+
+Search in the language you're learning: results appear at once, like on YouTube, and each one's level fills in a few
+seconds later, so you see how hard a video or article is before you open it.
+
+### And also
+
 - **Look up any word**: its dictionary form (*rufe … an* → *anrufen*, 間に合わない → 間に合う), meanings, readings and a
   native voice reading it aloud. Save it with the sentence you met it in.
-- **Suggestions that learn**: picks get easier or harder as you rate them, favour the channels and topics you finish,
-  never repeat what you've watched (mark anything as already watched or read), and new ones are found in the background.
-- **Search YouTube and the news** in your language: every result is rated for your level before you open it.
 - **Words move up on their own**: a word you keep meeting without looking it up goes from learning to familiar to known,
   and you can move it back.
 - **Level Lab**: short tests (vocabulary, reading, listening, speaking) that give your level as a range.
@@ -73,9 +108,9 @@ stop it. Next time, `npm run start` is all you need.
 1. Choose the language you want to learn (and its variety, e.g. Brazilian or European Portuguese). Lingo OS downloads
    what it needs for it, a language model and a dictionary (about 10 to 70 MB), in the background. Add more languages
    any time in **Settings → Languages**, or with the **+** next to the language buttons at the top.
-2. Set your daily goal in **Settings**, then take the 5-minute vocabulary test in **Level**. It measures where you
-   are, so suggestions fit you from day one (especially if you've been learning for a while). Entering the hours you
-   studied before using the app is planned for a coming release.
+2. Tell it where you're starting from: a level you choose, the hours you've already spent on the language, your
+   Immersion Tracker history, or nothing at all. For a measured start, take the 5-minute vocabulary test in **Level**.
+   Set your daily goal in **Settings**.
 3. Go to **Today** or **Watch**. Suggestions are found in the background in your first minutes; they appear as they're
    found.
 4. Time you spend away from the app (a podcast, a class) can be added with **Log time** (or Ctrl+L).
@@ -83,6 +118,12 @@ stop it. Next time, `npm run start` is all you need.
 Stuck? Run `npm run doctor`: it checks your setup and says what to fix. The **Help** page in the app explains every screen.
 
 ## The Android app
+
+<p align="center">
+  <img src="docs/screenshots/phone-today.jpg" alt="The Android app's Today page: a top pick with Watch now and Already watched, and the bottom navigation bar" width="270" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/phone-player.jpg" alt="The Android app playing a French video, with its level chips and the line-by-line controls" width="270" />
+</p>
 
 Install [Obtainium](https://github.com/ImranR98/Obtainium) on your phone, tap **Add app**, paste
 `https://github.com/proy9714/lingo-os`, then **Install**. Obtainium tells you when there's an update. (Or download the
