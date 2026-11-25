@@ -10,6 +10,12 @@ const SAMPLES: Record<string, string> = {
   de: "Ich rufe dich morgen an, dann können wir alles besprechen.",
   es: "Te llamo mañana y lo hablamos con calma.",
   ja: "明日電話するから、その時にゆっくり話そうね。",
+  fr: "Je t'appelle demain, et on en parlera tranquillement.",
+  pt: "Eu te ligo amanhã e a gente conversa com calma.",
+  it: "Ti chiamo domani e ne parliamo con calma.",
+  ru: "Я позвоню тебе завтра, и мы спокойно всё обсудим.",
+  ko: "내일 전화할게, 그때 천천히 이야기하자.",
+  zh: "我明天给你打电话，到时候我们慢慢聊。",
 };
 
 /** Settings: which voices read words and sentences aloud. */
@@ -104,7 +110,7 @@ function VoiceRow({ lang, device, onChoose, saving }: { lang: Language; device: 
       <Button
         className="min-h-10 px-3"
         disabled={!device && !data?.voice}
-        onClick={() => speak(SAMPLES[lang.code] ?? lang.native_name, lang.code, 1)}
+        onClick={() => speak(SAMPLES[lang.code] ?? lang.native_name, lang.code, 1, undefined, device ? undefined : (data?.voice ?? undefined))}
       >
         ▶ Test
       </Button>

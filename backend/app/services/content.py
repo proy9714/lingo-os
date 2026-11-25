@@ -84,6 +84,18 @@ def _channel_collection(conn: Connection, lang: str, channel: str) -> int:
     ).lastrowid
 
 
+# Watched = played to 90% here (status 'finished'), marked as watched by hand (also 'finished'), or listed in the
+# Immersion Tracker history. Opening a video and leaving early doesn't count: it stays in suggestions.
+WATCHED_SQL = (
+    "(ci.status = 'finished' OR EXISTS (SELECT 1 FROM activity_sessions ws WHERE ws.content_item_id = ci.id "
+    "AND ws.tracking = 'import'))"
+)
+
+
+def is_watched(conn: Connection, item_id: int) -> bool:
+    return bool(conn.execute(text(f"SELECT {WATCHED_SQL} FROM content_items ci WHERE ci.id = :i"), {"i": item_id}).scalar())
+
+
 _ITEM_COLUMNS = (
     "ci.id, ci.language_code, ci.type, ci.title, ci.creator, ci.source, ci.source_url, ci.external_id, ci.local_path, "
     "ci.duration_sec, ci.status, ci.progress, ci.position_ref, ci.analysis_status, ci.last_opened_at, ci.metadata_json, "
@@ -140,8 +152,8 @@ def list_items(
     params: dict[str, Any] = {"l": lang, "limit": limit, "offset": offset}
     order = "COALESCE(ci.last_opened_at, (SELECT MAX(s.started_at) FROM activity_sessions s WHERE s.content_item_id = ci.id), ci.added_at)"
     if state == "watched":
-        # played here or in the tracker, or marked "already watched" / finished
-        where.append("(ci.status = 'finished' OR EXISTS (SELECT 1 FROM activity_sessions s WHERE s.content_item_id = ci.id))")
+        # played to 90% here, listed in the tracker, or marked "already watched"
+        where.append(WATCHED_SQL)
         order = (
             "MAX(COALESCE(ci.finished_at, ''), COALESCE(ci.last_opened_at, ''), "
             "COALESCE((SELECT MAX(s.started_at) FROM activity_sessions s WHERE s.content_item_id = ci.id), ''), ci.added_at)"

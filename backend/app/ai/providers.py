@@ -160,13 +160,26 @@ class OpenAICompatibleProvider(_HTTPProvider):
         body: dict[str, Any] = {"model": req.model, "messages": messages}
         if req.temperature is not None:
             body["temperature"] = req.temperature
+        if req.thinking == "off" and self.is_openai:
+            body["reasoning_effort"] = "minimal"  # reasoning models: answer quickly
         if req.schema:
             body["response_format"] = {"type": "json_schema", "json_schema": {"name": "result", "schema": req.schema}}
         headers = {"Authorization": f"Bearer {self.cfg.api_key}"} if self.cfg.api_key else {}
         try:
             response = self.client.post("/chat/completions", json=body, headers=headers, timeout=req.timeout)
-            if response.status_code == 400 and req.schema:
-                body["response_format"] = {"type": "json_object"}
+            # Models differ in what they accept (newer OpenAI models take no temperature, older ones no
+            # reasoning_effort): drop what the error names, or simplify the JSON request, and ask again.
+            for _ in range(3):
+                if response.status_code != 400:
+                    break
+                error = _error_text(response)
+                dropped = next((k for k in ("temperature", "reasoning_effort") if k in body and k in error), None)
+                if dropped:
+                    body.pop(dropped)
+                elif body.get("response_format", {}).get("type") == "json_schema":
+                    body["response_format"] = {"type": "json_object"}
+                else:
+                    break
                 response = self.client.post("/chat/completions", json=body, headers=headers, timeout=req.timeout)
         except httpx.HTTPError as exc:
             raise ProviderError(f"network error: {exc}") from exc
@@ -183,6 +196,24 @@ class OpenAICompatibleProvider(_HTTPProvider):
             raise ProviderError("unexpected response shape") from exc
         usage = data.get("usage") or {}
         return LLMResponse(text, usage.get("prompt_tokens"), usage.get("completion_tokens"))
+
+    @property
+    def is_openai(self) -> bool:
+        return "api.openai.com" in self.base_url
+
+    def list_models(self) -> list[str]:
+        headers = {"Authorization": f"Bearer {self.cfg.api_key}"} if self.cfg.api_key else {}
+        try:
+            response = self.client.get("/models", headers=headers)
+        except httpx.HTTPError as exc:
+            raise ProviderError(f"network error: {exc}") from exc
+        if response.status_code != 200:
+            raise ProviderError(f"{self.cfg.name} {response.status_code}: {_error_text(response)}", status=response.status_code)
+        ids = sorted(m["id"] for m in response.json().get("data", []) if isinstance(m, dict) and m.get("id"))
+        if self.is_openai:  # only chat models: not embeddings, images, speech, moderation
+            skip = ("embedding", "whisper", "tts", "dall-e", "image", "moderation", "audio", "realtime", "transcribe", "search")
+            ids = [i for i in ids if i.startswith(("gpt-", "o1", "o3", "o4", "chatgpt")) and not any(s in i for s in skip)]
+        return ids
 
 
 class FakeProvider:
@@ -201,8 +232,12 @@ class FakeProvider:
 def make_provider(cfg: ProviderConfig, transport: httpx.BaseTransport | None = None):
     if cfg.kind == "gemini":
         return GeminiProvider(cfg, transport)
+    if cfg.kind == "anthropic":
+        from app.ai.anthropic_provider import AnthropicProvider
+
+        return AnthropicProvider(cfg)
     if cfg.kind in {"openai_compatible", "ollama"}:
         return OpenAICompatibleProvider(cfg, transport)
     if cfg.kind == "fake":
         return FakeProvider(cfg)
-    raise ValueError(f"unknown provider kind '{cfg.kind}' (use gemini, openai_compatible or ollama)")
+    raise ValueError(f"unknown provider kind '{cfg.kind}' (use gemini, anthropic, openai_compatible or ollama)")

@@ -280,6 +280,9 @@ export const usePageList = (id: number) => useQuery({ queryKey: ["pages", id], q
 
 export const useAiStatus = () => useQuery({ queryKey: ["ai-status"], queryFn: api.aiStatus, staleTime: 5 * 60_000 });
 export const useAiUsage = () => useQuery({ queryKey: ["ai-usage"], queryFn: api.aiUsage });
+export const useAiProviders = () => useQuery({ queryKey: ["ai-providers"], queryFn: api.aiProviders, staleTime: 60_000 });
+export const useAiModels = (provider: string, enabled: boolean) =>
+  useQuery({ queryKey: ["ai-models", provider], queryFn: () => api.aiModels(provider), enabled, staleTime: 30 * 60_000, retry: false });
 
 // ---------------------------------------------------------------- Phase 5
 

@@ -6,7 +6,7 @@
   --color-ink: #eef1f7;
   --color-ink-2: #c3cad6;
   --color-ink-3: #8f99ab;
-  --color-base: #0a0e1a;
+  --color-canvas: #0a0e1a;
   --color-surface: #111726;
   --color-good: #8ff0c6;
   --color-warn: #fdc08b;
@@ -54,7 +54,7 @@ html.native {
 html,
 body {
   margin: 0;
-  background: var(--color-base);
+  background: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -265,6 +265,11 @@ body {
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* a field whose frame shows focus itself (the search box glows): no second ring around the text */
+.focus-in-frame:focus-visible {
+  outline: none;
 }
 
 input[type="number"]::-webkit-inner-spin-button {

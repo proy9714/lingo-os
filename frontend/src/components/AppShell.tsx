@@ -28,7 +28,7 @@ function tint(hex: string, alpha: number): string {
 export function AppShell() {
   const settings = useSettings();
   const languages = useLanguages();
-  if (settings.isPending || languages.isPending) return <div className="min-h-dvh bg-base" aria-busy="true" />;
+  if (settings.isPending || languages.isPending) return <div className="min-h-dvh bg-canvas" aria-busy="true" />;
   if (languages.isSuccess && languages.data.length === 0) return <FirstRun />;
   return <Shell />;
 }

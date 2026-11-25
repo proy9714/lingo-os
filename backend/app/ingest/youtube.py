@@ -80,9 +80,11 @@ def _channel_url(entry: dict[str, Any], info: dict[str, Any]) -> str | None:
     return info.get("channel_url") or info.get("uploader_url")
 
 
-def _flat(url: str, limit: int, start: int = 1) -> list[Listing]:
+def _flat(url: str, limit: int, start: int = 1, lang: str | None = None) -> list[Listing]:
+    # YouTube translates titles into the interface language (English by default): ask in the learner's language
+    extra: dict[str, Any] = {"extractor_args": {"youtube": {"lang": [lang]}}} if lang else {}
     try:
-        with _ydl(extract_flat="in_playlist", playliststart=start, playlistend=start + limit - 1, noplaylist=False) as ydl:
+        with _ydl(extract_flat="in_playlist", playliststart=start, playlistend=start + limit - 1, noplaylist=False, **extra) as ydl:
             info = ydl.extract_info(url, download=False)
     except Exception as exc:
         raise YouTubeError(_short(exc)) from exc
@@ -103,18 +105,18 @@ def _flat(url: str, limit: int, start: int = 1) -> list[Listing]:
     return out[:limit]
 
 
-def search(query: str, limit: int = 10) -> list[Listing]:
-    """YouTube search results for `query` (yt-dlp's ytsearch, no API key)."""
-    return _flat(f"ytsearch{limit}:{query}", limit)
+def search(query: str, limit: int = 10, lang: str | None = None) -> list[Listing]:
+    """YouTube search results for `query` (yt-dlp's ytsearch, no API key), with titles as shown in `lang`."""
+    return _flat(f"ytsearch{limit}:{query}", limit, lang=lang)
 
 
-def channel_uploads(channel_url: str, limit: int = 10, start: int = 1) -> list[Listing]:
+def channel_uploads(channel_url: str, limit: int = 10, start: int = 1, lang: str | None = None) -> list[Listing]:
     """A channel's uploads from its /videos tab, newest first: entries start … start + limit - 1."""
     url = channel_url.rstrip("/")
     for suffix in ("/featured", "/videos", "/streams", "/shorts"):
         if url.endswith(suffix):
             url = url[: -len(suffix)]
-    return _flat(url + "/videos", limit, start)
+    return _flat(url + "/videos", limit, start, lang=lang)
 
 
 def fetch_info(video_id: str) -> VideoInfo:

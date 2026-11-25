@@ -32,7 +32,7 @@ from app.sync.crypto import EnvelopeError, open_envelope, seal
 from app.sync.hub import SyncAuthError, authenticate, confirm_pairing, device_key, pending_key
 
 MAX_SKEW_SECONDS = 300
-BLOCKED_PREFIXES = ("/api/sync", "/api/devices", "/api/ai/test")  # managing pairing stays on the laptop
+BLOCKED_PREFIXES = ("/api/sync", "/api/devices", "/api/ai/test", "/api/ai/keys")  # pairing and API keys stay on the laptop
 
 
 def _envelope(body: dict[str, Any]) -> tuple[str, dict[str, Any]]:

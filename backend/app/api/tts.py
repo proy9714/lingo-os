@@ -41,7 +41,7 @@ async def speak(
         path = await tts.synthesize(cfg, text, chosen, rate)
     except tts.TtsError as exc:
         raise HTTPException(status_code=503, detail=f"Native voice unavailable: {exc}.") from exc
-    return FileResponse(path, media_type="audio/mpeg", headers={"Cache-Control": "private, max-age=31536000, immutable"})
+    return FileResponse(path, media_type="audio/mpeg", headers={"Cache-Control": "private, no-cache"})  # revalidated (a cheap 304), so a newly chosen voice is heard at once
 
 
 @router.get("/voices")

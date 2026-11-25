@@ -62,7 +62,7 @@ seconds later, so you see how hard a video or article is before you open it.
 - **Words move up on their own**: a word you keep meeting without looking it up goes from learning to familiar to known,
   and you can move it back.
 - **Level Lab**: short tests (vocabulary, reading, listening, speaking) that give your level as a range.
-- **Speak**: an AI tutor that talks at your level (optional, needs a free Gemini key), and shadowing practice.
+- **Speak**: an AI tutor that talks at your level (optional: Gemini, Claude or ChatGPT), and shadowing practice.
 - **Grammar**, **Manga** (Japanese, with clickable speech bubbles), **weekly reports**, and an **Android app**.
 
 ## Install it on your computer
@@ -135,9 +135,11 @@ do syncs when you're back. Details in [docs/PHONE.md](docs/PHONE.md).
 
 ## Optional extras
 
-- **AI explanations and the tutor**: create a free API key at [aistudio.google.com](https://aistudio.google.com/),
-  copy `.env.example` to `.env`, put the key after `GEMINI_API_KEY=`, restart, and press **Test connection** in
-  Settings. Other providers (a local Ollama, OpenRouter, any OpenAI-compatible server) are set in `config/llm.yaml`.
+- **AI explanations and the tutor**: use **Gemini**, **Claude** or **ChatGPT**. Create an API key
+  ([Gemini](https://aistudio.google.com/apikey), free tier · [Claude](https://platform.claude.com/settings/keys) ·
+  [ChatGPT](https://platform.openai.com/api-keys)), then in **Settings → AI explanations** pick the provider, paste
+  the key (it's saved in `.env` on your computer) and press **Test connection**. You can also choose which models
+  it uses. Other providers (a local Ollama, OpenRouter, any OpenAI-compatible server) are set in `config/llm.yaml`.
   Everything else works without AI.
 - **Voices**: words and sentences are read by native neural voices, whatever voices your computer has. Choose a voice
   per language in Settings → **Voices**, or switch to your device's own voices to stay fully offline.

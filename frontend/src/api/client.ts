@@ -38,6 +38,7 @@ import type {
   MangaVocabWord,
   AiStatus,
   AiUsage,
+  AiProviders,
   ContextGloss,
   GrammarBreakdown,
   ReaderPage,
@@ -135,6 +136,8 @@ export const api = {
   removeLanguage: (code: string) => request<{ removed: boolean }>(`/api/languages/${encodeURIComponent(code)}`, { method: "DELETE" }),
   search: (lang: string, kind: "video" | "article", q: string) =>
     request<SearchState>("/api/search", { method: "POST", body: json({ lang, kind, q }) }),
+  searchSuggest: (lang: string, kind: "video" | "article", q: string) =>
+    request<{ q: string; suggestions: string[] }>(`/api/search/suggest?${new URLSearchParams({ lang, kind, q })}`),
   searchResults: (id: string) => request<SearchState>(`/api/search/${encodeURIComponent(id)}`),
   wordMoves: (lang: string) => request<{ at: string | null; moves: WordMove[] }>(`/api/vocab/moves?lang=${encodeURIComponent(lang)}`),
   languageStart: (code: string) => request<StartingPoint>(`/api/languages/${encodeURIComponent(code)}/start`),
@@ -281,6 +284,11 @@ export const api = {
   // Phase 4
   aiStatus: () => request<AiStatus>("/api/ai/status"),
   aiUsage: () => request<AiUsage>("/api/ai/usage"),
+  aiProviders: () => request<AiProviders>("/api/ai/providers"),
+  aiChoose: (body: { provider?: string; models?: Record<string, Partial<Record<"fast" | "smart", string | null>>> }) =>
+    request<AiProviders>("/api/ai/choice", { method: "PUT", body: json(body) }),
+  aiSaveKey: (provider: string, key: string) => request<AiProviders>("/api/ai/keys", { method: "PUT", body: json({ provider, key }) }),
+  aiModels: (provider: string) => request<{ provider: string; models: string[] }>(`/api/ai/models?provider=${encodeURIComponent(provider)}`),
   aiTest: () => request<{ ok: boolean; provider: string; model: string }>("/api/ai/test", { method: "POST" }),
   aiGloss: (body: { lang: string; sentence: string; surface: string; lemma: string; pos?: string; reading?: string }) =>
     request<ContextGloss>("/api/ai/gloss", { method: "POST", body: json(body) }),

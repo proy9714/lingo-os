@@ -13,7 +13,7 @@ import hashlib
 import json
 import re
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from string import Template
 from typing import Any, TypeVar
@@ -24,6 +24,10 @@ from sqlalchemy import Engine, text
 
 from app.ai.config import AIConfig, ProviderConfig, TaskRoute
 from app.ai.providers import LLMRequest, LLMResponse, ProviderError, make_provider
+from app.db import settings_store
+
+CHOICE_KEY = "ai.choice"  # app_settings: {"provider": "auto" | name, "models": {name: {tier: model}}}
+TIERS = ("fast", "smart")
 
 PROMPTS = Path(__file__).parent / "prompts"
 T = TypeVar("T", bound=BaseModel)
@@ -98,16 +102,61 @@ class Gateway:
         reason = provider.unavailable_reason()
         return (None, reason) if reason else (provider, None)
 
+    def choice(self) -> dict[str, Any]:
+        """Which provider the learner picked in Settings ('auto' = the first with a key) and any models they chose."""
+        try:
+            with self.engine.connect() as conn:
+                saved = settings_store.get(conn, CHOICE_KEY, {}) or {}
+        except Exception:  # noqa: BLE001 - no settings table (a bare test database): use the defaults
+            saved = {}
+        provider = saved.get("provider") if saved.get("provider") in self.cfg.choosable else "auto"
+        return {"provider": provider, "models": saved.get("models") or {}}
+
+    def set_choice(self, provider: str | None = None, models: dict[str, dict[str, str | None]] | None = None) -> dict[str, Any]:
+        current = self.choice()
+        if provider is not None:
+            if provider != "auto" and provider not in self.cfg.choosable:
+                raise ValueError(f"unknown provider '{provider}'")
+            current["provider"] = provider
+        for name, tiers in (models or {}).items():
+            if name not in self.cfg.choosable:
+                raise ValueError(f"unknown provider '{name}'")
+            own = dict(current["models"].get(name) or {})
+            for tier, model in tiers.items():
+                if tier not in TIERS:
+                    raise ValueError(f"unknown tier '{tier}'")
+                if model:
+                    own[tier] = str(model)[:120]
+                else:
+                    own.pop(tier, None)  # back to the default
+            current["models"][name] = own
+        with self.engine.begin() as conn:
+            settings_store.put(conn, CHOICE_KEY, current)
+        return current
+
+    def model_for(self, name: str, tier: str | None, choice: dict[str, Any] | None = None) -> str:
+        provider = self.cfg.providers[name]
+        chosen = ((choice or self.choice())["models"].get(name) or {}).get(tier or "") if tier else None
+        return chosen or provider.model_for(tier) or ""
+
     def route(self, task: str) -> list[tuple[str, TaskRoute]]:
         """Usable providers for a task, primary first. Raises AIUnavailable with the reason if none."""
         route = self.cfg.tasks.get(task)
         if route is None:
             raise AIUnavailable(f"task '{task}' has no route in config/llm.yaml")
         chain, reasons = [], []
-        for name in (route.use, *route.fallback):
+        if route.tier:
+            # the provider chosen in Settings; 'auto' tries each choosable provider in order and uses the first with a key
+            choice = self.choice()
+            names = [choice["provider"]] if choice["provider"] != "auto" else self.cfg.choosable
+            candidates = [(name, replace(route, model=self.model_for(name, route.tier, choice))) for name in names]
+            candidates += [(name, route) for name in route.fallback if name not in names]
+        else:
+            candidates = [(name, route) for name in (route.use, *route.fallback)]
+        for name, own in candidates:
             provider, reason = self._usable(name)
             if provider:
-                chain.append((name, route))
+                chain.append((name, own))
             elif reason:
                 reasons.append(reason)
         if not chain:
@@ -123,7 +172,8 @@ class Gateway:
         provider = self.cfg.providers[name]
         return {
             "enabled": True,
-            "provider": name,
+            "provider": provider.label or name,
+            "provider_id": name,
             "kind": provider.kind,
             "model": route.model or provider.default_model,
             "local_only": self.cfg.local_only,

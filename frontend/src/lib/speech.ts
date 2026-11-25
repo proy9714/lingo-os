@@ -43,7 +43,7 @@ let audio: HTMLAudioElement | null = null;
 let finish: (() => void) | null = null;
 let turn = 0;
 
-export function speak(text: string, lang: string, rate = 0.9, onEnd?: () => void): void {
+export function speak(text: string, lang: string, rate = 0.9, onEnd?: () => void, voice?: string): void {
   stopSpeaking();
   const mine = ++turn;
   let ended = false;
@@ -59,7 +59,7 @@ export function speak(text: string, lang: string, rate = 0.9, onEnd?: () => void
     return;
   }
   void (async () => {
-    if (engine === "neural" && (await playNeural(text, lang, rate, mine, done))) return;
+    if (engine === "neural" && (await playNeural(text, lang, rate, mine, done, voice))) return;
     if (mine !== turn) return;
     await speakOnDevice(text, lang, rate, mine, done);
   })();
@@ -78,9 +78,10 @@ export function stopSpeaking(): void {
 }
 
 /** The laptop's neural voice. False if it couldn't be reached, so the device's own voice can try. */
-async function playNeural(text: string, lang: string, rate: number, mine: number, done: () => void): Promise<boolean> {
+async function playNeural(text: string, lang: string, rate: number, mine: number, done: () => void, voice?: string): Promise<boolean> {
   if (!LOCALES[lang]) return false;
   const query = new URLSearchParams({ lang, text: text.slice(0, 1500), rate: rate.toFixed(2) });
+  if (voice) query.set("voice", voice); // a voice being tried in Settings
   let src: string;
   try {
     src = await mediaUrl(`/api/tts?${query}`);

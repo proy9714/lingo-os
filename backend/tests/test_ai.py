@@ -37,7 +37,7 @@ def test_without_a_key_everything_degrades_with_a_reason(client, monkeypatch) ->
                       client.app.state.engine)
     client.app.state.ai = gateway
     status = client.get("/api/ai/status").json()
-    assert status["context"] == {"enabled": False, "reason": "no GEMINI_API_KEY in .env", "local_only": False}
+    assert status["context"] == {"enabled": False, "reason": "no GEMINI_API_KEY set", "local_only": False}
     response = client.post("/api/ai/gloss", json={"lang": "de", "sentence": "Hallo Welt.", "surface": "Welt", "lemma": "Welt"})
     assert response.status_code == 503
     assert "GEMINI_API_KEY" in response.json()["detail"]

@@ -41,8 +41,8 @@ const KINDS: Record<GrammarKind, { label: string; badge: string; accent: string;
 export function GrammarPage() {
   const { code, languages } = useActiveLanguage();
   const tabs = languages.map((l) => ({ value: l.code, label: l.name }));
-  const languageName = languages.find((l) => l.code === lang)?.name ?? "this language";
   const [lang, setLang] = useState(code);
+  const languageName = languages.find((l) => l.code === lang)?.name ?? "this language";
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<GrammarKind | "all">("all");
   const reference = useGrammarReference(lang);

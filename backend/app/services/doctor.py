@@ -39,8 +39,14 @@ def run_checks(cfg: AppConfig) -> dict[str, Any]:
     ffmpeg = shutil.which("ffmpeg")
     add("ffmpeg", bool(ffmpeg), ffmpeg or "not on PATH (needed from Phase 2)", required=False)
 
-    has_key = bool(os.environ.get("GEMINI_API_KEY"))
-    add("Gemini API key", has_key, "set in .env" if has_key else "missing in .env (needed from Phase 4)", required=False)
+    keys = {"Gemini": "GEMINI_API_KEY", "Claude": "ANTHROPIC_API_KEY", "ChatGPT": "OPENAI_API_KEY"}
+    with_key = [name for name, env in keys.items() if os.environ.get(env)]
+    add(
+        "AI API key",
+        bool(with_key),
+        f"set for {', '.join(with_key)}" if with_key else "none (optional: Gemini, Claude or ChatGPT, in Settings or .env)",
+        required=False,
+    )
 
     tracker_ok = bool(cfg.tracker_path and cfg.tracker_path.is_dir())
     add(

@@ -274,7 +274,11 @@ def list_channels(
         say(span[0] + (span[1] - span[0]) * number / max(1, len(order)), f"listing {source['name'][:50]}")
         depth = int(source["config"].get("depth", 0))
         try:
-            found = fetchers.channel_uploads(source["target"], min(MAX_DEPTH, depth + LIST_PAGE), 1)
+            count = min(MAX_DEPTH, depth + LIST_PAGE)
+            if fetchers.channel_uploads is youtube.channel_uploads:  # the real one: titles as shown in this language
+                found = youtube.channel_uploads(source["target"], count, 1, lang=lang)
+            else:
+                found = fetchers.channel_uploads(source["target"], count, 1)
             status = f"ok, {len(found)} listed"
         except youtube.YouTubeError as exc:
             found, status = [], f"error: {exc}"[:200]

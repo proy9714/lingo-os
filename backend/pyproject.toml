@@ -29,6 +29,7 @@ dependencies = [
   "pymorphy3-dicts-ru>=2.4",
   "spacy-pkuseg>=1.0,<2",
   "pypinyin>=0.55",
+  "anthropic>=2.13.0",
 ]
 
 [project.scripts]

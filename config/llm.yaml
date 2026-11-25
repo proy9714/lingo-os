@@ -1,32 +1,52 @@
 # AI routing (ARCHITECTURE §8). Feature code names a task, never a provider.
-# API keys come from .env. Model names are yours to choose; Gemini is the default.
-# `npm run lingo -- ai models` lists the Gemini models your key can use; `npm run lingo -- ai test` checks the setup.
+# Pick the provider in Settings → AI explanations (Gemini, Claude or ChatGPT). "Auto" uses the first one below that
+# has a key. Keys come from .env (or are pasted in Settings, which writes them there).
+# Each task asks for a "fast" model (quick look-ups) or a "smart" one (deeper work); each provider says which model
+# that is, and you can pick other models per provider in Settings.
+# `npm run lingo -- ai models` lists the models a key can use; `npm run lingo -- ai test` checks the setup.
 
 # true: every task uses local providers only (for example Ollama); nothing is sent out.
 local_only: false
 
 providers:
-  cloud:
+  gemini:
+    label: Gemini
     kind: gemini
     api_key_env: GEMINI_API_KEY
-    default_model: gemini-flash-latest   # used if a model below doesn't exist on your account
-    # prices:                              # optional, USD per million tokens, for the usage estimate in Settings
-    #   gemini-flash-latest: { in: 0.0, out: 0.0 }   # fill in from Google's pricing page
-  # local:                                 # optional: any OpenAI-compatible server
+    key_url: https://aistudio.google.com/apikey
+    models: { fast: gemini-flash-latest, smart: gemini-pro-latest }   # "-latest" aliases follow Google's current models
+    default_model: gemini-flash-latest   # used if a model above doesn't exist on your account
+  claude:
+    label: Claude
+    kind: anthropic
+    api_key_env: ANTHROPIC_API_KEY
+    key_url: https://platform.claude.com/settings/keys
+    models: { fast: claude-opus-5-5, smart: claude-opus-5-5 }   # quick look-ups run at low effort; pick Haiku or Sonnet in Settings to spend less
+    default_model: claude-opus-5-5
+  chatgpt:
+    label: ChatGPT
+    kind: openai_compatible
+    base_url: https://api.openai.com/v1
+    api_key_env: OPENAI_API_KEY
+    key_url: https://platform.openai.com/api-keys
+    models: { fast: gpt-5-mini, smart: gpt-5 }
+    default_model: gpt-5-mini
+    # prices:                              # optional, on any provider: USD per million tokens, for the usage estimate
+    #   gpt-5-mini: { in: 0.0, out: 0.0 }   # fill in from the provider's pricing page
+  # local:                                 # optional: any OpenAI-compatible server, used when the chosen one fails
   #   kind: ollama                         # or openai_compatible (OpenRouter, Groq, LM Studio…) with base_url + api_key_env
   #   base_url: http://localhost:11434/v1
-  #   default_model: qwen3:8b
+  #   default_model: qwen3:8b              # then add `fallback: [local]` to the tasks below
 
-# "-latest" aliases follow Google's current models. Pin a version (for example from `ai models`) to freeze behaviour.
 tasks:
-  lookup.context_gloss:  { use: cloud, model: gemini-flash-latest, temperature: 0.2, thinking: "off", timeout: 25 }
-  lookup.grammar:        { use: cloud, model: gemini-flash-latest, temperature: 0.2, timeout: 40 }
-  tutor.chat:            { use: cloud, model: gemini-flash-latest, temperature: 0.7 }
-  tutor.postprocess:     { use: cloud, model: gemini-flash-latest }
-  content.query_gen:     { use: cloud, model: gemini-flash-latest }
-  content.tagging:       { use: cloud, model: gemini-flash-latest }
-  level.speaking_rubric: { use: cloud, model: gemini-pro-latest, temperature: 0 }
-  profile.evolve:        { use: cloud, model: gemini-pro-latest }
+  lookup.context_gloss:  { tier: fast, temperature: 0.2, thinking: "off", timeout: 25 }
+  lookup.grammar:        { tier: fast, temperature: 0.2, timeout: 40 }
+  tutor.chat:            { tier: fast, temperature: 0.7 }
+  tutor.postprocess:     { tier: fast }
+  content.query_gen:     { tier: fast }
+  content.tagging:       { tier: fast }
+  level.speaking_rubric: { tier: smart, temperature: 0 }
+  profile.evolve:        { tier: smart }
 
 stt:
   default: { kind: browser }   # Web Speech API recognition; faster-whisper is optional (skipped for now)

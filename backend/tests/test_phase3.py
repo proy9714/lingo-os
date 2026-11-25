@@ -129,7 +129,8 @@ def test_up_next_never_suggests_watched_videos_or_finished_items(client) -> None
     with engine.begin() as conn:
         ids = {}
         for name, kind, status, progress in [
-            ("watched in the app", "youtube", "library", 0.3),
+            ("watched in the app", "youtube", "finished", 0.95),
+            ("left after a third", "youtube", "in_progress", 0.3),
             ("from the tracker CSV", "youtube", "library", 0.0),
             ("new video", "youtube", "candidate", 0.0),
             ("finished book", "epub", "finished", 1.0),
@@ -146,7 +147,7 @@ def test_up_next_never_suggests_watched_videos_or_finished_items(client) -> None
                 text("INSERT INTO content_scores (content_item_id, profile_version, coverage, expected_unknown, i1_score, band) VALUES (:i, 1, 0.92, 10, 0.8, 'i_plus_1')"),
                 {"i": ids[name]},
             )
-        for name, tracking in [("watched in the app", "auto"), ("from the tracker CSV", "import")]:
+        for name, tracking in [("watched in the app", "auto"), ("left after a third", "auto"), ("from the tracker CSV", "import")]:
             conn.execute(
                 text(
                     "INSERT INTO activity_sessions (language_code, activity, modality, tracking, started_at, active_seconds, "
@@ -155,7 +156,8 @@ def test_up_next_never_suggests_watched_videos_or_finished_items(client) -> None
                 {"tr": tracking, "i": ids[name]},
             )
         picks = up_next(conn, "de", 10)["picks"]
-    assert {p["title"] for p in picks} == {"new video", "book in progress"}
+    # a video counts as watched only when 90% of it played (or it was marked, or the tracker lists it)
+    assert {p["title"] for p in picks} == {"new video", "book in progress", "left after a third"}
     assert next(p for p in picks if p["title"] == "book in progress")["reasons"][-1] == "continue where you left off"
 
 

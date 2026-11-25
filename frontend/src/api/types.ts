@@ -18,7 +18,7 @@ export interface Language {
 }
 
 export interface SearchResult {
-  state: "measuring" | "ready" | "no_captions" | "failed";
+  state: "measuring" | "ready" | "no_captions" | "failed" | "other_language";
   error: string | null;
   title: string;
   url: string | null;
@@ -622,6 +622,26 @@ export type AiTaskStatus =
 export interface AiStatus {
   context: AiTaskStatus;
   grammar: AiTaskStatus;
+}
+
+export interface AiProvider {
+  id: string;
+  label: string;
+  kind: string;
+  key_env: string | null;
+  key_url: string | null;
+  has_key: boolean;
+  key_hint: string | null;
+  defaults: Record<"fast" | "smart", string>;
+  models: Record<"fast" | "smart", string>;
+  chosen: Partial<Record<"fast" | "smart", string>>;
+}
+
+export interface AiProviders {
+  selected: string; // "auto" or a provider id
+  active: string | null; // the provider answering now, if any
+  local_only: boolean;
+  providers: AiProvider[];
 }
 
 export interface AiMeta {

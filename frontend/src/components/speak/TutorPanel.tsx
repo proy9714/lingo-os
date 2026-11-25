@@ -68,9 +68,9 @@ export function TutorPanel({ lang }: { lang: string }) {
         <Panel className="glass-strong">
           <PanelTitle>The tutor needs an AI model</PanelTitle>
           <p className="text-sm leading-relaxed text-ink-2">
-            It's off right now ({status.reason}). Add a Gemini key, or point <code>config/llm.yaml</code> at another provider,
-            then restart. <Link to="/settings" className="text-accent underline">Settings</Link> has the steps. The Shadowing
-            tab works without it.
+            It's off right now. Paste a Gemini, Claude or ChatGPT key in{" "}
+            <Link to="/settings" className="text-accent underline">Settings → AI explanations</Link>; it works at once. The
+            Shadowing tab works without it.
           </p>
         </Panel>
       )}

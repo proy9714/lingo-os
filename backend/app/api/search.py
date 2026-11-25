@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 from sqlalchemy import Connection
 
@@ -28,6 +28,18 @@ def start(body: SearchRequest, request: Request, conn: Connection = Depends(get_
         return search.start(request.app.state.engine, cfg, body.lang, body.kind, body.q)
     except search.SearchError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+@router.get("/suggest")
+def suggest(
+    request: Request,
+    lang: str = Query(min_length=2, max_length=8),
+    kind: str = Query(pattern="^(video|article)$"),
+    q: str = Query(min_length=1, max_length=100),
+    conn: Connection = Depends(get_conn),
+) -> dict[str, Any]:
+    require_language(conn, lang)
+    return {"q": q, "suggestions": search.suggest(request.app.state.engine, lang, kind, q)}
 
 
 @router.get("/{search_id}")

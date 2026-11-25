@@ -15,11 +15,14 @@ LOCAL_KINDS = {"ollama"}
 @dataclass(frozen=True)
 class ProviderConfig:
     name: str
-    kind: str  # gemini | openai_compatible | ollama | fake
+    kind: str  # gemini | anthropic | openai_compatible | ollama | fake
     api_key_env: str | None = None
     base_url: str | None = None
     default_model: str | None = None  # used when a task's model doesn't exist on this provider
     prices: dict[str, dict[str, float]] = field(default_factory=dict)  # model -> {in, out} USD per million tokens
+    label: str | None = None  # set for the providers a learner can choose in Settings ("Gemini", "Claude", "ChatGPT")
+    key_url: str | None = None  # where to create an API key
+    models: dict[str, str] = field(default_factory=dict)  # tier ('fast' | 'smart') -> model
 
     @property
     def api_key(self) -> str | None:
@@ -33,13 +36,16 @@ class ProviderConfig:
         return any(host in url for host in ("://localhost", "://127.0.0.1", "://[::1]"))
 
     def unavailable_reason(self) -> str | None:
-        if self.kind == "gemini" and not self.api_key:
-            return f"no {self.api_key_env or 'GEMINI_API_KEY'} in .env"
+        if self.kind in {"gemini", "anthropic"} and not self.api_key:
+            return f"no {self.api_key_env or 'API key'} set"
         if self.kind == "openai_compatible" and not self.base_url:
             return "no base_url configured"
         if self.kind == "openai_compatible" and self.api_key_env and not self.api_key and not self.is_local:
-            return f"no {self.api_key_env} in .env"
+            return f"no {self.api_key_env} set"
         return None
+
+    def model_for(self, tier: str | None) -> str | None:
+        return (self.models.get(tier) if tier else None) or self.default_model
 
 
 @dataclass(frozen=True)
@@ -51,6 +57,7 @@ class TaskRoute:
     fallback: tuple[str, ...] = ()
     thinking: str | None = None  # 'off' asks the model to answer without thinking first (faster)
     timeout: float = 40.0
+    tier: str | None = None  # 'fast' | 'smart': the chosen provider's model for that tier (instead of `use` + `model`)
 
 
 @dataclass(frozen=True)
@@ -58,6 +65,11 @@ class AIConfig:
     providers: dict[str, ProviderConfig]
     tasks: dict[str, TaskRoute]
     local_only: bool = False
+
+    @property
+    def choosable(self) -> list[str]:
+        """Providers a learner can pick in Settings, in the order 'Auto' tries them."""
+        return [name for name, p in self.providers.items() if p.label]
 
 
 def load_ai_config(root: Path) -> AIConfig:
@@ -78,6 +90,9 @@ def parse_ai_config(raw: dict[str, Any]) -> AIConfig:
             base_url=spec.get("base_url"),
             default_model=spec.get("default_model"),
             prices=spec.get("prices") or {},
+            label=spec.get("label"),
+            key_url=spec.get("key_url"),
+            models={str(k): str(v) for k, v in (spec.get("models") or {}).items()},
         )
         for name, spec in (raw.get("providers") or {}).items()
     }
@@ -86,11 +101,12 @@ def parse_ai_config(raw: dict[str, Any]) -> AIConfig:
         fallback = spec.get("fallback") or []
         tasks[task] = TaskRoute(
             task=task,
-            use=str(spec.get("use", "cloud")),
+            use=str(spec.get("use") or ("" if spec.get("tier") else "cloud")),
             model=str(spec.get("model", "")),
             temperature=spec.get("temperature"),
             fallback=tuple(str(f) for f in (fallback if isinstance(fallback, list) else [fallback])),
             thinking=spec.get("thinking"),
             timeout=float(spec.get("timeout", 40)),
+            tier=spec.get("tier"),
         )
     return AIConfig(providers=providers, tasks=tasks, local_only=bool(raw.get("local_only", False)))

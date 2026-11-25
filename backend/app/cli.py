@@ -437,18 +437,22 @@ def ai_test() -> None:
 
 @ai_app.command("models")
 def ai_models() -> None:
-    """List the Gemini models your key can use (to pin one in config/llm.yaml)."""
-    from app.ai.providers import GeminiProvider, ProviderError
+    """List the models each key can use (Gemini, Claude, ChatGPT), to pick in Settings or config/llm.yaml."""
+    from app.ai.providers import ProviderError
 
     gateway = _gateway()
-    for name, provider in gateway.providers.items():
-        if isinstance(provider, GeminiProvider):
-            try:
-                models = provider.list_models()
-            except ProviderError as exc:
-                console.print(f"{name}: {exc}")
-                continue
-            console.print(f"{name}: " + ", ".join(sorted(models)))
+    for name in gateway.cfg.choosable:
+        label = gateway.cfg.providers[name].label
+        reason = gateway.cfg.providers[name].unavailable_reason()
+        if reason:
+            console.print(f"{label}: {reason}")
+            continue
+        try:
+            models = gateway.providers[name].list_models()
+        except ProviderError as exc:
+            console.print(f"{label}: {exc}")
+            continue
+        console.print(f"{label}: " + ", ".join(sorted(models)))
 
 
 @app.command()

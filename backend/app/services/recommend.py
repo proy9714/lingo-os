@@ -25,7 +25,7 @@ from typing import Any
 
 from sqlalchemy import Connection, text
 
-from app.services import taste
+from app.services import content, taste
 from app.services.catalog import CONFIDENCE
 from app.services.content import MANGA_TYPES, READ_TYPES, SHELVES, WATCH_TYPES
 
@@ -58,7 +58,7 @@ def candidates(conn: Connection, lang: str, shelf: str | None = None) -> list[di
             f"WHERE ci.language_code = :l AND ci.type IN ({type_list}) "
             "AND ci.status NOT IN ('dismissed', 'archived', 'finished') "
             "AND (ci.analysis_status = 'done' OR cs.estimated = 1) "
-            f"AND NOT (ci.type IN ({WATCHED_TYPES}) AND EXISTS (SELECT 1 FROM activity_sessions w WHERE w.content_item_id = ci.id))"
+            f"AND NOT (ci.type IN ({WATCHED_TYPES}) AND {content.WATCHED_SQL})"
         ),
         {"l": lang},
     ).all()

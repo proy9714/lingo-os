@@ -10,6 +10,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.gzip import GZipMiddleware
 from sqlalchemy import Engine
 
 from app import __version__
@@ -86,6 +87,8 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
     for module in (system, settings, stats, activity, imports, nlp, vocab, level, content, ai, manga, tutor, shadowing, automation, devices, tts, languages_api, search_api):
         app.include_router(module.router)
 
+    # compress JSON, scripts and styles (often 70-90% smaller); audio and pictures are already compressed
+    app.add_middleware(GZipMiddleware, minimum_size=1024, compresslevel=5)
     _serve_frontend(app, cfg.frontend_dist)
     return app
 
@@ -109,7 +112,7 @@ def _serve_frontend(app: FastAPI, dist: Path) -> None:
     if not index.exists():
         return
     if (dist / "assets").is_dir():
-        app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
+        app.mount("/assets", ImmutableFiles(directory=dist / "assets"), name="assets")
     root = dist.resolve()
 
     @app.get("/{path:path}", include_in_schema=False)
@@ -118,5 +121,15 @@ def _serve_frontend(app: FastAPI, dist: Path) -> None:
             raise HTTPException(status_code=404)
         candidate = (dist / path).resolve()
         if path and candidate.is_file() and candidate.is_relative_to(root):
-            return FileResponse(candidate)
-        return FileResponse(index)
+            return FileResponse(candidate, headers={"Cache-Control": "public, max-age=86400"})  # icons and the like
+        # the page itself is always checked (a cheap 304), so a new version of the app shows on the next load
+        return FileResponse(index, headers={"Cache-Control": "no-cache"})
+
+
+class ImmutableFiles(StaticFiles):
+    """Vite names every built file after its contents, so a file never changes: browsers may keep it for a year."""
+
+    def file_response(self, *args, **kwargs):  # noqa: ANN002, ANN003, ANN201
+        response = super().file_response(*args, **kwargs)
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        return response

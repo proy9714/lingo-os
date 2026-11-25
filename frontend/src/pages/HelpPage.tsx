@@ -652,24 +652,30 @@ const TOPICS: Topic[] = [
     id: "ai",
     title: "AI explanations",
     summary: "Optional: meanings in context, sentence help and the tutor.",
-    keywords: "ai gemini api key llm explanation translation grammar tutor ollama openrouter",
+    keywords: "ai gemini claude anthropic chatgpt openai gpt api key llm model explanation translation grammar tutor ollama openrouter",
     body: (
       <>
+        <p>Use Gemini, Claude or ChatGPT: whichever you have an API key for.</p>
         <Steps>
           {[
             <>
-              Create a free API key at <strong className="text-ink">aistudio.google.com</strong>.
+              Create a key: Gemini at <strong className="text-ink">aistudio.google.com</strong> (has a free tier), Claude at{" "}
+              <strong className="text-ink">platform.claude.com</strong>, or ChatGPT at <strong className="text-ink">platform.openai.com</strong>.
             </>,
             <>
-              In the project folder, copy <Code>.env.example</Code> to <Code>.env</Code> and paste the key after{" "}
-              <Code>GEMINI_API_KEY=</Code>.
+              <Go to="/settings">Settings</Go> → AI explanations: pick the provider and paste the key. It works at once, no restart.
             </>,
-            "Restart the app.",
             <>
-              <Go to="/settings">Settings</Go> → AI → <em>Test connection</em>.
+              Press <em>Test connection</em>.
             </>,
           ]}
         </Steps>
+        <p>
+          <strong className="text-ink">Auto</strong> uses the first provider that has a key. Each provider has a quick model (word
+          meanings, grammar, the tutor) and a deeper one (speaking feedback, the weekly review); <em>Change</em> lets you pick others
+          from the models your key can use. Keys are kept in <Code>.env</Code> on this computer and are never shown again or sent to a
+          phone.
+        </p>
         <p>
           Other providers work too (Ollama on this computer, OpenRouter and any OpenAI-compatible service): see{" "}
           <Code>config/llm.yaml</Code>. Without a key, lookups use the dictionaries only. Only what a request needs is sent (the sentence
