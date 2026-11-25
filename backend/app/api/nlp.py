@@ -51,6 +51,14 @@ def lookup(
     result = dict_lookup(dict_conn, body.lang, forms, body.reading)
     if not result["entries"] and not result["inflections"] and not _has_dictionaries(dict_conn, body.lang):
         result["missing_dictionary"] = True
+    if not result["entries"] and body.lang == "de":  # a compound the dictionary doesn't list: show its parts
+        from app.dictionary.lookup import compound_parts
+
+        for form in forms:
+            parts = compound_parts(dict_conn, body.lang, form)
+            if parts:
+                result["compound"] = parts
+                break
     return {
         "lemma": body.lemma,
         "reading": body.reading,

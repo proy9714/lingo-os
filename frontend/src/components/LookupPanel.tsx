@@ -152,8 +152,26 @@ export function LookupPanel() {
             No dictionary installed for this language. Import one with <code>lingo dict import</code>.
           </p>
         )}
-        {result && !result.missing_dictionary && result.entries.length === 0 && (
+        {result && !result.missing_dictionary && result.entries.length === 0 && !result.compound?.length && (
           <p className="well rounded-xl p-3 text-sm text-ink-2">No dictionary entry found for this word.</p>
+        )}
+        {result?.compound && result.compound.length > 0 && result.entries.length === 0 && (
+          <section className="well rounded-xl p-3" aria-label="Parts of this compound">
+            <p className="text-xs font-semibold tracking-wide text-ink-3 uppercase">A compound: its parts</p>
+            <p className="mt-1 text-lg font-semibold" lang={selection?.lang}>
+              {result.compound.map((p) => p.term).join(" + ")}
+            </p>
+            <ul className="mt-2 flex flex-col gap-1 text-sm">
+              {result.compound.map((p, n) => (
+                <li key={`${p.part}-${n}`}>
+                  <span className="font-semibold" lang={selection?.lang}>
+                    {p.term}
+                  </span>
+                  <span className="text-ink-2"> · {p.gloss ?? "no entry"}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
         )}
 
         {result?.entries.map((entry, index) => (

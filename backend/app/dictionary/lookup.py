@@ -138,3 +138,74 @@ def lemma_resolver(engine):  # noqa: ANN001, ANN201 - an Engine on dictionaries.
         return None
 
     return resolve
+
+
+# ------------------------------------------------------------------ German compounds
+
+LINKS = ("", "s", "es", "n", "en", "er", "e")  # Fugenelemente: Weihnacht-s-markt, Hund-e-hütte, Kind-er-garten
+MIN_PART = 3
+
+
+def _headwords(conn: Connection, lang: str, terms: list[str]) -> dict[str, tuple[str, bool]]:
+    """Which of these spellings the dictionary knows: lower-case form → (form as listed, has its own meanings).
+    A capitalised listing wins (German nouns: Weg 'path' over weg 'away')."""
+    found: dict[str, tuple[str, bool]] = {}
+    for _name, _prio, term, _reading, _score, glossary_json in _rows(conn, lang, list(dict.fromkeys(terms))):
+        data = json.loads(glossary_json)
+        if not (data.get("g") or data.get("f")):
+            continue
+        key, glossed = term.lower(), bool(data.get("g"))
+        old = found.get(key)
+        if old is None or (glossed and not old[1]) or (glossed == old[1] and term[:1].isupper() and not old[0][:1].isupper()):
+            found[key] = (term, glossed)
+    return found
+
+
+def split_compound(conn: Connection, lang: str, word: str, depth: int = 2) -> list[str] | None:
+    """'Weihnachtsmarktbesucher' → ['Weihnachtsmarkt', 'Besucher']: the longest first part that is a word (dropping a
+    linking -s-/-n-/-er-…), and a last part that is a word or splits again. None if it isn't a compound we can read."""
+    if lang != "de" or len(word) < 2 * MIN_PART or depth == 0:
+        return None
+    cuts = range(len(word) - MIN_PART, MIN_PART - 1, -1)
+    heads, tails = [], []
+    for cut in cuts:
+        head, tail = word[:cut], word[cut:]
+        for link in LINKS:
+            if link and not head.lower().endswith(link):
+                continue
+            base = head[: len(head) - len(link)] if link else head
+            if len(base) >= MIN_PART:
+                heads += [base, base[:1].upper() + base[1:].lower(), base.lower()]
+        tails += [tail[:1].upper() + tail[1:].lower(), tail.lower()]
+    known = _headwords(conn, lang, heads + tails)
+    for cut in cuts:
+        head, tail = word[:cut], word[cut:]
+        bases = [
+            (head[: len(head) - len(link)] if link else head).lower()
+            for link in LINKS
+            if not link or head.lower().endswith(link)
+        ]
+        bases = [b for b in bases if len(b) >= MIN_PART and b in known]
+        if not bases:
+            continue
+        # a word with its own meanings (Hund) beats an inflected form (Hunde)
+        first = next((known[b][0] for b in bases if known[b][1]), known[bases[0]][0])
+        if tail.lower() in known:
+            return [first, known[tail.lower()][0]]
+        rest = split_compound(conn, lang, tail[:1].upper() + tail[1:], depth - 1)
+        if rest:
+            return [first, *rest]
+    return None
+
+
+def compound_parts(conn: Connection, lang: str, word: str) -> list[dict[str, Any]]:
+    """Each part of a compound with its first meaning, for the lookup panel."""
+    parts = split_compound(conn, lang, word)
+    if not parts:
+        return []
+    out = []
+    for part in parts:
+        found = lookup(conn, lang, [part], limit=1)
+        entry = found["entries"][0] if found["entries"] else None
+        out.append({"part": part, "gloss": entry["glosses"][0] if entry else None, "term": entry["term"] if entry else part})
+    return out

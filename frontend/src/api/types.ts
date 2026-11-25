@@ -290,6 +290,7 @@ export interface LookupResult {
   entries: DictEntry[];
   inflections: { form: string; lemma: string; rules: string[] }[];
   missing_dictionary?: boolean;
+  compound?: { part: string; term: string; gloss: string | null }[]; // German: a compound the dictionary doesn't list
 }
 
 export interface WordListItem {
