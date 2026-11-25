@@ -46,11 +46,23 @@ export function PhonePanel() {
             Your Android phone uses this laptop over your home Wi-Fi, and keeps working offline with saved texts; changes
             sync when it's back. Only paired phones can connect, and everything they send is encrypted.
           </p>
+          {data.data_dir && (
+            <p className="text-xs text-ink-3">
+              A phone paired here syncs with the data in <code className="break-all text-ink-2">{data.data_dir}</code>.
+            </p>
+          )}
+          {data.temporary && (
+            <p role="alert" className="rounded-xl border border-warn/40 bg-warn/10 p-3 text-xs leading-relaxed text-warn">
+              This is a temporary test copy of Lingo OS, not your own data. Don't pair your phone with it: the phone would
+              show this copy's languages and lose track of your real progress when it's gone.
+            </p>
+          )}
+          {!data.allowed && <p className="text-xs text-ink-3">Phone sync is turned off for this server.</p>}
           <label className="flex items-center gap-2.5">
             <input
               type="checkbox"
               checked={data.enabled}
-              disabled={toggle.isPending}
+              disabled={toggle.isPending || (!data.allowed && !data.enabled)}
               onChange={(e) => toggle.mutate(e.target.checked)}
               className="size-4 accent-[var(--accent)]"
             />

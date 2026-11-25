@@ -877,6 +877,9 @@ export interface DeviceRow {
 }
 
 export interface SyncStatus {
+  data_dir: string | null; // the data a phone pairs with
+  temporary: boolean; // a test copy in a temporary folder: don't pair a real phone with it
+  allowed: boolean; // false on a test server (LINGO_PHONE_SYNC=off)
   enabled: boolean;
   running: boolean;
   error: string | null;

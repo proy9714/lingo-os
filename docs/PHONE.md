@@ -55,6 +55,14 @@ switching to the release APK (and the other way round).
   logs work; changes wait in an outbox and sync automatically when the laptop is back in reach (or press
   **Sync now**). Each change is applied exactly once; if a word was changed on both devices, the later change wins.
 
+## The phone shows the wrong languages, or none of your progress
+
+The phone shows the Lingo OS it's paired with. If it was paired with another copy (a test install, or another data
+folder on the same laptop), it shows that copy's languages, and its saved copy of them when that copy isn't running.
+On the phone, open the sync screen (tap the status badge, or go to `/connect`) and press **Disconnect**, then pair
+again from **your** Lingo OS: Settings → Phone shows the data folder a phone will sync with, and warns when it's a
+temporary test copy. Test servers can refuse phones altogether with `LINGO_PHONE_SYNC=off`.
+
 ## Limits for now
 
 - Videos stream from YouTube or the laptop; they can't be saved offline. Manga reads at home; offline manga is next.

@@ -65,7 +65,7 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
         if runner:
             runner.start()
         with engine.connect() as conn:  # phone sync listens on the Wi-Fi only when turned on in Settings
-            sync_on = run_jobs and bool(settings_store.get(conn, "sync.enabled", False))
+            sync_on = run_jobs and devices.phone_sync_allowed() and bool(settings_store.get(conn, "sync.enabled", False))
             port = int(settings_store.get(conn, "sync.port", SYNC_PORT))
         if sync_on:
             devices.start_listener(app_, cfg, port)

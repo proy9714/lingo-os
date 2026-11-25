@@ -144,3 +144,13 @@ def test_listener_starts_and_stops(client, cfg) -> None:
     finally:
         listener.stop()
     assert not listener.running
+
+
+def test_a_test_server_never_takes_a_phone(client, monkeypatch) -> None:
+    status = client.get("/api/sync/status").json()
+    assert status["data_dir"] and status["temporary"] is True and status["allowed"] is True  # tests run in a temp folder
+    monkeypatch.setenv("LINGO_PHONE_SYNC", "off")
+    refused = client.post("/api/sync/enable", json={"enabled": True})
+    assert refused.status_code == 409 and "LINGO_PHONE_SYNC" in refused.json()["detail"]
+    status = client.get("/api/sync/status").json()
+    assert status["allowed"] is False and status["enabled"] is False
