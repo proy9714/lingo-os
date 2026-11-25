@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -49,6 +49,17 @@ export function PlayerPage() {
   const [playing, setPlaying] = useState(false);
   const [rate, setRate] = useState(1);
   const [pauseEachLine, setPauseEachLine] = useState(false);
+  // A–B loop: the stretch between two moments plays again and again
+  const [loop, setLoop] = useState<{ a: number; b: number | null } | null>(null);
+  // English under each line: YouTube's own captions, or the AI provider's translation
+  const [showTranslation, setShowTranslation] = useState(false);
+  const translation = useQuery({
+    queryKey: ["translation", id],
+    queryFn: () => api.translation(id),
+    enabled: showTranslation,
+    staleTime: Infinity,
+    retry: false,
+  });
   const resumeAfterLookup = useRef(false);
   const lastAutoPause = useRef(-1);
   const listRef = useRef<HTMLOListElement>(null);
@@ -93,6 +104,30 @@ export function PlayerPage() {
     }
   }, [time, pauseEachLine, playing, activeIndex, cues]);
 
+  // Loop: back to A whenever B is reached.
+  useEffect(() => {
+    if (loop && loop.b !== null && time >= loop.b) {
+      lastAutoPause.current = -1;
+      controls.current?.seek(loop.a);
+      setTime(loop.a);
+    }
+  }, [time, loop]);
+
+  // English for each line: the translation lines that overlap it in time.
+  const translated = useMemo(() => {
+    const lines = translation.data?.cues ?? [];
+    if (!showTranslation || !lines.length) return new Map<number, string>();
+    const out = new Map<number, string>();
+    for (const cue of cues) {
+      const parts = lines.filter((t) => {
+        const mid = (t.start_ms + t.end_ms) / 2;
+        return mid >= cue.start_ms - 200 && mid < cue.end_ms + 200;
+      });
+      if (parts.length) out.set(cue.seq, parts.map((t) => t.text).join(" "));
+    }
+    return out;
+  }, [translation.data, cues, showTranslation]);
+
   // Resume after the lookup panel closes, if a word click paused the video.
   useEffect(() => {
     if (!lookupOpen && resumeAfterLookup.current) {
@@ -113,6 +148,28 @@ export function PlayerPage() {
     controls.current?.seek(ms);
     setTime(ms);
   }, []);
+
+  // L: loop the current line (or stop looping)
+  const loopLine = useCallback(() => {
+    if (loop) {
+      setLoop(null);
+      return;
+    }
+    if (activeIndex < 0) return;
+    const cue = cues[activeIndex];
+    setLoop({ a: cue.start_ms, b: cue.end_ms });
+    seekTo(cue.start_ms);
+    controls.current?.play();
+  }, [loop, activeIndex, cues, seekTo]);
+
+  // A–B button: first press marks A, the second marks B, the third stops
+  const abPress = () => {
+    if (!loop) setLoop({ a: time, b: null });
+    else if (loop.b === null) {
+      if (time > loop.a + 300) setLoop({ a: loop.a, b: time });
+      else setLoop(null);
+    } else setLoop(null);
+  };
 
   const jump = useCallback(
     (delta: number) => {
@@ -135,11 +192,11 @@ export function PlayerPage() {
       else if (event.key.toLowerCase() === "r" && activeIndex >= 0) {
         seekTo(cues[activeIndex].start_ms);
         controls.current?.play();
-      }
+      } else if (event.key.toLowerCase() === "l") loopLine();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [playing, jump, seekTo, activeIndex, cues]);
+  }, [playing, jump, seekTo, activeIndex, cues, loopLine]);
 
   if (item.isPending) return <Skeleton className="h-96 rounded-[20px]" />;
   if (item.isError) return <Panel role="alert">Could not open this video: {item.error.message}</Panel>;
@@ -238,6 +295,30 @@ export function PlayerPage() {
             >
               Pause after each line
             </button>
+            <button
+              type="button"
+              aria-pressed={Boolean(loop)}
+              onClick={abPress}
+              title="Repeat a stretch: press at the start (A), then at the end (B); L loops the current line"
+              className={cx(
+                "min-h-10 rounded-xl px-3 text-sm font-semibold tabular-nums",
+                loop ? "border border-accent/60 bg-accent/15 text-accent" : "border border-white/14 text-ink-2 hover:bg-white/8",
+              )}
+            >
+              {!loop ? "A–B loop" : loop.b === null ? `A ${clock(loop.a)} · set B` : `Looping ${clock(loop.a)}–${clock(loop.b)} ✕`}
+            </button>
+            <button
+              type="button"
+              aria-pressed={showTranslation}
+              onClick={() => setShowTranslation(!showTranslation)}
+              title="English under each line"
+              className={cx(
+                "min-h-10 rounded-xl px-3 text-sm font-semibold",
+                showTranslation ? "border border-accent/60 bg-accent/15 text-accent" : "border border-white/14 text-ink-2 hover:bg-white/8",
+              )}
+            >
+              {showTranslation && translation.isFetching ? "Translating…" : "English"}
+            </button>
             <span className="ml-auto text-xs text-ink-3 tabular-nums">{clock(time)}</span>
           </div>
           <div className="glass rounded-2xl px-3 py-2.5">
@@ -257,6 +338,15 @@ export function PlayerPage() {
               <span className="text-xs text-ink-3">click a word to look it up</span>
             )}
           </div>
+          {showTranslation && translation.data && !translation.data.available && (
+            <p className="border-b border-white/8 px-4 py-2 text-xs text-ink-3">{translation.data.reason}</p>
+          )}
+          {showTranslation && translation.isError && (
+            <p className="border-b border-white/8 px-4 py-2 text-xs text-red-200">{translation.error.message}</p>
+          )}
+          {showTranslation && translation.data?.source === "ai" && (
+            <p className="border-b border-white/8 px-4 py-2 text-xs text-ink-3">English translated by your AI provider (YouTube has none).</p>
+          )}
           {transcript.isPending ? (
             <div className="flex flex-col gap-2 p-4">
               <Skeleton className="h-5" />
@@ -281,6 +371,7 @@ export function PlayerPage() {
                   lang={lang}
                   itemId={id}
                   active={index === activeIndex}
+                  translation={translated.get(cue.seq)}
                   onSeek={() => {
                     seekTo(cue.start_ms);
                     controls.current?.play();
@@ -297,13 +388,21 @@ export function PlayerPage() {
           )}
         </section>
       </div>
-      <p className="px-1 text-xs text-ink-3">Space play/pause · ← → previous/next line · R replay line. Watching time counts only while playing.</p>
+      <p className="px-1 text-xs text-ink-3">Space play/pause · ← → previous/next line · R replay line · L loop line. Watching time counts only while playing.</p>
     </div>
   );
 }
 
-function CueRow(props: { cue: TranscriptCue; lang: string; itemId: number; active: boolean; onSeek: () => void; onWord: () => void }) {
-  const { cue, lang, itemId, active, onSeek, onWord } = props;
+function CueRow(props: {
+  cue: TranscriptCue;
+  lang: string;
+  itemId: number;
+  active: boolean;
+  translation?: string;
+  onSeek: () => void;
+  onWord: () => void;
+}) {
+  const { cue, lang, itemId, active, translation, onSeek, onWord } = props;
   return (
     <li data-seq={cue.seq} className={cx("flex gap-2 rounded-xl px-2 py-1.5", active && "bg-accent/10")}>
       <button
@@ -325,6 +424,7 @@ function CueRow(props: { cue: TranscriptCue; lang: string; itemId: number; activ
           theme="dark"
           onWordClick={onWord}
         />
+        {translation && <span className="mt-0.5 block text-[13px] leading-snug text-ink-3">{translation}</span>}
       </p>
     </li>
   );

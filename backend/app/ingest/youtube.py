@@ -185,6 +185,25 @@ def fetch_captions(video_id: str, lang: str, info: VideoInfo | None = None, stri
     return Captions(kind=kind, track_lang=track_lang, fmt=fmt["ext"], cues=cues) if cues else None
 
 
+def fetch_translation(video_id: str, to: str = "en") -> list[Cue]:
+    """Captions in another language (English by default) to show under the transcript: uploaded ones first, then
+    YouTube's automatic translation. Empty if there are none."""
+    info = fetch_info(video_id).raw
+    manual = info.get("subtitles") or {}
+    picked = _pick(manual, [to] + sorted(k for k in manual if k.startswith(f"{to}-")))
+    if not picked:
+        picked = _pick(info.get("automatic_captions") or {}, [to, f"{to}-orig"])
+    if not picked:
+        return []
+    _lang, fmt = picked
+    try:
+        with _ydl() as ydl:
+            raw = ydl.urlopen(fmt["url"]).read().decode("utf-8", errors="replace")
+    except Exception as exc:
+        raise YouTubeError(_short(exc)) from exc
+    return parse_json3(raw) if fmt["ext"] == "json3" else parse_vtt(raw)
+
+
 def _short(exc: Exception) -> str:
     message = str(exc).replace("ERROR: ", "").strip()
     return message.splitlines()[0][:300] if message else exc.__class__.__name__

@@ -45,6 +45,7 @@ tasks:
   tutor.postprocess:     { tier: fast }
   content.query_gen:     { tier: fast }
   content.tagging:       { tier: fast }
+  content.translate:     { tier: fast, temperature: 0.2, thinking: "off", timeout: 60 }
   level.speaking_rubric: { tier: smart, temperature: 0 }
   profile.evolve:        { tier: smart }
 

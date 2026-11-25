@@ -250,6 +250,44 @@ def transcript(item_id: int, conn: Connection = Depends(get_conn)) -> dict[str, 
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
+@router.get("/content/{item_id}/translation")
+def translation(request: Request, item_id: int, to: str = Query("en", pattern="^en$"), conn: Connection = Depends(get_conn),
+                cfg: AppConfig = Depends(get_cfg)) -> dict[str, Any]:
+    """English (or another language's) captions to show under the transcript; cached once fetched."""
+    import json as _json
+
+    from app.ai.gateway import AIUnavailable
+    from app.ingest.youtube import fetch_translation
+    from app.services.explain import translate_with_ai
+
+    try:
+        item = content.get_item(conn, item_id)
+    except content.ContentError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    if item["source"] != "youtube" or not item["external_id"]:
+        return {"to": to, "available": False, "cues": [], "reason": "Translations come with YouTube videos only."}
+    cache = cfg.data_dir / "cache" / "translations" / f"{item['external_id']}.{to}.json"
+    if cache.exists():
+        return _json.loads(cache.read_text(encoding="utf-8"))
+    source = "youtube"
+    try:
+        found = [{"start_ms": c.start_ms, "end_ms": c.end_ms, "text": c.text} for c in fetch_translation(item["external_id"], to)]
+    except YouTubeError:
+        found = []  # YouTube refuses its automatic translations to programs more often than not
+    reason = None
+    if not found:
+        try:
+            found, source = translate_with_ai(request.app.state.ai, conn, item_id, item["language"]), "ai"
+        except AIUnavailable as exc:
+            reason = f"No English captions on YouTube, and AI translation is off ({exc})."
+    body = {"to": to, "available": bool(found), "source": source if found else None, "cues": found, "reason": reason}
+    if not found:
+        return body  # not cached: an AI key added later can still translate it
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text(_json.dumps(body, ensure_ascii=False), encoding="utf-8")
+    return body
+
+
 @router.get("/content/{item_id}/pages")
 def page_list(item_id: int, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
     entries = reading.pages(conn, item_id)

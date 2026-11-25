@@ -99,3 +99,29 @@ def grammar_breakdown(gateway: Gateway, conn: Connection, *, lang: str, sentence
     # Keep only chunks that really occur in the sentence, so the UI can underline them.
     parts = [p for p in result.parts if p.text and p.text in sentence]
     return {**result.model_dump(), "parts": [p.model_dump() for p in parts], "points": [p.model_dump() for p in result.points[:3]], **meta}
+
+
+class TranslatedLines(BaseModel):
+    lines: list[str]
+
+
+TRANSLATE_BATCH = 50
+
+
+def translate_with_ai(gateway: Gateway, conn: Connection, item_id: int, lang: str) -> list[dict[str, Any]]:
+    """English under each transcript line, translated in batches by the AI provider you chose (answers are cached)."""
+    from app.services.content import cues_of
+
+    cues = cues_of(conn, item_id)
+    language = _language_name(conn, lang)
+    out: list[dict[str, Any]] = []
+    for start in range(0, len(cues), TRANSLATE_BATCH):
+        batch = cues[start : start + TRANSLATE_BATCH]
+        numbered = "\n".join(f"{n + 1}. {cue['text']}" for n, cue in enumerate(batch))
+        result, _meta = gateway.structured(
+            "content.translate", "translate_lines", {"language": language, "count": len(batch), "lines": numbered}, TranslatedLines
+        )
+        lines = result.lines + [""] * max(0, len(batch) - len(result.lines))
+        for cue, line in zip(batch, lines):
+            out.append({"start_ms": cue["start_ms"], "end_ms": cue["end_ms"], "text": line.strip()})
+    return out

@@ -266,6 +266,10 @@ export const api = {
     }
     return (await response.json()) as AddedDocument;
   },
+  translation: (id: number) =>
+    request<{ to: string; available: boolean; source: "youtube" | "ai" | null; reason: string | null; cues: { start_ms: number; end_ms: number; text: string }[] }>(
+      `/api/content/${id}/translation?to=en`,
+    ),
   recommendSeen: (ids: number[]) => request<{ counted: number }>("/api/recommend/seen", { method: "POST", body: json({ ids }) }),
   restoreBackup: async (file: File) => {
     const form = new FormData();
