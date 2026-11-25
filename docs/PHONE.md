@@ -72,7 +72,8 @@ temporary test copy. Test servers can refuse phones altogether with `LINGO_PHONE
 
 ## Limits for now
 
-- Videos stream from YouTube or the laptop; they can't be saved offline. Manga reads at home; offline manga is next.
+- Videos stream from YouTube or the laptop; they can't be saved offline. Manga volumes can: **Save offline** stores
+  their page images on the phone too (it takes a moment per page, at home).
 - Android's in-app browser has no speech recognition, so the tutor's microphone, the speaking check and the word
   comparison in shadowing need typing or the laptop for now (recording yourself still works). A native speech plugin
   can be added later.

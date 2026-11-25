@@ -65,8 +65,10 @@ export async function offlineAnswer(method: string, path: string, query: URLSear
 
   let m: RegExpMatchArray | null;
   if (method === "GET" && path === "/api/content") {
-    const packs = (await allPacks()).filter((p) => p.item.language === query.get("lang") && p.kind === "text");
-    return query.get("shelf") === "read" ? { total: packs.length, items: packs.map(itemOf) } : { total: 0, items: [] };
+    const mine = (await allPacks()).filter((p) => p.item.language === query.get("lang"));
+    const shelf = query.get("shelf");
+    const packs = mine.filter((p) => (shelf === "manga" ? p.kind === "manga" : p.kind === "text"));
+    return shelf === "read" || shelf === "manga" ? { total: packs.length, items: packs.map(itemOf) } : { total: 0, items: [] };
   }
   if (method === "GET" && (m = path.match(/^\/api\/content\/(\d+)$/))) {
     const pack = await getPack(Number(m[1]));
@@ -84,6 +86,16 @@ export async function offlineAnswer(method: string, path: string, query: URLSear
       return { item: itemOf(pack), page: n, pages: pack.pages.length, title: page.title, paragraphs: page.paragraphs, summary: null };
     }
   }
+  if (method === "GET" && (m = path.match(/^\/api\/manga\/(\d+)\/page\/(\d+)$/))) {
+    const pack = await getPack(Number(m[1]));
+    if (pack?.kind === "manga" && pack.manga_pages?.length) {
+      const pages = pack.manga_pages;
+      const n = Math.max(1, Math.min(pages.length, Number(m[2])));
+      const page = pages[n - 1];
+      return { item: itemOf(pack), page: page.page, pages: pages.length, width: page.width, height: page.height, ocr: page.ocr, blocks: page.blocks, summary: null };
+    }
+  }
+  if (method === "GET" && (m = path.match(/^\/api\/manga\/(\d+)\/vocab$/))) return { item_id: Number(m[1]), total_unknown: 0, words: [] };
   if (method === "GET" && path === "/api/recommend") return { language: query.get("lang"), available: 0, picks: [] };
   if (method === "GET" && path === "/api/ai/status") {
     const off = { enabled: false, reason: "offline", local_only: false };

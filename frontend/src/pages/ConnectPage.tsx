@@ -2,15 +2,17 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
-import { api, syncApi } from "../api/client";
+import { api, mangaImage, syncApi } from "../api/client";
 import { useActiveLanguage } from "../api/hooks";
 import { Button, Chip, Panel, PanelTitle } from "../components/ui";
 import { flush, pending } from "../sync/outbox";
-import { allPacks, deletePack, savePack } from "../sync/packs";
+import { allPacks, deletePack, savePack, savePageImage, type Pack } from "../sync/packs";
 import {
+  blobUrl,
   disconnect,
   pairWith,
   remoteConfig,
+  rpc,
   useSyncState,
 } from "../sync/remote";
 
@@ -178,8 +180,14 @@ function Connected({ onDisconnect }: { onDisconnect: () => void }) {
   const navigate = useNavigate();
   const packs = useQuery({ queryKey: ["offline-packs"], queryFn: allPacks });
   const shelf = useQuery({
-    queryKey: ["content", code, "", "read"],
-    queryFn: () => api.content(code, "", "read"),
+    queryKey: ["content", code, "", "read+manga"],
+    queryFn: async () => {
+      const read = await api.content(code, "", "read");
+      if (code !== "ja") return read;
+      // manga volumes too: their page images are saved with them
+      const manga = await api.content(code, "", "manga").catch(() => ({ items: [] as typeof read.items }));
+      return { ...read, items: [...read.items, ...manga.items] };
+    },
   });
   const [message, setMessage] = useState<string | null>(null);
   const [saving, setSaving] = useState<number | null>(null);
@@ -207,7 +215,21 @@ function Connected({ onDisconnect }: { onDisconnect: () => void }) {
     setSaving(id);
     setMessage(null);
     try {
-      await savePack(await syncApi.pack(id));
+      const pack = await syncApi.pack(id);
+      if (pack.kind === "manga") {
+        // a manga volume: its page images come along, one by one, while the laptop is in reach
+        const pages = pack.pages as unknown as NonNullable<Pack["manga_pages"]>;
+        for (const [n, page] of pages.entries()) {
+          setMessage(`Saving page ${n + 1} of ${pages.length}…`);
+          const r = await rpc("GET", mangaImage(id, page.page), null, null, 60_000);
+          if (r.status >= 400 || !r.b64) throw new Error(`Page ${page.page} couldn't be fetched.`);
+          await savePageImage(id, page.page, await (await fetch(blobUrl(r.b64, r.type ?? "image/jpeg"))).blob());
+        }
+        await savePack({ ...pack, pages: [], manga_pages: pages });
+        setMessage(null);
+      } else {
+        await savePack(pack);
+      }
       void qc.invalidateQueries({ queryKey: ["offline-packs"] });
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "Couldn't save it.");

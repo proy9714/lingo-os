@@ -65,6 +65,7 @@ import type {
 import { flush } from "../sync/outbox";
 import { offlineAnswer, remember } from "../sync/offline";
 import type { Pack } from "../sync/packs";
+import { getPageImage } from "../sync/packs";
 import { blobUrl, OfflineError, remoteConfig, rpc } from "../sync/remote";
 
 export class ApiError extends Error {
@@ -461,10 +462,17 @@ export function mediaUrl(path: string): Promise<string> {
   if (!remoteConfig()) return Promise.resolve(path);
   let pending = mediaCache.get(path);
   if (!pending) {
-    pending = rpc("GET", path, null, null, 60_000).then((r) => {
-      if (r.status >= 400 || !r.b64) throw new ApiError(r.status, "media unavailable");
-      return blobUrl(r.b64, r.type ?? "application/octet-stream");
-    });
+    pending = rpc("GET", path, null, null, 60_000)
+      .then((r) => {
+        if (r.status >= 400 || !r.b64) throw new ApiError(r.status, "media unavailable");
+        return blobUrl(r.b64, r.type ?? "application/octet-stream");
+      })
+      .catch(async (error: unknown) => {
+        const page = path.match(/^\/api\/manga\/(\d+)\/image\/(\d+)$/); // a manga page saved for offline
+        const saved = page ? await getPageImage(Number(page[1]), Number(page[2])) : undefined;
+        if (saved) return URL.createObjectURL(saved);
+        throw error;
+      });
     pending.catch(() => mediaCache.delete(path));
     mediaCache.set(path, pending);
   }
