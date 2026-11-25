@@ -723,6 +723,19 @@ Each phase ends with something you can use.
 
 ---
 
+### Done since the phases above (v0.5)
+
+Furigana (reader and transcripts), German compound splitting, exam-anchor entry, Whisper transcription (opt-in,
+faster-whisper on the CPU), A–B loop, translation track (YouTube captions, else the AI provider), neural voices,
+streaming tutor replies, AI-written discovery searches, offline manga, Android speech recognition (plugin), Tailscale
+(addresses in the pairing code and learned on each sync), Gemini/Claude/ChatGPT choice, Hindi/Bengali/Arabic (RTL),
+backups, the recommender rebuild (`services/ranker.py`).
+
+Still deferred: OCR for scanned PDFs and running mokuro on manga (both need large models); Gutenberg/Aozora book
+discovery (Gutenberg was unreachable when this was attempted); podcasts (Whisper now makes them possible); pitch
+contour and DTW timing in shadowing (Parselmouth); a Japanese C-test; grammar tracking from lookups; refitting the
+vocabulary curve from weekly evidence; the series coverage curve for manga.
+
 ## 13. Assumptions and open questions
 
 | # | Question | Default I'll assume if you don't say otherwise |

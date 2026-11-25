@@ -76,7 +76,8 @@ temporary test copy. Test servers can refuse phones altogether with `LINGO_PHONE
   their page images on the phone too (it takes a moment per page, at home).
 - Speech recognition (the tutor's microphone, the speaking check, shadowing) uses Android's own recogniser; the
   first time, Android asks to allow the microphone.
-- Gemini isn't called from the phone directly; AI explanations work at home through the laptop.
+- AI explanations and the tutor go through the laptop (at home, or anywhere over Tailscale): API keys stay on the
+  laptop and are never sent to the phone.
 
 ## Remove a phone
 

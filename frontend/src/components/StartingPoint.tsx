@@ -281,7 +281,8 @@ function ExamPicker({ lang, data }: { lang: string; data: StartingPoint }) {
   const [exam, setExam] = useState(data.exam?.exam ?? "");
   const [level, setLevel] = useState(data.exam?.level_id ?? "");
   const [passedOn, setPassedOn] = useState(data.exam?.passed_on ?? "");
-  const options = data.exams.find((e) => e.id === exam)?.levels ?? [];
+  const exams = data.exams ?? [];
+  const options = exams.find((e) => e.id === exam)?.levels ?? [];
   const field = "min-h-10 rounded-lg border border-white/14 bg-surface px-2 text-sm text-ink";
   return (
     <div>
@@ -308,7 +309,7 @@ function ExamPicker({ lang, data }: { lang: string; data: StartingPoint }) {
           className={field}
         >
           <option value="">Choose an exam…</option>
-          {data.exams.map((e) => (
+          {exams.map((e) => (
             <option key={e.id} value={e.id}>
               {e.name}
             </option>

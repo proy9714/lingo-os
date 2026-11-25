@@ -63,7 +63,13 @@ seconds later, so you see how hard a video or article is before you open it.
   and you can move it back.
 - **Level Lab**: short tests (vocabulary, reading, listening, speaking) that give your level as a range.
 - **Speak**: an AI tutor that talks at your level (optional: Gemini, Claude or ChatGPT), and shadowing practice.
-- **Grammar**, **Manga** (Japanese, with clickable speech bubbles), **weekly reports**, and an **Android app**.
+- **Player extras**: an A–B loop, English under each line (YouTube's captions or your AI provider's translation),
+  furigana for Japanese, and **Whisper** transcripts made on your computer for videos without captions.
+- **Your starting point**: a level you choose, past hours, your Immersion Tracker history, or an official exam you
+  passed (Goethe, DELE, DELF, JLPT, TOPIK, HSK…).
+- **Grammar**, **Manga** (Japanese, with clickable speech bubbles), **weekly reports**, and an **Android app** that
+  syncs over home Wi-Fi or anywhere through Tailscale, with texts and manga saved for offline.
+- **Backups**: everything in one file, to keep safe or move to another computer.
 
 ## Install it on your computer
 

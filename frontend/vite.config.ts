@@ -8,7 +8,8 @@ const { version } = JSON.parse(readFileSync(new URL("./package.json", import.met
 // In development the API runs separately on :8787 (npm run dev at the project root starts both).
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  define: { __APP_VERSION__: JSON.stringify(version) }, // a new version clears the answers saved in the browser
+  // every build gets its own id, which clears the answers saved in the browser: a new build may shape them differently
+  define: { __APP_VERSION__: JSON.stringify(`${version}+${Date.now().toString(36)}`) },
   server: {
     port: 5173,
     strictPort: true,
