@@ -195,7 +195,8 @@ function recognitionClass(): (new () => RecognitionLike) | null {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
-export const canRecognize = () => recognitionClass() !== null;
+// In the Android app the WebView has no recogniser: Android's own one is used through a plugin.
+export const canRecognize = () => isNativeApp() || recognitionClass() !== null;
 
 /**
  * Speech to text with the browser's recogniser. In Chrome and Edge the audio is sent to the browser maker's speech
@@ -210,7 +211,58 @@ export function useSpeechInput(lang: string) {
   const finished = useRef<((text: string) => void) | null>(null);
   const collected = useRef("");
 
+  const native = useRef<{ stop: () => Promise<void>; cleanup: () => void } | null>(null);
+
+  // Android: one utterance per press, partial results as you speak; it ends by itself after a pause.
+  const startNative = useCallback(async () => {
+    const { SpeechRecognition } = await import("@capacitor-community/speech-recognition");
+    collected.current = "";
+    setFinalText("");
+    setInterim("");
+    setError(null);
+    try {
+      const permission = await SpeechRecognition.requestPermissions();
+      if (permission.speechRecognition !== "granted") {
+        setError("Allow the microphone for Lingo OS in Android's settings to speak.");
+        return;
+      }
+      const { available } = await SpeechRecognition.available();
+      if (!available) {
+        setError("This phone has no speech recognition (install or update Google's speech services).");
+        return;
+      }
+      await SpeechRecognition.removeAllListeners();
+      let latest = "";
+      const finish = () => {
+        collected.current = latest.trim();
+        setFinalText(collected.current);
+        setInterim("");
+        setListening(false);
+        finished.current?.(collected.current);
+        finished.current = null;
+        void SpeechRecognition.removeAllListeners();
+      };
+      await SpeechRecognition.addListener("partialResults", (data) => {
+        latest = data.matches?.[0] ?? latest;
+        setInterim(latest);
+      });
+      await SpeechRecognition.addListener("listeningState", (data) => {
+        if (data.status === "stopped") finish();
+      });
+      native.current = { stop: () => SpeechRecognition.stop(), cleanup: () => void SpeechRecognition.removeAllListeners() };
+      setListening(true);
+      await SpeechRecognition.start({ language: LOCALES[lang] ?? lang, partialResults: true, popup: false, maxResults: 1 });
+    } catch (e) {
+      setListening(false);
+      setError(`Speech recognition: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  }, [lang]);
+
   const start = useCallback(() => {
+    if (isNativeApp()) {
+      void startNative();
+      return;
+    }
     const Recognition = recognitionClass();
     if (!Recognition) {
       setError("This browser has no speech recognition. Chrome or Edge have one.");
@@ -247,12 +299,17 @@ export function useSpeechInput(lang: string) {
     recognizer.current = rec;
     rec.start();
     setListening(true);
-  }, [lang]);
+  }, [lang, startNative]);
 
   /** Stops listening and resolves with everything recognised. */
   const stop = useCallback(
     () =>
       new Promise<string>((resolve) => {
+        if (native.current && listening) {
+          finished.current = resolve;
+          void native.current.stop().catch(() => resolve(collected.current));
+          return;
+        }
         if (!recognizer.current || !listening) {
           resolve(collected.current);
           return;
@@ -263,7 +320,13 @@ export function useSpeechInput(lang: string) {
     [listening],
   );
 
-  useEffect(() => () => recognizer.current?.abort(), []);
+  useEffect(
+    () => () => {
+      recognizer.current?.abort();
+      native.current?.cleanup();
+    },
+    [],
+  );
 
   return { supported: canRecognize(), listening, text: [finalText, interim].filter(Boolean).join(" "), error, start, stop };
 }

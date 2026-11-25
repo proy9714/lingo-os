@@ -74,9 +74,8 @@ temporary test copy. Test servers can refuse phones altogether with `LINGO_PHONE
 
 - Videos stream from YouTube or the laptop; they can't be saved offline. Manga volumes can: **Save offline** stores
   their page images on the phone too (it takes a moment per page, at home).
-- Android's in-app browser has no speech recognition, so the tutor's microphone, the speaking check and the word
-  comparison in shadowing need typing or the laptop for now (recording yourself still works). A native speech plugin
-  can be added later.
+- Speech recognition (the tutor's microphone, the speaking check, shadowing) uses Android's own recogniser; the
+  first time, Android asks to allow the microphone.
 - Gemini isn't called from the phone directly; AI explanations work at home through the laptop.
 
 ## Remove a phone
