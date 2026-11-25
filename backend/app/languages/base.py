@@ -16,6 +16,7 @@ class Token:
     learnable: bool = False  # content word worth colouring (not particles, names, numbers…)
     lookup_forms: tuple[str, ...] = field(default=())  # extra dictionary keys (surface, written base form)
     base: str = ""  # dictionary form as written in this text (ご飯 where the lemma is 御飯); defaults to lemma
+    ruby: tuple[tuple[str, str], ...] = ()  # Japanese furigana: (text, reading) pieces, reading '' over kana
 
     @property
     def display(self) -> str:

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../api/client";
 import { useContentItem, useContentMutation, useTranscript } from "../api/hooks";
 import type { TranscriptCue } from "../api/types";
+import { FuriganaToggle } from "../lib/furigana";
 import { BANDS } from "../components/cards";
 import { CompletedButton } from "../components/CompletedButton";
 import { DifficultyRating } from "../components/DifficultyRating";
@@ -250,7 +251,11 @@ export function PlayerPage() {
             <h2 id="t-transcript" className="text-[13px] font-semibold tracking-[0.08em] text-ink-2 uppercase">
               Transcript
             </h2>
-            <span className="text-xs text-ink-3">click a word to look it up</span>
+            {lang === "ja" ? (
+              <FuriganaToggle className="rounded-lg px-2 py-1 text-xs font-semibold text-ink-2 transition hover:bg-white/8 hover:text-ink" />
+            ) : (
+              <span className="text-xs text-ink-3">click a word to look it up</span>
+            )}
           </div>
           {transcript.isPending ? (
             <div className="flex flex-col gap-2 p-4">

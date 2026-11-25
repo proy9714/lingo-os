@@ -233,6 +233,7 @@ export interface AnnotatedToken {
   rank: number | null;
   status: TokenStatus;
   p: number | null;
+  ruby?: [string, string][]; // Japanese furigana: (text, reading) pieces, reading "" over kana
 }
 
 export interface Annotation {

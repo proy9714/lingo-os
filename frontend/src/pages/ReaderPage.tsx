@@ -1,6 +1,7 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { FuriganaToggle } from "../lib/furigana";
 import { CompletedButton } from "../components/CompletedButton";
 import { BackLink } from "../lib/nav";
 import { api } from "../api/client";
@@ -114,6 +115,9 @@ export function ReaderPage() {
         </div>
         <div className="flex items-center gap-1.5">
           {item.data && <CompletedButton id={item.data.id} kind="text" finished={item.data.status === "finished"} />}
+          {lang === "ja" && (
+            <FuriganaToggle className="min-h-10 rounded-xl px-3 text-xs font-semibold text-ink-2 transition hover:bg-white/8 hover:text-ink" />
+          )}
           <Button variant="ghost" aria-label="Smaller text" disabled={size === SIZES[0]} onClick={() => changeSize(-1)}>
             A−
           </Button>

@@ -36,6 +36,27 @@ POS_MAP = {
 GROUP_HEADS = {"動詞", "形容詞", "形状詞"}
 
 
+KANJI = re.compile(r"[\u3400-\u9fff\uf900-\ufaff々〆ヶ]")
+
+
+def furigana(surface: str, kana: str) -> tuple[tuple[str, str], ...]:
+    """Readings over the kanji only: 食べさせた + たべさせた → (食, た), (べさせた, ''). Empty if nothing to add."""
+    if not KANJI.search(surface) or not kana:
+        return ()
+    runs: list[tuple[str, bool]] = []
+    for ch in surface:
+        is_kanji = bool(KANJI.match(ch))
+        if runs and runs[-1][1] == is_kanji:
+            runs[-1] = (runs[-1][0] + ch, is_kanji)
+        else:
+            runs.append((ch, is_kanji))
+    pattern = "".join("(.+?)" if is_kanji else f"({re.escape(to_hiragana(run))})" for run, is_kanji in runs)
+    match = re.fullmatch(pattern, kana)
+    if not match:  # irregular reading (当て字, numbers): the whole word gets it
+        return ((surface, kana),)
+    return tuple((run, match.group(n + 1) if is_kanji else "") for n, (run, is_kanji) in enumerate(runs))
+
+
 def to_hiragana(katakana: str) -> str:
     return "".join(chr(ord(c) - 0x60) if "ァ" <= c <= "ヶ" else c for c in katakana)
 
@@ -98,6 +119,8 @@ class JapanesePack:
             base = feature.orthBase or word.surface
             lemma = _clean_lemma(feature.lemma or base)
             reading = to_hiragana(feature.lForm or feature.kana or "") if is_word else ""
+            # the reading of the words as written (not the dictionary form), for furigana
+            written = "".join(to_hiragana(w.feature.kana or w.surface) for w, _s, _e in words[i:j]) if is_word else ""
             learnable = is_word and pos in {"NOUN", "VERB", "ADJ", "ADV", "INTJ"}
             tokens.append(
                 Token(
@@ -111,6 +134,7 @@ class JapanesePack:
                     learnable=learnable,
                     lookup_forms=tuple(dict.fromkeys(f for f in (base, lemma, surface) if f)) if is_word else (),
                     base=base if is_word else "",
+                    ruby=furigana(surface, written) if is_word else (),
                 )
             )
             i = j

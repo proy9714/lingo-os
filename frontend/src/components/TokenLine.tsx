@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 
 import type { AnnotatedToken, TokenStatus } from "../api/types";
+import { useFurigana, withFurigana } from "../lib/furigana";
 import { useLookupStore } from "../state/lookup";
 import { cx } from "./ui";
 
@@ -40,6 +41,7 @@ export function TokenLine({ lang, text, tokens, sentence, locator, contentItemId
   const select = useLookupStore((s) => s.select);
   const selected = useLookupStore((s) => s.selection);
   const classes = theme === "dark" ? DARK : PAPER;
+  const furigana = useFurigana();
   let cursor = 0;
   return (
     <span lang={lang}>
@@ -75,7 +77,7 @@ export function TokenLine({ lang, text, tokens, sentence, locator, contentItemId
               )}
               aria-label={`${content}: look up${token.status === "new" ? " (new word)" : ""}`}
             >
-              {content}
+              {withFurigana(token, content, furigana)}
             </button>
           </Fragment>
         );

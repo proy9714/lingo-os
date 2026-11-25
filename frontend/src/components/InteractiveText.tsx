@@ -2,6 +2,7 @@ import { Fragment, useMemo } from "react";
 
 import { useAnnotation } from "../api/hooks";
 import type { AnnotatedToken, Annotation, TokenStatus } from "../api/types";
+import { useFurigana, withFurigana } from "../lib/furigana";
 import { useLookupStore } from "../state/lookup";
 import { Skeleton, cx } from "./ui";
 
@@ -36,6 +37,7 @@ export function InteractiveText({ lang, text, locator }: { lang: string; text: s
 function Rendered({ lang, text, data, locator }: { lang: string; text: string; data: Annotation; locator?: string }) {
   const select = useLookupStore((s) => s.select);
   const selected = useLookupStore((s) => s.selection);
+  const furigana = useFurigana();
 
   const pieces = useMemo(() => {
     const out: { key: string; gap: string; token: AnnotatedToken }[] = [];
@@ -72,7 +74,7 @@ function Rendered({ lang, text, data, locator }: { lang: string; text: string; d
                 )}
                 aria-label={`${content}: look up${token.status === "new" ? " (new word)" : ""}`}
               >
-                {content}
+                {withFurigana(token, content, furigana)}
               </button>
             ) : (
               content

@@ -65,6 +65,7 @@ def annotate(conn: Connection, lang: str, text: str) -> dict[str, Any]:
                 "rank": rank,
                 "status": status,
                 "p": round(p, 3) if p is not None else None,
+                **({"ruby": [list(piece) for piece in token.ruby]} if token.ruby else {}),
             }
         )
 
