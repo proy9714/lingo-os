@@ -146,10 +146,29 @@ function LocalMedia({ item, startMs, onReady, onTime, onPlaying }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item.id]);
 
-  const src = useRecordingSrc(item.id);
+  // a podcast episode not downloaded here plays straight from its publisher (that works on the phone too)
+  const enclosure = item.type === "podcast_episode" ? (item.metadata as { enclosure_url?: string } | null)?.enclosure_url : undefined;
+  const src = useRecordingSrc(item.id, enclosure ?? `/api/content/${item.id}/media`);
+  useEffect(() => {
+    // the lock screen and notification shade show what's playing, with play/pause and ±15 s
+    const session = typeof navigator !== "undefined" ? navigator.mediaSession : undefined;
+    if (!session || typeof MediaMetadata === "undefined") return;
+    const image = (item.metadata as { image?: string } | null)?.image;
+    session.metadata = new MediaMetadata({ title: item.title, artist: item.creator ?? "", artwork: image ? [{ src: image }] : [] });
+    const media = ref.current;
+    if (!media) return;
+    session.setActionHandler("play", () => void media.play());
+    session.setActionHandler("pause", () => media.pause());
+    session.setActionHandler("seekbackward", () => (media.currentTime = Math.max(0, media.currentTime - 15)));
+    session.setActionHandler("seekforward", () => (media.currentTime = media.currentTime + 15));
+    return () => {
+      for (const action of ["play", "pause", "seekbackward", "seekforward"] as const) session.setActionHandler(action, null);
+    };
+  }, [item.id, item.title, item.creator, item.metadata]);
   const common = {
     src,
     controls: true,
+    preload: "metadata" as const,
     onPlay: () => onPlaying(true),
     onPause: () => onPlaying(false),
     onEnded: () => onPlaying(false),

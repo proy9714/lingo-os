@@ -88,7 +88,7 @@ export function PlayerPage() {
   const lang = item.data?.language ?? "de";
   useTracker({
     lang,
-    activity: item.data?.type === "audio" ? "audio" : "video",
+    activity: item.data?.type === "podcast_episode" ? "podcast" : item.data?.type === "audio" ? "audio" : "video",
     label: item.data?.type === "audio" ? "Listening" : "Watching",
     contentItemId: item.data ? id : undefined,
     active: Boolean(item.data) && playing,
@@ -210,7 +210,11 @@ export function PlayerPage() {
     <div className="flex flex-col gap-4">
       <header className="flex flex-wrap items-start justify-between gap-3 px-1 pt-1">
         <div className="min-w-0">
-          <BackLink to="/watch" label="All videos" className="text-sm text-ink-2 hover:text-ink" />
+          {data.type === "podcast_episode" ? (
+            <BackLink to="/listen" label="Podcasts" className="text-sm text-ink-2 hover:text-ink" />
+          ) : (
+            <BackLink to="/watch" label="All videos" className="text-sm text-ink-2 hover:text-ink" />
+          )}
           <h1 className="mt-1 text-xl leading-snug font-bold md:text-2xl">{displayTitle(data.title)}</h1>
           <p className="mt-1 text-sm text-ink-2">
             {data.creator ?? "Local file"}

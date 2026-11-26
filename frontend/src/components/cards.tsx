@@ -63,7 +63,8 @@ export function videoThumb(pick: Pick<UpNextPick, "source" | "external_id">, siz
   return pick.source === "youtube" && pick.external_id ? `https://i.ytimg.com/vi/${pick.external_id}/${size}default.jpg` : null;
 }
 
-export function targetOf(pick: Pick<UpNextPick, "kind">): "/read/$itemId" | "/manga/$itemId" | "/watch/$itemId" {
+export function targetOf(pick: Pick<UpNextPick, "kind">): "/read/$itemId" | "/manga/$itemId" | "/watch/$itemId" | "/listen/$itemId" {
+  if (pick.kind === "podcast") return "/listen/$itemId";
   return pick.kind === "reading" ? "/read/$itemId" : pick.kind === "manga" ? "/manga/$itemId" : "/watch/$itemId";
 }
 
@@ -112,7 +113,7 @@ function Picture({ pick, size = "mq" }: { pick: UpNextPick; size?: "mq" | "hq" |
 }
 
 export function lengthLabel(pick: UpNextPick): string | null {
-  if (pick.kind === "video") return pick.duration_sec ? `${Math.round(pick.duration_sec / 60)} min` : null;
+  if (pick.kind === "video" || pick.kind === "podcast") return pick.duration_sec ? `${Math.round(pick.duration_sec / 60)} min` : null;
   if (pick.kind === "manga") return null;
   const minutes = readingMinutes(pick.word_count);
   return minutes ? `${minutes} min read` : null;
@@ -174,7 +175,7 @@ const HOVER_ICON =
 export function WatchedButton({ pick, className, labelled }: { pick: UpNextPick; className?: string; labelled?: boolean }) {
   const mark = useMarkWatched();
   const showToast = useUi((s) => s.showToast);
-  const label = pick.kind === "video" ? "Already watched" : "Already read";
+  const label = pick.kind === "video" ? "Already watched" : pick.kind === "podcast" ? "Already heard" : "Already read";
   return (
     <button
       type="button"
@@ -185,9 +186,9 @@ export function WatchedButton({ pick, className, labelled }: { pick: UpNextPick;
           {
             onSuccess: () =>
               showToast(
-                pick.kind === "video" ? "Moved to Watched." : "Marked as read.",
+                pick.kind === "video" ? "Moved to Watched." : pick.kind === "podcast" ? "Moved to Listened." : "Marked as read.",
                 { label: "Undo", run: () => mark.mutate({ id: pick.id, watched: false }) },
-                { itemId: pick.id, kind: pick.kind === "video" ? "video" : "text" },
+                { itemId: pick.id, kind: pick.kind === "video" || pick.kind === "podcast" ? "video" : "text" },
               ),
             onError: (error) => {
               restore();
@@ -275,7 +276,7 @@ function reasonLine(pick: UpNextPick): string {
 /** The big card at the top of Today. */
 export function FeaturedCard({ pick }: { pick: UpNextPick }) {
   const length = lengthLabel(pick);
-  const verb = pick.kind === "video" ? "Watch now" : pick.kind === "manga" ? "Read the volume" : "Read now";
+  const verb = pick.kind === "video" ? "Watch now" : pick.kind === "podcast" ? "Listen now" : pick.kind === "manga" ? "Read the volume" : "Read now";
   const inProgress = (pick.progress ?? 0) > 0.02 && (pick.progress ?? 0) < 0.9;
   const card = useRef<HTMLElement>(null);
   useSeen(card, pick.id);
@@ -304,7 +305,7 @@ export function FeaturedCard({ pick }: { pick: UpNextPick }) {
             params={{ itemId: String(pick.id) }}
             className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-accent px-5 text-sm font-bold text-accent-ink transition hover:brightness-110"
           >
-            {pick.kind === "video" && <span aria-hidden="true">▶</span>} {verb}
+            {(pick.kind === "video" || pick.kind === "podcast") && <span aria-hidden="true">▶</span>} {verb}
           </Link>
           {pick.kind !== "manga" && <WatchedButton pick={pick} labelled />}
           <DismissButton pick={pick} labelled />

@@ -197,6 +197,52 @@ export const useWordProgress = (id: number | null | undefined, status?: string) 
     staleTime: 60_000,
   });
 
+// ---------------------------------------------------------------- podcasts
+
+export const usePodcastShows = (lang: string) =>
+  useQuery({ queryKey: ["podcasts", lang], queryFn: () => api.podcastShows(lang), enabled: Boolean(lang) });
+
+export const usePodcastSearch = (lang: string, q: string, enabled: boolean) =>
+  useQuery({
+    queryKey: ["podcast-search", lang, q],
+    queryFn: () => api.podcastSearch(lang, q),
+    enabled: Boolean(lang) && enabled,
+    staleTime: 10 * 60_000,
+    retry: false,
+  });
+
+export const usePodcastEpisodes = (id: number | null) =>
+  useQuery({ queryKey: ["podcast-episodes", id], queryFn: () => api.podcastEpisodes(id as number), enabled: id !== null });
+
+/** Following or unfollowing a show changes the shows, their episodes and the Listen suggestions. */
+export function usePodcastMutation<TVars, TData>(fn: (vars: TVars) => Promise<TData>) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: fn,
+    onSuccess: () => {
+      for (const key of [["podcasts"], ["podcast-search"], ["podcast-episodes"], ["feed"], ["recommend"], ["content"]]) {
+        void qc.invalidateQueries({ queryKey: key });
+      }
+    },
+  });
+}
+
+/** Check the shows you follow for new episodes when the Podcasts page opens (the server does it at most twice a day). */
+export function usePodcastRefresh(lang: string) {
+  const qc = useQueryClient();
+  const asked = useRef<string | null>(null);
+  useEffect(() => {
+    if (!lang || asked.current === lang) return;
+    asked.current = lang;
+    void api
+      .podcastRefresh(lang)
+      .then((r) => {
+        if (r.added) for (const key of [["podcasts"], ["podcast-episodes"], ["feed"]]) void qc.invalidateQueries({ queryKey: key });
+      })
+      .catch(() => undefined);
+  }, [lang, qc]);
+}
+
 export const useWordModel = (lang: string) =>
   useQuery({ queryKey: ["words", "model", lang], queryFn: () => api.wordModel(lang), enabled: Boolean(lang) });
 

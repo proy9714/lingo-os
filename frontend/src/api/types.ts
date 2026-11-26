@@ -451,6 +451,8 @@ export interface VoiceList {
 
 export interface ContentItem {
   id: number;
+  published_at?: string | null;
+  collection_id?: number | null;
   language: string;
   type: string;
   title: string;
@@ -567,6 +569,30 @@ export interface SystemStatus {
 export type FeedShelf = "watch" | "listen" | "read";
 export type Shelf = FeedShelf | "manga";
 export type PickKind = "video" | "podcast" | "reading" | "manga";
+
+/** A podcast you follow (backend services/podcasts.py). */
+export interface PodcastShow {
+  id: number;
+  title: string;
+  author: string | null;
+  feed_url: string;
+  image: string | null;
+  description: string | null;
+  subscribed: boolean;
+  episodes: number;
+  listened: number;
+  latest: string | null;
+}
+
+export interface PodcastSearchResult {
+  title: string;
+  author: string | null;
+  feed_url: string;
+  image: string | null;
+  genre: string | null;
+  episodes: number | null;
+  following: boolean;
+}
 
 /** A suggestion's score taken apart (backend recommend.explain). */
 export interface PickExplain {

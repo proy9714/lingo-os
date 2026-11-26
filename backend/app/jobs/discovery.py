@@ -11,11 +11,37 @@ from app.services.discover import update_content
 @register("update_content")
 def update_content_job(ctx: JobContext) -> dict[str, Any]:
     ctx.progress(0.02, "looking for new content")
-    return update_content(
+    result = update_content(
         ctx.engine, ctx.cfg, ctx.payload.get("lang"), per_run=ctx.payload.get("per_run"),
         progress=lambda fraction, message: ctx.progress(fraction, message),
         videos=bool(ctx.payload.get("videos", True)), articles=bool(ctx.payload.get("articles", True)),
     )
+    if ctx.payload.get("podcasts", True):
+        result["podcasts"] = _podcasts(ctx)
+    return result
+
+
+def _podcasts(ctx: JobContext) -> dict[str, Any]:
+    """New episodes of the shows you follow; and Whisper transcribes the best-placed ones without a transcript, a few
+    a day (when transcription is on in Settings), so their level gets measured."""
+    from app.db import settings_store
+    from app.ingest import whisper
+    from app.jobs.runner import enqueue
+    from app.services import podcasts, recommend
+
+    langs = [ctx.payload["lang"]] if ctx.payload.get("lang") else ctx.cfg.language_codes
+    out: dict[str, Any] = {"added": 0, "transcribing": 0}
+    for lang in langs:
+        ctx.progress(0.95, "checking your podcasts")
+        with ctx.engine.begin() as conn:
+            out["added"] += podcasts.refresh(conn, lang)["added"]
+            if (settings_store.get(conn, whisper.SETTING) or "") in whisper.MODELS:
+                for item_id in podcasts.to_transcribe(conn, lang, limit=int(settings_store.get(conn, "podcasts.auto_transcribe", 2) or 0)):
+                    enqueue(conn, "transcribe", {"item_id": item_id}, lane="gpu", dedupe=False)
+                    out["transcribing"] += 1
+    if out["added"]:
+        recommend.invalidate()
+    return out
 
 
 @register("verify_candidates")

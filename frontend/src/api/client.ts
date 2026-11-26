@@ -64,6 +64,8 @@ import type {
   Shelf,
   WordModel,
   WordProgress,
+  PodcastSearchResult,
+  PodcastShow,
 } from "./types";
 
 import { flush } from "../sync/outbox";
@@ -209,6 +211,16 @@ export const api = {
   searchSuggest: (lang: string, kind: "video" | "article", q: string) =>
     request<{ q: string; suggestions: string[] }>(`/api/search/suggest?${new URLSearchParams({ lang, kind, q })}`),
   searchResults: (id: string) => request<SearchState>(`/api/search/${encodeURIComponent(id)}`),
+  podcastShows: (lang: string) => request<{ shows: PodcastShow[] }>(`/api/podcasts?lang=${encodeURIComponent(lang)}`),
+  podcastSearch: (lang: string, q: string) =>
+    request<{ results: PodcastSearchResult[] }>(`/api/podcasts/search?lang=${encodeURIComponent(lang)}&q=${encodeURIComponent(q)}`),
+  podcastSubscribe: (lang: string, feedUrl: string) =>
+    request<PodcastShow & { added: number; collection_id: number }>("/api/podcasts/subscribe", { method: "POST", body: json({ lang, feed_url: feedUrl }) }),
+  podcastUnsubscribe: (id: number) => request<{ unsubscribed: boolean }>(`/api/podcasts/${id}`, { method: "DELETE" }),
+  podcastEpisodes: (id: number, offset = 0) =>
+    request<{ show: PodcastShow; total: number; items: ContentItem[]; next_offset: number | null }>(`/api/podcasts/${id}/episodes?offset=${offset}`),
+  podcastRefresh: (lang: string, force = false) =>
+    request<{ added: number; errors: string[] }>("/api/podcasts/refresh", { method: "POST", body: json({ lang, force }) }),
   wordProgress: (id: number) => request<WordProgress>(`/api/vocab/words/${id}/progress`),
   wordModel: (lang: string) => request<WordModel>(`/api/vocab/model?lang=${encodeURIComponent(lang)}`),
   setWordModel: (prefs: Partial<WordModel["preferences"]>) =>

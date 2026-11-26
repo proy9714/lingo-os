@@ -29,6 +29,12 @@ def transcribe(ctx: JobContext) -> dict[str, Any]:
         if item["source"] == "youtube" and item["external_id"]:
             ctx.progress(0.1, "fetching the audio")
             audio = whisper.youtube_audio(item["external_id"], work)
+        elif item["type"] == "podcast_episode":
+            from app.services import podcasts
+
+            ctx.progress(0.1, "fetching the episode")
+            with ctx.engine.connect() as conn:
+                audio = podcasts.ensure_local_audio(conn, ctx.cfg, item_id)  # kept: offline downloads use it too
         elif item["local_path"] and Path(item["local_path"]).exists():
             audio = Path(item["local_path"])
         else:

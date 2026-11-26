@@ -21,7 +21,7 @@ export function useTabParam<T extends string>(values: readonly T[]): [T, (tab: T
  * "← Back" on a detail page: returns to where you came from (Today, the Watched tab, a search…) with its scroll
  * position; when the page was opened directly, it links to the section instead.
  */
-export function BackLink({ to, label, className }: { to: "/watch" | "/read" | "/manga"; label: string; className?: string }) {
+export function BackLink({ to, label, className }: { to: "/watch" | "/listen" | "/read" | "/manga"; label: string; className?: string }) {
   const canGoBack = useCanGoBack();
   const router = useRouter();
   return (

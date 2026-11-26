@@ -132,8 +132,12 @@ def _reasons(item: dict[str, Any]) -> list[str]:
     if item.get("_fill"):
         reasons.append("the closest to your level found so far")
     if item["estimated"]:
-        reasons.append({"label": "level estimated from the channel's label", "language": "a learner channel, level not measured yet"}
-                       .get(item["level_basis"] or "", "level estimated from the channel"))
+        if item["type"] in PODCAST_TYPES:
+            reasons.append("level estimated from the show's other episodes" if item["level_basis"] in ("channel1", "channel3")
+                           else "level not measured yet (no transcript)")
+        else:
+            reasons.append({"label": "level estimated from the channel's label", "language": "a learner channel, level not measured yet"}
+                           .get(item["level_basis"] or "", "level estimated from the channel"))
     return reasons
 
 

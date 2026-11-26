@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import Connection, text
 
@@ -422,10 +422,31 @@ def taste_summary(
     return {**summary, "calibration": calibration.summary(conn, lang)}
 
 
-@router.get("/content/{item_id}/media")
-def media(item_id: int, request: Request, conn: Connection = Depends(get_conn), cfg: AppConfig = Depends(get_cfg)) -> FileResponse:
+@router.get("/content/{item_id}/media", response_model=None)
+def media(item_id: int, request: Request, conn: Connection = Depends(get_conn), cfg: AppConfig = Depends(get_cfg)) -> FileResponse | RedirectResponse:
+    """Play or download a recording: your own files, and podcast episodes (from here once downloaded, otherwise
+    straight from the publisher; ?download=1 fetches the episode here first, for a device saving it offline)."""
     try:
-        path = content.media_path(cfg, content.get_item(conn, item_id))
+        item = content.get_item(conn, item_id)
+        if item["type"] == "podcast_episode":
+            from app.services import podcasts
+
+            path = podcasts.local_audio(cfg, conn, item)
+            if path is None and request.query_params.get("download"):
+                path = podcasts.ensure_local_audio(conn, cfg, item_id)
+            if path is None:
+                url = (item.get("metadata") or {}).get("enclosure_url")
+                if not url:
+                    raise content.ContentError("this episode has no audio file")
+                return RedirectResponse(url, status_code=302)
+            return FileResponse(path)
+        path = content.media_path(cfg, item)
     except content.ContentError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001 - a publisher that won't hand over the file
+        from app.services.podcasts import PodcastError
+
+        if isinstance(exc, PodcastError):
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+        raise
     return FileResponse(path)  # Starlette serves HTTP Range requests, so seeking works

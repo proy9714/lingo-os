@@ -6,8 +6,9 @@ import type { PoolStatus, UpNextPick } from "../api/types";
 import { useInfiniteSentinel } from "../lib/useInfiniteSentinel";
 import { PickCard } from "./cards";
 import { Button, ProgressBar, Skeleton, cx } from "./ui";
+import type { FeedShelf } from "../api/types";
 
-const NOUN = { watch: "videos", read: "articles" } as const;
+const NOUN = { watch: "videos", listen: "episodes", read: "articles" } as const;
 
 export function relativeTime(iso: string | null): string {
   if (!iso) return "never";
@@ -63,7 +64,7 @@ function flatten(pages: { items: UpNextPick[] }[] | undefined): UpNextPick[] {
 export const GRID = "grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))]";
 
 /** A shelf's suggestions as an endless grid: more load as you scroll, more are found in the background. */
-export function SuggestionGrid({ lang, shelf }: { lang: string; shelf: "watch" | "read" }) {
+export function SuggestionGrid({ lang, shelf }: { lang: string; shelf: FeedShelf }) {
   const feed = useFeed(lang, shelf);
   const pool = usePool(lang);
   const topUp = useTopUp(lang);
@@ -80,7 +81,8 @@ export function SuggestionGrid({ lang, shelf }: { lang: string; shelf: "watch" |
   // Reaching the end asks for more in the background (the server keeps to its cooldown).
   const askedAtEnd = useRef(false);
   useEffect(() => {
-    if (atEnd && items.length > 0 && !askedAtEnd.current) {
+    // podcasts come from the shows you follow: nothing to search for at the end of that list
+    if (atEnd && items.length > 0 && !askedAtEnd.current && shelf !== "listen") {
       askedAtEnd.current = true;
       topUp.mutate({ shelf, atEnd: true });
     }
@@ -130,7 +132,9 @@ export function SuggestionGrid({ lang, shelf }: { lang: string; shelf: "watch" |
         )
       )}
       <div ref={sentinel} aria-hidden="true" />
-      {atEnd && <FeedEnd shelf={shelf} count={items.length} pool={pool.data} onFind={() => topUp.mutate({ force: true, shelf })} finding={topUp.isPending} />}
+      {atEnd && shelf !== "listen" && (
+        <FeedEnd shelf={shelf} count={items.length} pool={pool.data} onFind={() => topUp.mutate({ force: true, shelf })} finding={topUp.isPending} />
+      )}
     </div>
   );
 }

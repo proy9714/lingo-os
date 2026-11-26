@@ -8,7 +8,7 @@ const HEARTBEAT_EVERY = 15;
 
 interface TrackerOptions {
   lang: string;
-  activity: "video" | "audio" | "reading" | "article" | "manga" | "tutor" | "shadowing";
+  activity: "video" | "audio" | "podcast" | "reading" | "article" | "manga" | "tutor" | "shadowing";
   label: string;
   contentItemId?: number;
   /** True while you are actually immersed: media playing, page being read… */

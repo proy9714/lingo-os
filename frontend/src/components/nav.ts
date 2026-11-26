@@ -1,7 +1,7 @@
 import type { IconName } from "./Icon";
 
 export interface NavItem {
-  to: "/" | "/watch" | "/read" | "/manga" | "/speak" | "/words" | "/grammar" | "/level" | "/downloads" | "/settings" | "/help";
+  to: "/" | "/watch" | "/listen" | "/read" | "/manga" | "/speak" | "/words" | "/grammar" | "/level" | "/downloads" | "/settings" | "/help";
   label: string;
   icon: IconName;
   only?: string[]; // shown only while one of these languages is active
@@ -10,6 +10,7 @@ export interface NavItem {
 export const NAV: NavItem[] = [
   { to: "/", label: "Today", icon: "home" },
   { to: "/watch", label: "Watch", icon: "play" },
+  { to: "/listen", label: "Podcasts", icon: "headphones" },
   { to: "/read", label: "Read", icon: "book" },
   { to: "/manga", label: "Manga", icon: "manga", only: ["ja"] }, // mokuro manga reading is for Japanese
   { to: "/speak", label: "Speak", icon: "mic" },

@@ -103,13 +103,13 @@ _ITEM_COLUMNS = (
     "(SELECT MAX(s.started_at) FROM activity_sessions s WHERE s.content_item_id = ci.id), "
     "(SELECT kind FROM transcripts t WHERE t.content_item_id = ci.id AND t.is_primary = 1), "
     "cs.coverage, cs.expected_unknown, cs.band, ca.speech_wpm, ci.word_count, ci.page_count, ci.perceived_difficulty, "
-    "COALESCE(cs.estimated, 0)"
+    "COALESCE(cs.estimated, 0), ci.published_at, ci.collection_id"
 )
 _ITEM_KEYS = (
     "id", "language", "type", "title", "creator", "source", "url", "external_id", "local_path", "duration_sec",
     "status", "progress", "position_ref", "analysis_status", "last_opened_at", "metadata", "times_watched",
     "last_watched_at", "transcript_kind", "coverage", "expected_unknown", "band", "speech_wpm", "word_count", "page_count",
-    "difficulty", "estimated",
+    "difficulty", "estimated", "published_at", "collection_id",
 )
 _ITEM_FROM = (
     "FROM content_items ci LEFT JOIN content_scores cs ON cs.content_item_id = ci.id "

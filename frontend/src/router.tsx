@@ -16,6 +16,8 @@ const routeTree = rootRoute.addChildren([
   page("/", TodayPage),
   page("/watch", lazyRouteComponent(() => import("./pages/WatchPage"), "WatchPage")),
   page("/watch/$itemId", lazyRouteComponent(() => import("./pages/PlayerPage"), "PlayerPage")),
+  page("/listen", lazyRouteComponent(() => import("./pages/PodcastPage"), "PodcastPage")),
+  page("/listen/$itemId", lazyRouteComponent(() => import("./pages/PlayerPage"), "PlayerPage")),
   page("/read", lazyRouteComponent(() => import("./pages/ReadPage"), "ReadPage")),
   page("/read/$itemId", lazyRouteComponent(() => import("./pages/ReaderPage"), "ReaderPage")),
   page("/manga", lazyRouteComponent(() => import("./pages/MangaPage"), "MangaPage")),

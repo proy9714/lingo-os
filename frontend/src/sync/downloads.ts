@@ -134,7 +134,7 @@ async function downloadRecording(target: DownloadTarget, pack: Pack): Promise<vo
   if (!remoteConfig()) {
     // the computer: one download from its own server
     setJob(target.id, { progress: 0.1, label });
-    await saveMedia(target.id, await apiBlob(`/api/content/${target.id}/media`, mime), mime);
+    await saveMedia(target.id, await apiBlob(`/api/content/${target.id}/media?download=1`, mime), mime);
     return;
   }
   // the phone through the encrypted channel: 2 MB at a time
