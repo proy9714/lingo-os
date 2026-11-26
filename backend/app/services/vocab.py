@@ -8,6 +8,7 @@ from typing import Any
 from sqlalchemy import Connection, bindparam, text
 
 from app.languages.base import lexeme_key
+from app.sync.hlc import HybridClock
 from app.timeutil import to_iso, utc_now
 
 STATUSES = ("seen", "learning", "familiar", "known", "ignored")
@@ -16,6 +17,18 @@ STATUS_P = {"learning": 0.3, "familiar": 0.75, "known": 0.98, "ignored": 1.0}
 
 class VocabError(ValueError):
     pass
+
+
+# Every status change made here (by you, by an automatic move, by a test) gets a sync clock stamp, so a change the
+# phone made earlier and sends later can't overwrite it: last writer wins (sync/apply.py). "HUB" stands for this
+# laptop or server; phones stamp with their own device id.
+_CLOCK = HybridClock("HUB")
+
+
+def stamp_hlc(conn: Connection, lexeme_id: int) -> str:
+    stamp = _CLOCK.tick()
+    conn.execute(text("UPDATE user_words SET updated_hlc = :h WHERE lexeme_id = :id"), {"h": stamp, "id": lexeme_id})
+    return stamp
 
 
 def ensure_lexeme(conn: Connection, lang: str, lemma: str, reading: str, pos: str = "", rank: int | None = None) -> int:
@@ -50,19 +63,27 @@ def states(conn: Connection, lang: str, keys: list[tuple[str, str]]) -> dict[str
     }
 
 
-def _event(conn: Connection, lexeme_id: int, event: str, value: str | None = None) -> None:
+def _event(conn: Connection, lexeme_id: int, event: str, value: str | None = None, *, at: str | None = None,
+           content_item_id: int | None = None) -> None:
     conn.execute(
-        text("INSERT INTO word_events (lexeme_id, event, value) VALUES (:id, :e, :v)"),
-        {"id": lexeme_id, "e": event, "v": value},
+        text(
+            "INSERT INTO word_events (lexeme_id, event, value, content_item_id, created_at) "
+            "VALUES (:id, :e, :v, (SELECT id FROM content_items WHERE id = :c), COALESCE(:at, strftime('%Y-%m-%dT%H:%M:%fZ','now')))"
+        ),
+        {"id": lexeme_id, "e": event, "v": value, "c": content_item_id, "at": at},
     )
 
 
 def record_lookup(
-    conn: Connection, lang: str, lemma: str, reading: str, pos: str, rank: int | None, model_p: float
+    conn: Connection, lang: str, lemma: str, reading: str, pos: str, rank: int | None, model_p: float,
+    *, at: str | None = None, content_item_id: int | None = None,
 ) -> dict[str, Any]:
-    """A lookup is evidence you don't (fully) know the word: lower its probability."""
+    """A lookup is evidence you don't (fully) know the word: lower its probability.
+
+    `at` is when it happened (a lookup made offline on the phone arrives later) and `content_item_id` where: the
+    memory model and the recommender use both."""
     lexeme_id = ensure_lexeme(conn, lang, lemma, reading, pos, rank)
-    now = to_iso(utc_now())
+    now = at or to_iso(utc_now())
     row = conn.execute(text("SELECT status, p_known FROM user_words WHERE lexeme_id = :id"), {"id": lexeme_id}).first()
     if row is None:
         conn.execute(
@@ -83,7 +104,7 @@ def record_lookup(
             ),
             {"p": round(new_p, 4), "now": now, "id": lexeme_id},
         )
-    _event(conn, lexeme_id, "lookup")
+    _event(conn, lexeme_id, "lookup", at=at, content_item_id=content_item_id)
     return word_state(conn, lexeme_id)
 
 
@@ -99,7 +120,9 @@ def set_status(
     save: bool = False,
     context: dict[str, Any] | None = None,
     event: str = "status_change",
+    note: str | None = None,
 ) -> dict[str, Any]:
+    """Set a word's status. `note` is kept with the event (e.g. "phone" for a change made on the phone)."""
     if status not in STATUSES:
         raise VocabError(f"unknown status '{status}'")
     lexeme_id = ensure_lexeme(conn, lang, lemma, reading, pos, rank)
@@ -114,7 +137,8 @@ def set_status(
         ),
         {"id": lexeme_id, "s": status, "p": p, "saved": int(save), "now": now},
     )
-    _event(conn, lexeme_id, "save" if save else event, status)
+    _event(conn, lexeme_id, "save" if save else event, f"{status} ({note})" if note else status)
+    stamp_hlc(conn, lexeme_id)
     if context and context.get("sentence"):
         add_context(conn, lexeme_id, context)
     return word_state(conn, lexeme_id)

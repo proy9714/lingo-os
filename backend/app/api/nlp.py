@@ -27,6 +27,7 @@ class LookupRequest(BaseModel):
     pos: str = Field(default="", max_length=16)
     forms: list[str] = Field(default_factory=list, max_length=16)  # Arabic: with and without prefixes, endings, hamza seats
     record: bool = True  # count it as a lookup (lowers the word's known-probability)
+    content_item_id: int | None = None  # what you were reading or watching (the memory model and suggestions use it)
 
 
 @router.post("/tokenize")
@@ -43,7 +44,9 @@ def lookup(
     forms = list(dict.fromkeys([body.lemma, *body.forms]))
     info = word_info(conn, body.lang, body.lemma, body.reading, forms)
     if body.record:
-        state = vocab.record_lookup(conn, body.lang, body.lemma, body.reading, body.pos, info["rank"], info["model_p"])
+        state = vocab.record_lookup(
+            conn, body.lang, body.lemma, body.reading, body.pos, info["rank"], info["model_p"], content_item_id=body.content_item_id
+        )
     else:
         existing = vocab.states(conn, body.lang, [(body.lemma, body.reading)])
         state = next(iter(existing.values()), None)

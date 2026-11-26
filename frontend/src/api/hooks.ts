@@ -187,6 +187,27 @@ function useWordMutation<TVars, TData>(fn: (vars: TVars) => Promise<TData>) {
 export const useSetStatus = () => useWordMutation(api.setStatus);
 
 /** Words that moved up by themselves recently (learning → familiar → known). */
+/** Where a word stands and why (no review dates: words come back through what you watch and read). */
+export const useWordProgress = (id: number | null | undefined, status?: string) =>
+  useQuery({
+    queryKey: ["words", "progress", id, status],
+    queryFn: () => api.wordProgress(id as number),
+    enabled: Boolean(id) && status !== undefined && status !== "seen" && status !== "ignored",
+    retry: false,
+    staleTime: 60_000,
+  });
+
+export const useWordModel = (lang: string) =>
+  useQuery({ queryKey: ["words", "model", lang], queryFn: () => api.wordModel(lang), enabled: Boolean(lang) });
+
+export function useSetWordModel() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: api.setWordModel,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["words"] }),
+  });
+}
+
 export const useWordMoves = (lang: string) =>
   useQuery({ queryKey: ["words", "moves", lang], queryFn: () => api.wordMoves(lang), enabled: Boolean(lang) });
 export const usePatchWord = () =>

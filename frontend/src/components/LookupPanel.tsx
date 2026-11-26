@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 import { api } from "../api/client";
-import { useAiStatus, useSetStatus } from "../api/hooks";
+import { useAiStatus, useSetStatus, useWordProgress } from "../api/hooks";
 import type { GrammarBreakdown, LookupResult, WordStatus } from "../api/types";
 import { canSpeak, speak } from "../lib/speech";
 import { useLookupStore } from "../state/lookup";
@@ -12,6 +12,7 @@ import { Button, Chip, cx } from "./ui";
 const STATUS_BUTTONS: { status: WordStatus; label: string }[] = [
   { status: "seen", label: "New" },
   { status: "learning", label: "Learning" },
+  { status: "familiar", label: "Familiar" },
   { status: "known", label: "Known" },
   { status: "ignored", label: "Ignore" },
 ];
@@ -29,7 +30,10 @@ export function LookupPanel() {
     setResult(null);
     setFitting(null);
     const { token, lang } = selection;
-    lookup.mutate({ lang, lemma: token.lemma, reading: token.reading, pos: token.pos, forms: token.forms, record: token.learnable });
+    lookup.mutate({
+      lang, lemma: token.lemma, reading: token.reading, pos: token.pos, forms: token.forms, record: token.learnable,
+      content_item_id: selection.contentItemId ?? null,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selection?.nonce]);
 
@@ -126,6 +130,7 @@ export function LookupPanel() {
                 </button>
               ))}
             </div>
+            <WordStanding id={state?.lexeme_id} status={currentStatus} />
             <Button variant="primary" disabled={setStatus.isPending} onClick={() => change(currentStatus === "known" ? "known" : "learning", true)}>
               {state?.saved ? "Saved · add this sentence too" : "Save to my words, with this sentence"}
             </Button>
@@ -344,4 +349,11 @@ function GrammarView({ lang, data }: { lang: string; data: GrammarBreakdown }) {
       ))}
     </div>
   );
+}
+
+/** One line on where the word stands and what moves it next (never a review date: it comes back in what you watch). */
+function WordStanding({ id, status }: { id: number | undefined; status: WordStatus }) {
+  const progress = useWordProgress(id, status);
+  if (!progress.data) return null;
+  return <p className="text-xs leading-relaxed text-ink-2">{progress.data.message}</p>;
 }

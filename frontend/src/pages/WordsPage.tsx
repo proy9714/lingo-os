@@ -1,7 +1,16 @@
 import { useEffect, useState } from "react";
 
-import { useActiveLanguage, usePatchWord, useVocabSummary, useWord, useWords } from "../api/hooks";
-import type { WordListItem, WordStatus } from "../api/types";
+import {
+  useActiveLanguage,
+  usePatchWord,
+  useSetWordModel,
+  useVocabSummary,
+  useWord,
+  useWordModel,
+  useWordProgress,
+  useWords,
+} from "../api/hooks";
+import type { WordListItem, WordPace, WordStatus } from "../api/types";
 import { Button, Chip, Panel, Skeleton, cx } from "../components/ui";
 import { formatDay, localDayOf } from "../lib/format";
 
@@ -9,6 +18,7 @@ const FILTERS: { key: string; label: string }[] = [
   { key: "", label: "All" },
   { key: "saved", label: "Saved" },
   { key: "learning", label: "Learning" },
+  { key: "familiar", label: "Familiar" },
   { key: "known", label: "Known" },
   { key: "seen", label: "Looked up" },
   { key: "ignored", label: "Ignored" },
@@ -54,6 +64,7 @@ export function WordsPage() {
           Every word you looked up or saved, with the sentence you met it in. A browser, not flashcards: saved words come back
           through what you read and watch.
         </p>
+        <AutoMoves lang={code} />
       </header>
 
       <div className="glass flex flex-wrap items-center gap-2 rounded-2xl p-2.5">
@@ -135,7 +146,7 @@ function WordRow({ item, lang, open, onToggle }: { item: WordListItem; lang: str
           )}
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1 text-xs text-ink-3">
-          <span className={cx(item.status === "known" ? "text-good" : item.status === "learning" ? "text-sky-300" : "")}>{STATUS_LABEL[item.status]}</span>
+          <span className={cx(item.status === "known" ? "text-good" : item.status === "learning" ? "text-sky-300" : item.status === "familiar" ? "text-violet-300" : "")}>{STATUS_LABEL[item.status]}</span>
           {item.last_seen_at && <span>{formatDay(localDayOf(item.last_seen_at))}</span>}
         </div>
       </button>
@@ -158,7 +169,7 @@ function WordDetailPanel({ id, lang }: { id: number; lang: string }) {
   return (
     <div className="mx-3 mb-3 flex flex-col gap-3 rounded-xl bg-black/20 p-3">
       <div role="group" aria-label="Status" className="flex flex-wrap gap-1.5">
-        {(["learning", "known", "ignored"] as WordStatus[]).map((status) => (
+        {(["learning", "familiar", "known", "ignored"] as WordStatus[]).map((status) => (
           <button
             key={status}
             type="button"
@@ -176,6 +187,7 @@ function WordDetailPanel({ id, lang }: { id: number; lang: string }) {
           {word.rank ? `rank ${word.rank.toLocaleString("en")} · ` : ""}looked up {word.lookups ?? 0}×
         </span>
       </div>
+      {word.status && <Standing id={id} status={word.status} />}
       {word.contexts_list.length > 0 && (
         <ul className="flex flex-col gap-1.5">
           {word.contexts_list.map((c) => (
@@ -201,4 +213,77 @@ function WordDetailPanel({ id, lang }: { id: number; lang: string }) {
       </div>
     </div>
   );
+}
+
+const PACES: { pace: WordPace; label: string; hint: string }[] = [
+  { pace: "cautious", label: "Cautious", hint: "words need more meetings before they move up" },
+  { pace: "balanced", label: "Balanced", hint: "the default" },
+  { pace: "eager", label: "Eager", hint: "words move up after fewer meetings" },
+];
+
+/**
+ * Words move learning → familiar → known by themselves as you keep meeting them without looking them up, and back a
+ * step when you keep looking them up. The model learns how quickly words stick for you; you choose the pace.
+ */
+function AutoMoves({ lang }: { lang: string }) {
+  const model = useWordModel(lang).data;
+  const save = useSetWordModel();
+  const [open, setOpen] = useState(false);
+  if (!model) return null;
+  const { auto, pace } = model.preferences;
+  const fitted = model.fitted && model.fitted.labels >= 10 ? model.fitted : null;
+  return (
+    <div className="mt-3 max-w-2xl rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm">
+      <button type="button" onClick={() => setOpen((v) => !v)} className="flex w-full items-center justify-between gap-2 text-left">
+        <span>
+          <strong className="text-ink">Words move by themselves</strong>
+          <span className="text-ink-2"> · {auto ? `${PACES.find((p) => p.pace === pace)?.label ?? "Balanced"} pace` : "off"}</span>
+        </span>
+        <span className="text-xs text-ink-3">{open ? "Close" : "Change"}</span>
+      </button>
+      {open && (
+        <div className="mt-3 flex flex-col gap-3 text-ink-2">
+          <p>
+            A word you&apos;re learning becomes familiar, then known, as you keep meeting it on different days in what you watch and
+            read without looking it up. Look it up again and again and it moves back a step. Anything you set yourself stays as
+            you set it.
+          </p>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={auto} onChange={(e) => save.mutate({ auto: e.target.checked })} className="size-4 accent-[var(--accent)]" />
+            Move words automatically
+          </label>
+          <div role="group" aria-label="Pace" className="flex flex-wrap gap-1.5">
+            {PACES.map((p) => (
+              <button
+                key={p.pace}
+                type="button"
+                aria-pressed={pace === p.pace}
+                disabled={!auto}
+                title={p.hint}
+                onClick={() => save.mutate({ pace: p.pace })}
+                className={cx(
+                  "min-h-9 rounded-full px-3 text-[13px] font-semibold disabled:opacity-40",
+                  pace === p.pace ? "border border-white bg-white/16 text-white" : "border border-white/14 hover:bg-white/8",
+                )}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-ink-3">
+            {fitted
+              ? `Tuned to you from ${fitted.labels} moments in your own history (words you met, looked up again, or moved back).`
+              : "It tunes itself to how quickly words stick for you once there's a little more history."}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Where the word stands and why, in plain words. */
+function Standing({ id, status }: { id: number; status: WordStatus }) {
+  const progress = useWordProgress(id, status).data;
+  if (!progress) return null;
+  return <p className="text-sm text-ink-2">{progress.message}</p>;
 }

@@ -58,11 +58,37 @@ export interface WordMove {
   lexeme_id: number;
   lemma: string;
   reading: string;
-  from: "learning" | "familiar";
-  to: "familiar" | "known";
+  from: "learning" | "familiar" | "known";
+  to: "learning" | "familiar" | "known";
+  /** up: it stuck; down: you kept looking it up */
+  direction: "up" | "down";
   days: number;
   times: number;
+  lookups?: number;
   status: string;
+}
+
+/** Where one word stands, in plain words (GET /api/vocab/words/{id}/progress). */
+export interface WordProgress {
+  lexeme_id: number;
+  status: string;
+  source: "manual" | "auto" | "test" | "sync";
+  since: string;
+  days_met: number;
+  lookups: number;
+  strength: "new" | "growing" | "strong";
+  recall: number;
+  stability_days: number;
+  next: "familiar" | "known" | null;
+  message: string;
+}
+
+export type WordPace = "cautious" | "balanced" | "eager";
+
+export interface WordModel {
+  preferences: { auto: boolean; pace: WordPace };
+  fitted: { g: number; lapse: number; labels: number; words: number; loss_default: number; loss_fitted: number; fitted_at: string } | null;
+  defaults: { g: number; b: number; lapse: number };
 }
 
 export interface ExamOption {

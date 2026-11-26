@@ -8,8 +8,9 @@ import { Button, Panel, PanelTitle, cx } from "./ui";
 const LABEL: Record<string, string> = { learning: "learning", familiar: "familiar", known: "known" };
 
 /**
- * Today: words that moved up by themselves because you kept meeting them in what you watched and read without
- * looking them up. Each can be moved back with one click: your own choice always wins.
+ * Today: words that moved by themselves: up because you kept meeting them in what you watched and read without
+ * looking them up, or back a step because you kept looking them up. Each can be undone with one click: your own
+ * choice always wins (and tells the model it moved too early).
  */
 export function WordMovesCard({ lang }: { lang: string }) {
   const moves = useWordMoves(lang).data?.moves ?? [];
@@ -20,8 +21,8 @@ export function WordMovesCard({ lang }: { lang: string }) {
         Words you've got
       </PanelTitle>
       <p className="mb-3 text-sm text-ink-2">
-        You met these on several days in what you watched and read, without looking them up, so they moved up. Disagree? Move a
-        word back.
+        Words move up when you keep meeting them on different days without looking them up, and back a step when you keep
+        looking them up. Disagree? Undo it.
       </p>
       <ul className="flex flex-col gap-1.5">
         {moves.slice(0, 12).map((move) => (
@@ -44,7 +45,10 @@ function MoveRow({ lang, move }: { lang: string; move: WordMove }) {
         {move.reading && move.reading !== move.lemma && <span className="ml-1.5 text-xs font-normal text-ink-3">{move.reading}</span>}
       </span>
       <span className="text-xs text-ink-3">
-        {LABEL[move.from]} → <span className={cx(!movedBack && "font-semibold text-good")}>{LABEL[move.to]}</span> · met on {move.days} days
+        {LABEL[move.from]} →{" "}
+        <span className={cx(!movedBack && (move.direction === "down" ? "font-semibold text-warn" : "font-semibold text-good"))}>{LABEL[move.to]}</span>
+        {" · "}
+        {move.direction === "down" ? `looked up ${move.lookups ?? 2} times` : `met on ${move.days} days`}
       </span>
       <span className="flex-1" />
       {movedBack ? (

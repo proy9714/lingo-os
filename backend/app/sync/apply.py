@@ -10,6 +10,7 @@ Events: {event_id, hlc, entity, entity_key, op, payload}
 from __future__ import annotations
 
 import json
+from datetime import timedelta
 from typing import Any
 
 from sqlalchemy import Connection, text
@@ -19,7 +20,7 @@ from app.services.activity import MODALITY
 from app.services.annotate import word_info
 from app.services.reading import record_page_progress
 from app.sync.hlc import Stamp
-from app.timeutil import from_iso
+from app.timeutil import from_iso, to_iso, utc_now
 
 ENTITIES = {"lookup", "word_status", "activity", "progress"}
 
@@ -32,9 +33,26 @@ def _millis(iso: str | None) -> int:
     return int(from_iso(iso).timestamp() * 1000) if iso else 0
 
 
+def _when(value: Any) -> str | None:
+    """A time sent by the phone, if it's a sensible one (not in the future, not years back)."""
+    if not isinstance(value, str):
+        return None
+    try:
+        moment = from_iso(value)
+    except ValueError:
+        return None
+    now = utc_now()
+    if moment > now or now - moment > timedelta(days=365):
+        return None
+    return to_iso(moment)
+
+
 def _lookup(conn: Connection, p: dict[str, Any], _hlc: str) -> str:
     info = word_info(conn, p["lang"], p["lemma"], p.get("reading", ""), list(dict.fromkeys([p["lemma"], *p.get("forms", [])])))
-    vocab.record_lookup(conn, p["lang"], p["lemma"], p.get("reading", ""), p.get("pos", ""), info["rank"], info["model_p"])
+    vocab.record_lookup(
+        conn, p["lang"], p["lemma"], p.get("reading", ""), p.get("pos", ""), info["rank"], info["model_p"],
+        at=_when(p.get("at")), content_item_id=p.get("content_item_id") if isinstance(p.get("content_item_id"), int) else None,
+    )
     return "applied"
 
 
@@ -52,7 +70,7 @@ def _word_status(conn: Connection, p: dict[str, Any], hlc: str) -> str:
             return "superseded"  # changed on the laptop after the phone did
     vocab.set_status(
         conn, p["lang"], p["lemma"], p.get("reading", ""), p["status"], pos=p.get("pos", ""), save=bool(p.get("save")),
-        context=p.get("context"),
+        context=p.get("context"), note="phone",
     )
     conn.execute(text("UPDATE user_words SET updated_hlc = :h WHERE lexeme_id = :id"), {"h": hlc, "id": lexeme_id})
     return "applied"

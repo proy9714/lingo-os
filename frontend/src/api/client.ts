@@ -62,6 +62,8 @@ import type {
   TrackerImportSummary,
   FeedShelf,
   Shelf,
+  WordModel,
+  WordProgress,
 } from "./types";
 
 import { flush } from "../sync/outbox";
@@ -207,6 +209,10 @@ export const api = {
   searchSuggest: (lang: string, kind: "video" | "article", q: string) =>
     request<{ q: string; suggestions: string[] }>(`/api/search/suggest?${new URLSearchParams({ lang, kind, q })}`),
   searchResults: (id: string) => request<SearchState>(`/api/search/${encodeURIComponent(id)}`),
+  wordProgress: (id: number) => request<WordProgress>(`/api/vocab/words/${id}/progress`),
+  wordModel: (lang: string) => request<WordModel>(`/api/vocab/model?lang=${encodeURIComponent(lang)}`),
+  setWordModel: (prefs: Partial<WordModel["preferences"]>) =>
+    request<Pick<WordModel, "preferences">>("/api/vocab/model", { method: "PUT", body: json(prefs) }),
   wordMoves: (lang: string) => request<{ at: string | null; moves: WordMove[] }>(`/api/vocab/moves?lang=${encodeURIComponent(lang)}`),
   languageStart: (code: string) => request<StartingPoint>(`/api/languages/${encodeURIComponent(code)}/start`),
   setLanguageLevel: (code: string, level: string | null) =>
@@ -252,7 +258,7 @@ export const api = {
   // Phase 1
   annotate: (lang: string, text: string) =>
     request<Annotation>("/api/nlp/tokenize", { method: "POST", body: json({ lang, text }) }),
-  lookup: (input: { lang: string; lemma: string; reading?: string; pos?: string; forms?: string[]; record?: boolean }) =>
+  lookup: (input: { lang: string; lemma: string; reading?: string; pos?: string; forms?: string[]; record?: boolean; content_item_id?: number | null }) =>
     request<LookupResult>("/api/nlp/lookup", { method: "POST", body: json(input) }),
   setStatus: (input: {
     lang: string;
