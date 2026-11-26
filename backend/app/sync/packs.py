@@ -1,8 +1,16 @@
-"""Offline packs: everything the phone needs to read an item with no laptop around.
+"""Offline packs: everything a device needs to use an item with no laptop or server in reach.
 
-A pack holds the item's pages, already split into words with your current statuses, plus the dictionary entries for
-those words (a small subset of the full dictionaries). Manga packs list the pages and text boxes; the phone fetches
-the page images once while it is still on the home Wi-Fi.
+A pack holds the item's text already split into words with your current statuses, plus the dictionary entries for
+those words (a small subset of the full dictionaries), so reading and lookups work offline.
+
+  text    books, articles and texts: their pages
+  manga   the pages and text boxes; the device fetches the page images once while still in reach
+  media   videos, audio and podcast episodes with a transcript: the interactive transcript (version 2). The recording
+          itself is downloaded separately when there is one to download (`media`: a local file or a podcast episode);
+          YouTube videos can't be saved, so for them the pack is a read-along transcript.
+
+Packs work for any device: the phone (registered in offline_packs, so Settings can list them) and the browser on a
+computer.
 """
 
 from __future__ import annotations
@@ -15,9 +23,9 @@ from sqlalchemy import Connection, text
 from app.dictionary.lookup import lookup as dict_lookup
 from app.services import manga, reading
 from app.services.annotate import annotate_segments
-from app.services.content import READ_TYPES, ContentError, chunks_of, get_item
+from app.services.content import READ_TYPES, WATCH_TYPES, ContentError, annotated_transcript, chunks_of, get_item
 
-PACK_VERSION = 1
+PACK_VERSION = 2  # 2 adds "media" packs; text and manga packs are unchanged, so older apps still read them
 MAX_DICT_WORDS = 6000
 
 
@@ -43,7 +51,8 @@ def _dictionary(dict_conn: Connection, lang: str, tokens: list[dict[str, Any]]) 
     return out
 
 
-def build_pack(conn: Connection, dict_conn: Connection, item_id: int) -> dict[str, Any]:
+def build_pack(conn: Connection, dict_conn: Connection, item_id: int, media: dict[str, Any] | None = None) -> dict[str, Any]:
+    """The pack for an item. `media` describes the downloadable recording, if any (api/offline_media.media_info)."""
     try:
         item = get_item(conn, item_id)
     except ContentError as exc:
@@ -59,7 +68,7 @@ def build_pack(conn: Connection, dict_conn: Connection, item_id: int) -> dict[st
         pages = []
         for bounds in reading.pages(conn, item_id):
             paragraphs = [
-                {"seq": seq, "text": by_seq[seq][0]["text"], "tokens": by_seq[seq][1]}
+                {"seq": seq, "locator": by_seq[seq][0]["locator"], "text": by_seq[seq][0]["text"], "tokens": by_seq[seq][1]}
                 for seq in range(bounds["start"], bounds["end"] + 1)
                 if seq in by_seq
             ]
@@ -75,11 +84,19 @@ def build_pack(conn: Connection, dict_conn: Connection, item_id: int) -> dict[st
             for block in page["blocks"]:
                 all_tokens += block.get("tokens", [])
         body = {"kind": "manga", "pages": pages, "images": [f"/api/manga/{item_id}/image/{p['page']}" for p in pages]}
+    elif item["type"] in WATCH_TYPES:
+        transcript = annotated_transcript(conn, item_id)
+        if not transcript["cues"]:
+            raise PackError("this has no transcript yet: get captions or a transcript first, then save it")
+        for cue in transcript["cues"]:
+            all_tokens += cue.get("tokens", [])
+        body = {"kind": "media", "pages": [], "transcript": transcript, "media": media or {"available": False, "via": "none"}}
     else:
-        raise PackError("videos stream from YouTube or the laptop and can't be packed; books, articles, texts and manga can")
+        raise PackError("this kind of item can't be saved for offline use")
+    keys = ("id", "language", "type", "title", "creator", "coverage", "page_count", "word_count", "duration_sec", "source", "external_id")
     return {
         "version": PACK_VERSION,
-        "item": {k: item[k] for k in ("id", "language", "type", "title", "creator", "coverage", "page_count", "word_count")},
+        "item": {k: item.get(k) for k in keys} | {"image": (item.get("metadata") or {}).get("image")},
         **body,
         "dictionary": _dictionary(dict_conn, lang, all_tokens),
     }

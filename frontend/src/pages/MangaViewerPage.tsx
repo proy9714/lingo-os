@@ -12,6 +12,7 @@ import { useEngagement } from "../lib/useEngagement";
 import { useTracker } from "../lib/useTracker";
 import { useLookupStore } from "../state/lookup";
 import { useMediaUrl } from "../sync/useSync";
+import { DownloadButton } from "../components/DownloadButton";
 
 function stored(key: string, fallback: boolean): boolean {
   try {
@@ -128,6 +129,7 @@ export function MangaViewerPage() {
           <h1 className="truncate text-xl font-bold tracking-tight">{item.data?.title ?? " "}</h1>
         </div>
         <div className="flex flex-wrap items-center gap-1.5" role="toolbar" aria-label="Viewer options">
+          {item.data && <DownloadButton item={item.data} compact />}
           <ToggleButton pressed={spread} onClick={() => toggle("lingo.manga.spread", !spread, setSpread)}>
             Two pages
           </ToggleButton>

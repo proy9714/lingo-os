@@ -2,19 +2,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
-import { api, mangaImage, syncApi } from "../api/client";
+import { api } from "../api/client";
 import { useActiveLanguage } from "../api/hooks";
 import { Button, Chip, Panel, PanelTitle } from "../components/ui";
+import { downloadItem, refreshDownloads, useDownloads } from "../sync/downloads";
 import { flush, pending } from "../sync/outbox";
-import { allPacks, deletePack, savePack, savePageImage, type Pack } from "../sync/packs";
-import {
-  blobUrl,
-  disconnect,
-  pairWith,
-  remoteConfig,
-  rpc,
-  useSyncState,
-} from "../sync/remote";
+import { allPacks, deletePack } from "../sync/packs";
+import { disconnect, pairWith, remoteConfig, useSyncState } from "../sync/remote";
 
 /** On the phone: connect to the laptop once, then see sync status and manage what's saved for offline reading. */
 export function ConnectPage() {
@@ -212,27 +206,15 @@ function Connected({ onDisconnect }: { onDisconnect: () => void }) {
   };
 
   const saveOffline = async (id: number) => {
+    const item = shelf.data?.items.find((i) => i.id === id);
+    if (!item) return;
     setSaving(id);
     setMessage(null);
     try {
-      const pack = await syncApi.pack(id);
-      if (pack.kind === "manga") {
-        // a manga volume: its page images come along, one by one, while the laptop is in reach
-        const pages = pack.pages as unknown as NonNullable<Pack["manga_pages"]>;
-        for (const [n, page] of pages.entries()) {
-          setMessage(`Saving page ${n + 1} of ${pages.length}…`);
-          const r = await rpc("GET", mangaImage(id, page.page), null, null, 60_000);
-          if (r.status >= 400 || !r.b64) throw new Error(`Page ${page.page} couldn't be fetched.`);
-          await savePageImage(id, page.page, await (await fetch(blobUrl(r.b64, r.type ?? "image/jpeg"))).blob());
-        }
-        await savePack({ ...pack, pages: [], manga_pages: pages });
-        setMessage(null);
-      } else {
-        await savePack(pack);
-      }
+      await downloadItem({ id, type: item.type, title: item.title });
+      const failed = useDownloads.getState().jobs[id]?.error;
+      if (failed) setMessage(failed);
       void qc.invalidateQueries({ queryKey: ["offline-packs"] });
-    } catch (e) {
-      setMessage(e instanceof Error ? e.message : "Couldn't save it.");
     } finally {
       setSaving(null);
     }
@@ -319,6 +301,7 @@ function Connected({ onDisconnect }: { onDisconnect: () => void }) {
                   variant="ghost"
                   onClick={async () => {
                     await deletePack(p.item.id);
+                    await refreshDownloads();
                     void qc.invalidateQueries({ queryKey: ["offline-packs"] });
                   }}
                 >

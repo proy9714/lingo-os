@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import type { ContentItem } from "../api/types";
 import { YT_EMBED_BLOCKED, YT_PLAYING, loadYouTubeApi, type YTPlayer } from "../lib/youtube";
+import { getMedia } from "../sync/packs";
 
 export interface PlayerControls {
   play(): void;
@@ -96,6 +97,30 @@ function YouTube({ videoId, startMs, onReady, onTime, onPlaying }: Omit<Props, "
   );
 }
 
+/**
+ * Where to play a recording from: the copy downloaded on this device when there is one (works offline), otherwise the
+ * laptop or server.
+ */
+export function useRecordingSrc(id: number, fallback = `/api/content/${id}/media`): string | undefined {
+  const [src, setSrc] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    let live = true;
+    let url: string | null = null;
+    void getMedia(id).then((blob) => {
+      if (!live) return;
+      if (blob) {
+        url = URL.createObjectURL(blob);
+        setSrc(url);
+      } else setSrc(fallback);
+    });
+    return () => {
+      live = false;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [id, fallback]);
+  return src;
+}
+
 function LocalMedia({ item, startMs, onReady, onTime, onPlaying }: Props) {
   const ref = useRef<HTMLVideoElement & HTMLAudioElement>(null);
   const isAudio = item.type === "audio" || item.type === "podcast_episode";
@@ -121,8 +146,9 @@ function LocalMedia({ item, startMs, onReady, onTime, onPlaying }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item.id]);
 
+  const src = useRecordingSrc(item.id);
   const common = {
-    src: `/api/content/${item.id}/media`,
+    src,
     controls: true,
     onPlay: () => onPlaying(true),
     onPause: () => onPlaying(false),

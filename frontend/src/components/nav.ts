@@ -1,7 +1,7 @@
 import type { IconName } from "./Icon";
 
 export interface NavItem {
-  to: "/" | "/watch" | "/read" | "/manga" | "/speak" | "/words" | "/grammar" | "/level" | "/settings" | "/help";
+  to: "/" | "/watch" | "/read" | "/manga" | "/speak" | "/words" | "/grammar" | "/level" | "/downloads" | "/settings" | "/help";
   label: string;
   icon: IconName;
   only?: string[]; // shown only while one of these languages is active
@@ -16,6 +16,7 @@ export const NAV: NavItem[] = [
   { to: "/words", label: "Words", icon: "words" },
   { to: "/grammar", label: "Grammar", icon: "grammar" },
   { to: "/level", label: "Level", icon: "gauge" },
+  { to: "/downloads", label: "Downloads", icon: "download" },
   { to: "/settings", label: "Settings", icon: "settings" },
   { to: "/help", label: "Help", icon: "help" },
 ];

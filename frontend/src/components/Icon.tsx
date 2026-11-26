@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export type IconName = "home" | "play" | "book" | "manga" | "mic" | "words" | "gauge" | "settings" | "plus" | "close" | "sync" | "help" | "grammar" | "check";
+export type IconName = "home" | "play" | "book" | "manga" | "mic" | "words" | "gauge" | "settings" | "plus" | "close" | "sync" | "help" | "grammar" | "check" | "download" | "headphones";
 
 const PATHS: Record<IconName, ReactNode> = {
   home: <path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z" />,
@@ -45,6 +45,8 @@ const PATHS: Record<IconName, ReactNode> = {
   ),
   plus: <path d="M12 5v14M5 12h14" />,
   check: <path d="m5 12.5 4.5 4.5L19 7" />,
+  download: <path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14" />,
+  headphones: <path d="M4 15v-3a8 8 0 0 1 16 0v3M4 15a2 2 0 0 1 2-2h1v7H6a2 2 0 0 1-2-2zM20 15a2 2 0 0 0-2-2h-1v7h1a2 2 0 0 0 2-2z" />,
   close: <path d="M6 6l12 12M18 6 6 18" />,
   sync: <path d="M20 11a8 8 0 0 0-14.3-4.3L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.3L20 16M20 20v-4h-4" />,
   grammar: <path d="M4 19 8.5 6h1L14 19M5.6 14.5h6.8M15 13.2c.7-1 1.7-1.5 2.9-1.5 1.8 0 2.6 1 2.6 2.7V19M20.5 15.6c-.9-.3-1.8-.4-2.6-.3-1.6.2-2.6 1-2.6 2.1 0 1 .8 1.7 2 1.7 1.4 0 2.6-.8 3.2-2" />,

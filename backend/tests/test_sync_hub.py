@@ -147,7 +147,7 @@ def test_offline_pack_for_a_text(client, paired) -> None:
     assert any(t["display"] == "Park" for t in data["pages"][0]["paragraphs"][0]["tokens"])
     listed = paired.rpc("GET", "/api/packs")["json"]
     assert [(p["item_id"], p["status"]) for p in listed] == [(item["id"], "ready")]
-    assert client.get("/api/packs").status_code == 400  # only phones have packs
+    assert client.get("/api/packs").json() == []  # a browser keeps its own list of what it saved
 
 
 def test_listener_starts_and_stops(client, cfg) -> None:

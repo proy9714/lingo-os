@@ -17,6 +17,7 @@ import { BackLink, displayTitle } from "../lib/nav";
 import { useTracker } from "../lib/useTracker";
 import { useLookupStore } from "../state/lookup";
 import { useShadowTarget } from "../state/shadow";
+import { DownloadButton } from "../components/DownloadButton";
 
 const SPEEDS = [0.75, 0.9, 1, 1.25];
 
@@ -225,6 +226,7 @@ export function PlayerPage() {
               {data.speech_wpm && <Chip>{Math.round(data.speech_wpm)} words/min</Chip>}
             </>
           )}
+          {(transcript.data?.cues.length ?? 0) > 0 && <DownloadButton item={data} compact />}
           <CompletedButton id={id} kind="video" finished={data.status === "finished"} onDone={() => controls.current?.pause()} />
         </div>
       </header>

@@ -1,6 +1,8 @@
-// What the phone can do with no laptop in reach: read packed texts, look words up in the pack's dictionary,
-// change word statuses, track time and log progress. Changes go to the outbox and sync later.
+// What works with no laptop or server in reach, from what's saved on this device (Downloads): read saved texts and
+// manga, follow saved transcripts and play downloaded recordings, look words up in the saved dictionaries. On the phone
+// word statuses, time and progress go to the outbox and sync later. The computer's browser uses this too, for reading.
 import { enqueue, ulid } from "./outbox";
+import { remoteConfig } from "./remote";
 import { allPacks, getPack, type Pack } from "./packs";
 
 const CACHE = "lingo.cache.";
@@ -35,6 +37,7 @@ function cacheKey(path: string): string | null {
 }
 
 function itemOf(pack: Pack) {
+  if (pack.kind === "media" && pack.transcript?.item) return { ...pack.transcript.item, metadata: { ...pack.transcript.item.metadata, offline: true } };
   return {
     ...pack.item,
     source: "pack",
@@ -67,12 +70,19 @@ export async function offlineAnswer(method: string, path: string, query: URLSear
   if (method === "GET" && path === "/api/content") {
     const mine = (await allPacks()).filter((p) => p.item.language === query.get("lang"));
     const shelf = query.get("shelf");
-    const packs = mine.filter((p) => (shelf === "manga" ? p.kind === "manga" : p.kind === "text"));
-    return shelf === "read" || shelf === "manga" ? { total: packs.length, items: packs.map(itemOf) } : { total: 0, items: [] };
+    const listen = (p: Pack) => p.item.type === "podcast_episode";
+    const packs = mine.filter((p) =>
+      shelf === "manga" ? p.kind === "manga" : shelf === "read" ? p.kind === "text" : shelf === "listen" ? listen(p) : p.kind === "media" && !listen(p),
+    );
+    return { total: packs.length, items: packs.map(itemOf) };
   }
   if (method === "GET" && (m = path.match(/^\/api\/content\/(\d+)$/))) {
     const pack = await getPack(Number(m[1]));
     if (pack) return itemOf(pack);
+  }
+  if (method === "GET" && (m = path.match(/^\/api\/content\/(\d+)\/transcript$/))) {
+    const pack = await getPack(Number(m[1]));
+    if (pack?.kind === "media" && pack.transcript) return { ...pack.transcript, item: itemOf(pack) };
   }
   if (method === "GET" && (m = path.match(/^\/api\/content\/(\d+)\/pages$/))) {
     const pack = await getPack(Number(m[1]));
@@ -83,7 +93,8 @@ export async function offlineAnswer(method: string, path: string, query: URLSear
     if (pack && pack.kind === "text") {
       const n = Math.max(1, Math.min(pack.pages.length, Number(m[2])));
       const page = pack.pages[n - 1];
-      return { item: itemOf(pack), page: n, pages: pack.pages.length, title: page.title, paragraphs: page.paragraphs, summary: null };
+      const paragraphs = page.paragraphs.map((p) => ({ ...p, locator: p.locator ?? `seq:${p.seq}` }));
+      return { item: itemOf(pack), page: n, pages: pack.pages.length, title: page.title, paragraphs, summary: null };
     }
   }
   if (method === "GET" && (m = path.match(/^\/api\/manga\/(\d+)\/page\/(\d+)$/))) {
@@ -112,11 +123,17 @@ export async function offlineAnswer(method: string, path: string, query: URLSear
         break;
       }
     }
-    if (body.record) enqueue("lookup", { lang, lemma: body.lemma, reading: body.reading ?? "", pos: body.pos ?? "", forms: body.forms ?? [] });
+    // the phone remembers the lookup and sends it later (with when and where it happened)
+    if (body.record && remoteConfig()) {
+      enqueue("lookup", {
+        lang, lemma: body.lemma, reading: body.reading ?? "", pos: body.pos ?? "", forms: body.forms ?? [],
+        at: new Date().toISOString(), content_item_id: body.content_item_id ?? null,
+      });
+    }
     return { lemma: body.lemma, reading: body.reading ?? "", pos: body.pos ?? "", rank: null, model_p: null, state: null, contexts: [], entries, inflections: [] };
   }
   if (method === "POST" && path === "/api/vocab/status" && body) {
-    enqueue("word_status", { ...body }, `${body.lang}|${body.lemma}|${body.reading ?? ""}`, true);
+    enqueue("word_status", { ...body, at: new Date().toISOString() }, `${body.lang}|${body.lemma}|${body.reading ?? ""}`, true);
     return { lexeme_id: 0, language: body.lang, lemma: body.lemma, reading: body.reading ?? "", status: body.status, saved: Boolean(body.save), p_known: null, lookups: 0, queued: true };
   }
   if (method === "POST" && path === "/api/activity/heartbeat" && body) {
@@ -146,5 +163,5 @@ export async function offlineAnswer(method: string, path: string, query: URLSear
     enqueue("progress", { content_item_id: Number(m[1]), page: body.page, total: body.total }, m[1], true);
     return { ok: true };
   }
-  throw new Error("You're offline: this needs the laptop on the same Wi-Fi.");
+  throw new Error("You're offline: this needs your Lingo OS laptop or server. What you saved in Downloads works offline.");
 }

@@ -122,11 +122,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     );
   } catch (error) {
     if (outer?.aborted) throw error; // cancelled by the page, not a connection problem
-    return unreachable<T>(method, path);
+    return unreachable<T>(method, path, init?.body);
   }
   // the dev server's proxy answers 502/503/504 (or a bare 500) while the API isn't running
   const proxied = response.status >= 502 || (response.status === 500 && !response.headers.get("content-type")?.includes("json"));
-  if (proxied) return unreachable<T>(method, path);
+  if (proxied) return unreachable<T>(method, path, init?.body);
   if (useSyncState.getState().online === false) reportReachable(true);
   if (!response.ok) {
     let detail = response.statusText;
@@ -147,12 +147,14 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 /** The server can't be reached: answer from what's saved in this browser when possible, else fail at once. */
-async function unreachable<T>(method: string, path: string): Promise<T> {
+async function unreachable<T>(method: string, path: string, rawBody?: RequestInit["body"]): Promise<T> {
   serverLost();
-  if (method === "GET") {
-    const url = new URL(path, window.location.origin);
+  const url = new URL(path, window.location.origin);
+  // reading only: pages, lists and transcripts of what's downloaded, and dictionary lookups in saved dictionaries
+  if (method === "GET" || url.pathname === "/api/nlp/lookup") {
+    const body = typeof rawBody === "string" ? (JSON.parse(rawBody) as Record<string, unknown>) : null;
     try {
-      return (await offlineAnswer(method, url.pathname, url.searchParams, null)) as T;
+      return (await offlineAnswer(method, url.pathname, url.searchParams, body)) as T;
     } catch {
       // nothing saved for this
     }

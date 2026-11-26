@@ -26,6 +26,7 @@ const routeTree = rootRoute.addChildren([
   page("/level", lazyRouteComponent(() => import("./pages/LevelPage"), "LevelPage")),
   page("/settings", lazyRouteComponent(() => import("./pages/SettingsPage"), "SettingsPage")),
   page("/reports", lazyRouteComponent(() => import("./pages/ReportsPage"), "ReportsPage")),
+  page("/downloads", lazyRouteComponent(() => import("./pages/DownloadsPage"), "DownloadsPage")),
   page("/connect", lazyRouteComponent(() => import("./pages/ConnectPage"), "ConnectPage")),
   page("/help", lazyRouteComponent(() => import("./pages/HelpPage"), "HelpPage")),
 ]);

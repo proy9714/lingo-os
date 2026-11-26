@@ -111,7 +111,7 @@ function CantReach({ onRetry }: { onRetry: () => void }) {
             {checking ? "Checking…" : "Try again"}
           </Button>
           {phone && (
-            <Link to="/connect" className="rounded-full px-4 py-2 text-sm font-semibold text-ink ring-1 ring-white/15">
+            <Link to="/downloads" className="rounded-full px-4 py-2 text-sm font-semibold text-ink ring-1 ring-white/15">
               Saved for offline
             </Link>
           )}

@@ -14,6 +14,7 @@ import { splitSentences } from "../lib/sentences";
 import { useEngagement } from "../lib/useEngagement";
 import { useTracker } from "../lib/useTracker";
 import { useLookupStore } from "../state/lookup";
+import { DownloadButton } from "../components/DownloadButton";
 
 /** Reading counts while the page is open and you've scrolled, clicked or moved the mouse in the last 3 minutes. */
 const IDLE_AFTER_MS = 180_000;
@@ -114,6 +115,7 @@ export function ReaderPage() {
           {item.data?.creator && <p className="mt-1 text-sm text-ink-2">{item.data.creator}</p>}
         </div>
         <div className="flex items-center gap-1.5">
+          {item.data && <DownloadButton item={item.data} compact />}
           {item.data && <CompletedButton id={item.data.id} kind="text" finished={item.data.status === "finished"} />}
           {lang === "ja" && (
             <FuriganaToggle className="min-h-10 rounded-xl px-3 text-xs font-semibold text-ink-2 transition hover:bg-white/8 hover:text-ink" />
@@ -232,7 +234,7 @@ function Paragraph({ lang, paragraph, contentItemId }: { lang: string; paragraph
           text={sentence.text}
           tokens={sentence.tokens}
           sentence={sentence.text.trim()}
-          locator={`${paragraph.locator.split("|")[0]}@${sentence.start}`}
+          locator={`${(paragraph.locator ?? `seq:${paragraph.seq}`).split("|")[0]}@${sentence.start}`}
           contentItemId={contentItemId}
         />
       ))}

@@ -14,6 +14,7 @@ from sqlalchemy import Connection
 from app.api.deps import get_cfg, get_conn, get_dict_conn
 from app.config import AppConfig
 from app.db import settings_store
+from app.services import content
 from app.sync import hub, packs
 
 router = APIRouter(prefix="/api", tags=["devices"])
@@ -120,9 +121,8 @@ def remove(device_id: str, conn: Connection = Depends(get_conn)) -> dict[str, bo
 
 @router.get("/packs")
 def pack_list(conn: Connection = Depends(get_conn), device: str | None = Header(default=None, alias="X-Lingo-Device")) -> list[dict[str, Any]]:
-    if not device:
-        raise HTTPException(status_code=400, detail="offline packs are listed for a paired phone")
-    return packs.device_packs(conn, device)
+    """What a paired phone has saved (a browser keeps its own list, so it gets an empty one)."""
+    return packs.device_packs(conn, device) if device else []
 
 
 @router.get("/packs/{item_id}")
@@ -130,11 +130,15 @@ def pack(
     item_id: int,
     conn: Connection = Depends(get_conn),
     dict_conn: Connection = Depends(get_dict_conn),
+    cfg: AppConfig = Depends(get_cfg),
     device: str | None = Header(default=None, alias="X-Lingo-Device"),
 ) -> dict[str, Any]:
+    from app.api.offline_media import media_info
+
     try:
-        data = packs.build_pack(conn, dict_conn, item_id)
-    except packs.PackError as exc:
+        item = content.get_item(conn, item_id)
+        data = packs.build_pack(conn, dict_conn, item_id, media=media_info(cfg, conn, item))
+    except (packs.PackError, content.ContentError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     if device:
         packs.register(conn, device, item_id, packs.pack_size(data))
