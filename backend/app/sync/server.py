@@ -225,7 +225,9 @@ class Listener:
             return
         import uvicorn
 
-        config = uvicorn.Config(app, host=host, port=port, log_level="warning", access_log=False)
+        # log_config/log_level None: leave logging as the main server set it up. A log level here would apply to the
+        # shared "uvicorn.error" logger and hide the main server's "Application startup complete" line.
+        config = uvicorn.Config(app, host=host, port=port, log_config=None, log_level=None, access_log=False)
         self.server = uvicorn.Server(config)
         self.port, self.error = port, None
 
