@@ -27,6 +27,7 @@ from app.db import migrate
 from app.db.engine import make_engine
 from app.db import settings_store
 from app.db.seed import seed
+from app.access import AccessMiddleware
 from app.etag import ETagMiddleware
 from app.sync.hub import SYNC_PORT
 from app.sync.server import Listener
@@ -94,8 +95,25 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
     app.add_middleware(ETagMiddleware)
     # compress JSON, scripts and styles (often 70-90% smaller); audio and pictures are already compressed
     app.add_middleware(GZipMiddleware, minimum_size=1024, compresslevel=5)
+    if cfg.access_token:  # a server: sign in first (app/access.py); outermost, so nothing answers before it
+        secure = bool(cfg.public_url and cfg.public_url.startswith("https://"))
+        app.add_middleware(AccessMiddleware, token=cfg.access_token, secure_cookie=secure)
+    elif cfg.host not in LOOPBACK:
+        logging.getLogger(__name__).warning(
+            "Lingo OS is answering %s without LINGO_ACCESS_TOKEN: anyone who can reach it can read and change your data. "
+            "Keep it on a private network (Tailscale) or set a token (docs/DEPLOY.md).",
+            cfg.host,
+        )
+    if cfg.sync_on_main:
+        # a server: phones sync through this port (one address, one HTTPS certificate) instead of the Wi-Fi listener
+        from app.sync.server import create_sync_app
+
+        app.mount("/sync", create_sync_app(app, engine, cfg, base=""))
     _serve_frontend(app, cfg.frontend_dist)
     return app
+
+
+LOOPBACK = {"127.0.0.1", "localhost", "::1"}
 
 
 def _top_up_on_start(engine: Engine, default_language: str) -> None:

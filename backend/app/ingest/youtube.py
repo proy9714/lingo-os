@@ -5,8 +5,10 @@ yt-dlp needs a JavaScript runtime for YouTube; Node (already required by the fro
 
 from __future__ import annotations
 
+import os
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from app.ingest.subtitles import Cue, parse_json3, parse_vtt
@@ -43,6 +45,20 @@ def parse_video_id(value: str) -> str | None:
     return match.group(1) if match else None
 
 
+def network_options() -> dict[str, Any]:
+    """YouTube often refuses requests from cloud servers. On a server you can pass it a browser's cookies
+    (LINGO_YTDLP_COOKIES: the path of a cookies.txt exported from a browser signed in to YouTube) and/or send its
+    requests through another connection (LINGO_YTDLP_PROXY, e.g. socks5://100.101.102.103:1080 on your home network)."""
+    out: dict[str, Any] = {}
+    cookies = os.environ.get("LINGO_YTDLP_COOKIES")
+    if cookies and Path(cookies).is_file():
+        out["cookiefile"] = cookies
+    proxy = os.environ.get("LINGO_YTDLP_PROXY")
+    if proxy:
+        out["proxy"] = proxy
+    return out
+
+
 def _ydl(**extra: Any):  # imported lazily: yt-dlp is slow to import
     from yt_dlp import YoutubeDL
 
@@ -54,6 +70,7 @@ def _ydl(**extra: Any):  # imported lazily: yt-dlp is slow to import
             "noplaylist": True,
             "js_runtimes": {"node": {}},
             "socket_timeout": 20,
+            **network_options(),
             **extra,
         }
     )

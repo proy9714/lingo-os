@@ -63,10 +63,13 @@ def youtube_audio(video_id: str, folder: Path) -> Path:
     """The audio track only (no video, no conversion: whisper reads m4a and webm itself)."""
     from yt_dlp import YoutubeDL
 
+    from app.ingest.youtube import network_options
+
     folder.mkdir(parents=True, exist_ok=True)
     options = {
         "format": "bestaudio[ext=m4a]/bestaudio", "outtmpl": str(folder / f"{video_id}.%(ext)s"), "quiet": True,
         "no_warnings": True, "noplaylist": True, "js_runtimes": {"node": {}}, "socket_timeout": 30,
+        **network_options(),  # cookies / proxy for a server (ingest/youtube.py)
     }
     try:
         with YoutubeDL(options) as ydl:

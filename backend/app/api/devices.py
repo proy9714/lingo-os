@@ -44,6 +44,8 @@ def _temporary(path: Path) -> bool:
 def start_listener(app: Any, cfg: AppConfig, port: int) -> None:
     from app.sync.server import create_sync_app
 
+    if cfg.sync_on_main:
+        return  # a server: phones sync through the main port (/sync/...), nothing listens on the Wi-Fi port
     if not getattr(app.state, "sync_app", None):
         app.state.sync_app = create_sync_app(app, app.state.engine, cfg)
     app.state.sync_listener.start(app.state.sync_app, port)

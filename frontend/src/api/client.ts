@@ -128,6 +128,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const proxied = response.status >= 502 || (response.status === 500 && !response.headers.get("content-type")?.includes("json"));
   if (proxied) return unreachable<T>(method, path, init?.body);
   if (useSyncState.getState().online === false) reportReachable(true);
+  if (response.status === 401 && !path.startsWith("/api/health")) {
+    window.location.assign("/login"); // a Lingo OS on a server asks you to sign in (backend app/access.py)
+  }
   if (!response.ok) {
     let detail = response.statusText;
     try {

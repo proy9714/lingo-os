@@ -73,12 +73,20 @@ def _envelope(body: dict[str, Any]) -> tuple[str, dict[str, Any]]:
     return device, body
 
 
-def create_sync_app(main_app: FastAPI, engine: Engine, cfg: AppConfig) -> FastAPI:
+def create_sync_app(main_app: FastAPI, engine: Engine, cfg: AppConfig, base: str = "/sync") -> FastAPI:
+    """The sync endpoints. `base` is "/sync" for the Wi-Fi listener; "" when mounted at /sync on the main app."""
     app = FastAPI(title="Lingo OS sync", docs_url=None, redoc_url=None, openapi_url=None)
     # Any origin may call: every body is encrypted with a key only paired phones have. (The Android app uses native
     # HTTP and doesn't need this; it lets the phone mode be tried in an ordinary browser.)
     app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["POST"], allow_headers=["Content-Type"])
     client = httpx.AsyncClient(transport=httpx.ASGITransport(app=main_app), base_url="http://hub", timeout=120)
+
+    def forward_headers(device: str) -> dict[str, str]:
+        # the phone already proved itself with its pairing key; on a server the API also wants the access token
+        headers = {"X-Lingo-Device": device}
+        if cfg.access_token:
+            headers["Authorization"] = f"Bearer {cfg.access_token}"
+        return headers
 
     def fail(status: int, message: str) -> JSONResponse:
         return JSONResponse({"error": message}, status_code=status)
@@ -132,11 +140,11 @@ def create_sync_app(main_app: FastAPI, engine: Engine, cfg: AppConfig) -> FastAP
         with engine.connect() as conn:
             return sync_apply.changes_since(conn, message.get("since"))
 
-    @app.post("/sync/hello")
+    @app.post(f"{base}/hello")
     async def hello() -> dict[str, Any]:
         return {"app": "lingo-os", "sync": 1}
 
-    @app.post("/sync/pair")
+    @app.post(f"{base}/pair")
     async def pair(request: Request):
         try:
             device, key, message = await unwrap_async(request, pairing=True)
@@ -145,7 +153,7 @@ def create_sync_app(main_app: FastAPI, engine: Engine, cfg: AppConfig) -> FastAP
             return fail(403, str(exc))
         return seal(key, device, result)
 
-    @app.post("/sync/rpc")
+    @app.post(f"{base}/rpc")
     async def rpc(request: Request):
         try:
             device, key, message = await unwrap_async(request)
@@ -157,7 +165,7 @@ def create_sync_app(main_app: FastAPI, engine: Engine, cfg: AppConfig) -> FastAP
             return seal(key, device, {"status": 403, "json": {"detail": "not available from the phone"}})
         response = await client.request(
             method, path, params=message.get("query") or None, json=message.get("body"),
-            headers={"X-Lingo-Device": device},
+            headers=forward_headers(device),
         )
         kind = response.headers.get("content-type", "")
         if kind.startswith("application/json"):
@@ -168,7 +176,7 @@ def create_sync_app(main_app: FastAPI, engine: Engine, cfg: AppConfig) -> FastAP
             out = {"status": response.status_code, "type": kind, "b64": base64.b64encode(response.content).decode()}
         return seal(key, device, out)
 
-    @app.post("/sync/push")
+    @app.post(f"{base}/push")
     async def push(request: Request):
         try:
             device, key, message = await unwrap_async(request)
@@ -177,7 +185,7 @@ def create_sync_app(main_app: FastAPI, engine: Engine, cfg: AppConfig) -> FastAP
             return fail(403, str(exc))
         return seal(key, device, result)
 
-    @app.post("/sync/where")
+    @app.post(f"{base}/where")
     async def where(request: Request):
         """The laptop's current addresses: a phone paired at home learns a Tailscale address added later."""
         try:
@@ -187,7 +195,7 @@ def create_sync_app(main_app: FastAPI, engine: Engine, cfg: AppConfig) -> FastAP
             return fail(403, str(exc))
         return seal(key, device, {"hubs": hubs})
 
-    @app.post("/sync/pull")
+    @app.post(f"{base}/pull")
     async def pull(request: Request):
         try:
             device, key, message = await unwrap_async(request)

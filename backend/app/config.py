@@ -77,6 +77,14 @@ class AppConfig:
     default_goal_minutes: int
     tracker_path: Path | None
     baselines: dict[str, Any]
+    # Running on a server (docs/DEPLOY.md). All come from the environment, so a laptop is unaffected:
+    #   LINGO_PUBLIC_URL     the address phones and browsers use, e.g. https://lingo.tail1234.ts.net
+    #   LINGO_ACCESS_TOKEN   when set, the API answers only after signing in with it (/login)
+    #   LINGO_SYNC_ON_MAIN   phones sync on the main port (/sync/...) instead of the Wi-Fi listener on 8788;
+    #                        on by default when a public URL is set
+    public_url: str | None = None
+    access_token: str | None = None
+    sync_on_main: bool = False
 
     @property
     def db_path(self) -> Path:
@@ -120,6 +128,10 @@ def _merge(base: dict[str, Any], local: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+def _truthy(value: str | None) -> bool:
+    return (value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
 def load_config(root: Path = ROOT, data_dir: str | Path | None = None) -> AppConfig:
     """Load settings. `data_dir` (or LINGO_DATA_DIR) overrides config/app.yaml."""
     load_dotenv(root / ".env", override=False)
@@ -135,11 +147,16 @@ def load_config(root: Path = ROOT, data_dir: str | Path | None = None) -> AppCon
     # `languages:` lists codes (or {code: …} entries, as older configs did) to add to a brand-new database
     starting = tuple(item["code"] if isinstance(item, dict) else str(item) for item in app_yaml.get("languages") or [])
 
+    public_url = (os.environ.get("LINGO_PUBLIC_URL") or "").strip().rstrip("/") or None
+    sync_on_main = _truthy(os.environ.get("LINGO_SYNC_ON_MAIN")) if os.environ.get("LINGO_SYNC_ON_MAIN") else bool(public_url)
     return AppConfig(
         root=root,
         data_dir=_resolve(root, chosen_data_dir),
-        host=server.get("host", "127.0.0.1"),
-        port=int(server.get("port", 8787)),
+        host=os.environ.get("LINGO_HOST") or server.get("host", "127.0.0.1"),
+        port=int(os.environ.get("LINGO_PORT") or server.get("port", 8787)),
+        public_url=public_url,
+        access_token=(os.environ.get("LINGO_ACCESS_TOKEN") or "").strip() or None,
+        sync_on_main=sync_on_main,
         starting_languages=starting,
         default_language=defaults.get("active_language") or (starting[0] if starting else "de"),
         default_goal_minutes=int(defaults.get("daily_goal_minutes", 60)),

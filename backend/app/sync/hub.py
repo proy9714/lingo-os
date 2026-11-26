@@ -80,30 +80,64 @@ def tailscale_addresses() -> list[str]:
 HOST = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9.-]{0,251}[A-Za-z0-9])?$")
 
 
+URL = re.compile(r"^(https?)://([A-Za-z0-9.-]+)(?::(\d{1,5}))?/?$")
+
+
+def _valid_entry(value: str) -> bool:
+    match = URL.match(value)
+    return bool(match and HOST.match(match.group(2))) if match else bool(HOST.match(value))
+
+
 def extra_addresses(conn: Connection) -> list[str]:
-    """Addresses you added for away from home (a Tailscale name like laptop.tail1234.ts.net, or any you route)."""
+    """Addresses you added for away from home: a host (a Tailscale name like laptop.tail1234.ts.net, an IP) or a full
+    address with its scheme and port (https://lingo.example.org), used as it is."""
     value = settings_store.get(conn, "sync.extra_addresses", []) or []
-    return [a for a in value if isinstance(a, str) and HOST.match(a)]
+    return [a for a in value if isinstance(a, str) and _valid_entry(a)]
 
 
 def set_extra_addresses(conn: Connection, addresses: list[str]) -> list[str]:
     clean: list[str] = []
     for raw in addresses:
-        host = raw.strip().removeprefix("http://").removeprefix("https://").split("/")[0].split(":")[0]
-        if not host:
+        value = raw.strip().rstrip("/")
+        if not value:
             continue
-        if not HOST.match(host):
-            raise ValueError(f"'{raw}' isn't an address (use a name like laptop.tail1234.ts.net or an IP like 100.101.102.103)")
-        if host not in clean:
-            clean.append(host)
+        match = URL.match(value)
+        # A full address is kept as it is on a server, or when it names its port. On a laptop "https://laptop.ts.net"
+        # means that host: phones reach its Wi-Fi listener over plain http on the sync port.
+        if not (match and (match.group(3) or sync_on_main())):
+            value = value.removeprefix("http://").removeprefix("https://").split("/")[0].split(":")[0]
+        if not _valid_entry(value):
+            raise ValueError(
+                f"'{raw}' isn't an address (use a name like laptop.tail1234.ts.net, an IP like 100.101.102.103, "
+                "or a full address like https://lingo.example.org)"
+            )
+        if value not in clean:
+            clean.append(value)
     settings_store.put(conn, "sync.extra_addresses", clean[:5])
     return clean[:5]
 
 
+def public_url() -> str | None:
+    """The address set for a server (LINGO_PUBLIC_URL): phones use it first."""
+    return (os.environ.get("LINGO_PUBLIC_URL") or "").strip().rstrip("/") or None
+
+
+def sync_on_main() -> bool:
+    """Phones sync through the main port (/sync/...) rather than the Wi-Fi listener (see config.AppConfig)."""
+    flag = os.environ.get("LINGO_SYNC_ON_MAIN")
+    return flag.strip().lower() in {"1", "true", "yes", "on"} if flag else bool(public_url())
+
+
 def hub_urls(conn: Connection, port: int) -> list[str]:
-    """Every address a phone may reach this laptop at: home Wi-Fi first, then Tailscale and your own."""
-    hosts = list(dict.fromkeys([*lan_addresses(), *tailscale_addresses(), *extra_addresses(conn)]))
-    return [f"http://{h}:{port}" for h in hosts]
+    """Every address a phone may reach this hub at: a server's public address first, then home Wi-Fi, Tailscale and
+    your own. On a server phones sync through the main port, so the bare addresses use that port."""
+    if sync_on_main():
+        port = int(os.environ.get("LINGO_PORT") or 8787)
+    hosts = list(dict.fromkeys([*lan_addresses(), *tailscale_addresses()]))
+    urls = [public_url()] if public_url() else []
+    for entry in [*hosts, *extra_addresses(conn)]:
+        urls.append(entry if URL.match(entry) else f"http://{entry}:{port}")
+    return list(dict.fromkeys(u for u in urls if u))
 
 
 def start_pairing(conn: Connection, cfg: AppConfig, name: str = "Phone") -> dict[str, Any]:
@@ -115,7 +149,7 @@ def start_pairing(conn: Connection, cfg: AppConfig, name: str = "Phone") -> dict
     key = derive_key(hub_secret(cfg.data_dir), device_id)
     port = int(settings_store.get(conn, "sync.port", SYNC_PORT))
     urls = hub_urls(conn, port)
-    addresses = [u.removeprefix("http://").rsplit(":", 1)[0] for u in urls]
+    addresses = [u.removeprefix("http://").removeprefix("https://").rsplit(":", 1)[0] if u.startswith("http://") else u for u in urls]
     payload = {
         "v": 1,
         "hub": urls or [f"http://127.0.0.1:{port}"],

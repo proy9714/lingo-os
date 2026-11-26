@@ -36,6 +36,19 @@ def run_checks(cfg: AppConfig) -> dict[str, Any]:
     built = (cfg.frontend_dist / "index.html").exists()
     add("frontend build", built, "frontend/dist" if built else "not built yet (npm run build)", required=False)
 
+    exposed = cfg.host not in {"127.0.0.1", "localhost", "::1"}
+    if exposed or cfg.access_token or cfg.public_url:
+        add(
+            "server access",
+            bool(cfg.access_token) or not exposed,
+            (
+                f"answering {cfg.host}:{cfg.port}"
+                + (", sign-in with LINGO_ACCESS_TOKEN" if cfg.access_token else " with no sign-in: set LINGO_ACCESS_TOKEN or keep it on Tailscale only")
+                + (f"; phones use {cfg.public_url}" if cfg.public_url else "")
+            ),
+            required=False,
+        )
+
     ffmpeg = shutil.which("ffmpeg")
     add("ffmpeg", bool(ffmpeg), ffmpeg or "not on PATH (needed from Phase 2)", required=False)
 
