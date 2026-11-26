@@ -731,8 +731,18 @@ streaming tutor replies, AI-written discovery searches, offline manga, Android s
 (addresses in the pairing code and learned on each sync), Gemini/Claude/ChatGPT choice, Hindi/Bengali/Arabic (RTL),
 backups, the recommender rebuild (`services/ranker.py`).
 
+### Done since (v0.6)
+
+Fast phone start-up and an honest offline state (parallel reachability check, no endless loading, saved settings),
+Downloads on the phone and the computer (texts, manga, podcast episodes, read-along transcripts), the grammar
+reference bundled in the app, ETag revalidation, running on a free server ([DEPLOY.md](DEPLOY.md)), words moving
+learning → familiar → known (and back) with a memory model fitted to you ([WORD_PROMOTION.md](WORD_PROMOTION.md)),
+the recommender as Comprehensible Input Value with learned weights and exploring places
+([RECOMMENDATION.md](RECOMMENDATION.md)), and a Podcasts tab. These documents supersede §6.3's description of
+ranking and word statuses where they differ.
+
 Still deferred: OCR for scanned PDFs and running mokuro on manga (both need large models); Gutenberg/Aozora book
-discovery (Gutenberg was unreachable when this was attempted); podcasts (Whisper now makes them possible); pitch
+discovery (Gutenberg was unreachable when this was attempted); pitch
 contour and DTW timing in shadowing (Parselmouth); a Japanese C-test; grammar tracking from lookups; refitting the
 vocabulary curve from weekly evidence; the series coverage curve for manga.
 

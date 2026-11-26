@@ -387,6 +387,58 @@ def manga_scan(as_json: bool = typer.Option(False, "--json", help="Machine-reada
         console.print("  Nothing new.")
 
 
+words_app = typer.Typer(help="Your words and the memory model that moves them (docs/WORD_PROMOTION.md).", no_args_is_help=True)
+app.add_typer(words_app, name="words")
+
+
+@words_app.command("model")
+def words_model(
+    lang: str = typer.Option(..., "--lang", help="Language code, e.g. de."),
+    refit: bool = typer.Option(False, help="Fit it to your history now instead of using today's fit."),
+    as_json: bool = typer.Option(False, "--json", help="Machine-readable output."),
+) -> None:
+    """How the memory model is fitted to you (growth, lapse) and your pace settings."""
+    from app.engine import memory
+    from app.main import bootstrap
+
+    with bootstrap(load_config()).begin() as conn:
+        fitted = memory.fit(conn, lang, force=refit)
+        prefs = memory.preferences(conn)
+    out = {"language": lang, "preferences": prefs, "fitted": fitted, "defaults": memory.DEFAULTS}
+    if as_json:
+        typer.echo(json.dumps(out, ensure_ascii=False, indent=2))
+        return
+    console.print(f"[bold]{lang}[/bold]: automatic moves {'on' if prefs['auto'] else 'off'}, {prefs['pace']} pace")
+    console.print(
+        f"growth g = {fitted['g']} (default {memory.DEFAULTS['g']}), lapse = {fitted['lapse']} (default {memory.DEFAULTS['lapse']}), "
+        f"from {fitted.get('labels', 0)} moments in your history; log loss {fitted.get('loss_default')} → {fitted.get('loss_fitted')}"
+    )
+
+
+@words_app.command("explain")
+def words_explain(
+    lemma: str = typer.Argument(..., help="The word (its dictionary form)."),
+    lang: str = typer.Option(..., "--lang", help="Language code, e.g. de."),
+    reading: str = typer.Option("", help="Reading (Japanese only)."),
+    as_json: bool = typer.Option(False, "--json", help="Machine-readable output."),
+) -> None:
+    """Where one word stands and why."""
+    from sqlalchemy import text as sql
+
+    from app.main import bootstrap
+    from app.services import word_progress
+
+    with bootstrap(load_config()).begin() as conn:
+        lexeme = conn.execute(
+            sql("SELECT id FROM lexemes WHERE language_code = :l AND lemma = :w AND reading = :r"), {"l": lang, "w": lemma, "r": reading}
+        ).scalar()
+        result = word_progress.explain(conn, lang, lexeme) if lexeme else None
+    if result is None:
+        typer.echo(json.dumps({"error": "you haven't marked this word yet"}) if as_json else "You haven't marked this word yet.")
+        raise typer.Exit(1)
+    typer.echo(json.dumps(result, ensure_ascii=False, indent=2) if as_json else f"{lemma}: {result['status']}. {result['message']}")
+
+
 grammar_app = typer.Typer(help="The grammar reference (backend/app/grammar/*.yaml).", no_args_is_help=True)
 app.add_typer(grammar_app, name="grammar")
 
