@@ -7,9 +7,13 @@ from typing import Any
 
 from sqlalchemy import Connection, bindparam, text
 
+# How many times you went through each item: every session counts the share of the item it covered (60 seconds of a
+# 40-minute video is 1/40 of a watch, not a whole one), so words "heard" follow what you actually heard or read.
+# Reading length is estimated at 150 words a minute; an item of unknown length counts a session as 10 minutes.
 WATCHES = (
-    "SELECT content_item_id, COUNT(*) AS watches, SUM(active_seconds) AS seconds FROM activity_sessions "
-    "WHERE content_item_id IS NOT NULL AND is_baseline = 0 GROUP BY content_item_id"
+    "SELECT s.content_item_id, SUM(MIN(1.0, s.active_seconds * 1.0 / COALESCE(NULLIF(ci.duration_sec, 0), "
+    "NULLIF(ci.word_count, 0) * 0.4, 600))) AS watches, SUM(s.active_seconds) AS seconds FROM activity_sessions s "
+    "JOIN content_items ci ON ci.id = s.content_item_id WHERE s.is_baseline = 0 GROUP BY s.content_item_id"
 )
 COVERAGE_TARGET = 0.90
 

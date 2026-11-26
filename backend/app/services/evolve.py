@@ -165,7 +165,8 @@ def metrics(conn: Connection, lang: str, start: str, end: str) -> dict[str, Any]
         "minutes_by_modality": by_modality,
         "active_days": active_days,
         "words_saved": events.get("save", 0),
-        "words_to_known": events.get("status_change:known", 0),
+        # by you, by an automatic move ("known (automatic: …)"), from the phone ("known (phone)")
+        "words_to_known": sum(n for key, n in events.items() if key == "status_change:known" or key.startswith("status_change:known (")),
         "lookups": events.get("lookup", 0),
         "items_started": started,
         "items_finished": finished,

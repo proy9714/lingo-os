@@ -146,11 +146,15 @@ def test_up_next_and_feed_explain_the_new_reasons(client) -> None:
         learning = [_lexeme(conn, f"lerne{n}", 3000 + n, "learning", changed_days_ago=10) for n in range(3)]
         item = _item(conn, "due words video")
         _contains(conn, item, *learning, *[_lexeme(conn, f"neu{n}", 2500 + n) for n in range(4)])
-        _item(conn, "plain video", creator="Andere")
+        plain = _item(conn, "plain video", creator="Andere")
+        _contains(conn, plain, *[_lexeme(conn, f"selten{n}", 40000 + n) for n in range(4)])
     feed = client.get("/api/feed", params={"lang": "de", "shelf": "watch"}).json()
     pick = next(i for i in feed["items"] if i["id"] == item)
-    assert "brings back 3 words you're learning, due again" in pick["reasons"]
-    assert "its new words are common, useful ones" in pick["reasons"]
+    assert "brings back 3 words you're learning, just as they start to fade" in pick["reasons"]
+    assert "teaches more new words you're ready for than most" in pick["reasons"]
+    assert not any("due" in reason for reason in pick["reasons"])  # no flashcard language, ever
+    breakdown = pick["explain"]
+    assert breakdown["parts"]["reinforce"] > 0.5 and breakdown["parts"]["learn"] > 0 and breakdown["fit"] == 0.8
     assert feed["items"][0]["id"] == item
     picks = client.get("/api/recommend", params={"lang": "de"}).json()["picks"]
     assert picks[0]["id"] == item

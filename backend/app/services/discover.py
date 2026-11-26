@@ -457,17 +457,21 @@ def _discover_articles(
 
 def prune(conn: Connection, days: int, lang: str | None = None) -> int:
     """Remove discovered items nobody opened, older than `days`: dropped ones (so they can be re-checked as your level
-    moves) and measured candidates. Estimated catalogue entries stay; things you dismissed yourself, added or watched
-    are never removed."""
+    moves) and measured candidates. Measured candidates that fit your level are what suggestions are made of: they
+    stay four times as long. Estimated catalogue entries stay; things you dismissed yourself, added or watched are
+    never removed."""
     result = conn.execute(
         text(
             "DELETE FROM content_items WHERE origin = 'scraper' AND status IN ('candidate', 'dismissed') "
             "AND analysis_status = 'done' AND last_opened_at IS NULL AND (:l IS NULL OR language_code = :l) "
             "AND COALESCE(json_extract(metadata_json, '$.dismissed_by_you'), 0) = 0 "
             "AND added_at < strftime('%Y-%m-%dT%H:%M:%fZ', 'now', :age) "
+            "AND (status = 'dismissed' OR added_at < strftime('%Y-%m-%dT%H:%M:%fZ', 'now', :keep) OR NOT EXISTS ("
+            " SELECT 1 FROM content_scores cs WHERE cs.content_item_id = content_items.id AND cs.estimated = 0 "
+            " AND cs.band IN ('stretch', 'i_plus_1', 'comfortable'))) "
             "AND NOT EXISTS (SELECT 1 FROM activity_sessions s WHERE s.content_item_id = content_items.id)"
         ),
-        {"l": lang, "age": f"-{days} days"},
+        {"l": lang, "age": f"-{days} days", "keep": f"-{days * 4} days"},
     )
     return result.rowcount or 0
 

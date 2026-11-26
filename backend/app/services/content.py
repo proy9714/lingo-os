@@ -13,7 +13,7 @@ from sqlalchemy import Connection, bindparam, text
 
 from app.config import AppConfig
 from app.services import calibration
-from app.engine.evidence import sample_running_words
+from app.engine.evidence import WATCHES, sample_running_words
 from app.engine.knowledge import knowledge_p
 from app.engine.profile import get_profile
 from app.engine.vocab_model import DEFAULT_K
@@ -504,8 +504,7 @@ def score_item(conn: Connection, item_id: int) -> dict[str, Any] | None:
             "SELECT cl.count, l.freq_rank, w.status, w.p_known, COALESCE(h.heard, 0) FROM content_lemmas cl "
             "JOIN lexemes l ON l.id = cl.lexeme_id LEFT JOIN user_words w ON w.lexeme_id = l.id "
             "LEFT JOIN (SELECT c2.lexeme_id, SUM(c2.count * x.watches) AS heard FROM content_lemmas c2 JOIN "
-            "(SELECT content_item_id, COUNT(*) AS watches FROM activity_sessions WHERE content_item_id IS NOT NULL "
-            "AND is_baseline = 0 GROUP BY content_item_id) x ON x.content_item_id = c2.content_item_id "
+            f"({WATCHES}) x ON x.content_item_id = c2.content_item_id "
             "WHERE c2.content_item_id != :id GROUP BY c2.lexeme_id) h ON h.lexeme_id = l.id "
             "WHERE cl.content_item_id = :id"
         ),

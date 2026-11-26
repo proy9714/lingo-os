@@ -568,10 +568,22 @@ export type FeedShelf = "watch" | "listen" | "read";
 export type Shelf = FeedShelf | "manga";
 export type PickKind = "video" | "podcast" | "reading" | "manga";
 
+/** A suggestion's score taken apart (backend recommend.explain). */
+export interface PickExplain {
+  fit: number;
+  freshness: number;
+  confidence: number;
+  taste: number;
+  parts: Record<string, number>;
+  weights: Record<string, number>;
+  explore: boolean;
+}
+
 export interface UpNextPick {
   id: number;
   type: string;
   kind: PickKind;
+  explain?: PickExplain;
   title: string;
   creator: string | null;
   source: string;

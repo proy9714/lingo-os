@@ -94,13 +94,22 @@ def window(conn: Connection, lang: str, item_type: str) -> tuple[float, float]:
     return centre - half, centre + half
 
 
+EASY_SIDE = 1.6  # the fit falls off this much more slowly above the ideal (easier) than below it (harder)
+
+
 def band_and_fit(coverage: float, lo: float, hi: float) -> tuple[str, float]:
+    """The band an item falls in, and how well it fits (1 at your ideal coverage).
+
+    The fit curve is lopsided on purpose: something a little easier than ideal is still pleasant and you still learn
+    from it, while something a little harder is tiring and you learn less (too many unknown words to work them out
+    from context). So each step of coverage above the ideal costs less than the same step below it."""
     centre, width = (lo + hi) / 2, hi - lo
     band = (
         "too_hard" if coverage < lo - 0.1 else "stretch" if coverage < lo else "i_plus_1" if coverage <= hi
         else "comfortable" if coverage <= hi + 0.02 else "too_easy"
     )
-    return band, round(math.exp(-(((coverage - centre) / width) ** 2)), 4)
+    spread = width * (EASY_SIDE if coverage > centre else 1.0)
+    return band, round(math.exp(-(((coverage - centre) / spread) ** 2)), 4)
 
 
 def summary(conn: Connection, lang: str) -> dict[str, Any]:

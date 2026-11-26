@@ -1,15 +1,18 @@
 """What to watch and read next: matched to your level and your taste, never something you've already watched.
 
-score = level fit × freshness × confidence × taste × what it teaches
-  level fit      how close the item is to your "just right" coverage (calibrated by your difficulty ratings)
+score = level fit × freshness × confidence × taste × what it's worth to you now (Comprehensible Input Value)
+  level fit      how close the item is to your "just right" coverage, calibrated by your difficulty ratings; a bit too
+                 easy costs less than a bit too hard (services/calibration.py)
   freshness      unfinished books and manga you started get a boost
   confidence     measured items count fully; items whose level is estimated from their channel count a little less
   taste          what you tend to finish, come back to or dismiss: channels (sampled, so new ones get tried), sites,
                  topics, length (services/taste.py)
-  what it teaches  common new words, learning words due to come back, speech speed, cards you keep passing by
-                 (services/ranker.py)
-The best of the list is then re-ranked for variety (channel, topic, length, kind), and Today prefers what fits the
-minutes left in your daily goal.
+  worth          learnable new words per minute, words you're learning that have started to fade, speech speed, the
+                 next episode of a series, how recent news and podcasts are, cards you keep passing by; the weights
+                 are learned from what you open (services/ranker.py)
+The list is then built place by place for variety (channel, topic, length, kind, words brought back), with some places
+for exploring; Today keeps that order and prefers what fits the minutes left in your daily goal. docs/RECOMMENDATION.md
+explains it all with examples.
 Never suggested: videos you've watched (tracked in the app or imported from the Immersion Tracker CSVs) and anything
 you've finished, dismissed or archived.
 
@@ -46,8 +49,9 @@ _KEYS = (
 )
 
 
-def candidates(conn: Connection, lang: str, shelf: str | None = None) -> list[dict[str, Any]]:
-    """Everything that may be suggested, with its score inputs. `shelf` limits it to 'watch', 'read' or 'manga'."""
+def candidates(conn: Connection, lang: str, shelf: str | None = None, *, shown_only: bool = False) -> list[dict[str, Any]]:
+    """Everything that may be suggested, with its score inputs. `shelf` limits it to 'watch', 'listen', 'read' or
+    'manga'. `shown_only` instead lists every card you've been shown, whatever became of it (to learn from)."""
     types = SHELVES.get(shelf) if shelf else WATCH_TYPES + READ_TYPES + MANGA_TYPES
     type_list = ", ".join(f"'{t}'" for t in types or ())
     rows = conn.execute(
@@ -56,21 +60,26 @@ def candidates(conn: Connection, lang: str, shelf: str | None = None) -> list[di
             "ci.word_count, ci.status, ci.progress, ci.origin, ci.metadata_json, cs.coverage, cs.i1_score, cs.band, "
             "cs.expected_unknown, cs.estimated, "
             "CASE WHEN cs.estimated = 1 THEN 0 ELSE (SELECT COUNT(*) FROM content_lemmas cl JOIN user_words w "
-            " ON w.lexeme_id = cl.lexeme_id WHERE cl.content_item_id = ci.id AND w.status = 'learning') END AS learning_words, "
+            " ON w.lexeme_id = cl.lexeme_id WHERE cl.content_item_id = ci.id AND w.status IN ('learning', 'familiar')) END AS learning_words, "
             "(SELECT COUNT(*) FROM activity_sessions s WHERE s.content_item_id = ci.id AND s.is_baseline = 0) AS watched, "
-            "ca.speech_wpm "
-            "FROM content_items ci JOIN content_scores cs ON cs.content_item_id = ci.id "
+            "ca.speech_wpm"
+            + (", (ci.last_opened_at IS NOT NULL OR EXISTS (SELECT 1 FROM activity_sessions s2 WHERE s2.content_item_id = ci.id)) " if shown_only else " ")
+            + "FROM content_items ci JOIN content_scores cs ON cs.content_item_id = ci.id "
             "LEFT JOIN content_analysis ca ON ca.content_item_id = ci.id "
             f"WHERE ci.language_code = :l AND ci.type IN ({type_list}) "
-            "AND ci.status NOT IN ('dismissed', 'archived', 'finished') "
-            "AND (ci.analysis_status = 'done' OR cs.estimated = 1) "
-            f"AND NOT (ci.type IN ({WATCHED_TYPES}) AND {content.WATCHED_SQL})"
+            + (
+                "AND EXISTS (SELECT 1 FROM item_impressions ii WHERE ii.content_item_id = ci.id) "
+                if shown_only
+                else "AND ci.status NOT IN ('dismissed', 'archived', 'finished') "
+                "AND (ci.analysis_status = 'done' OR cs.estimated = 1) "
+                f"AND NOT (ci.type IN ({WATCHED_TYPES}) AND {content.WATCHED_SQL})"
+            )
         ),
         {"l": lang},
     ).all()
     out = []
     for row in rows:
-        item = dict(zip(_KEYS, row))
+        item = dict(zip(_KEYS + ("opened",), row)) if shown_only else dict(zip(_KEYS, row))
         meta = json.loads(item.pop("metadata") or "{}")
         item["image"] = meta.get("image")
         item["site"] = meta.get("site")
@@ -104,14 +113,20 @@ def _reasons(item: dict[str, Any]) -> list[str]:
     reasons = [f"≈ {round((item['coverage'] or 0) * 100)}% known"]
     if item["status"] == "in_progress" and (item["progress"] or 0) < 0.9:
         reasons.append("continue where you left off")
+    if item.get("_series"):
+        reasons.append("the next one in a series you're following")
     reasons += item.get("_taste_reasons", [])
-    due = item.get("_due_words", 0)
-    if due:
-        reasons.append(f"brings back {due} {'word' if due == 1 else 'words'} you're learning, due again")
+    faded = item.get("_due_words", 0)
+    if faded:
+        reasons.append(f"brings back {faded} {'word' if faded == 1 else 'words'} you're learning, just as they start to fade")
     elif item["learning_words"]:
         reasons.append(f"brings back {item['learning_words']} of your saved words")
-    if item.get("_teach") is not None and item["_teach"] >= 0.6:
-        reasons.append("its new words are common, useful ones")
+    if (item.get("_parts") or {}).get("learn", 0) >= 0.2:
+        reasons.append("teaches more new words you're ready for than most")
+    if (item.get("_parts") or {}).get("recent", 0) >= 0.5:
+        reasons.append("new this week")
+    if item.get("_explore"):
+        reasons.append("something new to try: it helps the suggestions learn what you like")
     if item.get("_time_fit"):
         reasons.append("fits the time left in today's goal")
     if item.get("_fill"):
@@ -122,13 +137,28 @@ def _reasons(item: dict[str, Any]) -> list[str]:
     return reasons
 
 
+def explain(item: dict[str, Any]) -> dict[str, Any]:
+    """The score taken apart: level fit × freshness × confidence × taste × exp(Σ weight · part)."""
+    freshness = 1.25 if item["status"] == "in_progress" and (item["progress"] or 0) < 0.9 else 1.0
+    confidence = CONFIDENCE.get(item["level_basis"] or "", 0.8) if item["estimated"] else 1.0
+    return {
+        "fit": round(item["i1_score"] or 0.0, 3),
+        "freshness": freshness,
+        "confidence": confidence,
+        "taste": item.get("_taste", 1.0),
+        "parts": item.get("_parts", {}),
+        "weights": item.get("_weights", {}),
+        "explore": bool(item.get("_explore")),
+    }
+
+
 def _present(item: dict[str, Any]) -> dict[str, Any]:
     clean = {k: v for k, v in item.items() if not k.startswith("_")}
-    return {**clean, "kind": kind_of(item), "score": round(_score(item), 4), "reasons": _reasons(item)}
+    return {**clean, "kind": kind_of(item), "score": round(_score(item), 4), "reasons": _reasons(item), "explain": explain(item)}
 
 
-def _apply_taste(conn: Connection, lang: str, items: list[dict[str, Any]]) -> dict[int, dict[int, float]]:
-    """Score every item; returns the topic vectors, which the variety step uses too."""
+def _apply_taste(conn: Connection, lang: str, items: list[dict[str, Any]]) -> tuple[dict[int, dict[int, float]], dict[str, Any]]:
+    """Score every item; returns the topic vectors and the ranking context, which the list building uses too."""
     prof = taste.profile(conn, lang)
     measured = [i["id"] for i in items if not i["estimated"] and i["type"] not in MANGA_TYPES]
     vecs = taste.item_vectors(conn, measured, prof.idf) if prof.idf else {}
@@ -138,7 +168,7 @@ def _apply_taste(conn: Connection, lang: str, items: list[dict[str, Any]]) -> di
         item["_score"] = _base(item) * factor * ranker.boost(item, ctx)
         item["_taste"] = round(factor, 3)
         item["_taste_reasons"] = reasons
-    return vecs
+    return vecs, ctx
 
 
 def spread_creators(items: list[dict[str, Any]], gap: int = CREATOR_GAP) -> list[dict[str, Any]]:
@@ -157,14 +187,21 @@ _RANKED: dict[tuple[str, str], tuple[float, tuple, list[dict[str, Any]]]] = {}
 
 
 def _version(conn: Connection, lang: str) -> tuple:
+    """What the ranking depends on: when any of it changes, the cached order is rebuilt (cards being shown are left out
+    on purpose, so scrolling through a list never reshuffles it)."""
     return tuple(
         conn.execute(
             text(
                 "SELECT (SELECT MAX(id) FROM content_items), (SELECT COUNT(*) FROM content_items WHERE language_code = :l "
                 "AND status IN ('dismissed', 'finished')), (SELECT MAX(computed_at) FROM content_scores), "
-                "(SELECT MAX(id) FROM activity_sessions), (SELECT value_json FROM app_settings WHERE key = :k)"
+                "(SELECT MAX(id) FROM activity_sessions), "
+                "(SELECT group_concat(key || '=' || value_json) FROM app_settings WHERE key IN (:k1, :k2, :k3, :k4)), "
+                "(SELECT MAX(status_changed_at) FROM user_words), (SELECT COUNT(*) FROM user_words)"
             ),
-            {"l": lang, "k": f"calibration.{lang}.listening"},
+            {
+                "l": lang, "k1": f"calibration.{lang}.listening", "k2": f"calibration.{lang}.reading",
+                "k3": f"band_shift.{lang}", "k4": f"reco_weights.{lang}",
+            },
         ).first()
         or ()
     )
@@ -197,14 +234,36 @@ def ranked(conn: Connection, lang: str, shelf: str | None) -> list[dict[str, Any
     cached = _RANKED.get(key)
     if cached and cached[1] == version and time.monotonic() - cached[0] < RANK_CACHE_SECONDS:
         return cached[2]
+    learn_weights(conn, lang)
     items = candidates(conn, lang, shelf)
-    vectors = _apply_taste(conn, lang, items)
+    vectors, ctx = _apply_taste(conn, lang, items)
     items.sort(key=lambda i: (-_score(i), i["id"]))
     near = _never_empty(items)
-    varied = ranker.diversify(near, _score, vectors)
+    varied = ranker.diversify(near, _score, vectors, ctx)
     result = varied[: ranker.MMR_TOP] + spread_creators(varied[ranker.MMR_TOP :])
     _RANKED[key] = (time.monotonic(), version, result)
+    _CONTEXT[key] = (vectors, ctx)
     return result
+
+
+_CONTEXT: dict[tuple[str, str], tuple[dict[int, dict[int, float]], dict[str, Any]]] = {}
+
+
+def learn_weights(conn: Connection, lang: str, *, force: bool = False) -> dict[str, Any]:
+    """Refit the part weights to which cards you opened (at most once a day; ranker.fit_weights)."""
+    from app.db import settings_store
+    from app.timeutil import from_iso, utc_now
+
+    stored = settings_store.get(conn, f"reco_weights.{lang}") or {}
+    if not force and stored.get("fitted_at") and utc_now() - from_iso(stored["fitted_at"]) < ranker.FIT_EVERY:
+        return stored
+    shown = candidates(conn, lang, None, shown_only=True)
+    if not shown:
+        return ranker.fit_weights(conn, lang, [], force=True)
+    ctx = ranker.context(conn, lang, shown)
+    ctx["shown"] = {}  # being passed by is the outcome here, not a feature
+    rows = [(ranker.parts(item, ctx), bool(item.get("opened"))) for item in shown]
+    return ranker.fit_weights(conn, lang, rows, force=True)
 
 
 def invalidate() -> None:
@@ -232,17 +291,21 @@ def _minutes_left(conn: Connection, lang: str) -> float | None:
 
 def up_next(conn: Connection, lang: str, n: int = 12) -> dict[str, Any]:
     minutes_left = _minutes_left(conn, lang)
-    for item in ranked(conn, lang, None):
-        fit = ranker.time_fit(item, minutes_left)
+    everything = ranked(conn, lang, None)
+    vectors, ctx = _CONTEXT.get((lang, "all"), ({}, {}))
+    wpm = ctx.get("wpm", ranker.READING_WPM)
+    for item in everything:
+        fit = ranker.time_fit(item, minutes_left, wpm)
         item["_today"] = _score(item) * fit
         item["_time_fit"] = fit > 1 and minutes_left is not None and minutes_left <= 30  # worth saying when time is short
 
     def today_score(item: dict[str, Any]) -> float:
         return item.get("_today", _score(item))
 
-    pool = sorted(ranked(conn, lang, None), key=today_score, reverse=True)
-    # Prefer measured items for the short list; estimated ones fill in only if needed.
-    pool.sort(key=lambda i: (i["estimated"], -today_score(i)))
+    # The list is built again with today's time in mind, keeping its variety and its exploring places: estimated items
+    # come in through those places rather than crowding the short list.
+    head = sorted(everything[: ranker.MMR_TOP], key=lambda i: (i["estimated"] and not i.get("_explore"), -today_score(i)))
+    pool = ranker.diversify(head, today_score, vectors, ctx)
     picks: list[dict[str, Any]] = []
     kinds: Counter[str] = Counter()
     creators: Counter[str] = Counter()
@@ -269,8 +332,9 @@ def up_next(conn: Connection, lang: str, n: int = 12) -> dict[str, Any]:
             if kinds[kind_of(item)] >= kind_cap or (item["creator"] and creators[item["creator"]] >= creator_cap):
                 continue
             take(item)
-    picks.sort(key=today_score, reverse=True)
-    return {"language": lang, "available": len(pool), "picks": [_present(item) for item in picks[:n]]}
+    order = {id(item): index for index, item in enumerate(pool)}
+    picks.sort(key=lambda item: order.get(id(item), len(order)))  # the stretch/comfortable picks take their place too
+    return {"language": lang, "available": len(everything), "picks": [_present(item) for item in picks[:n]]}
 
 
 def feed(conn: Connection, lang: str, shelf: str, offset: int = 0, limit: int = 24) -> dict[str, Any]:

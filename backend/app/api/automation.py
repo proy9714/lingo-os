@@ -35,7 +35,7 @@ class SourcePatch(BaseModel):
 class TopUpRequest(BaseModel):
     lang: str = Field(min_length=2, max_length=8)
     force: bool = False
-    shelf: str | None = Field(default=None, pattern="^(watch|read)$")
+    shelf: str | None = Field(default=None, pattern="^(watch|listen|read)$")
     at_end: bool = False  # you scrolled to the end of this shelf: look for more sooner
 
 

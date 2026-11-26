@@ -8,6 +8,7 @@ import { useSeen } from "../lib/seen";
 import { useUi } from "../state/ui";
 import { Icon } from "./Icon";
 import { cx } from "./ui";
+import { WhyThis } from "./WhyThis";
 
 /** How an item sits against your level, in plain words, with a colour. */
 export const BANDS: Record<string, { label: string; tone: string; hint: string }> = {
@@ -296,6 +297,7 @@ export function FeaturedCard({ pick }: { pick: UpNextPick }) {
         <p className="text-sm text-white/75">
           {[pick.site || pick.creator, length, ...pick.reasons.filter((r) => !r.endsWith("% known"))].filter(Boolean).join(" · ")}
         </p>
+        <WhyThis explain={pick.explain} />
         <div className="mt-1 flex flex-wrap items-center gap-2">
           <Link
             to={targetOf(pick)}

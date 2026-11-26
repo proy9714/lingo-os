@@ -56,7 +56,7 @@ def list_content(
     lang: str = Query(..., min_length=2, max_length=8),
     q: str | None = Query(None, max_length=100),
     kind: str | None = Query(None, pattern="^(youtube|local)$"),
-    shelf: str = Query("watch", pattern="^(watch|read|manga)$"),
+    shelf: str = Query("watch", pattern="^(watch|listen|read|manga)$"),
     state: str = Query("all", pattern="^(all|watched|mine)$"),
     limit: int = Query(60, ge=1, le=300),
     offset: int = Query(0, ge=0),
@@ -70,7 +70,7 @@ def list_content(
 @router.get("/feed")
 def suggestions(
     lang: str = Query(..., min_length=2, max_length=8),
-    shelf: str = Query("watch", pattern="^(watch|read)$"),
+    shelf: str = Query("watch", pattern="^(watch|listen|read)$"),
     offset: int = Query(0, ge=0),
     limit: int = Query(24, ge=1, le=60),
     conn: Connection = Depends(get_conn),

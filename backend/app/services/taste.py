@@ -34,6 +34,7 @@ CHANNEL_SHRINK, LENGTH_SHRINK = 1.5, 3.0
 WEIGHTS = {"channel": 0.55, "length": 0.3, "topic": 0.6}
 PRIOR = 1.5  # Beta(1.5, 1.5): an untried channel could be anything, but not wildly so
 CLIP = (0.45, 2.2)
+DRAW_SHARE = 0.5  # how much of a channel's daily Thompson draw reaches the ranking (the rest is its posterior mean)
 TOPIC_RANKS = (400, 40000)  # frequency ranks that carry topics (common grammar words and rare names left out)
 TOPIC_TERMS = 80  # strongest topic words kept per item
 MAX_DOC_SHARE = 0.3
@@ -130,7 +131,9 @@ class TasteProfile:
     def multiplier(self, item: dict[str, Any], vector: dict[int, float] | None = None) -> tuple[float, list[str]]:
         owner = owner_of(item["type"], item.get("creator"), item.get("site"))
         channel = self.channel_affinity(owner)
-        sampled = self.sampled_channel(owner) if self.signals >= 3 else channel
+        # The daily draw explores channels you haven't settled on; it's pulled halfway toward what's known about the
+        # channel, since exploring is now also done by dedicated places in the list (ranker.diversify).
+        sampled = (DRAW_SHARE * self.sampled_channel(owner) + (1 - DRAW_SHARE) * channel) if self.signals >= 3 else channel
         bucket = length_bucket(item["type"], item.get("duration_sec"), item.get("word_count"))
         length = self.lengths.get(bucket, 0.0) if bucket else 0.0
         topic = max(-0.5, min(0.8, self.similarity(vector)))
