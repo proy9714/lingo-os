@@ -1,0 +1,2393 @@
+{
+ "language": "de",
+ "title": "German grammar",
+ "intro": "A working reference for beginners to intermediate learners. Every pattern comes with real sentences and a translation: read a section, notice the shape, then listen for it in what you watch and read.",
+ "sections": [
+  {
+   "number": 1,
+   "id": "nouns",
+   "title": "Nouns, articles & gender",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "gender",
+    "article",
+    "der",
+    "die",
+    "das",
+    "plural",
+    "noun"
+   ],
+   "rule": null,
+   "text": "Gender belongs to the word, not to its meaning, so learn every noun together with its article. Endings help: **-ung, -heit, -keit, -schaft, -ion, -tät** are feminine (die Wohnung); **-chen, -lein** are always neuter, even for people (das Mädchen); a person who does something, ending in **-er**, is usually masculine (der Fahrer); most nouns in **-e** are feminine (die Tasche). A compound takes the gender of its last part: das Haus + die Tür → die Haustür. Plurals come in several patterns (Tische, Bücher, Lampen, Autos, Fenster), so learn them with the noun too.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Definite",
+      "Indefinite"
+     ],
+     "rows": [
+      [
+       "der (masculine)",
+       "der Tisch | the table",
+       "ein Tisch | a table"
+      ],
+      [
+       "die (feminine)",
+       "die Lampe | the lamp",
+       "eine Lampe | a lamp"
+      ],
+      [
+       "das (neuter)",
+       "das Fenster | the window",
+       "ein Fenster | a window"
+      ],
+      [
+       "die (plural, every gender)",
+       "die Tische | the tables",
+       "Tische | tables (there is no plural ein)"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Die Lampe ist kaputt.",
+     "translation": "The lamp is broken.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Wir brauchen einen neuen Tisch.",
+     "translation": "We need a new table.",
+     "note": "einen: masculine, as the object",
+     "reading": null
+    },
+    {
+     "text": "Das Mädchen heißt Lena.",
+     "translation": "The girl is called Lena.",
+     "note": "-chen is always neuter",
+     "reading": null
+    },
+    {
+     "text": "Die Haustür ist offen.",
+     "translation": "The front door is open.",
+     "note": "the last part, die Tür, decides the gender",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 2,
+   "id": "pronouns",
+   "title": "Personal pronouns",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "pronoun",
+    "pronouns",
+    "ich",
+    "mich",
+    "mir",
+    "dich",
+    "dir"
+   ],
+   "rule": "Pronouns change with their role in the sentence: subject (Nominativ), direct object (Akkusativ) or indirect object (Dativ).",
+   "text": "A pronoun follows the noun's grammatical gender: der Kaffee → **er**, die Stadt → **sie**, das Buch → **es**. German always says the subject; it never drops it the way Spanish or Japanese do. Use **Sie** (always capitalised) with strangers, at work and in shops; **du** with friends, family, children and online.",
+   "tables": [
+    {
+     "head": [
+      "Meaning",
+      "Nominativ",
+      "Akkusativ",
+      "Dativ"
+     ],
+     "rows": [
+      [
+       "I / me",
+       "ich",
+       "mich",
+       "mir"
+      ],
+      [
+       "you (friend, family)",
+       "du",
+       "dich",
+       "dir"
+      ],
+      [
+       "he / him",
+       "er",
+       "ihn",
+       "ihm"
+      ],
+      [
+       "she / her",
+       "sie",
+       "sie",
+       "ihr"
+      ],
+      [
+       "it",
+       "es",
+       "es",
+       "ihm"
+      ],
+      [
+       "we / us",
+       "wir",
+       "uns",
+       "uns"
+      ],
+      [
+       "you (several people)",
+       "ihr",
+       "euch",
+       "euch"
+      ],
+      [
+       "they / them",
+       "sie",
+       "sie",
+       "ihnen"
+      ],
+      [
+       "you (formal)",
+       "Sie",
+       "Sie",
+       "Ihnen"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Kennst du ihn?",
+     "translation": "Do you know him?",
+     "note": "ihn: Akkusativ",
+     "reading": null
+    },
+    {
+     "text": "Kannst du mir helfen?",
+     "translation": "Can you help me?",
+     "note": "helfen takes the Dativ: mir",
+     "reading": null
+    },
+    {
+     "text": "Der Kaffee ist kalt, er schmeckt nicht.",
+     "translation": "The coffee is cold; it doesn't taste good.",
+     "note": "der Kaffee → er",
+     "reading": null
+    },
+    {
+     "text": "Wie geht es Ihnen?",
+     "translation": "How are you?",
+     "note": "formal",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 3,
+   "id": "cases",
+   "title": "The four cases",
+   "kind": "structure",
+   "level": "A1–A2",
+   "tags": [
+    "case",
+    "cases",
+    "nominativ",
+    "akkusativ",
+    "dativ",
+    "genitiv",
+    "accusative",
+    "dative",
+    "genitive"
+   ],
+   "rule": null,
+   "text": "German shows who does what to whom with **case** endings, mostly on the article. Ask the case question: **Wer?** (Nominativ, the subject), **Wen? Was?** (Akkusativ, the direct object), **Wem?** (Dativ, the indirect object), **Wessen?** (Genitiv, whose).",
+   "tables": [
+    {
+     "caption": "Definite article (der-words, also dieser, jeder, welcher)",
+     "head": [
+      "",
+      "Masc.",
+      "Fem.",
+      "Neuter",
+      "Plural"
+     ],
+     "rows": [
+      [
+       "Nominativ",
+       "der",
+       "die",
+       "das",
+       "die"
+      ],
+      [
+       "Akkusativ",
+       "d{en}",
+       "die",
+       "das",
+       "die"
+      ],
+      [
+       "Dativ",
+       "d{em}",
+       "d{er}",
+       "d{em}",
+       "d{en} | (+ -n on the noun)"
+      ],
+      [
+       "Genitiv",
+       "d{es} | (+ -s / -es)",
+       "d{er}",
+       "d{es} | (+ -s / -es)",
+       "d{er}"
+      ]
+     ]
+    },
+    {
+     "caption": "Indefinite article (ein-words, also kein, mein, dein …)",
+     "head": [
+      "",
+      "Masc.",
+      "Fem.",
+      "Neuter",
+      "Plural (kein)"
+     ],
+     "rows": [
+      [
+       "Nominativ",
+       "ein",
+       "eine",
+       "ein",
+       "keine"
+      ],
+      [
+       "Akkusativ",
+       "ein{en}",
+       "eine",
+       "ein",
+       "keine"
+      ],
+      [
+       "Dativ",
+       "ein{em}",
+       "ein{er}",
+       "ein{em}",
+       "kein{en}"
+      ],
+      [
+       "Genitiv",
+       "ein{es}",
+       "ein{er}",
+       "ein{es}",
+       "kein{er}"
+      ]
+     ]
+    }
+   ],
+   "after": "Only the masculine changes in the Akkusativ (der → den, ein → einen). In speech the Genitiv is often replaced by **von + Dativ**: das Auto von meinem Vater.",
+   "examples": [
+    {
+     "text": "Der Hund sucht den Ball.",
+     "translation": "The dog is looking for the ball.",
+     "note": "der Hund: subject; den Ball: object",
+     "reading": null
+    },
+    {
+     "text": "Ich schenke meiner Mutter Blumen.",
+     "translation": "I'm giving my mother flowers.",
+     "note": "meiner Mutter: Dativ, the person receiving",
+     "reading": null
+    },
+    {
+     "text": "Das Fahrrad meines Bruders ist rot.",
+     "translation": "My brother's bike is red.",
+     "note": "Genitiv; in speech: das Fahrrad von meinem Bruder",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 4,
+   "id": "present",
+   "title": "Present tense",
+   "kind": "verbs",
+   "level": "A1",
+   "tags": [
+    "present",
+    "präsens",
+    "conjugation",
+    "verb endings"
+   ],
+   "rule": "Take the infinitive, drop -en to get the stem, then add the ending for the person.",
+   "text": "Stems ending in **-t / -d** add an -e: du arbeit**e**st, er find**e**t. Stems ending in **-s / -ß / -z** take only -t for du: du heißt, du tanzt. Many common irregular verbs change their vowel in the du and er/sie/es forms: **e → i** (sprechen: du sprichst), **e → ie** (lesen: du liest), **a → ä** (fahren: du fährst). The present also covers \"I'm doing\" and plans: there is no separate continuous form.",
+   "tables": [
+    {
+     "head": [
+      "Person",
+      "Ending",
+      "spielen | to play",
+      "kochen | to cook",
+      "trinken | to drink"
+     ],
+     "rows": [
+      [
+       "ich",
+       "-e",
+       "spiel{e}",
+       "koch{e}",
+       "trink{e}"
+      ],
+      [
+       "du",
+       "-st",
+       "spiel{st}",
+       "koch{st}",
+       "trink{st}"
+      ],
+      [
+       "er / sie / es",
+       "-t",
+       "spiel{t}",
+       "koch{t}",
+       "trink{t}"
+      ],
+      [
+       "wir",
+       "-en",
+       "spiel{en}",
+       "koch{en}",
+       "trink{en}"
+      ],
+      [
+       "ihr",
+       "-t",
+       "spiel{t}",
+       "koch{t}",
+       "trink{t}"
+      ],
+      [
+       "sie / Sie",
+       "-en",
+       "spiel{en}",
+       "koch{en}",
+       "trink{en}"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Wir spielen am Samstag Tennis.",
+     "translation": "We're playing tennis on Saturday.",
+     "note": "the present for a plan",
+     "reading": null
+    },
+    {
+     "text": "Du fährst zu schnell!",
+     "translation": "You're driving too fast!",
+     "note": "fahren: a → ä",
+     "reading": null
+    },
+    {
+     "text": "Sie liest gerade einen Krimi.",
+     "translation": "She's reading a crime novel at the moment.",
+     "note": "gerade = right now",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 5,
+   "id": "irregular",
+   "title": "Essential irregular verbs",
+   "kind": "verbs",
+   "level": "A1",
+   "tags": [
+    "sein",
+    "haben",
+    "werden",
+    "wissen",
+    "irregular"
+   ],
+   "rule": null,
+   "text": "Learn **sein, haben** and **werden** first: besides their own meaning they build the past (habe gemacht, bin gegangen), the future (werde machen) and the passive.",
+   "tables": [
+    {
+     "head": [
+      "Verb",
+      "ich",
+      "du",
+      "er / sie / es",
+      "wir",
+      "ihr",
+      "sie / Sie"
+     ],
+     "rows": [
+      [
+       "sein | to be",
+       "bin",
+       "bist",
+       "ist",
+       "sind",
+       "seid",
+       "sind"
+      ],
+      [
+       "haben | to have",
+       "habe",
+       "hast",
+       "hat",
+       "haben",
+       "habt",
+       "haben"
+      ],
+      [
+       "werden | to become",
+       "werde",
+       "wirst",
+       "wird",
+       "werden",
+       "werdet",
+       "werden"
+      ],
+      [
+       "wissen | to know (a fact)",
+       "weiß",
+       "weißt",
+       "weiß",
+       "wissen",
+       "wisst",
+       "wissen"
+      ],
+      [
+       "nehmen | to take",
+       "nehme",
+       "nimmst",
+       "nimmt",
+       "nehmen",
+       "nehmt",
+       "nehmen"
+      ],
+      [
+       "essen | to eat",
+       "esse",
+       "isst",
+       "isst",
+       "essen",
+       "esst",
+       "essen"
+      ],
+      [
+       "sehen | to see",
+       "sehe",
+       "siehst",
+       "sieht",
+       "sehen",
+       "seht",
+       "sehen"
+      ],
+      [
+       "geben | to give",
+       "gebe",
+       "gibst",
+       "gibt",
+       "geben",
+       "gebt",
+       "geben"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Ich bin müde, aber ich habe Hunger.",
+     "translation": "I'm tired, but I'm hungry.",
+     "note": "Hunger haben: literally 'to have hunger'",
+     "reading": null
+    },
+    {
+     "text": "Weißt du, wo der Bahnhof ist?",
+     "translation": "Do you know where the station is?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Er nimmt den Bus.",
+     "translation": "He takes the bus.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 6,
+   "id": "modals",
+   "title": "Modal verbs",
+   "kind": "verbs",
+   "level": "A1–A2",
+   "tags": [
+    "modal",
+    "können",
+    "müssen",
+    "dürfen",
+    "wollen",
+    "sollen",
+    "möchten"
+   ],
+   "rule": "The modal verb is conjugated in position 2; the main verb goes to the end as an infinitive.",
+   "text": "The ich and er/sie/es forms are the same and have no ending. Careful: **muss nicht** means \"don't have to\"; \"mustn't\" is **darf nicht**. **Will** means \"want\", not the English future.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "können | can",
+      "müssen | have to",
+      "wollen | want",
+      "dürfen | may",
+      "sollen | should",
+      "möchten | would like"
+     ],
+     "rows": [
+      [
+       "ich",
+       "kann",
+       "muss",
+       "will",
+       "darf",
+       "soll",
+       "möchte"
+      ],
+      [
+       "du",
+       "kannst",
+       "musst",
+       "willst",
+       "darfst",
+       "sollst",
+       "möchtest"
+      ],
+      [
+       "er / sie / es",
+       "kann",
+       "muss",
+       "will",
+       "darf",
+       "soll",
+       "möchte"
+      ],
+      [
+       "wir",
+       "können",
+       "müssen",
+       "wollen",
+       "dürfen",
+       "sollen",
+       "möchten"
+      ],
+      [
+       "ihr",
+       "könnt",
+       "müsst",
+       "wollt",
+       "dürft",
+       "sollt",
+       "möchtet"
+      ],
+      [
+       "sie / Sie",
+       "können",
+       "müssen",
+       "wollen",
+       "dürfen",
+       "sollen",
+       "möchten"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Ich kann heute nicht kommen.",
+     "translation": "I can't come today.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Hier darf man nicht rauchen.",
+     "translation": "You're not allowed to smoke here.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Du musst das nicht machen.",
+     "translation": "You don't have to do that.",
+     "note": "not 'you mustn't'",
+     "reading": null
+    },
+    {
+     "text": "Ich möchte einen Kaffee, bitte.",
+     "translation": "I'd like a coffee, please.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 7,
+   "id": "verb-second",
+   "title": "Word order: main clauses (verb second)",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "word order",
+    "verb second",
+    "v2",
+    "position"
+   ],
+   "rule": "In a main clause the conjugated verb is always the second element. Whatever comes first (subject, time, place, object), the subject then stands right after the verb.",
+   "text": "The second part of the verb (infinitive, participle, separable prefix) goes to the very end: Ich **habe** gestern lange **geschlafen**. The connectors **und, aber, oder, denn, sondern** don't take up a position. In the middle of the sentence the usual order is time, reason, manner, place: Ich fahre **morgen** **wegen der Arbeit** **mit dem Zug** **nach Hamburg**.",
+   "tables": [
+    {
+     "head": [
+      "Position 1",
+      "Verb",
+      "The rest"
+     ],
+     "rows": [
+      [
+       "Ich | I",
+       "fahre",
+       "morgen nach Hamburg. | am going to Hamburg tomorrow."
+      ],
+      [
+       "Morgen | Tomorrow",
+       "fahre",
+       "ich nach Hamburg."
+      ],
+      [
+       "Nach Hamburg | To Hamburg",
+       "fahre",
+       "ich morgen."
+      ],
+      [
+       "(yes/no question)",
+       "Fährst",
+       "du morgen nach Hamburg? | Are you going to Hamburg tomorrow?"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Heute bleibe ich zu Hause.",
+     "translation": "Today I'm staying at home.",
+     "note": "heute takes position 1, so ich follows the verb",
+     "reading": null
+    },
+    {
+     "text": "Am Wochenende habe ich viel geschlafen.",
+     "translation": "At the weekend I slept a lot.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Kommst du mit?",
+     "translation": "Are you coming along?",
+     "note": "yes/no question: the verb comes first",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 8,
+   "id": "verb-final",
+   "title": "Word order: subordinate clauses (verb last)",
+   "kind": "structure",
+   "level": "A2",
+   "tags": [
+    "subordinate",
+    "weil",
+    "dass",
+    "wenn",
+    "ob",
+    "word order",
+    "verb final"
+   ],
+   "rule": "After a subordinating conjunction (dass, weil, wenn, als, ob, obwohl, damit, bevor, nachdem …) the conjugated verb moves to the end of its clause. There is always a comma.",
+   "text": "If the subordinate clause comes first, it counts as position 1, so the main clause starts with its verb: **Wenn es regnet, bleibe ich zu Hause.** With a modal, the modal is last: …, weil ich arbeiten **muss**. A separable verb joins up again at the end: …, dass er früh **aufsteht**.",
+   "tables": [],
+   "after": null,
+   "examples": [
+    {
+     "text": "Ich glaube, dass sie recht hat.",
+     "translation": "I think she's right.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Weil der Zug Verspätung hatte, kam ich zu spät.",
+     "translation": "Because the train was late, I arrived late.",
+     "note": "clause first → the main clause starts with the verb",
+     "reading": null
+    },
+    {
+     "text": "Weißt du, ob das Museum heute offen ist?",
+     "translation": "Do you know whether the museum is open today?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Er sagt, dass er früh aufsteht.",
+     "translation": "He says he gets up early.",
+     "note": "auf + steht come back together at the end",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 9,
+   "id": "separable",
+   "title": "Separable & inseparable verbs",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "separable",
+    "trennbar",
+    "prefix",
+    "anrufen",
+    "aufstehen",
+    "inseparable"
+   ],
+   "rule": null,
+   "text": "Separable prefixes (an, auf, aus, ab, ein, mit, vor, zu, zurück, weg …) are stressed (**AN**rufen) and go to the end of a main clause. Inseparable prefixes (**be-, ge-, er-, ver-, zer-, ent-, emp-, miss-**) are unstressed and never move. In the Perfekt, ge- goes between a separable prefix and the stem (an**ge**rufen); inseparable verbs take no ge- (verstanden, bekommen).",
+   "tables": [
+    {
+     "head": [
+      "Prefix",
+      "Splits?",
+      "Verb",
+      "In a main clause"
+     ],
+     "rows": [
+      [
+       "an-",
+       "yes",
+       "anrufen | to call",
+       "Ich rufe dich morgen an. | I'll call you tomorrow."
+      ],
+      [
+       "auf-",
+       "yes",
+       "aufmachen | to open",
+       "Mach bitte die Tür auf. | Please open the door."
+      ],
+      [
+       "ein-",
+       "yes",
+       "einkaufen | to shop",
+       "Wir kaufen heute ein. | We're going shopping today."
+      ],
+      [
+       "mit-",
+       "yes",
+       "mitkommen | to come along",
+       "Kommst du mit? | Are you coming along?"
+      ],
+      [
+       "ver-",
+       "never",
+       "verstehen | to understand",
+       "Ich verstehe dich. | I understand you."
+      ],
+      [
+       "be-",
+       "never",
+       "bekommen | to get, receive",
+       "Sie bekommt ein Paket. | She's getting a parcel."
+      ],
+      [
+       "er-",
+       "never",
+       "erzählen | to tell",
+       "Er erzählt eine Geschichte. | He's telling a story."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Der Film fängt um acht an.",
+     "translation": "The film starts at eight.",
+     "note": "anfangen",
+     "reading": null
+    },
+    {
+     "text": "Ich habe meine Schwester angerufen.",
+     "translation": "I called my sister.",
+     "note": "an-ge-rufen",
+     "reading": null
+    },
+    {
+     "text": "Hast du alles verstanden?",
+     "translation": "Did you understand everything?",
+     "note": "ver-: no ge-",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 10,
+   "id": "akk-dat",
+   "title": "Akkusativ vs. Dativ",
+   "kind": "contrast",
+   "level": "A2",
+   "tags": [
+    "akkusativ",
+    "dativ",
+    "accusative",
+    "dative",
+    "object",
+    "helfen",
+    "gefallen"
+   ],
+   "rule": null,
+   "text": "With geben, schenken, zeigen, erklären, schicken, bringen the person is Dativ and the thing Akkusativ. Order: two nouns → Dativ first (Ich gebe **dem Kind** **den Ball**); if the thing is a pronoun, it comes first (Ich gebe **ihn** dem Kind).",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Akkusativ",
+      "Dativ"
+     ],
+     "rows": [
+      [
+       "Question",
+       "Wen? Was? | whom? what?",
+       "Wem? | to whom?"
+      ],
+      [
+       "Role",
+       "the direct object: what the action happens to",
+       "the indirect object: who receives or benefits"
+      ],
+      [
+       "Typical verbs",
+       "sehen, kaufen, brauchen, haben, finden, suchen",
+       "helfen, danken, gefallen, gehören, gratulieren, antworten, schmecken, passen"
+      ],
+      [
+       "With two objects",
+       "the thing",
+       "the person"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Ich zeige dem Gast das Zimmer.",
+     "translation": "I'm showing the guest the room.",
+     "note": "dem Gast: Dativ; das Zimmer: Akkusativ",
+     "reading": null
+    },
+    {
+     "text": "Die Jacke gefällt mir.",
+     "translation": "I like the jacket.",
+     "note": "literally: the jacket pleases me",
+     "reading": null
+    },
+    {
+     "text": "Ich danke dir für die Hilfe.",
+     "translation": "Thank you for the help.",
+     "note": "danken + Dativ",
+     "reading": null
+    },
+    {
+     "text": "Ich gebe es ihm morgen.",
+     "translation": "I'll give it to him tomorrow.",
+     "note": "the Akkusativ pronoun goes first",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 11,
+   "id": "two-way",
+   "title": "Two-way prepositions (Wechselpräpositionen)",
+   "kind": "contrast",
+   "level": "A2",
+   "tags": [
+    "two-way",
+    "wechselpräpositionen",
+    "in",
+    "an",
+    "auf",
+    "wohin",
+    "wo",
+    "liegen",
+    "legen"
+   ],
+   "rule": "an, auf, hinter, in, neben, über, unter, vor, zwischen: movement towards a place → Akkusativ; location → Dativ.",
+   "text": "The verbs come in pairs: **legen / liegen** (lay / lie), **stellen / stehen** (stand something / stand), **setzen / sitzen** (sit someone / sit), **hängen / hängen**. Short forms: in dem → **im**, in das → **ins**, an dem → **am**, an das → **ans**.",
+   "tables": [
+    {
+     "head": [
+      "Question",
+      "Case",
+      "Example"
+     ],
+     "rows": [
+      [
+       "Wohin? (where to: movement)",
+       "Akkusativ",
+       "Ich lege das Buch auf den Tisch. | I put the book on the table."
+      ],
+      [
+       "Wo? (where: location)",
+       "Dativ",
+       "Das Buch liegt auf dem Tisch. | The book is lying on the table."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Wir gehen ins Kino.",
+     "translation": "We're going to the cinema.",
+     "note": "ins = in das: Akkusativ, direction",
+     "reading": null
+    },
+    {
+     "text": "Wir sind im Kino.",
+     "translation": "We're at the cinema.",
+     "note": "im = in dem: Dativ, location",
+     "reading": null
+    },
+    {
+     "text": "Häng das Bild an die Wand.",
+     "translation": "Hang the picture on the wall.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Das Bild hängt an der Wand.",
+     "translation": "The picture is hanging on the wall.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 12,
+   "id": "perfekt",
+   "title": "Perfekt (the spoken past)",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "perfekt",
+    "past",
+    "participle",
+    "haben",
+    "sein",
+    "partizip"
+   ],
+   "rule": "haben or sein in position 2 + past participle at the end. In conversation this is the normal past tense.",
+   "text": "Use **sein** with verbs of movement from A to B (gehen, fahren, fliegen, kommen, laufen), changes of state (aufwachen, einschlafen, sterben, werden) and with sein, bleiben, passieren. Everything else takes **haben**.",
+   "tables": [
+    {
+     "head": [
+      "Verb type",
+      "Participle",
+      "Example"
+     ],
+     "rows": [
+      [
+       "regular",
+       "ge- + stem + -t: machen → ge{mach}t",
+       "Ich habe Kaffee gemacht. | I made coffee."
+      ],
+      [
+       "irregular",
+       "ge- + (changed) stem + -en: schreiben → geschrieben, trinken → getrunken",
+       "Sie hat eine E-Mail geschrieben. | She wrote an email."
+      ],
+      [
+       "separable",
+       "prefix + ge + stem: einkaufen → eingekauft",
+       "Wir haben schon eingekauft. | We've already done the shopping."
+      ],
+      [
+       "be-, ver-, er- … and -ieren",
+       "no ge-: besuchen → besucht, telefonieren → telefoniert",
+       "Ich habe Oma besucht. | I visited grandma."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Wir sind nach Wien gefahren.",
+     "translation": "We went to Vienna.",
+     "note": "movement → sein",
+     "reading": null
+    },
+    {
+     "text": "Hast du schon gegessen?",
+     "translation": "Have you eaten yet?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Was ist passiert?",
+     "translation": "What happened?",
+     "note": "passieren takes sein",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 13,
+   "id": "praeteritum",
+   "title": "Präteritum (the written past)",
+   "kind": "verbs",
+   "level": "B1",
+   "tags": [
+    "präteritum",
+    "simple past",
+    "war",
+    "hatte",
+    "konnte"
+   ],
+   "rule": "Stories, news and books use the Präteritum. In speech it's used mainly for sein, haben, the modal verbs and a few others (es gab, ich wusste, ich dachte).",
+   "text": "Regular verbs add **-te** to the stem. Irregular verbs get a new stem with no ending for ich and er/sie/es: gehen → ging, kommen → kam, sehen → sah, finden → fand, sprechen → sprach.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "sein",
+      "haben",
+      "können",
+      "machen (regular)",
+      "gehen (irregular)"
+     ],
+     "rows": [
+      [
+       "ich",
+       "war",
+       "hatte",
+       "konnte",
+       "mach{te}",
+       "ging"
+      ],
+      [
+       "du",
+       "warst",
+       "hattest",
+       "konntest",
+       "mach{test}",
+       "gingst"
+      ],
+      [
+       "er / sie / es",
+       "war",
+       "hatte",
+       "konnte",
+       "mach{te}",
+       "ging"
+      ],
+      [
+       "wir",
+       "waren",
+       "hatten",
+       "konnten",
+       "mach{ten}",
+       "gingen"
+      ],
+      [
+       "ihr",
+       "wart",
+       "hattet",
+       "konntet",
+       "mach{tet}",
+       "gingt"
+      ],
+      [
+       "sie / Sie",
+       "waren",
+       "hatten",
+       "konnten",
+       "mach{ten}",
+       "gingen"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Gestern war ich krank.",
+     "translation": "Yesterday I was ill.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Wir hatten keine Zeit.",
+     "translation": "We didn't have time.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Es war einmal ein König.",
+     "translation": "Once upon a time there was a king.",
+     "note": "fairy tales and stories use the Präteritum",
+     "reading": null
+    },
+    {
+     "text": "Ich musste lange warten.",
+     "translation": "I had to wait a long time.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 14,
+   "id": "future",
+   "title": "Futur I",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "future",
+    "futur",
+    "werden"
+   ],
+   "rule": "werden in position 2 + infinitive at the end.",
+   "text": "For plans, German usually just uses the present with a time word: **Morgen fliege ich nach Rom.** Futur I is for promises, predictions and guesses about now (often with **wohl** or **schon**). On its own, **werden** means \"to become\".",
+   "tables": [],
+   "after": null,
+   "examples": [
+    {
+     "text": "Ich werde dir helfen.",
+     "translation": "I'll help you.",
+     "note": "a promise",
+     "reading": null
+    },
+    {
+     "text": "Es wird morgen regnen.",
+     "translation": "It's going to rain tomorrow.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Sie wird wohl noch schlafen.",
+     "translation": "She's probably still asleep.",
+     "note": "a guess about now",
+     "reading": null
+    },
+    {
+     "text": "Er wird Arzt.",
+     "translation": "He's going to be a doctor.",
+     "note": "werden alone = become",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 15,
+   "id": "reflexive",
+   "title": "Reflexive verbs",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "reflexive",
+    "sich",
+    "mich",
+    "mir"
+   ],
+   "rule": null,
+   "text": "Many verbs are reflexive in German but not in English: **sich freuen** (auf / über), **sich beeilen**, **sich erinnern an**, **sich interessieren für**, **sich setzen**, **sich fühlen**. Use the Dativ form when there is another object: Ich wasche **mir die Hände**.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Akkusativ",
+      "Dativ"
+     ],
+     "rows": [
+      [
+       "ich",
+       "mich",
+       "mir"
+      ],
+      [
+       "du",
+       "dich",
+       "dir"
+      ],
+      [
+       "er / sie / es",
+       "sich",
+       "sich"
+      ],
+      [
+       "wir",
+       "uns",
+       "uns"
+      ],
+      [
+       "ihr",
+       "euch",
+       "euch"
+      ],
+      [
+       "sie / Sie",
+       "sich",
+       "sich"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Ich freue mich auf das Wochenende.",
+     "translation": "I'm looking forward to the weekend.",
+     "note": "sich freuen auf",
+     "reading": null
+    },
+    {
+     "text": "Beeil dich!",
+     "translation": "Hurry up!",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Ich putze mir die Zähne.",
+     "translation": "I brush my teeth.",
+     "note": "mir: die Zähne is the direct object",
+     "reading": null
+    },
+    {
+     "text": "Interessierst du dich für Musik?",
+     "translation": "Are you interested in music?",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 16,
+   "id": "adjective-endings",
+   "title": "Adjective endings",
+   "kind": "structure",
+   "level": "B1",
+   "tags": [
+    "adjective",
+    "endings",
+    "adjektivendungen",
+    "declension"
+   ],
+   "rule": "An adjective before a noun takes an ending. If the article already shows gender and case (der, dem), the adjective just takes -e or -en. If it doesn't (ein, or no article at all), the adjective shows it (-er, -es).",
+   "text": null,
+   "tables": [
+    {
+     "caption": "After der, die, das (and dieser, jeder, welcher)",
+     "head": [
+      "",
+      "Masc.",
+      "Fem.",
+      "Neuter",
+      "Plural"
+     ],
+     "rows": [
+      [
+       "Nominativ",
+       "der neu{e} Rock",
+       "die neu{e} Jacke",
+       "das neu{e} Hemd",
+       "die neu{en} Schuhe"
+      ],
+      [
+       "Akkusativ",
+       "den neu{en} Rock",
+       "die neu{e} Jacke",
+       "das neu{e} Hemd",
+       "die neu{en} Schuhe"
+      ],
+      [
+       "Dativ",
+       "dem neu{en} Rock",
+       "der neu{en} Jacke",
+       "dem neu{en} Hemd",
+       "den neu{en} Schuhen"
+      ],
+      [
+       "Genitiv",
+       "des neu{en} Rocks",
+       "der neu{en} Jacke",
+       "des neu{en} Hemds",
+       "der neu{en} Schuhe"
+      ]
+     ]
+    },
+    {
+     "caption": "After ein, kein, mein, dein …",
+     "head": [
+      "",
+      "Masc.",
+      "Fem.",
+      "Neuter",
+      "Plural"
+     ],
+     "rows": [
+      [
+       "Nominativ",
+       "ein neu{er} Rock",
+       "eine neu{e} Jacke",
+       "ein neu{es} Hemd",
+       "keine neu{en} Schuhe"
+      ],
+      [
+       "Akkusativ",
+       "einen neu{en} Rock",
+       "eine neu{e} Jacke",
+       "ein neu{es} Hemd",
+       "keine neu{en} Schuhe"
+      ],
+      [
+       "Dativ",
+       "einem neu{en} Rock",
+       "einer neu{en} Jacke",
+       "einem neu{en} Hemd",
+       "keinen neu{en} Schuhen"
+      ],
+      [
+       "Genitiv",
+       "eines neu{en} Rocks",
+       "einer neu{en} Jacke",
+       "eines neu{en} Hemds",
+       "keiner neu{en} Schuhe"
+      ]
+     ]
+    },
+    {
+     "caption": "No article",
+     "head": [
+      "",
+      "Masc.",
+      "Fem.",
+      "Neuter",
+      "Plural"
+     ],
+     "rows": [
+      [
+       "Nominativ",
+       "kalt{er} Kaffee",
+       "kalt{e} Milch",
+       "kalt{es} Wasser",
+       "kalt{e} Getränke"
+      ],
+      [
+       "Akkusativ",
+       "kalt{en} Kaffee",
+       "kalt{e} Milch",
+       "kalt{es} Wasser",
+       "kalt{e} Getränke"
+      ],
+      [
+       "Dativ",
+       "kalt{em} Kaffee",
+       "kalt{er} Milch",
+       "kalt{em} Wasser",
+       "kalt{en} Getränken"
+      ],
+      [
+       "Genitiv",
+       "kalt{en} Kaffees",
+       "kalt{er} Milch",
+       "kalt{en} Wassers",
+       "kalt{er} Getränke"
+      ]
+     ]
+    }
+   ],
+   "after": "After the noun, with sein or werden, there is no ending: Das Hemd ist **neu**.",
+   "examples": [
+    {
+     "text": "Ich suche eine günstige Wohnung.",
+     "translation": "I'm looking for a cheap flat.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Mit dem neuen Handy bin ich zufrieden.",
+     "translation": "I'm happy with the new phone.",
+     "note": "dem → -en",
+     "reading": null
+    },
+    {
+     "text": "Frisches Brot schmeckt am besten.",
+     "translation": "Fresh bread tastes best.",
+     "note": "no article → -es shows the neuter",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 17,
+   "id": "comparison",
+   "title": "Comparatives & superlatives",
+   "kind": "structure",
+   "level": "A2",
+   "tags": [
+    "comparative",
+    "superlative",
+    "als",
+    "wie",
+    "besser",
+    "am besten"
+   ],
+   "rule": null,
+   "text": "\"Than\" is **als**: größer als ich. \"As … as\" is **so … wie**: so groß wie du. Short adjectives often take an umlaut (alt → älter). Before a noun the forms take normal adjective endings: das schneller**e** Auto, der höchst**e** Berg.",
+   "tables": [
+    {
+     "head": [
+      "Adjective",
+      "Comparative",
+      "Superlative"
+     ],
+     "rows": [
+      [
+       "schnell | fast",
+       "schnell{er}",
+       "am schnell{sten}"
+      ],
+      [
+       "alt | old",
+       "ält{er}",
+       "am ält{esten}"
+      ],
+      [
+       "jung | young",
+       "jüng{er}",
+       "am jüng{sten}"
+      ],
+      [
+       "teuer | expensive",
+       "teur{er}",
+       "am teuer{sten}"
+      ],
+      [
+       "gut | good",
+       "besser",
+       "am besten"
+      ],
+      [
+       "viel | much",
+       "mehr",
+       "am meisten"
+      ],
+      [
+       "gern | gladly",
+       "lieber",
+       "am liebsten"
+      ],
+      [
+       "hoch | high",
+       "höher",
+       "am höchsten"
+      ],
+      [
+       "nah | near",
+       "näher",
+       "am nächsten"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Berlin ist größer als München.",
+     "translation": "Berlin is bigger than Munich.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Mein Bruder ist so alt wie du.",
+     "translation": "My brother is as old as you.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Am liebsten esse ich Pasta.",
+     "translation": "Pasta is what I like eating most.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Die Zugspitze ist der höchste Berg Deutschlands.",
+     "translation": "The Zugspitze is Germany's highest mountain.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 18,
+   "id": "questions",
+   "title": "Question words (W-Fragen)",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "question",
+    "questions",
+    "w-fragen",
+    "wer",
+    "wen",
+    "wem",
+    "wo",
+    "wohin",
+    "woher"
+   ],
+   "rule": null,
+   "text": "The question word takes position 1 and the verb follows. With a preposition, things become **wo(r)- + preposition**: Worauf wartest du? (What are you waiting for?) Wofür ist das? (What's that for?) For people you keep the preposition: Auf wen wartest du?",
+   "tables": [
+    {
+     "head": [
+      "German",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "was",
+       "what",
+       "Was kostet das? | What does that cost?"
+      ],
+      [
+       "wer",
+       "who",
+       "Wer kommt mit? | Who's coming along?"
+      ],
+      [
+       "wen",
+       "whom (Akkusativ)",
+       "Wen hast du gesehen? | Who did you see?"
+      ],
+      [
+       "wem",
+       "to whom (Dativ)",
+       "Wem gehört das? | Who does this belong to?"
+      ],
+      [
+       "wo",
+       "where",
+       "Wo ist die Toilette? | Where's the toilet?"
+      ],
+      [
+       "wohin",
+       "where to",
+       "Wohin fährst du? | Where are you going?"
+      ],
+      [
+       "woher",
+       "where from",
+       "Woher kommst du? | Where are you from?"
+      ],
+      [
+       "wann",
+       "when",
+       "Wann beginnt der Kurs? | When does the course start?"
+      ],
+      [
+       "warum",
+       "why",
+       "Warum lachst du? | Why are you laughing?"
+      ],
+      [
+       "wie",
+       "how",
+       "Wie heißt du? | What's your name?"
+      ],
+      [
+       "welcher / welche / welches",
+       "which",
+       "Welche Farbe magst du? | Which colour do you like?"
+      ],
+      [
+       "wie viel / wie viele",
+       "how much / how many",
+       "Wie viele Leute kommen? | How many people are coming?"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 19,
+   "id": "negation",
+   "title": "Negation: nicht vs. kein",
+   "kind": "contrast",
+   "level": "A1",
+   "tags": [
+    "negation",
+    "nicht",
+    "kein",
+    "nichts",
+    "nie"
+   ],
+   "rule": null,
+   "text": "**Nicht** goes to the end of the clause, or right before what it negates (an adjective, a place, a phrase with a preposition): Ich wohne **nicht in Berlin**. After a negation, \"but\" is **sondern**. Useful: **noch nicht** (not yet), **nicht mehr** (no longer), **kein … mehr** (no more), **nie** (never), **nichts** (nothing), **niemand** (nobody).",
+   "tables": [
+    {
+     "head": [
+      "Use",
+      "When",
+      "Example"
+     ],
+     "rows": [
+      [
+       "kein",
+       "a noun that would have ein, or no article",
+       "Ich habe kein Auto. | I don't have a car."
+      ],
+      [
+       "nicht",
+       "everything else: verbs, adjectives, nouns with der/die/das, names",
+       "Das ist nicht mein Auto. | That isn't my car."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Ich trinke keinen Alkohol.",
+     "translation": "I don't drink alcohol.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Er kommt heute nicht.",
+     "translation": "He isn't coming today.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Das ist nicht teuer, sondern billig.",
+     "translation": "That isn't expensive, it's cheap.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Ich habe noch nichts gegessen.",
+     "translation": "I haven't eaten anything yet.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 20,
+   "id": "relative",
+   "title": "Relative clauses",
+   "kind": "structure",
+   "level": "B1",
+   "tags": [
+    "relative",
+    "relativsatz",
+    "der",
+    "die",
+    "das",
+    "denen",
+    "dessen"
+   ],
+   "rule": "The relative pronoun takes its gender and number from the noun it refers to, and its case from its role in the relative clause. The verb goes to the end, with commas around the clause.",
+   "text": null,
+   "tables": [
+    {
+     "head": [
+      "",
+      "Masc.",
+      "Fem.",
+      "Neuter",
+      "Plural"
+     ],
+     "rows": [
+      [
+       "Nominativ",
+       "der",
+       "die",
+       "das",
+       "die"
+      ],
+      [
+       "Akkusativ",
+       "den",
+       "die",
+       "das",
+       "die"
+      ],
+      [
+       "Dativ",
+       "dem",
+       "der",
+       "dem",
+       "{denen}"
+      ],
+      [
+       "Genitiv",
+       "{dessen}",
+       "{deren}",
+       "{dessen}",
+       "{deren}"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Der Mann, der dort steht, ist mein Nachbar.",
+     "translation": "The man who's standing there is my neighbour.",
+     "note": "der: subject of its clause",
+     "reading": null
+    },
+    {
+     "text": "Das ist die Frau, die ich gestern getroffen habe.",
+     "translation": "That's the woman I met yesterday.",
+     "note": "die: Akkusativ",
+     "reading": null
+    },
+    {
+     "text": "Die Freunde, mit denen ich reise, kommen aus Köln.",
+     "translation": "The friends I'm travelling with are from Cologne.",
+     "note": "mit + Dativ plural: denen",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 21,
+   "id": "konjunktiv",
+   "title": "Konjunktiv II (would, could, if only)",
+   "kind": "verbs",
+   "level": "B1",
+   "tags": [
+    "konjunktiv",
+    "subjunctive",
+    "würde",
+    "wäre",
+    "hätte",
+    "könnte",
+    "conditional",
+    "polite"
+   ],
+   "rule": null,
+   "text": "Use it for things that aren't real (Wenn ich Zeit **hätte**, **würde** ich mehr lesen), for polite requests (**Könnten** Sie …? Ich **hätte** gern …) and advice (An deiner Stelle **würde** ich …). For most verbs use würde + infinitive; sein, haben and the modals have their own forms. For the past: hätte / wäre + participle.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "würde + infinitive",
+      "sein",
+      "haben",
+      "können"
+     ],
+     "rows": [
+      [
+       "ich",
+       "würde gehen",
+       "wäre",
+       "hätte",
+       "könnte"
+      ],
+      [
+       "du",
+       "würdest gehen",
+       "wärst",
+       "hättest",
+       "könntest"
+      ],
+      [
+       "er / sie / es",
+       "würde gehen",
+       "wäre",
+       "hätte",
+       "könnte"
+      ],
+      [
+       "wir",
+       "würden gehen",
+       "wären",
+       "hätten",
+       "könnten"
+      ],
+      [
+       "ihr",
+       "würdet gehen",
+       "wärt",
+       "hättet",
+       "könntet"
+      ],
+      [
+       "sie / Sie",
+       "würden gehen",
+       "wären",
+       "hätten",
+       "könnten"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Wenn ich reich wäre, würde ich reisen.",
+     "translation": "If I were rich, I would travel.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Könnten Sie mir bitte helfen?",
+     "translation": "Could you help me, please?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Ich hätte gern ein Wasser.",
+     "translation": "I'd like a water, please.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Das hätte ich nicht gedacht.",
+     "translation": "I wouldn't have thought so.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 22,
+   "id": "imperative",
+   "title": "Commands (imperative)",
+   "kind": "verbs",
+   "level": "A1",
+   "tags": [
+    "imperative",
+    "command",
+    "imperativ"
+   ],
+   "rule": null,
+   "text": "The du form drops -st and the pronoun (du kommst → **Komm!**). Verbs with e → i keep the i (nimm, lies, gib, sprich), but a → ä does not carry over (fahr!). **Bitte, doch, mal** make it friendlier: Komm doch mal vorbei! \"Let's …\" is **Gehen wir!** or **Lass uns gehen!**",
+   "tables": [
+    {
+     "head": [
+      "",
+      "kommen | come",
+      "warten | wait",
+      "nehmen | take",
+      "sein | be"
+     ],
+     "rows": [
+      [
+       "du",
+       "Komm!",
+       "Warte!",
+       "Nimm!",
+       "Sei leise!"
+      ],
+      [
+       "ihr",
+       "Kommt!",
+       "Wartet!",
+       "Nehmt!",
+       "Seid leise!"
+      ],
+      [
+       "Sie",
+       "Kommen Sie!",
+       "Warten Sie!",
+       "Nehmen Sie!",
+       "Seien Sie leise!"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Mach bitte das Fenster zu.",
+     "translation": "Please close the window.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Seien Sie vorsichtig!",
+     "translation": "Be careful!",
+     "note": "formal",
+     "reading": null
+    },
+    {
+     "text": "Lies das mal!",
+     "translation": "Have a read of this!",
+     "note": "lesen → lies",
+     "reading": null
+    },
+    {
+     "text": "Lass uns morgen anfangen.",
+     "translation": "Let's start tomorrow.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 23,
+   "id": "prepositions",
+   "title": "Prepositions & their cases",
+   "kind": "structure",
+   "level": "A2",
+   "tags": [
+    "prepositions",
+    "präpositionen",
+    "mit",
+    "für",
+    "ohne",
+    "seit",
+    "wegen",
+    "zu",
+    "nach"
+   ],
+   "rule": null,
+   "text": "Common short forms: zu dem → **zum**, zu der → **zur**, bei dem → **beim**, von dem → **vom**. In speech, wegen and trotz often take the Dativ: wegen dem Regen.",
+   "tables": [
+    {
+     "head": [
+      "Case",
+      "Prepositions",
+      "Example"
+     ],
+     "rows": [
+      [
+       "Akkusativ",
+       "durch, für, gegen, ohne, um, bis, entlang",
+       "Das Geschenk ist für dich. | The present is for you."
+      ],
+      [
+       "Dativ",
+       "aus, bei, mit, nach, seit, von, zu, gegenüber, ab",
+       "Ich fahre mit dem Rad zur Arbeit. | I cycle to work."
+      ],
+      [
+       "Akkusativ or Dativ",
+       "an, auf, hinter, in, neben, über, unter, vor, zwischen",
+       "Akkusativ for direction, Dativ for location (see two-way prepositions)"
+      ],
+      [
+       "Genitiv",
+       "wegen, trotz, während, statt, innerhalb",
+       "Wegen des Regens bleiben wir drinnen. | Because of the rain we're staying in."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Ich wohne seit zwei Jahren bei meinen Eltern.",
+     "translation": "I've been living with my parents for two years.",
+     "note": "seit + present tense",
+     "reading": null
+    },
+    {
+     "text": "Wir gehen ohne ihn.",
+     "translation": "We're going without him.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Nach dem Essen gehen wir spazieren.",
+     "translation": "After the meal we're going for a walk.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 24,
+   "id": "connectors",
+   "title": "Connectors & conjunctions",
+   "kind": "structure",
+   "level": "A2–B1",
+   "tags": [
+    "conjunctions",
+    "connectors",
+    "weil",
+    "denn",
+    "deshalb",
+    "trotzdem",
+    "obwohl"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [
+    {
+     "head": [
+      "Type",
+      "Words",
+      "Verb position",
+      "Example"
+     ],
+     "rows": [
+      [
+       "Coordinating",
+       "und, aber, oder, denn, sondern",
+       "unchanged",
+       "Ich bleibe hier, denn es regnet. | I'm staying here because it's raining."
+      ],
+      [
+       "Subordinating",
+       "weil, dass, wenn, als, ob, obwohl, damit, bevor, nachdem, während, bis, sobald",
+       "verb at the end",
+       "Ich bleibe hier, weil es regnet. | I'm staying here because it's raining."
+      ],
+      [
+       "Adverbs (take position 1)",
+       "deshalb, trotzdem, dann, danach, außerdem, sonst",
+       "verb right after",
+       "Es regnet, deshalb bleibe ich hier. | It's raining, so I'm staying here."
+      ],
+      [
+       "Two-part",
+       "entweder … oder, weder … noch, sowohl … als auch, nicht nur … sondern auch",
+       "—",
+       "Ich trinke weder Kaffee noch Tee. | I drink neither coffee nor tea."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Obwohl ich müde bin, gehe ich joggen.",
+     "translation": "Even though I'm tired, I'm going for a run.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Ich lerne Deutsch, damit ich in Wien arbeiten kann.",
+     "translation": "I'm learning German so that I can work in Vienna.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Zuerst frühstücke ich, dann gehe ich los.",
+     "translation": "First I have breakfast, then I head off.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 25,
+   "id": "numbers-time",
+   "title": "Numbers, days & time",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "numbers",
+    "zahlen",
+    "time",
+    "uhrzeit",
+    "days",
+    "months",
+    "date"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [
+    {
+     "caption": "Numbers",
+     "head": [
+      "",
+      "German"
+     ],
+     "rows": [
+      [
+       "1–10",
+       "eins, zwei, drei, vier, fünf, sechs, sieben, acht, neun, zehn"
+      ],
+      [
+       "11–20",
+       "elf, zwölf, dreizehn, vierzehn, fünfzehn, sechzehn, siebzehn, achtzehn, neunzehn, zwanzig"
+      ],
+      [
+       "tens",
+       "dreißig, vierzig, fünfzig, sechzig, siebzig, achtzig, neunzig, hundert"
+      ],
+      [
+       "21, 37, 99",
+       "einundzwanzig, siebenunddreißig, neunundneunzig | the unit comes first: 'one-and-twenty'"
+      ],
+      [
+       "dates",
+       "am 3. Mai = am dritten Mai | on 3 May (erste, zweite, dritte, vierte … zwanzigste)"
+      ],
+      [
+       "days",
+       "Montag, Dienstag, Mittwoch, Donnerstag, Freitag, Samstag, Sonntag | am Montag = on Monday"
+      ]
+     ]
+    },
+    {
+     "caption": "Telling the time",
+     "head": [
+      "Clock",
+      "Everyday",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "8:00",
+       "acht Uhr",
+       "eight o'clock"
+      ],
+      [
+       "8:15",
+       "Viertel nach acht",
+       "quarter past eight"
+      ],
+      [
+       "8:30",
+       "halb neun",
+       "half past eight (literally 'half nine': half-way to nine)"
+      ],
+      [
+       "8:45",
+       "Viertel vor neun",
+       "quarter to nine"
+      ],
+      [
+       "8:20",
+       "zwanzig nach acht",
+       "twenty past eight"
+      ],
+      [
+       "20:00",
+       "zwanzig Uhr",
+       "8 pm (timetables and official times use 24 hours)"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Der Zug fährt um halb sieben ab.",
+     "translation": "The train leaves at half past six.",
+     "note": "halb sieben = 6:30",
+     "reading": null
+    },
+    {
+     "text": "Ich habe am zwölften März Geburtstag.",
+     "translation": "My birthday is on 12 March.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Das kostet neunundzwanzig Euro.",
+     "translation": "That costs 29 euros.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 26,
+   "id": "confusions",
+   "title": "High-value confusions",
+   "kind": "contrast",
+   "level": "A2–B1",
+   "tags": [
+    "confusions",
+    "wissen",
+    "kennen",
+    "als",
+    "wenn",
+    "seit",
+    "vor",
+    "bekommen",
+    "gern",
+    "mögen",
+    "nach",
+    "zu"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [
+    {
+     "head": [
+      "Don't confuse",
+      "Difference",
+      "Example"
+     ],
+     "rows": [
+      [
+       "wissen / kennen",
+       "know a fact vs. be familiar with a person, place or thing",
+       "Ich weiß, wo er wohnt. | I know where he lives. ;; Ich kenne ihn gut. | I know him well."
+      ],
+      [
+       "als / wenn / wann",
+       "als: one event in the past; wenn: whenever, if, or in the future; wann: the question 'when?'",
+       "Als ich Kind war … | When I was a child … ;; Wenn ich Zeit habe … | When(ever) I have time …"
+      ],
+      [
+       "seit / vor",
+       "for or since (still going: present tense) vs. ago",
+       "Ich wohne seit 2020 hier. | I've lived here since 2020. ;; vor zwei Jahren | two years ago"
+      ],
+      [
+       "bekommen / werden",
+       "get, receive vs. become",
+       "Ich bekomme ein Geschenk. | I'm getting a present. ;; Ich werde müde. | I'm getting tired."
+      ],
+      [
+       "gern / mögen / gefallen",
+       "gern + verb: like doing; mögen + noun: like a thing; gefallen + Dativ: appeal to",
+       "Ich koche gern. | I like cooking. ;; Das Lied gefällt mir. | I like the song."
+      ],
+      [
+       "nach / zu",
+       "nach: towns, countries, home; zu: people, places, buildings",
+       "nach Berlin | to Berlin ;; zum Arzt | to the doctor's"
+      ],
+      [
+       "zu Hause / nach Hause",
+       "at home (location) vs. home (direction)",
+       "Ich bin zu Hause. | I'm at home. ;; Ich gehe nach Hause. | I'm going home."
+      ],
+      [
+       "sondern / aber",
+       "sondern corrects a negation; aber adds a contrast",
+       "nicht heute, sondern morgen | not today but tomorrow ;; teuer, aber gut | expensive but good"
+      ],
+      [
+       "lernen / studieren",
+       "learn (anything) vs. study at university",
+       "Ich lerne Deutsch. | I'm learning German. ;; Sie studiert Medizin. | She's studying medicine."
+      ],
+      [
+       "Sie / sie / sie",
+       "you (formal) vs. she vs. they: the verb and the capital letter tell",
+       "Sie kommt. | She's coming. ;; Kommen Sie? | Are you coming?"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 27,
+   "id": "memory-map",
+   "title": "One-page memory map",
+   "kind": "summary",
+   "level": "all",
+   "tags": [
+    "summary",
+    "overview"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [],
+   "after": null,
+   "examples": [],
+   "points": [
+    "Learn der, die or das with every noun; meaning doesn't tell you the gender.",
+    "The four cases show who does what to whom, so the word order can move around.",
+    "The conjugated verb is second in a main clause and last in a subordinate clause.",
+    "Separable prefixes go to the end; be-, ver-, er- and friends never move.",
+    "Perfekt: sein for movement and change, haben for almost everything else.",
+    "helfen, danken, gefallen, gehören and a few more always take the Dativ.",
+    "Two-way prepositions: direction (wohin?) → Akkusativ, location (wo?) → Dativ.",
+    "kein negates nouns with ein or no article; nicht negates everything else.",
+    "würde + infinitive covers most \"would\"; wäre, hätte and könnte have their own forms.",
+    "Adjective endings depend on what comes before them: a der-word, an ein-word or nothing."
+   ],
+   "tip": "Reading strategy: find the conjugated verb first (it tells you who is doing what), then look at the end of the clause for the piece that completes it: a separable prefix, a participle or an infinitive."
+  }
+ ]
+}

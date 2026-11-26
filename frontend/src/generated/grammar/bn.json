@@ -1,0 +1,785 @@
+{
+ "language": "bn",
+ "title": "Bengali grammar",
+ "intro": "A working reference for beginners to intermediate learners, in standard colloquial Bengali (চলিত ভাষা) as spoken in Bangladesh and West Bengal. Bengali has no grammatical gender, puts the verb at the end and attaches endings to nouns: read a section, notice the shape, then listen for it in what you watch and read.",
+ "sections": [
+  {
+   "number": 1,
+   "id": "word-order",
+   "title": "Word order & \"to be\"",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "word order",
+    "SOV",
+    "verb last",
+    "to be",
+    "zero copula",
+    "কি"
+   ],
+   "rule": null,
+   "text": "The verb comes last: **আমি ভাত খাই** (I rice eat). In the present, \"is/am/are\" is usually left out: **আমি ছাত্র** (I [am a] student). A yes/no question adds **কি** after the subject or simply rises in tone.",
+   "tables": [],
+   "after": null,
+   "examples": [
+    {
+     "text": "আমি প্রতিদিন বাংলা পড়ি।",
+     "translation": "I study Bengali every day.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "ও আমার বন্ধু।",
+     "translation": "He/she is my friend.",
+     "note": "no verb for 'is'",
+     "reading": null
+    },
+    {
+     "text": "আপনি কি চা খাবেন?",
+     "translation": "Will you have some tea?",
+     "note": "কি makes a yes/no question",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 2,
+   "id": "pronouns",
+   "title": "Pronouns & the three levels of \"you\"",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "pronoun",
+    "আমি",
+    "তুমি",
+    "আপনি",
+    "তুই",
+    "সে",
+    "তিনি",
+    "ও",
+    "উনি",
+    "politeness"
+   ],
+   "rule": null,
+   "text": "Bengali has no gender: **সে** is he or she. Instead it marks respect: **আপনি** for strangers and elders, **তুমি** for friends and family, **তুই** for very close friends and children. The verb ending changes with the level, not with gender.",
+   "tables": [
+    {
+     "head": [
+      "Meaning",
+      "Familiar",
+      "Ordinary",
+      "Polite"
+     ],
+     "rows": [
+      [
+       "you",
+       "তুই",
+       "তুমি",
+       "আপনি"
+      ],
+      [
+       "he / she (far)",
+       "—",
+       "সে / ও",
+       "তিনি / উনি"
+      ],
+      [
+       "I / we",
+       "আমি / আমরা",
+       "",
+       ""
+      ],
+      [
+       "you (plural)",
+       "তোরা",
+       "তোমরা",
+       "আপনারা"
+      ],
+      [
+       "they",
+       "—",
+       "তারা / ওরা",
+       "তাঁরা / ওঁরা"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "আপনি কেমন আছেন?",
+     "translation": "How are you? (polite)",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "তুমি কোথায় যাচ্ছ?",
+     "translation": "Where are you going? (to a friend)",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "তিনি একজন ডাক্তার।",
+     "translation": "He/she is a doctor.",
+     "note": "respectful তিনি",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 3,
+   "id": "classifiers",
+   "title": "The, a & plural: -টা, -টি, -গুলো",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "classifier",
+    "definite",
+    "টা",
+    "টি",
+    "গুলো",
+    "রা",
+    "একটা",
+    "plural",
+    "article"
+   ],
+   "rule": null,
+   "text": "There is no separate word for \"the\": **-টা** (everyday) or **-টি** (a little formal or affectionate) on the noun makes it definite. **একটা** means \"a\". Plurals take **-গুলো** (things) or **-রা** (people); after a number, the noun stays singular: **তিনটা বই** (three books).",
+   "tables": [
+    {
+     "head": [
+      "Ending",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "{টা} / {টি}",
+       "the (one)",
+       "বইটা | the book"
+      ],
+      [
+       "একটা / একটি",
+       "a, one",
+       "একটা বই | a book"
+      ],
+      [
+       "{গুলো} / {গুলি}",
+       "the (several things)",
+       "বইগুলো | the books"
+      ],
+      [
+       "{রা} / {এরা}",
+       "plural of people",
+       "ছাত্ররা | the students"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "ছেলেটা খুব ভালো।",
+     "translation": "The boy is very nice.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "আমি একটা নতুন জামা কিনেছি।",
+     "translation": "I bought a new shirt.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "আমগুলো খুব মিষ্টি।",
+     "translation": "The mangoes are very sweet.",
+     "note": "-গুলো for things",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 4,
+   "id": "cases",
+   "title": "Case endings: -কে, -র, -তে",
+   "kind": "structure",
+   "level": "A2",
+   "tags": [
+    "case",
+    "কে",
+    "র",
+    "এর",
+    "তে",
+    "এ",
+    "object",
+    "possessive",
+    "location",
+    "genitive",
+    "locative"
+   ],
+   "rule": null,
+   "text": "Endings attach to the noun (after any -টা/-গুলো): **ছেলেটাকে** (the boy, as object), **বইটার** (of the book), **ঘরে** (in the room). After a vowel, use **-র** and **-তে/-য়**; after a consonant, **-এর** and **-এ**. Possessive pronouns: **আমার, তোমার, আপনার, তার, আমাদের**.",
+   "tables": [
+    {
+     "head": [
+      "Ending",
+      "Use",
+      "Example"
+     ],
+     "rows": [
+      [
+       "{কে} / {এরকে}",
+       "object (people), to",
+       "রহিমকে বলো | tell Rahim"
+      ],
+      [
+       "{র} / {এর}",
+       "of, 's",
+       "রহিমের বাড়ি | Rahim's house"
+      ],
+      [
+       "{তে} / {এ}",
+       "in, at, on",
+       "বাড়িতে ;; ঢাকায় | at home ;; in Dhaka"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "আমি মাকে ফোন করেছি।",
+     "translation": "I called Mum.",
+     "note": "মা + কে",
+     "reading": null
+    },
+    {
+     "text": "এটা আমার বোনের ঘর।",
+     "translation": "This is my sister's room.",
+     "note": "বোন + এর",
+     "reading": null
+    },
+    {
+     "text": "ওরা কলকাতায় থাকে।",
+     "translation": "They live in Kolkata.",
+     "note": "কলকাতা + য়",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 5,
+   "id": "postpositions",
+   "title": "Postpositions (জন্য, সঙ্গে, থেকে…)",
+   "kind": "structure",
+   "level": "A2",
+   "tags": [
+    "postposition",
+    "জন্য",
+    "সঙ্গে",
+    "থেকে",
+    "কাছে",
+    "পরে",
+    "আগে",
+    "দিয়ে",
+    "নিচে",
+    "ওপরে"
+   ],
+   "rule": null,
+   "text": "Most postpositions follow a noun in the **-র/-এর** form: **বাবার সঙ্গে**, **স্কুলের পরে**. **থেকে** follows the plain noun: **বাড়ি থেকে**. **কাছে** also means \"have\": **আমার কাছে টাকা নেই** (I have no money on me).",
+   "tables": [
+    {
+     "head": [
+      "Postposition",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "জন্য",
+       "for",
+       "তোমার জন্য | for you"
+      ],
+      [
+       "সঙ্গে / সাথে",
+       "with",
+       "বন্ধুর সঙ্গে | with a friend"
+      ],
+      [
+       "থেকে",
+       "from, since",
+       "অফিস থেকে | from the office"
+      ],
+      [
+       "কাছে",
+       "near, to (a person)",
+       "আমার কাছে | near me, with me"
+      ],
+      [
+       "আগে / পরে",
+       "before / after",
+       "খাওয়ার পরে | after eating"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "আমি বাবার সঙ্গে বাজারে যাব।",
+     "translation": "I'll go to the market with Dad.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "সে সকাল থেকে কাজ করছে।",
+     "translation": "She's been working since the morning.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "এই চিঠিটা তোমার জন্য।",
+     "translation": "This letter is for you.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 6,
+   "id": "present",
+   "title": "Present simple & continuous",
+   "kind": "verbs",
+   "level": "A1",
+   "tags": [
+    "present",
+    "continuous",
+    "করি",
+    "করো",
+    "করে",
+    "করছি",
+    "verb endings"
+   ],
+   "rule": null,
+   "text": "The ending shows the person and the level of respect. The simple present covers habits and general truths; the continuous (**-ছি, -ছ, -ছে, -ছেন**) is what's happening now, and also \"have been doing\": **দুই ঘণ্টা ধরে পড়ছি**.",
+   "tables": [
+    {
+     "head": [
+      "Subject",
+      "Present simple (করা)",
+      "Present continuous"
+     ],
+     "rows": [
+      [
+       "আমি / আমরা",
+       "কর{ি}",
+       "কর{ছি}"
+      ],
+      [
+       "তুই",
+       "কর{িস}",
+       "কর{ছিস}"
+      ],
+      [
+       "তুমি",
+       "কর{ো}",
+       "কর{ছ}"
+      ],
+      [
+       "আপনি / তিনি",
+       "কর{েন}",
+       "কর{ছেন}"
+      ],
+      [
+       "সে / ও / তারা",
+       "কর{ে}",
+       "কর{ছে}"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "আমি রোজ সকালে হাঁটি।",
+     "translation": "I walk every morning.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "তুমি কী করছ?",
+     "translation": "What are you doing?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "উনি একটা ব্যাংকে কাজ করেন।",
+     "translation": "He/she works at a bank.",
+     "note": "polite -েন",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 7,
+   "id": "past",
+   "title": "Past tenses",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "past",
+    "simple past",
+    "লাম",
+    "লে",
+    "ল",
+    "past continuous",
+    "ছিলাম",
+    "habitual past",
+    "তাম"
+   ],
+   "rule": null,
+   "text": "**-লাম/-লে/-ল** is \"did\", **-ছিলাম** \"was doing\", **-তাম** \"used to do\" (also \"would do\" in unreal conditions). Irregular: **যাওয়া** → **গেলাম, গেল**; **আসা** → **এলাম, এল**; **খাওয়া** → **খেলাম, খেল**.",
+   "tables": [
+    {
+     "head": [
+      "Subject",
+      "Simple past",
+      "Past continuous",
+      "Habitual past"
+     ],
+     "rows": [
+      [
+       "আমি",
+       "কর{লাম}",
+       "কর{ছিলাম}",
+       "কর{তাম}"
+      ],
+      [
+       "তুমি",
+       "কর{লে}",
+       "কর{ছিলে}",
+       "কর{তে}"
+      ],
+      [
+       "আপনি / তিনি",
+       "কর{লেন}",
+       "কর{ছিলেন}",
+       "কর{তেন}"
+      ],
+      [
+       "সে / তারা",
+       "কর{ল}",
+       "কর{ছিল}",
+       "কর{ত}"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "গতকাল আমি একটা সিনেমা দেখলাম।",
+     "translation": "I watched a film yesterday.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "যখন তুমি ফোন করলে, আমি রান্না করছিলাম।",
+     "translation": "When you called, I was cooking.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "ছোটবেলায় আমরা নদীতে সাঁতার কাটতাম।",
+     "translation": "As children we used to swim in the river.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 8,
+   "id": "future-perfect",
+   "title": "Future & present perfect",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "future",
+    "ব",
+    "বে",
+    "বেন",
+    "perfect",
+    "েছি",
+    "েছে",
+    "এসেছি",
+    "খেয়েছি"
+   ],
+   "rule": null,
+   "text": "The future is **-ব/-বে/-বেন**. The present perfect (**-েছি**) is used for recent, finished actions with a result now, more often than English: **আমি খেয়েছি** (I've eaten). Its negative is **-নি** on the simple present: **আমি খাইনি** (I haven't eaten).",
+   "tables": [
+    {
+     "head": [
+      "Subject",
+      "Future",
+      "Present perfect"
+     ],
+     "rows": [
+      [
+       "আমি",
+       "কর{ব}",
+       "কর{েছি}"
+      ],
+      [
+       "তুমি",
+       "কর{বে}",
+       "কর{েছ}"
+      ],
+      [
+       "আপনি / তিনি",
+       "কর{বেন}",
+       "কর{েছেন}"
+      ],
+      [
+       "সে / তারা",
+       "কর{বে}",
+       "কর{েছে}"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "আমি কাল তোমাকে ফোন করব।",
+     "translation": "I'll call you tomorrow.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "ট্রেনটা এসে গেছে।",
+     "translation": "The train has arrived.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "আমি এখনো চিঠিটা পড়িনি।",
+     "translation": "I haven't read the letter yet.",
+     "note": "perfect negative -নি",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 9,
+   "id": "negation",
+   "title": "Negation: না, নি, নেই",
+   "kind": "contrast",
+   "level": "A2",
+   "tags": [
+    "negation",
+    "না",
+    "নি",
+    "নেই",
+    "নয়",
+    "নই",
+    "not",
+    "there is not"
+   ],
+   "rule": null,
+   "text": "**না** follows the verb: **খাব না** (I won't eat). For the past, use **-নি** on the present form, not the past ending. **আছে** (there is, has) has the negative **নেই**; the dropped \"is\" has its own negative **নয়**.",
+   "tables": [
+    {
+     "head": [
+      "Word",
+      "Use",
+      "Example"
+     ],
+     "rows": [
+      [
+       "না",
+       "after most verbs",
+       "আমি জানি না | I don't know"
+      ],
+      [
+       "-নি",
+       "didn't / haven't (with present form)",
+       "সে আসেনি | he didn't come"
+      ],
+      [
+       "নেই",
+       "there isn't, doesn't have",
+       "সময় নেই | there's no time"
+      ],
+      [
+       "নই / নও / নয়",
+       "am / are / is not",
+       "আমি ছাত্র নই | I'm not a student"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "আমি মাছ খাই না।",
+     "translation": "I don't eat fish.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "ওর গাড়ি নেই।",
+     "translation": "He/she doesn't have a car.",
+     "note": "নেই for possession",
+     "reading": null
+    },
+    {
+     "text": "এটা আমার ব্যাগ নয়।",
+     "translation": "This isn't my bag.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 10,
+   "id": "ache",
+   "title": "আছে (there is, have) & possession",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "আছে",
+    "ছিল",
+    "থাকবে",
+    "have",
+    "there is",
+    "possession",
+    "existence"
+   ],
+   "rule": null,
+   "text": "Possession is \"to someone there is\": **আমার একটা ভাই আছে** (I have a brother). The past is **ছিল**, the future **থাকবে**. **আছে** also means \"is (somewhere)\": **বইটা টেবিলে আছে**.",
+   "tables": [],
+   "after": null,
+   "examples": [
+    {
+     "text": "আমার দুটো বোন আছে।",
+     "translation": "I have two sisters.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "আগে এখানে একটা পুকুর ছিল।",
+     "translation": "There used to be a pond here.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "আপনার কাছে কি খুচরো আছে?",
+     "translation": "Do you have change?",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 11,
+   "id": "conjunctive",
+   "title": "Linking actions: -ে (having done) & যদি",
+   "kind": "verbs",
+   "level": "B1",
+   "tags": [
+    "conjunctive participle",
+    "এ",
+    "করে",
+    "খেয়ে",
+    "গিয়ে",
+    "যদি",
+    "তাহলে",
+    "condition",
+    "if"
+   ],
+   "rule": null,
+   "text": "A verb ending in **-ে** (করে, খেয়ে, গিয়ে) links actions: \"having done this, then…\". Conditions use **যদি… তাহলে**, or just the **-লে** form: **বৃষ্টি হলে আমরা যাব না** (if it rains, we won't go).",
+   "tables": [],
+   "after": null,
+   "examples": [
+    {
+     "text": "আমি খেয়ে বের হব।",
+     "translation": "I'll eat and then go out.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "সে বাড়ি গিয়ে ঘুমিয়ে পড়ল।",
+     "translation": "He went home and fell asleep.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "যদি সময় পাও, তাহলে আমাকে জানিও।",
+     "translation": "If you get time, let me know.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 12,
+   "id": "summary",
+   "title": "Summary: building a sentence",
+   "kind": "summary",
+   "level": "B1",
+   "tags": [
+    "summary",
+    "overview"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [],
+   "after": null,
+   "examples": [
+    {
+     "text": "গতকাল আমি বন্ধুদের সঙ্গে একটা ভালো সিনেমা দেখেছি।",
+     "translation": "Yesterday I watched a good film with my friends.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "সময় পেলে অবশ্যই আসবেন।",
+     "translation": "If you get the time, do come.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [
+    "Verb last; no gender; 'is' dropped in the present (আমি ছাত্র).",
+    "Three levels of 'you' (তুই / তুমি / আপনি), each with its own verb endings.",
+    "-টা/-টি = the; -গুলো/-রা = plural; then case endings -কে, -র/-এর, -তে/-এ.",
+    "Tenses: করি (do), করছি (am doing), করলাম (did), করেছি (have done), করব (will do), করতাম (used to).",
+    "Negation: না after the verb, -নি for the past, নেই for 'there isn't'."
+   ],
+   "tip": null
+  }
+ ]
+}

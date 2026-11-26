@@ -498,6 +498,8 @@ export const api = {
     request<DifficultyResult>(`/api/content/${id}/difficulty`, { method: "PUT", body: json({ value }) }),
   taste: (lang: string) => request<TasteSummary>(`/api/taste?lang=${encodeURIComponent(lang)}`),
   grammarReference: (lang: string) => request<GrammarReference>(`/api/tutor/reference/${encodeURIComponent(lang)}`),
+  grammarWeakSpots: (lang: string) =>
+    request<Pick<GrammarReference, "language" | "weak_spots">>(`/api/tutor/reference/${encodeURIComponent(lang)}/weak-spots`),
   setDiscoverAuto: (enabled: boolean) =>
     request<{ enabled: boolean }>("/api/discover/auto", { method: "PUT", body: json({ enabled }) }),
   sources: (lang: string) => request<ContentSource[]>(`/api/sources?lang=${encodeURIComponent(lang)}`),

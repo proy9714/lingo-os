@@ -52,12 +52,13 @@ def _check(lang: str, data: dict[str, Any]) -> None:
             raise GrammarError(f"{where}: every cell and line must be text (quote anything containing ': ')")
 
 
-@lru_cache(maxsize=8)
+@lru_cache(maxsize=None)  # one parse per language per process (12 small files)
 def reference(lang: str) -> dict[str, Any]:
     path = GRAMMAR_DIR / f"{lang}.yaml"
     if not path.exists():
         raise GrammarError(f"no grammar reference for '{lang}' yet")
-    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    loader = getattr(yaml, "CSafeLoader", yaml.SafeLoader)  # the C loader when PyYAML has it: several times faster
+    data = yaml.load(path.read_text(encoding="utf-8"), Loader=loader) or {}
     _check(lang, data)
     sections = []
     for number, section in enumerate(data["sections"], start=1):

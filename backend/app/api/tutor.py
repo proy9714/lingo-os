@@ -120,6 +120,22 @@ def review_job(job_id: int, conn: Connection = Depends(get_conn)) -> dict[str, A
     return job
 
 
+@router.get("/reference/{lang}/weak-spots")
+def grammar_weak_spots(lang: str, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
+    """Only the part of the grammar page that is about you: what the tutor noticed you still slip on.
+
+    The reference itself never changes between versions of the app, so the app carries it with it
+    (frontend/src/generated/grammar, written by `lingo grammar export`) and only asks for this.
+    """
+    from app.services import grammar
+
+    require_language(conn, lang)
+    try:
+        return {"language": lang, "weak_spots": grammar.weak_spots(conn, lang)}
+    except grammar.GrammarError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
 @router.get("/reference/{lang}")
 def grammar_reference(lang: str, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
     """The grammar overview for a language, with the tutor's notes on what you still slip on."""

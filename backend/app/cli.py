@@ -387,6 +387,29 @@ def manga_scan(as_json: bool = typer.Option(False, "--json", help="Machine-reada
         console.print("  Nothing new.")
 
 
+grammar_app = typer.Typer(help="The grammar reference (backend/app/grammar/*.yaml).", no_args_is_help=True)
+app.add_typer(grammar_app, name="grammar")
+
+
+@grammar_app.command("export")
+def grammar_export(
+    out: Path = typer.Option(None, help="Folder to write <lang>.json into (default: frontend/src/generated/grammar)."),
+) -> None:
+    """Write each grammar reference as JSON for the app to carry with it (instant and offline grammar pages)."""
+    import json as _json
+
+    from app.config import ROOT
+    from app.services import grammar
+
+    folder = out or ROOT / "frontend" / "src" / "generated" / "grammar"
+    folder.mkdir(parents=True, exist_ok=True)
+    langs = grammar.available()
+    for lang in langs:
+        text = _json.dumps(grammar.reference(lang), ensure_ascii=False, indent=1) + "\n"
+        (folder / f"{lang}.json").write_text(text, encoding="utf-8", newline="\n")
+    typer.echo(f"wrote {len(langs)} grammar references to {folder}")
+
+
 data_app = typer.Typer(help="Back up all your data to one file, or restore it.", no_args_is_help=True)
 app.add_typer(data_app, name="data")
 

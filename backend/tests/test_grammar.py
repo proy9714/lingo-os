@@ -57,3 +57,24 @@ def test_every_grammar_reference_loads_and_is_well_formed() -> None:
             assert section["kind"] in {"structure", "verbs", "contrast", "summary"}, (path.stem, section["id"])
             for example in section["examples"]:
                 assert example["text"] and example["translation"], (path.stem, section["id"])
+
+
+def test_the_app_carries_an_up_to_date_copy_of_every_reference() -> None:
+    """frontend/src/generated/grammar is what the grammar page shows; `lingo grammar export` rewrites it."""
+    import json
+
+    from app.config import ROOT
+
+    folder = ROOT / "frontend" / "src" / "generated" / "grammar"
+    for lang in grammar.available():
+        path = folder / f"{lang}.json"
+        assert path.exists(), f"missing {path.name}: run `uv run --project backend lingo grammar export`"
+        assert json.loads(path.read_text(encoding="utf-8")) == grammar.reference(lang), (
+            f"{path.name} is out of date: run `uv run --project backend lingo grammar export`"
+        )
+
+
+def test_weak_spots_endpoint_returns_only_the_personal_part(client) -> None:
+    body = client.get("/api/tutor/reference/de/weak-spots").json()
+    assert body == {"language": "de", "weak_spots": []}
+    assert client.get("/api/tutor/reference/xx/weak-spots").status_code in (404, 422)

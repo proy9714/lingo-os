@@ -1,0 +1,1916 @@
+{
+ "language": "ja",
+ "title": "Japanese grammar",
+ "intro": "A working reference for beginners to intermediate learners. Every pattern comes with real sentences, a kana reading and a translation: read a section, notice the shape, then listen for it in what you watch and read.",
+ "sections": [
+  {
+   "number": 1,
+   "id": "writing",
+   "title": "The writing system",
+   "kind": "structure",
+   "level": "N5",
+   "tags": [
+    "hiragana",
+    "katakana",
+    "kanji",
+    "furigana",
+    "writing"
+   ],
+   "rule": null,
+   "text": "A normal sentence mixes all three, without spaces between words. A small **っ** doubles the next consonant (きって, stamp); **ー** lengthens a vowel in katakana (コーヒー). The particles は, へ and を are read **wa, e, o**.",
+   "tables": [
+    {
+     "head": [
+      "Script",
+      "Used for",
+      "Example"
+     ],
+     "rows": [
+      [
+       "ひらがな hiragana",
+       "grammar endings, particles, native words",
+       "たべる | to eat ;; ありがとう | thank you"
+      ],
+      [
+       "カタカナ katakana",
+       "loanwords, foreign names, emphasis, sound effects",
+       "コーヒー | coffee ;; テレビ | TV"
+      ],
+      [
+       "漢字 kanji",
+       "meaning: nouns, the stems of verbs and adjectives",
+       "食べる (たべる) | to eat ;; 学校 (がっこう) | school"
+      ],
+      [
+       "ふりがな furigana",
+       "small kana printed over kanji to show the reading",
+       "漢字 with かんじ above it"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "私は学生です。",
+     "translation": "I am a student.",
+     "note": null,
+     "reading": "わたし は がくせい です"
+    },
+    {
+     "text": "コーヒーを飲みます。",
+     "translation": "I drink coffee.",
+     "note": "katakana for the loanword",
+     "reading": "コーヒー を のみます"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 2,
+   "id": "basic-sentence",
+   "title": "The basic sentence",
+   "kind": "structure",
+   "level": "N5",
+   "tags": [
+    "desu",
+    "です",
+    "word order",
+    "sov",
+    "sentence"
+   ],
+   "rule": "The verb (or です) always comes last. The subject is often left out when it's clear.",
+   "text": "Japanese has no articles and usually no plural: 本 (ほん) is \"a book\", \"the book\" or \"books\". The order is subject, object, verb: 私はパンを食べます (I bread eat). **ではありません** is the more formal negative.",
+   "tables": [
+    {
+     "head": [
+      "Pattern",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "A は B です",
+       "A is B",
+       "田中さんは先生です。 | Mr Tanaka is a teacher."
+      ],
+      [
+       "A は B じゃありません",
+       "A isn't B",
+       "これは水じゃありません。 | This isn't water."
+      ],
+      [
+       "A は B でした",
+       "A was B",
+       "昨日は休みでした。 | Yesterday was a day off."
+      ],
+      [
+       "… か",
+       "question",
+       "学生ですか。 | Are you a student?"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "日本語を勉強しています。",
+     "translation": "I'm studying Japanese.",
+     "note": "'I' is understood",
+     "reading": "にほんご を べんきょう して います"
+    },
+    {
+     "text": "これは何ですか。",
+     "translation": "What is this?",
+     "note": null,
+     "reading": "これ は なん です か"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 3,
+   "id": "wa-ga",
+   "title": "は vs. が",
+   "kind": "contrast",
+   "level": "N5–N4",
+   "tags": [
+    "wa",
+    "ga",
+    "は",
+    "が",
+    "topic",
+    "subject",
+    "particles"
+   ],
+   "rule": null,
+   "text": "Something already known or being talked about takes **は**; something new or the answer to \"who / what?\" takes **が**. Inside a longer description (before a noun, after から) the subject takes が.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "は (wa)",
+      "が (ga)"
+     ],
+     "rows": [
+      [
+       "Marks",
+       "the topic: what we're talking about",
+       "the subject: who or what does it, often new information"
+      ],
+      [
+       "Feels like",
+       "'As for X, …'",
+       "'It's X that …'"
+      ],
+      [
+       "Question words",
+       "never: a question word can't be the topic",
+       "誰が来ましたか。 | Who came?"
+      ],
+      [
+       "Fixed patterns",
+       "contrast: 肉は食べません。 | Meat, I don't eat.",
+       "with 好き, 分かる, ある / いる, できる: 犬が好きです。 | I like dogs."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "私は田中です。",
+     "translation": "I'm Tanaka.",
+     "note": "は: the topic",
+     "reading": "わたし は たなか です"
+    },
+    {
+     "text": "誰が来ましたか。—田中さんが来ました。",
+     "translation": "'Who came?' 'Mr Tanaka came.'",
+     "note": "the question word and its answer take が",
+     "reading": "だれ が きました か。たなかさん が きました"
+    },
+    {
+     "text": "私は猫が好きです。",
+     "translation": "I like cats.",
+     "note": "好き takes が for the thing you like",
+     "reading": "わたし は ねこ が すき です"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 4,
+   "id": "particles",
+   "title": "The main particles",
+   "kind": "structure",
+   "level": "N5",
+   "tags": [
+    "particles",
+    "を",
+    "に",
+    "で",
+    "へ",
+    "と",
+    "も",
+    "の",
+    "から",
+    "まで"
+   ],
+   "rule": "A particle comes right after the word it marks. As long as the particles stay attached, the order can move; the verb stays last.",
+   "text": null,
+   "tables": [
+    {
+     "head": [
+      "Particle",
+      "Job",
+      "Example"
+     ],
+     "rows": [
+      [
+       "を (o)",
+       "the direct object",
+       "パンを食べる | eat bread"
+      ],
+      [
+       "に (ni)",
+       "time, destination, where something is, the person you give to or meet",
+       "七時に起きる | get up at seven ;; 友達に会う | meet a friend"
+      ],
+      [
+       "で (de)",
+       "where an action happens; by means of",
+       "図書館で勉強する | study at the library ;; バスで行く | go by bus"
+      ],
+      [
+       "へ (e)",
+       "direction",
+       "東京へ行く | go to Tokyo"
+      ],
+      [
+       "と (to)",
+       "and (between nouns); with",
+       "パンと牛乳 | bread and milk ;; 友達と話す | talk with a friend"
+      ],
+      [
+       "も (mo)",
+       "also, too (replaces は / が / を)",
+       "私も行く | I'm going too"
+      ],
+      [
+       "の (no)",
+       "of, 's: links two nouns",
+       "私の本 | my book ;; 日本の車 | a Japanese car"
+      ],
+      [
+       "から / まで",
+       "from / until",
+       "九時から五時まで | from nine to five"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "駅で友達に会いました。",
+     "translation": "I met a friend at the station.",
+     "note": "で: where it happened; に: the person met",
+     "reading": "えき で ともだち に あいました"
+    },
+    {
+     "text": "日曜日に家族と映画を見ます。",
+     "translation": "On Sunday I'm watching a film with my family.",
+     "note": null,
+     "reading": "にちようび に かぞく と えいが を みます"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 5,
+   "id": "verb-groups",
+   "title": "Verb groups & the dictionary form",
+   "kind": "verbs",
+   "level": "N5",
+   "tags": [
+    "verb groups",
+    "godan",
+    "ichidan",
+    "dictionary form",
+    "u-verb",
+    "ru-verb"
+   ],
+   "rule": null,
+   "text": "The dictionary form is the plain present / future: 食べる = \"eat, will eat\". Verbs don't change for the person. Watch out for group 1 verbs that look like group 2: **帰る, 入る (はいる), 走る (はしる), 知る (しる), 切る (きる)**.",
+   "tables": [
+    {
+     "head": [
+      "Group",
+      "How to spot it",
+      "Examples"
+     ],
+     "rows": [
+      [
+       "Group 1 (u-verbs)",
+       "ends in -u, including most -aru, -oru, -uru verbs",
+       "書く (かく) | write ;; 飲む (のむ) | drink ;; 話す (はなす) | speak ;; 帰る (かえる) | go home"
+      ],
+      [
+       "Group 2 (ru-verbs)",
+       "ends in -iru or -eru (most of them)",
+       "食べる (たべる) | eat ;; 見る (みる) | see ;; 起きる (おきる) | get up"
+      ],
+      [
+       "Irregular",
+       "just two",
+       "する | do ;; 来る (くる) | come"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "毎朝コーヒーを飲む。",
+     "translation": "I drink coffee every morning.",
+     "note": "plain form: casual",
+     "reading": "まいあさ コーヒー を のむ"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 6,
+   "id": "masu",
+   "title": "The polite ます form",
+   "kind": "verbs",
+   "level": "N5",
+   "tags": [
+    "masu",
+    "ます",
+    "polite",
+    "ません",
+    "ました"
+   ],
+   "rule": null,
+   "text": "Group 2: drop る and add ます. Group 1: change the final -u to **-i** and add ます (飲む → 飲みます, 書く → 書きます, 話す → 話します, 待つ → 待ちます). The ます form is the safe default with strangers, at work and in shops. **ましょう** means \"let's\".",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Present",
+      "Negative",
+      "Past",
+      "Past negative"
+     ],
+     "rows": [
+      [
+       "食べる | eat",
+       "食べ{ます}",
+       "食べ{ません}",
+       "食べ{ました}",
+       "食べ{ませんでした}"
+      ],
+      [
+       "飲む | drink",
+       "飲み{ます}",
+       "飲み{ません}",
+       "飲み{ました}",
+       "飲み{ませんでした}"
+      ],
+      [
+       "する | do",
+       "し{ます}",
+       "し{ません}",
+       "し{ました}",
+       "し{ませんでした}"
+      ],
+      [
+       "来る | come",
+       "来{ます} (きます)",
+       "来{ません}",
+       "来{ました}",
+       "来{ませんでした}"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "明日、京都に行きます。",
+     "translation": "I'm going to Kyoto tomorrow.",
+     "note": null,
+     "reading": "あした、きょうと に いきます"
+    },
+    {
+     "text": "昨日は何も食べませんでした。",
+     "translation": "I didn't eat anything yesterday.",
+     "note": null,
+     "reading": "きのう は なにも たべません でした"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 7,
+   "id": "plain-forms",
+   "title": "Plain negative & past",
+   "kind": "verbs",
+   "level": "N5",
+   "tags": [
+    "plain form",
+    "nai",
+    "ない",
+    "ta",
+    "た",
+    "casual"
+   ],
+   "rule": null,
+   "text": "Group 1 negative: change -u to **-a** + ない (-う becomes **-わ**: 買わない). The た form is made exactly like the て form (next section), with た / だ instead of て / で. Plain forms are for friends and family, and are used inside longer sentences (before nouns, before と思う or から).",
+   "tables": [
+    {
+     "head": [
+      "Verb",
+      "Negative (ない)",
+      "Past (た)",
+      "Past negative"
+     ],
+     "rows": [
+      [
+       "食べる | eat (group 2)",
+       "食べ{ない}",
+       "食べ{た}",
+       "食べ{なかった}"
+      ],
+      [
+       "飲む | drink (group 1)",
+       "飲ま{ない}",
+       "飲{んだ}",
+       "飲ま{なかった}"
+      ],
+      [
+       "書く | write (group 1)",
+       "書か{ない}",
+       "書{いた}",
+       "書か{なかった}"
+      ],
+      [
+       "買う | buy (group 1)",
+       "買わ{ない}",
+       "買{った}",
+       "買わ{なかった}"
+      ],
+      [
+       "する | do",
+       "し{ない}",
+       "し{た}",
+       "し{なかった}"
+      ],
+      [
+       "来る | come",
+       "来ない (こない)",
+       "来た (きた)",
+       "来なかった (こなかった)"
+      ],
+      [
+       "ある | there is",
+       "ない",
+       "あった",
+       "なかった"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "今日は行かない。",
+     "translation": "I'm not going today.",
+     "note": "casual",
+     "reading": "きょう は いかない"
+    },
+    {
+     "text": "もう食べた？",
+     "translation": "Have you eaten yet?",
+     "note": "casual, with a rising tone",
+     "reading": "もう たべた？"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 8,
+   "id": "te-form",
+   "title": "The て form",
+   "kind": "verbs",
+   "level": "N5",
+   "tags": [
+    "te form",
+    "て",
+    "ている",
+    "てください",
+    "request",
+    "progressive"
+   ],
+   "rule": null,
+   "text": "The て form links actions (\"and then\"), and builds many patterns: **〜てください** (please do), **〜ている** (doing now, or a resulting state), **〜てもいい** (may), **〜てはいけない** (mustn't).",
+   "tables": [
+    {
+     "head": [
+      "Verb ending",
+      "て form",
+      "Example"
+     ],
+     "rows": [
+      [
+       "-る (group 2)",
+       "-て",
+       "食べる → 食べ{て}"
+      ],
+      [
+       "-う, -つ, -る (group 1)",
+       "-って",
+       "買う → 買{って} ;; 待つ → 待{って} ;; 帰る → 帰{って}"
+      ],
+      [
+       "-む, -ぶ, -ぬ",
+       "-んで",
+       "飲む → 飲{んで} ;; 遊ぶ → 遊{んで}"
+      ],
+      [
+       "-く",
+       "-いて",
+       "書く → 書{いて} (but 行く → 行{って})"
+      ],
+      [
+       "-ぐ",
+       "-いで",
+       "泳ぐ → 泳{いで}"
+      ],
+      [
+       "-す",
+       "-して",
+       "話す → 話{して}"
+      ],
+      [
+       "する, 来る",
+       "して, 来て (きて)",
+       "勉強する → 勉強{して}"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "ちょっと待ってください。",
+     "translation": "Please wait a moment.",
+     "note": null,
+     "reading": "ちょっと まって ください"
+    },
+    {
+     "text": "朝ご飯を食べて、学校に行きます。",
+     "translation": "I have breakfast and then go to school.",
+     "note": "て links actions in order",
+     "reading": "あさごはん を たべて、がっこう に いきます"
+    },
+    {
+     "text": "今、雨が降っています。",
+     "translation": "It's raining now.",
+     "note": "ている: in progress",
+     "reading": "いま、あめ が ふって います"
+    },
+    {
+     "text": "結婚しています。",
+     "translation": "I'm married.",
+     "note": "ている: a resulting state",
+     "reading": "けっこん して います"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 9,
+   "id": "adjectives",
+   "title": "い-adjectives & な-adjectives",
+   "kind": "structure",
+   "level": "N5",
+   "tags": [
+    "adjectives",
+    "i-adjective",
+    "na-adjective",
+    "い",
+    "な"
+   ],
+   "rule": null,
+   "text": "い-adjectives conjugate themselves; な-adjectives work like nouns. **いい** (good) is irregular: よくない, よかった. Some な-adjectives end in い: **きれい** (pretty, clean), **有名** (ゆうめい, famous) → きれいな花.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "い-adjective: 高い (たかい) | expensive",
+      "な-adjective: 静か (しずか) | quiet"
+     ],
+     "rows": [
+      [
+       "Before a noun",
+       "高い店 | an expensive shop",
+       "静か{な}部屋 | a quiet room"
+      ],
+      [
+       "Present",
+       "高いです",
+       "静かです"
+      ],
+      [
+       "Negative",
+       "高{くない}です",
+       "静か{じゃない}です"
+      ],
+      [
+       "Past",
+       "高{かった}です",
+       "静か{でした}"
+      ],
+      [
+       "Past negative",
+       "高{くなかった}です",
+       "静か{じゃなかった}です"
+      ],
+      [
+       "Linking ('and')",
+       "高{くて}",
+       "静か{で}"
+      ],
+      [
+       "As an adverb",
+       "高{く}",
+       "静か{に}"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "この店は高くないです。",
+     "translation": "This shop isn't expensive.",
+     "note": null,
+     "reading": "この みせ は たかくない です"
+    },
+    {
+     "text": "昨日はとても楽しかったです。",
+     "translation": "Yesterday was really fun.",
+     "note": null,
+     "reading": "きのう は とても たのしかった です"
+    },
+    {
+     "text": "きれいな公園ですね。",
+     "translation": "What a lovely park.",
+     "note": "きれい is a な-adjective",
+     "reading": "きれい な こうえん です ね"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 10,
+   "id": "aru-iru",
+   "title": "ある vs. いる",
+   "kind": "contrast",
+   "level": "N5",
+   "tags": [
+    "aru",
+    "iru",
+    "ある",
+    "いる",
+    "existence",
+    "there is"
+   ],
+   "rule": null,
+   "text": "Pattern: **[place] に [thing] が ある / いる**, or with the thing as topic: **[thing] は [place] に ある / いる**. Events take ある: 明日テストがあります (There's a test tomorrow).",
+   "tables": [
+    {
+     "head": [
+      "",
+      "ある",
+      "いる"
+     ],
+     "rows": [
+      [
+       "Used for",
+       "things, plants, events",
+       "people and animals: anything that moves by itself"
+      ],
+      [
+       "Example",
+       "机の上に本があります。 | There's a book on the desk.",
+       "公園に子供がいます。 | There are children in the park."
+      ],
+      [
+       "Negative",
+       "ありません / ない",
+       "いません / いない"
+      ],
+      [
+       "'Have'",
+       "お金がある | I have money",
+       "兄弟がいる | I have siblings"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "トイレはどこにありますか。",
+     "translation": "Where is the toilet?",
+     "note": null,
+     "reading": "トイレ は どこ に あります か"
+    },
+    {
+     "text": "猫が二匹います。",
+     "translation": "There are two cats. / I have two cats.",
+     "note": null,
+     "reading": "ねこ が にひき います"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 11,
+   "id": "kosoado",
+   "title": "こ・そ・あ・ど: this, that, which",
+   "kind": "structure",
+   "level": "N5",
+   "tags": [
+    "kosoado",
+    "これ",
+    "それ",
+    "あれ",
+    "どれ",
+    "この",
+    "ここ",
+    "どこ"
+   ],
+   "rule": null,
+   "text": "これ / それ stand alone; この / その need a noun after them. **こちら** is also a polite \"this person\": こちらは田中さんです (This is Mr Tanaka).",
+   "tables": [
+    {
+     "head": [
+      "",
+      "こ (near me)",
+      "そ (near you)",
+      "あ (over there)",
+      "ど (which?)"
+     ],
+     "rows": [
+      [
+       "thing",
+       "これ",
+       "それ",
+       "あれ",
+       "どれ"
+      ],
+      [
+       "+ noun",
+       "この本",
+       "その本",
+       "あの本",
+       "どの本"
+      ],
+      [
+       "place",
+       "ここ",
+       "そこ",
+       "あそこ",
+       "どこ"
+      ],
+      [
+       "direction, polite",
+       "こちら",
+       "そちら",
+       "あちら",
+       "どちら"
+      ],
+      [
+       "this kind of",
+       "こんな",
+       "そんな",
+       "あんな",
+       "どんな"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "これは何ですか。",
+     "translation": "What is this?",
+     "note": null,
+     "reading": "これ は なん です か"
+    },
+    {
+     "text": "あの人は誰ですか。",
+     "translation": "Who is that person over there?",
+     "note": null,
+     "reading": "あの ひと は だれ です か"
+    },
+    {
+     "text": "駅はどこですか。",
+     "translation": "Where's the station?",
+     "note": null,
+     "reading": "えき は どこ です か"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 12,
+   "id": "questions",
+   "title": "Questions",
+   "kind": "structure",
+   "level": "N5",
+   "tags": [
+    "questions",
+    "question words",
+    "何",
+    "誰",
+    "どこ",
+    "いつ",
+    "どうして",
+    "か"
+   ],
+   "rule": null,
+   "text": "Add **か** to make a polite question; the word order doesn't change. Casual questions just rise in tone or end in **の**. Question word + か = some-: **何か** (something), **誰か** (someone). Question word + も with a negative = no-: **何も** ない (nothing), **誰も** いない (nobody).",
+   "tables": [
+    {
+     "head": [
+      "Japanese",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "何 (なに / なん)",
+       "what",
+       "何を食べますか。 | What will you eat?"
+      ],
+      [
+       "誰 (だれ)",
+       "who",
+       "誰ですか。 | Who is it?"
+      ],
+      [
+       "どこ",
+       "where",
+       "どこに住んでいますか。 | Where do you live?"
+      ],
+      [
+       "いつ",
+       "when",
+       "いつ来ますか。 | When are you coming?"
+      ],
+      [
+       "どうして / なぜ",
+       "why",
+       "どうして休みましたか。 | Why were you off?"
+      ],
+      [
+       "どう",
+       "how",
+       "週末はどうでしたか。 | How was your weekend?"
+      ],
+      [
+       "どれ / どの",
+       "which",
+       "どれがいいですか。 | Which one is good?"
+      ],
+      [
+       "いくら",
+       "how much (price)",
+       "これはいくらですか。 | How much is this?"
+      ],
+      [
+       "いくつ",
+       "how many; how old",
+       "りんごはいくつですか。 | How many apples?"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "何か飲みますか。",
+     "translation": "Would you like something to drink?",
+     "note": "何か = something",
+     "reading": "なにか のみます か"
+    },
+    {
+     "text": "誰もいません。",
+     "translation": "There's nobody here.",
+     "note": "誰も + negative = nobody",
+     "reading": "だれ も いません"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 13,
+   "id": "counters",
+   "title": "Numbers, counters & time",
+   "kind": "structure",
+   "level": "N5",
+   "tags": [
+    "numbers",
+    "counters",
+    "time",
+    "days",
+    "時",
+    "分",
+    "つ",
+    "人"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [
+    {
+     "caption": "Numbers",
+     "head": [
+      "",
+      "Japanese"
+     ],
+     "rows": [
+      [
+       "1–10",
+       "いち, に, さん, よん (し), ご, ろく, なな (しち), はち, きゅう (く), じゅう"
+      ],
+      [
+       "bigger",
+       "じゅういち 11, にじゅう 20, ひゃく 100, せん 1,000, いちまん 10,000 | big numbers go in groups of 10,000"
+      ],
+      [
+       "days",
+       "月曜日 (げつようび) Mon, 火曜日 Tue, 水曜日 Wed, 木曜日 Thu, 金曜日 Fri, 土曜日 Sat, 日曜日 Sun"
+      ]
+     ]
+    },
+    {
+     "caption": "Common counters",
+     "head": [
+      "Counter",
+      "For",
+      "1",
+      "2",
+      "3"
+     ],
+     "rows": [
+      [
+       "つ",
+       "things in general",
+       "ひとつ",
+       "ふたつ",
+       "みっつ"
+      ],
+      [
+       "人 (にん)",
+       "people",
+       "ひとり",
+       "ふたり",
+       "さんにん"
+      ],
+      [
+       "本 (ほん)",
+       "long thin things: bottles, pens",
+       "いっぽん",
+       "にほん",
+       "さんぼん"
+      ],
+      [
+       "枚 (まい)",
+       "flat things: paper, tickets, shirts",
+       "いちまい",
+       "にまい",
+       "さんまい"
+      ],
+      [
+       "匹 (ひき)",
+       "small animals",
+       "いっぴき",
+       "にひき",
+       "さんびき"
+      ]
+     ]
+    },
+    {
+     "caption": "Time",
+     "head": [
+      "Word",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "時 (じ)",
+       "o'clock",
+       "四時 (よじ) | four o'clock ;; 九時 (くじ) | nine o'clock"
+      ],
+      [
+       "分 (ふん / ぷん)",
+       "minutes",
+       "五分 (ごふん) | five minutes ;; 十分 (じゅっぷん) | ten minutes"
+      ],
+      [
+       "半 (はん)",
+       "half past",
+       "三時半 | half past three"
+      ],
+      [
+       "午前 / 午後",
+       "a.m. / p.m.",
+       "午後二時 | 2 p.m."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "りんごを三つください。",
+     "translation": "Three apples, please.",
+     "note": null,
+     "reading": "りんご を みっつ ください"
+    },
+    {
+     "text": "今、四時半です。",
+     "translation": "It's half past four now.",
+     "note": null,
+     "reading": "いま、よじ はん です"
+    },
+    {
+     "text": "家族は四人です。",
+     "translation": "There are four people in my family.",
+     "note": null,
+     "reading": "かぞく は よにん です"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 14,
+   "id": "wants-likes",
+   "title": "Wanting & liking",
+   "kind": "structure",
+   "level": "N5",
+   "tags": [
+    "tai",
+    "たい",
+    "ほしい",
+    "好き",
+    "きらい",
+    "上手",
+    "want",
+    "like"
+   ],
+   "rule": null,
+   "text": "たい conjugates like an い-adjective (行きたくない, 行きたかった). たい and ほしい are for your own wishes; for someone else use **〜たがっている** or say what they told you.",
+   "tables": [
+    {
+     "head": [
+      "Pattern",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "verb stem + たい",
+       "want to (I)",
+       "日本に行きたいです。 | I want to go to Japan."
+      ],
+      [
+       "noun + が ほしい",
+       "want a thing (I)",
+       "新しいパソコンがほしいです。 | I want a new computer."
+      ],
+      [
+       "noun + が 好き",
+       "like",
+       "音楽が好きです。 | I like music."
+      ],
+      [
+       "noun + が きらい",
+       "dislike",
+       "虫がきらいです。 | I don't like insects."
+      ],
+      [
+       "verb + のが 好き",
+       "like doing",
+       "料理するのが好きです。 | I like cooking."
+      ],
+      [
+       "noun + が 上手 / 下手",
+       "good / bad at",
+       "彼女は歌が上手です。 | She's good at singing."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "何が食べたいですか。",
+     "translation": "What do you want to eat?",
+     "note": null,
+     "reading": "なに が たべたい です か"
+    },
+    {
+     "text": "今日は出かけたくない。",
+     "translation": "I don't want to go out today.",
+     "note": "たい → たくない",
+     "reading": "きょう は でかけたくない"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 15,
+   "id": "potential",
+   "title": "Can do (the potential form)",
+   "kind": "verbs",
+   "level": "N4",
+   "tags": [
+    "potential",
+    "can",
+    "できる",
+    "られる",
+    "ことができる"
+   ],
+   "rule": null,
+   "text": "What you can do usually takes **が**: 日本語**が**話せます. A more formal way is dictionary form + **ことができる**. In casual speech group 2 verbs often drop ら: 食べれる.",
+   "tables": [
+    {
+     "head": [
+      "Verb",
+      "Potential: 'can'"
+     ],
+     "rows": [
+      [
+       "食べる | eat (group 2)",
+       "食べ{られる}"
+      ],
+      [
+       "見る | see (group 2)",
+       "見{られる}"
+      ],
+      [
+       "書く | write (group 1: -u → -eru)",
+       "書{ける}"
+      ],
+      [
+       "話す | speak (group 1)",
+       "話{せる}"
+      ],
+      [
+       "飲む | drink (group 1)",
+       "飲{める}"
+      ],
+      [
+       "する | do",
+       "できる"
+      ],
+      [
+       "来る | come",
+       "来られる (こられる)"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "日本語が少し話せます。",
+     "translation": "I can speak a little Japanese.",
+     "note": null,
+     "reading": "にほんご が すこし はなせます"
+    },
+    {
+     "text": "ここで写真を撮ることができますか。",
+     "translation": "Can I take photos here?",
+     "note": "ことができる",
+     "reading": "ここ で しゃしん を とる こと が できます か"
+    },
+    {
+     "text": "漢字が読めない。",
+     "translation": "I can't read kanji.",
+     "note": null,
+     "reading": "かんじ が よめない"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 16,
+   "id": "giving",
+   "title": "Giving & receiving",
+   "kind": "contrast",
+   "level": "N4",
+   "tags": [
+    "あげる",
+    "くれる",
+    "もらう",
+    "giving",
+    "receiving",
+    "favours"
+   ],
+   "rule": null,
+   "text": "With the て form they describe favours: **〜てあげる** (do for someone), **〜てくれる** (someone does for me), **〜てもらう** (have someone do for me). Polite versions: さしあげる, くださる, いただく.",
+   "tables": [
+    {
+     "head": [
+      "Verb",
+      "Direction",
+      "Example"
+     ],
+     "rows": [
+      [
+       "あげる",
+       "I (or my side) give to someone else",
+       "妹に本をあげました。 | I gave my sister a book."
+      ],
+      [
+       "くれる",
+       "someone gives to me (or my side)",
+       "友達が花をくれました。 | A friend gave me flowers."
+      ],
+      [
+       "もらう",
+       "I receive from someone (に or から)",
+       "先生に辞書をもらいました。 | I got a dictionary from my teacher."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "母がケーキを作ってくれました。",
+     "translation": "My mother made a cake for me.",
+     "note": "てくれる: a favour to me",
+     "reading": "はは が ケーキ を つくって くれました"
+    },
+    {
+     "text": "友達に駅まで送ってもらいました。",
+     "translation": "A friend gave me a lift to the station.",
+     "note": "てもらう: I received the favour",
+     "reading": "ともだち に えき まで おくって もらいました"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 17,
+   "id": "comparison",
+   "title": "Comparisons",
+   "kind": "structure",
+   "level": "N5–N4",
+   "tags": [
+    "comparison",
+    "より",
+    "ほう",
+    "一番",
+    "ほど"
+   ],
+   "rule": null,
+   "text": "The adjective itself never changes for \"more\" or \"most\"; the particles do the work.",
+   "tables": [
+    {
+     "head": [
+      "Pattern",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "A は B より 〜",
+       "A is more … than B",
+       "東京は大阪より大きいです。 | Tokyo is bigger than Osaka."
+      ],
+      [
+       "A と B と どちらが 〜",
+       "which is more …, A or B?",
+       "夏と冬とどちらが好きですか。 | Which do you like more, summer or winter?"
+      ],
+      [
+       "A の ほうが 〜",
+       "A is more …",
+       "夏のほうが好きです。 | I prefer summer."
+      ],
+      [
+       "〜の中で 〜が 一番 〜",
+       "the most … of all",
+       "果物の中でいちごが一番好きです。 | Of all fruit, I like strawberries best."
+      ],
+      [
+       "A は B ほど 〜ない",
+       "A is not as … as B",
+       "今日は昨日ほど寒くない。 | Today isn't as cold as yesterday."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "電車のほうが速いです。",
+     "translation": "The train is faster.",
+     "note": null,
+     "reading": "でんしゃ の ほう が はやい です"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 18,
+   "id": "connecting",
+   "title": "Connecting sentences",
+   "kind": "structure",
+   "level": "N5–N4",
+   "tags": [
+    "から",
+    "ので",
+    "けど",
+    "し",
+    "ながら",
+    "たり",
+    "because",
+    "but"
+   ],
+   "rule": null,
+   "text": "In Japanese the reason comes first and the result last, the opposite of \"…, because …\".",
+   "tables": [
+    {
+     "head": [
+      "Word",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "から",
+       "because, so (direct)",
+       "時間がないから、タクシーで行く。 | I don't have time, so I'll take a taxi."
+      ],
+      [
+       "ので",
+       "because (softer, more polite)",
+       "雨なので、家にいます。 | Because it's raining, I'm staying in."
+      ],
+      [
+       "けど / が",
+       "but",
+       "高いけど、おいしい。 | It's expensive, but tasty."
+      ],
+      [
+       "し",
+       "and also (listing reasons)",
+       "安いし、近いし、いい店です。 | It's cheap, it's close: a good shop."
+      ],
+      [
+       "て form",
+       "and then",
+       "シャワーを浴びて、寝ました。 | I showered and went to bed."
+      ],
+      [
+       "〜ながら",
+       "while (same person)",
+       "音楽を聞きながら勉強する。 | I study while listening to music."
+      ],
+      [
+       "〜たり〜たりする",
+       "things like … and …",
+       "週末は掃除したり、買い物したりします。 | At weekends I do things like cleaning and shopping."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "疲れたので、早く寝ます。",
+     "translation": "I'm tired, so I'll go to bed early.",
+     "note": null,
+     "reading": "つかれた ので、はやく ねます"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 19,
+   "id": "conditionals",
+   "title": "If and when: たら, ば, と, なら",
+   "kind": "contrast",
+   "level": "N4",
+   "tags": [
+    "conditional",
+    "たら",
+    "ば",
+    "と",
+    "なら",
+    "if",
+    "when"
+   ],
+   "rule": null,
+   "text": "たら is made from the past: 行った → 行ったら. ば: group 1 -u → **-eba** (行けば), group 2 -る → **-れば** (食べれば), い-adjective -い → **-ければ** (高ければ), する → すれば, 来る → くれば. When unsure, たら usually works.",
+   "tables": [
+    {
+     "head": [
+      "Form",
+      "Feel",
+      "Example"
+     ],
+     "rows": [
+      [
+       "〜たら",
+       "if / when, once it has happened; the most flexible",
+       "駅に着いたら、電話してください。 | When you get to the station, please call me."
+      ],
+      [
+       "〜ば",
+       "if (condition → result), often in advice",
+       "安ければ買います。 | If it's cheap, I'll buy it."
+      ],
+      [
+       "〜と",
+       "whenever, automatically: natural results, directions",
+       "春になると、桜が咲きます。 | When spring comes, the cherry trees bloom."
+      ],
+      [
+       "〜なら",
+       "if that's the case (responding to what was said)",
+       "京都に行くなら、金閣寺がおすすめです。 | If you're going to Kyoto, I recommend Kinkaku-ji."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "時間があったら、遊びに来てください。",
+     "translation": "If you have time, come and visit.",
+     "note": null,
+     "reading": "じかん が あったら、あそび に きて ください"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 20,
+   "id": "relative",
+   "title": "Describing nouns with a clause",
+   "kind": "structure",
+   "level": "N4",
+   "tags": [
+    "relative clause",
+    "noun modification",
+    "describing"
+   ],
+   "rule": "The describing clause goes right before the noun, in plain form. There's no word for \"who\" or \"which\".",
+   "text": "Inside the clause the subject takes **が** (or の), never は: 母**が**作った料理 (the food my mother made). Adjectives and nouns work the same way: 高い車, 日本の映画.",
+   "tables": [
+    {
+     "head": [
+      "Clause + noun",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "昨日買った本",
+       "the book (I) bought yesterday"
+      ],
+      [
+       "眼鏡をかけている人",
+       "the person wearing glasses"
+      ],
+      [
+       "日本に住んでいる友達",
+       "a friend who lives in Japan"
+      ],
+      [
+       "明日行く店",
+       "the shop (I'm) going to tomorrow"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "これは母がくれた時計です。",
+     "translation": "This is the watch my mother gave me.",
+     "note": null,
+     "reading": "これ は はは が くれた とけい です"
+    },
+    {
+     "text": "駅の前にあるカフェで会いましょう。",
+     "translation": "Let's meet at the café in front of the station.",
+     "note": null,
+     "reading": "えき の まえ に ある カフェ で あいましょう"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 21,
+   "id": "invitations",
+   "title": "Let's: invitations & intentions",
+   "kind": "verbs",
+   "level": "N5–N4",
+   "tags": [
+    "volitional",
+    "ましょう",
+    "ませんか",
+    "よう",
+    "invitation",
+    "let's"
+   ],
+   "rule": null,
+   "text": "Casual volitional: group 1 -u → **-ō** (行く → 行こう, 飲む → 飲もう), group 2 -る → **-よう** (食べよう), する → しよう, 来る → こよう.",
+   "tables": [
+    {
+     "head": [
+      "Form",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "〜ましょう",
+       "let's (polite)",
+       "一緒に行きましょう。 | Let's go together."
+      ],
+      [
+       "〜ましょうか",
+       "shall we? / shall I?",
+       "窓を開けましょうか。 | Shall I open the window?"
+      ],
+      [
+       "〜ませんか",
+       "won't you? (a polite invitation)",
+       "映画を見に行きませんか。 | Would you like to go and see a film?"
+      ],
+      [
+       "〜う / 〜よう",
+       "let's (casual); with と思う: I think I'll",
+       "飲もう！ | Let's drink! ;; 来年日本に行こうと思う。 | I think I'll go to Japan next year."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "週末、一緒に料理しませんか。",
+     "translation": "Would you like to cook together at the weekend?",
+     "note": null,
+     "reading": "しゅうまつ、いっしょ に りょうり しません か"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 22,
+   "id": "must-may",
+   "title": "Must, may & should",
+   "kind": "structure",
+   "level": "N4",
+   "tags": [
+    "must",
+    "may",
+    "should",
+    "てもいい",
+    "てはいけない",
+    "なければならない",
+    "ほうがいい"
+   ],
+   "rule": null,
+   "text": "Casual short forms: なきゃ / なくちゃ (have to), ちゃだめ (mustn't).",
+   "tables": [
+    {
+     "head": [
+      "Pattern",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "〜てもいい",
+       "may, it's OK to",
+       "ここに座ってもいいですか。 | May I sit here?"
+      ],
+      [
+       "〜てはいけない",
+       "must not",
+       "ここでたばこを吸ってはいけません。 | You mustn't smoke here."
+      ],
+      [
+       "〜なければならない",
+       "must, have to",
+       "明日は早く起きなければなりません。 | I have to get up early tomorrow."
+      ],
+      [
+       "〜なくてもいい",
+       "don't have to",
+       "急がなくてもいいですよ。 | You don't have to hurry."
+      ],
+      [
+       "〜たほうがいい",
+       "should (advice)",
+       "薬を飲んだほうがいいですよ。 | You should take some medicine."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "もう帰らなきゃ。",
+     "translation": "I have to go home now.",
+     "note": "casual なきゃ",
+     "reading": "もう かえらなきゃ"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 23,
+   "id": "keigo",
+   "title": "Politeness levels (keigo)",
+   "kind": "structure",
+   "level": "N4–N3",
+   "tags": [
+    "keigo",
+    "polite",
+    "sonkeigo",
+    "kenjougo",
+    "teineigo",
+    "respectful",
+    "humble"
+   ],
+   "rule": null,
+   "text": "Start with the ます form; learn to recognise the rest in shops and announcements (いらっしゃいませ, welcome). **お / ご** before a noun is polite (お茶, ご飯). Add **さん** to other people's names, never to your own.",
+   "tables": [
+    {
+     "head": [
+      "Level",
+      "When",
+      "食べる | eat",
+      "行く | go",
+      "いる | be"
+     ],
+     "rows": [
+      [
+       "Plain",
+       "friends, family",
+       "食べる",
+       "行く",
+       "いる"
+      ],
+      [
+       "Polite (丁寧語)",
+       "the default with strangers and at work",
+       "食べます",
+       "行きます",
+       "います"
+      ],
+      [
+       "Respectful (尊敬語): raises the other person",
+       "what customers, bosses, guests do",
+       "召し上がる (めしあがる)",
+       "いらっしゃる",
+       "いらっしゃる"
+      ],
+      [
+       "Humble (謙譲語): lowers yourself",
+       "what you do for them",
+       "いただく",
+       "参る (まいる)",
+       "おる"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "少々お待ちください。",
+     "translation": "Please wait a moment.",
+     "note": "very polite shop Japanese",
+     "reading": "しょうしょう おまち ください"
+    },
+    {
+     "text": "田中と申します。",
+     "translation": "My name is Tanaka.",
+     "note": "humble: 申す",
+     "reading": "たなか と もうします"
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 24,
+   "id": "endings",
+   "title": "Sentence-ending particles",
+   "kind": "structure",
+   "level": "N5",
+   "tags": [
+    "よ",
+    "ね",
+    "よね",
+    "か",
+    "の",
+    "かな",
+    "sentence ending"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [
+    {
+     "head": [
+      "Particle",
+      "Adds",
+      "Example"
+     ],
+     "rows": [
+      [
+       "よ",
+       "new information: 'I'm telling you'",
+       "これ、おいしいよ。 | This is tasty, you know."
+      ],
+      [
+       "ね",
+       "shared feeling: 'isn't it?'",
+       "暑いですね。 | It's hot, isn't it?"
+      ],
+      [
+       "よね",
+       "checking that you agree",
+       "明日休みだよね？ | Tomorrow's a day off, right?"
+      ],
+      [
+       "か",
+       "a polite question",
+       "行きますか。 | Are you going?"
+      ],
+      [
+       "の",
+       "explaining, or asking for an explanation (casual)",
+       "どうしたの？ | What's wrong?"
+      ],
+      [
+       "かな",
+       "wondering",
+       "雨が降るかな。 | I wonder if it'll rain."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 25,
+   "id": "confusions",
+   "title": "High-value confusions",
+   "kind": "contrast",
+   "level": "N5–N4",
+   "tags": [
+    "confusions",
+    "は",
+    "が",
+    "に",
+    "で",
+    "知る",
+    "分かる",
+    "行く",
+    "来る",
+    "着る"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [
+    {
+     "head": [
+      "Don't confuse",
+      "Difference",
+      "Example"
+     ],
+     "rows": [
+      [
+       "は / が",
+       "topic vs. subject (new information)",
+       "私は田中です。 | I'm Tanaka. ;; 私が田中です。 | I'm the one who's Tanaka."
+      ],
+      [
+       "に / で (place)",
+       "where something is or goes vs. where an action happens",
+       "公園にいる | be in the park ;; 公園で遊ぶ | play in the park"
+      ],
+      [
+       "知る / 分かる",
+       "know (知っている) vs. understand",
+       "彼を知っています。 | I know him. ;; 分かりました。 | Understood."
+      ],
+      [
+       "行く / 来る",
+       "go away from where you are vs. come towards the speaker",
+       "今行きます！ | I'm coming! (going to you) ;; 来てください。 | Please come."
+      ],
+      [
+       "着る / はく / かぶる",
+       "put on the upper body vs. legs and feet vs. head",
+       "シャツを着る | put on a shirt ;; 靴をはく | put on shoes ;; 帽子をかぶる | put on a hat"
+      ],
+      [
+       "聞く",
+       "listen and ask are the same verb",
+       "音楽を聞く | listen to music ;; 道を聞く | ask the way"
+      ],
+      [
+       "〜ている",
+       "in progress vs. a resulting state",
+       "食べている | is eating ;; 結婚している | is married"
+      ],
+      [
+       "から / ので",
+       "because (direct) vs. because (softer)",
+       "安いから買う | it's cheap, so I'll buy it ;; 遅れたので、すみません | sorry, I'm late"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 26,
+   "id": "memory-map",
+   "title": "One-page memory map",
+   "kind": "summary",
+   "level": "all",
+   "tags": [
+    "summary",
+    "overview"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [],
+   "after": null,
+   "examples": [],
+   "points": [
+    "The verb (or です) comes last; everything else is marked by the particle after it.",
+    "は marks what you're talking about; が marks who does it or what's new.",
+    "に for time, destination and where something is; で for where an action happens.",
+    "Verbs don't change for the person; learn the group (1, 2 or irregular) of each verb.",
+    "The て form links actions and builds ている, てください, てもいい and てはいけない.",
+    "い-adjectives conjugate themselves; な-adjectives work like nouns.",
+    "ある for things, いる for people and animals.",
+    "A describing clause goes right before its noun, in plain form.",
+    "あげる gives away from you, くれる gives to you, もらう receives.",
+    "Use the ます form with anyone you don't know well; switch to plain forms with friends."
+   ],
+   "tip": "Listening strategy: Japanese saves the verb for last, so wait for the end of the sentence; that's where you hear whether it's past, negative, a question or a request."
+  }
+ ]
+}

@@ -193,7 +193,8 @@ function Section({ lang, section }: { lang: string; section: GrammarSection }) {
     <section
       id={`g-${section.id}`}
       aria-labelledby={`gh-${section.id}`}
-      className="scroll-mt-4 rounded-[20px] border border-white/10 bg-white/[0.04] p-5 md:p-7"
+      // sections off screen aren't laid out until you scroll near them: long references open fast on a phone
+      className="scroll-mt-4 rounded-[20px] border border-white/10 bg-white/[0.04] p-5 [contain-intrinsic-size:auto_640px] [content-visibility:auto] md:p-7"
     >
       <div className="flex flex-wrap items-center gap-3">
         <span className={cx("flex size-8 items-center justify-center rounded-lg text-sm font-bold", kind.badge)}>{section.number}</span>

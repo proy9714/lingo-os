@@ -1,0 +1,1345 @@
+{
+ "language": "fr",
+ "title": "French grammar",
+ "intro": "A working reference for beginners to intermediate learners. Every pattern comes with real sentences and a translation: read a section, notice the shape, then listen for it in what you watch and read.",
+ "sections": [
+  {
+   "number": 1,
+   "id": "nouns",
+   "title": "Nouns, articles & gender",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "gender",
+    "article",
+    "le",
+    "la",
+    "les",
+    "un",
+    "une",
+    "des",
+    "plural",
+    "noun"
+   ],
+   "rule": null,
+   "text": "Every noun is masculine or feminine; learn it with its article. Endings help: **-tion, -sion, -té, -ure, -ette** are usually feminine (la nation, la liberté); **-ment, -age, -eau, -isme** usually masculine (le moment, le fromage). The plural **-s** is usually silent, so listen to the article: **le/la** vs **les**. **à + le = au**, **à + les = aux**, **de + le = du**, **de + les = des**.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Definite",
+      "Indefinite"
+     ],
+     "rows": [
+      [
+       "masculine",
+       "le livre | the book",
+       "un livre | a book"
+      ],
+      [
+       "feminine",
+       "la table | the table",
+       "une table | a table"
+      ],
+      [
+       "before a vowel",
+       "l'ami, l'école | the friend, the school",
+       "un ami, une école"
+      ],
+      [
+       "plural",
+       "les livres, les tables | the books, the tables",
+       "des livres | (some) books"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "La ville est très belle.",
+     "translation": "The city is very beautiful.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "J'ai un problème.",
+     "translation": "I have a problem.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "On va au cinéma.",
+     "translation": "We're going to the cinema.",
+     "note": "à + le = au",
+     "reading": null
+    },
+    {
+     "text": "Le prix du pain augmente.",
+     "translation": "The price of bread is going up.",
+     "note": "de + le = du",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 2,
+   "id": "partitive",
+   "title": "Some, any & none (du, de la, des)",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "partitive",
+    "du",
+    "de la",
+    "des",
+    "quantity",
+    "pas de"
+   ],
+   "rule": null,
+   "text": "French needs an article where English often has none: **Je mange du pain.** After a negation, and after quantities (**beaucoup de, un peu de, un kilo de**), it becomes plain **de**. Verbs of liking take the definite article: **J'aime le café** (coffee in general).",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Affirmative",
+      "Negative"
+     ],
+     "rows": [
+      [
+       "masculine",
+       "du pain | (some) bread",
+       "pas de pain | no bread"
+      ],
+      [
+       "feminine",
+       "de la musique | (some) music",
+       "pas de musique | no music"
+      ],
+      [
+       "before a vowel",
+       "de l'eau | (some) water",
+       "pas d'eau | no water"
+      ],
+      [
+       "plural",
+       "des pommes | (some) apples",
+       "pas de pommes | no apples"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Tu veux de l'eau ?",
+     "translation": "Do you want some water?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Je n'ai pas de voiture.",
+     "translation": "I don't have a car.",
+     "note": "pas de after a negation",
+     "reading": null
+    },
+    {
+     "text": "Il y a beaucoup de monde.",
+     "translation": "There are a lot of people.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "J'adore le chocolat.",
+     "translation": "I love chocolate.",
+     "note": "liking takes le / la / les",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 3,
+   "id": "pronouns",
+   "title": "Subject pronouns, tu & vous, on",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "pronoun",
+    "je",
+    "tu",
+    "il",
+    "elle",
+    "True",
+    "nous",
+    "vous",
+    "ils",
+    "elles"
+   ],
+   "rule": null,
+   "text": "In conversation **on** usually replaces nous: **On y va ?** (Shall we go?). It takes the il/elle verb form. **vous** is both polite singular and plural; when in doubt with an adult you don't know, use vous.",
+   "tables": [
+    {
+     "head": [
+      "Meaning",
+      "Pronoun",
+      "Note"
+     ],
+     "rows": [
+      [
+       "I",
+       "je (j' before a vowel)",
+       "J'habite à Lyon."
+      ],
+      [
+       "you (one friend)",
+       "tu",
+       "friends, family, children"
+      ],
+      [
+       "he / she",
+       "il / elle",
+       "also 'it' for things"
+      ],
+      [
+       "we / one / people",
+       "on",
+       "everyday speech for 'we'"
+      ],
+      [
+       "we",
+       "nous",
+       "more formal or written"
+      ],
+      [
+       "you (polite or plural)",
+       "vous",
+       "strangers, work, several people"
+      ],
+      [
+       "they",
+       "ils / elles",
+       "ils for any mixed group"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "On mange ensemble ce soir ?",
+     "translation": "Shall we eat together tonight?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Vous pouvez répéter, s'il vous plaît ?",
+     "translation": "Could you repeat, please?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Elles sont parties tôt.",
+     "translation": "They (women) left early.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 4,
+   "id": "present",
+   "title": "Present tense (regular verbs)",
+   "kind": "verbs",
+   "level": "A1",
+   "tags": [
+    "present",
+    "présent",
+    "conjugation",
+    "-er",
+    "-ir",
+    "-re"
+   ],
+   "rule": "Drop -er, -ir or -re and add the ending; most -er endings sound the same.",
+   "text": "Nine out of ten verbs end in **-er**, and in speech je parle, tu parles, il parle and ils parlent all sound identical. The present also means \"I am doing\": **Je lis** = I read / I'm reading. To stress \"right now\", use **être en train de + infinitive**.",
+   "tables": [
+    {
+     "head": [
+      "Person",
+      "parler | to speak",
+      "finir | to finish",
+      "vendre | to sell"
+     ],
+     "rows": [
+      [
+       "je",
+       "parl{e}",
+       "fin{is}",
+       "vend{s}"
+      ],
+      [
+       "tu",
+       "parl{es}",
+       "fin{is}",
+       "vend{s}"
+      ],
+      [
+       "il / elle / on",
+       "parl{e}",
+       "fin{it}",
+       "vend"
+      ],
+      [
+       "nous",
+       "parl{ons}",
+       "fin{issons}",
+       "vend{ons}"
+      ],
+      [
+       "vous",
+       "parl{ez}",
+       "fin{issez}",
+       "vend{ez}"
+      ],
+      [
+       "ils / elles",
+       "parl{ent}",
+       "fin{issent}",
+       "vend{ent}"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Je parle un peu français.",
+     "translation": "I speak a little French.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Vous habitez où ?",
+     "translation": "Where do you live?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Les cours finissent à cinq heures.",
+     "translation": "Classes finish at five.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Je suis en train de cuisiner.",
+     "translation": "I'm cooking (right now).",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 5,
+   "id": "irregular",
+   "title": "Key irregular verbs",
+   "kind": "verbs",
+   "level": "A1",
+   "tags": [
+    "être",
+    "avoir",
+    "aller",
+    "faire",
+    "pouvoir",
+    "vouloir",
+    "irregular"
+   ],
+   "rule": null,
+   "text": "Also very common: **pouvoir** (je peux, ils peuvent), **vouloir** (je veux, ils veulent), **devoir** (je dois), **venir** (je viens, ils viennent), **prendre** (je prends, nous prenons, ils prennent). Age and many feelings use avoir: **j'ai vingt ans, j'ai faim, j'ai froid**.",
+   "tables": [
+    {
+     "head": [
+      "Person",
+      "être | to be",
+      "avoir | to have",
+      "aller | to go",
+      "faire | to do"
+     ],
+     "rows": [
+      [
+       "je",
+       "suis",
+       "ai",
+       "vais",
+       "fais"
+      ],
+      [
+       "tu",
+       "es",
+       "as",
+       "vas",
+       "fais"
+      ],
+      [
+       "il / elle / on",
+       "est",
+       "a",
+       "va",
+       "fait"
+      ],
+      [
+       "nous",
+       "sommes",
+       "avons",
+       "allons",
+       "faisons"
+      ],
+      [
+       "vous",
+       "êtes",
+       "avez",
+       "allez",
+       "faites"
+      ],
+      [
+       "ils / elles",
+       "sont",
+       "ont",
+       "vont",
+       "font"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "J'ai faim et j'ai soif.",
+     "translation": "I'm hungry and thirsty.",
+     "note": "avoir for hunger, thirst, age",
+     "reading": null
+    },
+    {
+     "text": "Il fait beau aujourd'hui.",
+     "translation": "The weather is nice today.",
+     "note": "faire for weather",
+     "reading": null
+    },
+    {
+     "text": "Tu veux venir avec nous ?",
+     "translation": "Do you want to come with us?",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 6,
+   "id": "negation",
+   "title": "Negation (ne … pas and friends)",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "negation",
+    "ne",
+    "pas",
+    "jamais",
+    "rien",
+    "personne",
+    "plus"
+   ],
+   "rule": null,
+   "text": "The two parts wrap the conjugated verb (**Je ne parle pas**) and the auxiliary in compound tenses (**Je n'ai pas compris**). In everyday speech the **ne** is often dropped: **Je sais pas**, **C'est pas grave**. Listen for **pas**, **jamais**, **rien** to catch a negation.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Pattern",
+      "Example"
+     ],
+     "rows": [
+      [
+       "not",
+       "ne … pas",
+       "Je ne sais pas. | I don't know."
+      ],
+      [
+       "never",
+       "ne … jamais",
+       "Il ne mange jamais de viande. | He never eats meat."
+      ],
+      [
+       "nothing",
+       "ne … rien",
+       "Je ne vois rien. | I can't see anything."
+      ],
+      [
+       "nobody",
+       "ne … personne",
+       "Il n'y a personne. | There's nobody."
+      ],
+      [
+       "no longer",
+       "ne … plus",
+       "Elle ne fume plus. | She doesn't smoke any more."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Je n'ai pas compris.",
+     "translation": "I didn't understand.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "C'est pas grave.",
+     "translation": "It doesn't matter.",
+     "note": "spoken French drops ne",
+     "reading": null
+    },
+    {
+     "text": "On n'a plus de lait.",
+     "translation": "We're out of milk.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 7,
+   "id": "questions",
+   "title": "Asking questions",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "questions",
+    "est-ce que",
+    "inversion",
+    "où",
+    "quand",
+    "comment",
+    "pourquoi",
+    "combien",
+    "quel"
+   ],
+   "rule": null,
+   "text": "**quel / quelle / quels / quelles** (which, what) agrees with its noun: **Quelle heure est-il ?** In speech the question word often comes last: **Tu vas où ?** **C'est combien ?**",
+   "tables": [
+    {
+     "head": [
+      "Style",
+      "Example"
+     ],
+     "rows": [
+      [
+       "rising voice (spoken)",
+       "Tu viens ce soir ? | Are you coming tonight?"
+      ],
+      [
+       "est-ce que (neutral)",
+       "Est-ce que tu viens ce soir ?"
+      ],
+      [
+       "inversion (formal, written)",
+       "Viens-tu ce soir ?"
+      ],
+      [
+       "question words",
+       "où | where ;; quand | when ;; comment | how ;; pourquoi | why ;; combien | how much ;; qui | who ;; quoi / que | what"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Qu'est-ce que tu fais ce week-end ?",
+     "translation": "What are you doing this weekend?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Tu habites où ?",
+     "translation": "Where do you live?",
+     "note": "question word at the end: spoken",
+     "reading": null
+    },
+    {
+     "text": "Pourquoi est-ce qu'il est parti ?",
+     "translation": "Why did he leave?",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 8,
+   "id": "adjectives",
+   "title": "Adjectives & agreement",
+   "kind": "structure",
+   "level": "A2",
+   "tags": [
+    "adjective",
+    "agreement",
+    "feminine",
+    "plural",
+    "position",
+    "bon",
+    "beau",
+    "grand"
+   ],
+   "rule": null,
+   "text": "Adjectives agree with the noun and usually come **after** it: **une voiture rouge**. A short group comes before: **beau, bon, grand, petit, jeune, vieux, nouveau, joli, mauvais** (BAGS: beauty, age, goodness, size). Before a masculine vowel: **un bel appartement, un nouvel ami, un vieil homme**.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "masculine",
+      "feminine"
+     ],
+     "rows": [
+      [
+       "regular",
+       "petit | small",
+       "petit{e}"
+      ],
+      [
+       "-eux / -euse",
+       "heureux | happy",
+       "heureu{se}"
+      ],
+      [
+       "-if / -ive",
+       "sportif | sporty",
+       "sporti{ve}"
+      ],
+      [
+       "irregular",
+       "beau, nouveau, vieux",
+       "belle, nouvelle, vieille"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "C'est une idée intéressante.",
+     "translation": "That's an interesting idea.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Ils ont une petite maison.",
+     "translation": "They have a small house.",
+     "note": "petit goes before",
+     "reading": null
+    },
+    {
+     "text": "Quel bel endroit !",
+     "translation": "What a beautiful place!",
+     "note": "bel before a vowel",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 9,
+   "id": "passe-compose",
+   "title": "Passé composé (what happened)",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "past",
+    "passé composé",
+    "avoir",
+    "être",
+    "participle",
+    "agreement"
+   ],
+   "rule": "avoir or être in the present + past participle (-er → -é, -ir → -i, -re → -u).",
+   "text": "Most verbs use **avoir**. About fifteen verbs of movement or change of state use **être** (aller, venir, arriver, partir, entrer, sortir, monter, descendre, naître, mourir, rester, tomber, devenir, retourner), and so do all reflexive verbs (**je me suis levé**). With être the participle agrees: **elle est partie, ils sont venus**. Irregular participles: **fait, dit, pris, mis, vu, eu, été, pu, voulu, lu, écrit**.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "with avoir",
+      "with être"
+     ],
+     "rows": [
+      [
+       "je",
+       "j'ai mangé | I ate",
+       "je suis allé(e) | I went"
+      ],
+      [
+       "tu",
+       "tu as fini",
+       "tu es venu(e)"
+      ],
+      [
+       "il / elle",
+       "il a vendu",
+       "elle est partie"
+      ],
+      [
+       "nous",
+       "nous avons vu",
+       "nous sommes arrivé(e)s"
+      ],
+      [
+       "ils / elles",
+       "ils ont pris",
+       "elles sont restées"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Hier, j'ai regardé un film.",
+     "translation": "Yesterday I watched a film.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Elle est arrivée en retard.",
+     "translation": "She arrived late.",
+     "note": "être + agreement",
+     "reading": null
+    },
+    {
+     "text": "Nous nous sommes promenés au bord de la mer.",
+     "translation": "We went for a walk by the sea.",
+     "note": "reflexive: être",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 10,
+   "id": "imparfait",
+   "title": "Imparfait vs. passé composé",
+   "kind": "contrast",
+   "level": "B1",
+   "tags": [
+    "imparfait",
+    "passé composé",
+    "past",
+    "background",
+    "habit"
+   ],
+   "rule": null,
+   "text": "Think of a film: the imparfait sets the scene, the passé composé moves the story. Only **être** is irregular in the imparfait (**j'étais**). Signal words: **souvent, tous les jours, d'habitude** → imparfait; **soudain, un jour, ensuite** → passé composé.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "imparfait",
+      "passé composé"
+     ],
+     "rows": [
+      [
+       "Formation",
+       "nous-stem + -ais, -ais, -ait, -ions, -iez, -aient (nous parlons → je parl{ais})",
+       "avoir / être + participle"
+      ],
+      [
+       "Use",
+       "background, description, habits, states: what was going on",
+       "events, completed actions: what happened next"
+      ],
+      [
+       "Examples",
+       "Il pleuvait. | It was raining. ;; Quand j'étais petit… | When I was little…",
+       "Le téléphone a sonné. | The phone rang. ;; J'ai ouvert la porte. | I opened the door."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Je lisais quand tu as appelé.",
+     "translation": "I was reading when you called.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Le dimanche, on allait chez ma grand-mère.",
+     "translation": "On Sundays we used to go to my grandmother's.",
+     "note": "habit",
+     "reading": null
+    },
+    {
+     "text": "Il faisait froid, alors j'ai mis un manteau.",
+     "translation": "It was cold, so I put on a coat.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 11,
+   "id": "object-pronouns",
+   "title": "Object pronouns, y & en",
+   "kind": "structure",
+   "level": "B1",
+   "tags": [
+    "pronoun",
+    "le",
+    "la",
+    "les",
+    "lui",
+    "leur",
+    "y",
+    "en",
+    "object"
+   ],
+   "rule": null,
+   "text": "Pronouns go **before the conjugated verb**: **Je le vois. Je lui parle.** With an infinitive they go before the infinitive: **Je vais le faire.** In positive commands they follow with a hyphen: **Dis-le !** **y** replaces à + place or thing (**J'y vais**); **en** replaces de + noun or a quantity (**J'en veux deux**).",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Direct (whom / what)",
+      "Indirect (to whom)"
+     ],
+     "rows": [
+      [
+       "me / you",
+       "me, te",
+       "me, te"
+      ],
+      [
+       "him, her, it",
+       "le, la (l')",
+       "lui"
+      ],
+      [
+       "us / you",
+       "nous, vous",
+       "nous, vous"
+      ],
+      [
+       "them",
+       "les",
+       "leur"
+      ],
+      [
+       "there / about it",
+       "y | there, to it",
+       "en | some, of it, from there"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Tu connais Marie ? Oui, je la connais.",
+     "translation": "Do you know Marie? Yes, I know her.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Je lui ai envoyé un message.",
+     "translation": "I sent him / her a message.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Des pommes ? J'en achète un kilo.",
+     "translation": "Apples? I'll buy a kilo (of them).",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "On y va !",
+     "translation": "Let's go!",
+     "note": "fixed expression with y",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 12,
+   "id": "reflexive",
+   "title": "Reflexive verbs",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "reflexive",
+    "se",
+    "pronominal",
+    "se lever",
+    "s'appeler"
+   ],
+   "rule": null,
+   "text": "Many daily-routine verbs are reflexive: **se réveiller, se laver, s'habiller, se coucher**, and **s'appeler** (Je m'appelle…). Some mean \"each other\": **Ils se parlent tous les jours.** In the passé composé they take être.",
+   "tables": [
+    {
+     "head": [
+      "Person",
+      "se lever | to get up"
+     ],
+     "rows": [
+      [
+       "je",
+       "me lève"
+      ],
+      [
+       "tu",
+       "te lèves"
+      ],
+      [
+       "il / elle / on",
+       "se lève"
+      ],
+      [
+       "nous",
+       "nous levons"
+      ],
+      [
+       "vous",
+       "vous levez"
+      ],
+      [
+       "ils / elles",
+       "se lèvent"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Je me lève à sept heures.",
+     "translation": "I get up at seven.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Comment tu t'appelles ?",
+     "translation": "What's your name?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Elles se sont rencontrées à Paris.",
+     "translation": "They met in Paris.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 13,
+   "id": "future",
+   "title": "The future (aller + infinitive, futur simple)",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "future",
+    "futur proche",
+    "futur simple",
+    "aller"
+   ],
+   "rule": null,
+   "text": "In speech the **futur proche** is the everyday future. The futur simple is common in writing, plans that are further off, and after **quand** about the future: **Quand j'aurai le temps, je t'appellerai.**",
+   "tables": [
+    {
+     "head": [
+      "",
+      "futur proche",
+      "futur simple"
+     ],
+     "rows": [
+      [
+       "Form",
+       "aller + infinitive",
+       "infinitive + -ai, -as, -a, -ons, -ez, -ont"
+      ],
+      [
+       "Example",
+       "Je vais partir. | I'm going to leave.",
+       "Je partir{ai}. | I will leave."
+      ],
+      [
+       "Irregular stems",
+       "",
+       "être → ser- ;; avoir → aur- ;; aller → ir- ;; faire → fer- ;; pouvoir → pourr- ;; venir → viendr- ;; voir → verr-"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "On va manger au restaurant ce soir.",
+     "translation": "We're going to eat out tonight.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Il fera beau demain.",
+     "translation": "It will be nice tomorrow.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Quand tu seras à Paris, appelle-moi.",
+     "translation": "When you're in Paris, call me.",
+     "note": "quand + future",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 14,
+   "id": "conditional",
+   "title": "Conditional & si clauses",
+   "kind": "verbs",
+   "level": "B1",
+   "tags": [
+    "conditional",
+    "conditionnel",
+    "si",
+    "would",
+    "hypothesis"
+   ],
+   "rule": "Future stem + imparfait endings (-ais, -ais, -ait, -ions, -iez, -aient).",
+   "text": "Never put the conditional or the future after **si** meaning \"if\": **Si j'avais** (not si j'aurais). The conditional also makes requests polite: **Je voudrais un café. Pourriez-vous m'aider ?**",
+   "tables": [
+    {
+     "head": [
+      "Situation",
+      "si-clause",
+      "main clause"
+     ],
+     "rows": [
+      [
+       "real / likely",
+       "Si tu viens, | If you come,",
+       "on ira au cinéma. | we'll go to the cinema."
+      ],
+      [
+       "imagined",
+       "Si j'avais le temps, | If I had time,",
+       "je voyagerais. | I would travel."
+      ],
+      [
+       "imagined past",
+       "Si j'avais su, | If I had known,",
+       "je serais venu. | I would have come."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Je voudrais réserver une table.",
+     "translation": "I'd like to book a table.",
+     "note": "polite request",
+     "reading": null
+    },
+    {
+     "text": "Si j'étais toi, je lui parlerais.",
+     "translation": "If I were you, I'd talk to him.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Tu pourrais fermer la fenêtre ?",
+     "translation": "Could you close the window?",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 15,
+   "id": "subjonctif",
+   "title": "The subjunctive",
+   "kind": "verbs",
+   "level": "B2",
+   "tags": [
+    "subjonctif",
+    "subjunctive",
+    "que",
+    "il faut que",
+    "wish",
+    "emotion"
+   ],
+   "rule": "ils-form of the present, drop -ent, add -e, -es, -e, -ions, -iez, -ent (ils parlent → que je parl{e}).",
+   "text": "The subjunctive follows **que** after necessity, wishes, feelings and doubt, when the two clauses have different subjects (same subject: infinitive, **Je veux partir**). Irregular: **être → que je sois, avoir → que j'aie, faire → que je fasse, aller → que j'aille, pouvoir → que je puisse, savoir → que je sache**.",
+   "tables": [
+    {
+     "head": [
+      "Trigger",
+      "Example"
+     ],
+     "rows": [
+      [
+       "necessity",
+       "Il faut que tu viennes. | You have to come."
+      ],
+      [
+       "wish, will",
+       "Je veux qu'il parte. | I want him to leave."
+      ],
+      [
+       "emotion",
+       "Je suis content que tu sois là. | I'm glad you're here."
+      ],
+      [
+       "doubt",
+       "Je doute qu'il ait raison. | I doubt he's right."
+      ],
+      [
+       "some conjunctions",
+       "bien que, pour que, avant que, à moins que"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Il faut que je parte maintenant.",
+     "translation": "I have to leave now.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Bien qu'il soit fatigué, il continue.",
+     "translation": "Although he's tired, he keeps going.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Je préfère que tu me le dises.",
+     "translation": "I'd rather you told me.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 16,
+   "id": "relatives",
+   "title": "Relative pronouns (qui, que, où, dont)",
+   "kind": "structure",
+   "level": "B1",
+   "tags": [
+    "relative",
+    "qui",
+    "que",
+    "où",
+    "dont",
+    "ce qui",
+    "ce que"
+   ],
+   "rule": null,
+   "text": "English can drop \"that\"; French never drops **que**. Choose qui if the next word is a verb (the noun is the subject), que if a new subject follows.",
+   "tables": [
+    {
+     "head": [
+      "Pronoun",
+      "Role",
+      "Example"
+     ],
+     "rows": [
+      [
+       "qui",
+       "subject",
+       "l'homme qui parle | the man who is talking"
+      ],
+      [
+       "que (qu')",
+       "direct object",
+       "le livre que je lis | the book (that) I'm reading"
+      ],
+      [
+       "où",
+       "place or time",
+       "la ville où j'habite ;; le jour où je l'ai vu"
+      ],
+      [
+       "dont",
+       "replaces de + noun",
+       "le film dont je t'ai parlé | the film I told you about"
+      ],
+      [
+       "ce qui / ce que",
+       "what (subject / object)",
+       "Ce que tu dis est vrai. | What you say is true."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "C'est la femme qui habite à côté.",
+     "translation": "That's the woman who lives next door.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Le café où on se voit est fermé.",
+     "translation": "The café where we meet is closed.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Voilà ce dont j'ai besoin.",
+     "translation": "That's what I need.",
+     "note": "avoir besoin de → dont",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 17,
+   "id": "comparison",
+   "title": "Comparing",
+   "kind": "structure",
+   "level": "A2",
+   "tags": [
+    "comparison",
+    "plus",
+    "moins",
+    "aussi",
+    "meilleur",
+    "mieux",
+    "superlative"
+   ],
+   "rule": null,
+   "text": "**meilleur** is the adjective (better wine), **mieux** the adverb (sings better). With nouns use **plus de / moins de / autant de**: **Il a plus de temps que moi.**",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Pattern",
+      "Example"
+     ],
+     "rows": [
+      [
+       "more",
+       "plus … que",
+       "Paris est plus grand que Lyon."
+      ],
+      [
+       "less",
+       "moins … que",
+       "C'est moins cher que l'autre."
+      ],
+      [
+       "as",
+       "aussi … que",
+       "Il est aussi grand que moi."
+      ],
+      [
+       "the most",
+       "le / la / les plus …",
+       "la plus belle ville"
+      ],
+      [
+       "irregular",
+       "bon → meilleur ;; bien → mieux",
+       "Ce vin est meilleur. ;; Elle chante mieux."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Le train est plus rapide que le bus.",
+     "translation": "The train is faster than the bus.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "C'est le meilleur restaurant du quartier.",
+     "translation": "It's the best restaurant in the area.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Je me sens mieux aujourd'hui.",
+     "translation": "I feel better today.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 18,
+   "id": "memory-map",
+   "title": "One-page memory map",
+   "kind": "summary",
+   "level": "all",
+   "tags": [
+    "summary",
+    "overview"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [],
+   "after": null,
+   "examples": [],
+   "points": [
+    "Learn le or la with every noun; plural -s is silent, so listen to the article.",
+    "du / de la / des for 'some'; after a negation or a quantity it's just de.",
+    "on is the everyday 'we'; vous is polite or plural.",
+    "Negation wraps the verb: ne … pas; in speech the ne often disappears.",
+    "Passé composé tells what happened; imparfait paints the background.",
+    "être verbs (movement, reflexive) agree in the passé composé: elle est partie.",
+    "aller + infinitive is the everyday future.",
+    "Object pronouns, y and en go before the conjugated verb.",
+    "Never the conditional after si: si j'avais…, je ferais…",
+    "The subjunctive follows que after il faut, wishes, feelings and doubt."
+   ],
+   "tip": "Listening strategy: French runs words together (liaison: les_amis, on_a). When a sentence blurs, listen for the subject pronoun and the article first: they tell you who and how many, even when the verb ending is silent."
+  }
+ ]
+}

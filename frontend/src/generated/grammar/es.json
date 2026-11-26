@@ -1,0 +1,2246 @@
+{
+ "language": "es",
+ "title": "Spanish grammar",
+ "intro": "A working reference for beginners to intermediate learners. Every pattern comes with real sentences and a translation: read a section, notice the shape, then listen for it in what you watch and read.",
+ "sections": [
+  {
+   "number": 1,
+   "id": "nouns",
+   "title": "Nouns, articles & gender",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "gender",
+    "article",
+    "el",
+    "la",
+    "plural",
+    "noun"
+   ],
+   "rule": null,
+   "text": "Most nouns in **-o** are masculine and most in **-a** are feminine. **-ción, -sión, -dad, -tad, -tud** are feminine (la canción, la ciudad); many words in **-ma** from Greek are masculine (el problema, el idioma, el tema). Common exceptions: el día, el mapa, la mano, la foto, la radio. Plurals: vowel + **-s** (casas), consonant + **-es** (ciudades), -z → **-ces** (luz → luces). **a + el = al**, **de + el = del**. Feminine nouns starting with a stressed a- take el in the singular: **el agua**, el águila (but las aguas).",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Definite",
+      "Indefinite"
+     ],
+     "rows": [
+      [
+       "masculine",
+       "el libro | the book",
+       "un libro | a book"
+      ],
+      [
+       "feminine",
+       "la mesa | the table",
+       "una mesa | a table"
+      ],
+      [
+       "masculine plural",
+       "los libros | the books",
+       "unos libros | some books"
+      ],
+      [
+       "feminine plural",
+       "las mesas | the tables",
+       "unas mesas | some tables"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "La ciudad es muy bonita.",
+     "translation": "The city is very pretty.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Tengo un problema.",
+     "translation": "I have a problem.",
+     "note": "el problema: masculine despite the -a",
+     "reading": null
+    },
+    {
+     "text": "Vamos al mercado.",
+     "translation": "We're going to the market.",
+     "note": "a + el = al",
+     "reading": null
+    },
+    {
+     "text": "El agua está fría.",
+     "translation": "The water is cold.",
+     "note": "agua is feminine, so fría",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 2,
+   "id": "pronouns",
+   "title": "Pronouns & dropping the subject",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "pronoun",
+    "pronouns",
+    "yo",
+    "tú",
+    "usted",
+    "vosotros",
+    "ustedes"
+   ],
+   "rule": null,
+   "text": "The verb ending already shows who is acting, so the subject pronoun is usually left out: **Vivo en Madrid.** Say it for emphasis or contrast. In Latin America **ustedes** is the only plural \"you\"; **vosotros** is used in Spain. Usted and ustedes take the third-person verb form.",
+   "tables": [
+    {
+     "head": [
+      "Meaning",
+      "Subject",
+      "Direct object",
+      "Indirect object",
+      "After a preposition"
+     ],
+     "rows": [
+      [
+       "I / me",
+       "yo",
+       "me",
+       "me",
+       "mí (conmigo)"
+      ],
+      [
+       "you (informal)",
+       "tú",
+       "te",
+       "te",
+       "ti (contigo)"
+      ],
+      [
+       "he / him",
+       "él",
+       "lo",
+       "le",
+       "él"
+      ],
+      [
+       "she / her",
+       "ella",
+       "la",
+       "le",
+       "ella"
+      ],
+      [
+       "you (formal)",
+       "usted",
+       "lo / la",
+       "le",
+       "usted"
+      ],
+      [
+       "we / us",
+       "nosotros / nosotras",
+       "nos",
+       "nos",
+       "nosotros"
+      ],
+      [
+       "you all (Spain, informal)",
+       "vosotros / vosotras",
+       "os",
+       "os",
+       "vosotros"
+      ],
+      [
+       "they / you all",
+       "ellos / ellas / ustedes",
+       "los / las",
+       "les",
+       "ellos / ellas / ustedes"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Vivo en Madrid.",
+     "translation": "I live in Madrid.",
+     "note": "no yo needed",
+     "reading": null
+    },
+    {
+     "text": "Yo trabajo y tú descansas.",
+     "translation": "I work and you rest.",
+     "note": "pronouns for contrast",
+     "reading": null
+    },
+    {
+     "text": "¿Vienes conmigo?",
+     "translation": "Are you coming with me?",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 3,
+   "id": "present",
+   "title": "Present tense (regular verbs)",
+   "kind": "verbs",
+   "level": "A1",
+   "tags": [
+    "present",
+    "presente",
+    "conjugation",
+    "-ar",
+    "-er",
+    "-ir"
+   ],
+   "rule": "Drop -ar, -er or -ir and add the ending for the person.",
+   "text": "The present covers habits, facts and plans for the near future. For \"right now\", use **estar + gerund** (-ando / -iendo): estoy comiendo, está lloviendo.",
+   "tables": [
+    {
+     "head": [
+      "Person",
+      "hablar | to speak",
+      "comer | to eat",
+      "vivir | to live"
+     ],
+     "rows": [
+      [
+       "yo",
+       "habl{o}",
+       "com{o}",
+       "viv{o}"
+      ],
+      [
+       "tú",
+       "habl{as}",
+       "com{es}",
+       "viv{es}"
+      ],
+      [
+       "él / ella / usted",
+       "habl{a}",
+       "com{e}",
+       "viv{e}"
+      ],
+      [
+       "nosotros",
+       "habl{amos}",
+       "com{emos}",
+       "viv{imos}"
+      ],
+      [
+       "vosotros",
+       "habl{áis}",
+       "com{éis}",
+       "viv{ís}"
+      ],
+      [
+       "ellos / ellas / ustedes",
+       "habl{an}",
+       "com{en}",
+       "viv{en}"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Hablo un poco de español.",
+     "translation": "I speak a little Spanish.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "¿Dónde vives?",
+     "translation": "Where do you live?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Mañana comemos con mis padres.",
+     "translation": "Tomorrow we're having lunch with my parents.",
+     "note": "the present for a plan",
+     "reading": null
+    },
+    {
+     "text": "Estoy leyendo un libro.",
+     "translation": "I'm reading a book (right now).",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 4,
+   "id": "ser-estar",
+   "title": "ser vs. estar",
+   "kind": "contrast",
+   "level": "A1",
+   "tags": [
+    "ser",
+    "estar",
+    "to be"
+   ],
+   "rule": null,
+   "text": "Some adjectives change meaning: **ser aburrido** (boring) / **estar aburrido** (bored); **ser listo** (clever) / **estar listo** (ready); **ser rico** (rich) / **estar rico** (tasty); **ser malo** (bad) / **estar malo** (ill).",
+   "tables": [
+    {
+     "head": [
+      "",
+      "ser",
+      "estar"
+     ],
+     "rows": [
+      [
+       "Forms",
+       "soy, eres, es, somos, sois, son",
+       "estoy, estás, está, estamos, estáis, están"
+      ],
+      [
+       "Use",
+       "what something is: identity, origin, job, character, time, material, where an event takes place",
+       "how or where something is: state, mood, location, result"
+      ],
+      [
+       "Examples",
+       "Ella es médica. | She's a doctor. ;; Son las tres. | It's three o'clock.",
+       "Estoy cansado. | I'm tired. ;; El banco está en la plaza. | The bank is on the square."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Soy de India, pero estoy en Madrid.",
+     "translation": "I'm from India, but I'm in Madrid.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "La sopa está muy rica.",
+     "translation": "The soup is delicious.",
+     "note": "estar rico = tasty",
+     "reading": null
+    },
+    {
+     "text": "La fiesta es en mi casa.",
+     "translation": "The party is at my place.",
+     "note": "events take ser",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 5,
+   "id": "irregular",
+   "title": "Essential irregular verbs",
+   "kind": "verbs",
+   "level": "A1",
+   "tags": [
+    "irregular",
+    "ir",
+    "tener",
+    "hacer",
+    "poder",
+    "querer",
+    "decir"
+   ],
+   "rule": null,
+   "text": "Many verbs are irregular only in the yo form: **hago, salgo, pongo, traigo, conozco, veo**.",
+   "tables": [
+    {
+     "head": [
+      "Verb",
+      "yo",
+      "tú",
+      "él / usted",
+      "nosotros",
+      "vosotros",
+      "ellos / ustedes"
+     ],
+     "rows": [
+      [
+       "ir | to go",
+       "voy",
+       "vas",
+       "va",
+       "vamos",
+       "vais",
+       "van"
+      ],
+      [
+       "tener | to have",
+       "tengo",
+       "tienes",
+       "tiene",
+       "tenemos",
+       "tenéis",
+       "tienen"
+      ],
+      [
+       "hacer | to do, make",
+       "hago",
+       "haces",
+       "hace",
+       "hacemos",
+       "hacéis",
+       "hacen"
+      ],
+      [
+       "poder | can",
+       "puedo",
+       "puedes",
+       "puede",
+       "podemos",
+       "podéis",
+       "pueden"
+      ],
+      [
+       "querer | to want",
+       "quiero",
+       "quieres",
+       "quiere",
+       "queremos",
+       "queréis",
+       "quieren"
+      ],
+      [
+       "decir | to say",
+       "digo",
+       "dices",
+       "dice",
+       "decimos",
+       "decís",
+       "dicen"
+      ],
+      [
+       "venir | to come",
+       "vengo",
+       "vienes",
+       "viene",
+       "venimos",
+       "venís",
+       "vienen"
+      ],
+      [
+       "saber | to know",
+       "sé",
+       "sabes",
+       "sabe",
+       "sabemos",
+       "sabéis",
+       "saben"
+      ],
+      [
+       "dar | to give",
+       "doy",
+       "das",
+       "da",
+       "damos",
+       "dais",
+       "dan"
+      ],
+      [
+       "salir | to go out",
+       "salgo",
+       "sales",
+       "sale",
+       "salimos",
+       "salís",
+       "salen"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Tengo veinte años.",
+     "translation": "I'm twenty.",
+     "note": "age uses tener",
+     "reading": null
+    },
+    {
+     "text": "¿Qué haces esta noche?",
+     "translation": "What are you doing tonight?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "No sé dónde está.",
+     "translation": "I don't know where it is.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 6,
+   "id": "stem-change",
+   "title": "Stem-changing verbs",
+   "kind": "verbs",
+   "level": "A1–A2",
+   "tags": [
+    "stem-changing",
+    "e-ie",
+    "o-ue",
+    "e-i",
+    "boot verbs"
+   ],
+   "rule": "The stressed vowel of the stem changes in every form except nosotros and vosotros.",
+   "text": "Other common ones: **e → ie** empezar, querer, preferir, entender, cerrar; **o → ue** poder, volver, encontrar, costar, recordar (and **jugar: u → ue**); **e → i** servir, repetir, seguir, vestir.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "e → ie: pensar | to think",
+      "o → ue: dormir | to sleep",
+      "e → i: pedir | to ask for"
+     ],
+     "rows": [
+      [
+       "yo",
+       "p{ie}nso",
+       "d{ue}rmo",
+       "p{i}do"
+      ],
+      [
+       "tú",
+       "p{ie}nsas",
+       "d{ue}rmes",
+       "p{i}des"
+      ],
+      [
+       "él / usted",
+       "p{ie}nsa",
+       "d{ue}rme",
+       "p{i}de"
+      ],
+      [
+       "nosotros",
+       "pensamos",
+       "dormimos",
+       "pedimos"
+      ],
+      [
+       "vosotros",
+       "pensáis",
+       "dormís",
+       "pedís"
+      ],
+      [
+       "ellos / ustedes",
+       "p{ie}nsan",
+       "d{ue}rmen",
+       "p{i}den"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "¿Cuánto cuesta?",
+     "translation": "How much does it cost?",
+     "note": "costar: o → ue",
+     "reading": null
+    },
+    {
+     "text": "Prefiero el té.",
+     "translation": "I prefer tea.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Juego al fútbol los sábados.",
+     "translation": "I play football on Saturdays.",
+     "note": "jugar: u → ue",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 7,
+   "id": "gustar",
+   "title": "gustar and verbs like it",
+   "kind": "structure",
+   "level": "A1–A2",
+   "tags": [
+    "gustar",
+    "encantar",
+    "doler",
+    "like",
+    "indirect object"
+   ],
+   "rule": "Literally \"it pleases me\": the verb agrees with the thing liked, and the person is an indirect object.",
+   "text": "The same pattern: **encantar** (love), **interesar**, **importar**, **doler** (hurt), **faltar** (be missing), **parecer** (seem). Add **a + name** to make le/les clear: A Ana le gusta leer.",
+   "tables": [
+    {
+     "head": [
+      "Who likes it",
+      "Pronoun",
+      "One thing / a verb",
+      "Several things"
+     ],
+     "rows": [
+      [
+       "(a mí) | I",
+       "me",
+       "me gusta el café",
+       "me gustan los perros"
+      ],
+      [
+       "(a ti) | you",
+       "te",
+       "te gusta bailar",
+       "te gustan"
+      ],
+      [
+       "(a él / ella / usted)",
+       "le",
+       "le gusta",
+       "le gustan"
+      ],
+      [
+       "(a nosotros)",
+       "nos",
+       "nos gusta",
+       "nos gustan"
+      ],
+      [
+       "(a vosotros)",
+       "os",
+       "os gusta",
+       "os gustan"
+      ],
+      [
+       "(a ellos / ustedes)",
+       "les",
+       "les gusta",
+       "les gustan"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Me gustan las películas de terror.",
+     "translation": "I like horror films.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "¿Te gusta bailar?",
+     "translation": "Do you like dancing?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "A mi madre le encanta el jardín.",
+     "translation": "My mother loves the garden.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Me duele la cabeza.",
+     "translation": "I have a headache.",
+     "note": "doler works like gustar",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 8,
+   "id": "object-pronouns",
+   "title": "Object pronouns",
+   "kind": "structure",
+   "level": "A2",
+   "tags": [
+    "object pronouns",
+    "lo",
+    "la",
+    "le",
+    "se lo",
+    "direct object",
+    "indirect object"
+   ],
+   "rule": null,
+   "text": "They go **before** a conjugated verb (Lo veo) and are **attached** to infinitives, gerunds and positive commands (quiero verlo, estoy mirándolo, ¡cómpralo!). With two pronouns, the indirect comes first (me lo das), and **le / les become se** before lo, la, los, las: **se lo doy**.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Direct object",
+      "Indirect object"
+     ],
+     "rows": [
+      [
+       "me",
+       "me",
+       "me"
+      ],
+      [
+       "you (tú)",
+       "te",
+       "te"
+      ],
+      [
+       "him, it, you (usted, masc.)",
+       "lo",
+       "le"
+      ],
+      [
+       "her, it, you (usted, fem.)",
+       "la",
+       "le"
+      ],
+      [
+       "us",
+       "nos",
+       "nos"
+      ],
+      [
+       "you all (vosotros)",
+       "os",
+       "os"
+      ],
+      [
+       "them, you all (ustedes)",
+       "los / las",
+       "les"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "¿El libro? Lo tengo aquí.",
+     "translation": "The book? I have it here.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Te llamo mañana.",
+     "translation": "I'll call you tomorrow.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Se lo explico a mi hermano.",
+     "translation": "I'm explaining it to my brother.",
+     "note": "le lo → se lo",
+     "reading": null
+    },
+    {
+     "text": "¿Me lo puedes enviar?",
+     "translation": "Can you send it to me?",
+     "note": "also: ¿Puedes enviármelo?",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 9,
+   "id": "reflexive",
+   "title": "Reflexive verbs",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "reflexive",
+    "me",
+    "te",
+    "se",
+    "llamarse",
+    "irse"
+   ],
+   "rule": null,
+   "text": "Daily routine verbs are reflexive: despertarse, ducharse, vestirse, acostarse. Some change meaning: **ir** (go) / **irse** (leave), **dormir** (sleep) / **dormirse** (fall asleep), **llamar** (call) / **llamarse** (be called). With body parts, use the article, not a possessive: Me lavo **las** manos.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "levantarse | to get up"
+     ],
+     "rows": [
+      [
+       "yo",
+       "me levanto"
+      ],
+      [
+       "tú",
+       "te levantas"
+      ],
+      [
+       "él / usted",
+       "se levanta"
+      ],
+      [
+       "nosotros",
+       "nos levantamos"
+      ],
+      [
+       "vosotros",
+       "os levantáis"
+      ],
+      [
+       "ellos / ustedes",
+       "se levantan"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Me llamo Carlos.",
+     "translation": "My name is Carlos.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Nos vamos a las ocho.",
+     "translation": "We're leaving at eight.",
+     "note": "irse = leave",
+     "reading": null
+    },
+    {
+     "text": "¿A qué hora te acuestas?",
+     "translation": "What time do you go to bed?",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 10,
+   "id": "adjectives",
+   "title": "Adjectives",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "adjective",
+    "agreement",
+    "position",
+    "buen"
+   ],
+   "rule": null,
+   "text": "Adjectives agree with the noun and usually come **after** it: una casa blanca. A few go before and change meaning: **un gran hombre** (a great man) vs. **un hombre grande** (a big man). Bueno, malo, primero, tercero drop -o before a masculine singular noun: **un buen día**, el primer piso.",
+   "tables": [
+    {
+     "head": [
+      "Ending",
+      "Masculine",
+      "Feminine"
+     ],
+     "rows": [
+      [
+       "-o",
+       "un chico alto | a tall boy",
+       "una chica alta | a tall girl"
+      ],
+      [
+       "-e or a consonant",
+       "un coche grande / azul",
+       "una casa grande / azul"
+      ],
+      [
+       "nationality, -or",
+       "un hombre español, trabajador",
+       "una mujer española, trabajadora"
+      ],
+      [
+       "plural",
+       "chicos altos, coches azules",
+       "chicas altas, casas azules"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Tengo una bicicleta roja.",
+     "translation": "I have a red bicycle.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Hace buen tiempo.",
+     "translation": "The weather is nice.",
+     "note": "bueno → buen",
+     "reading": null
+    },
+    {
+     "text": "Las calles son estrechas.",
+     "translation": "The streets are narrow.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 11,
+   "id": "possessives",
+   "title": "Possessives & demonstratives",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "possessive",
+    "mi",
+    "su",
+    "este",
+    "ese",
+    "aquel"
+   ],
+   "rule": null,
+   "text": "**Su** can mean his, her, their or your; add de él / de ella / de usted if it's unclear. After the noun there are long forms: un amigo **mío** (a friend of mine), **Es mío.** (It's mine.) Plurals: estos, estas, esos, esas, aquellos, aquellas.",
+   "tables": [
+    {
+     "caption": "Possessives (before the noun)",
+     "head": [
+      "",
+      "One thing",
+      "Several things"
+     ],
+     "rows": [
+      [
+       "my",
+       "mi casa",
+       "mis casas"
+      ],
+      [
+       "your (tú)",
+       "tu casa",
+       "tus casas"
+      ],
+      [
+       "his, her, its, their, your (usted)",
+       "su casa",
+       "sus casas"
+      ],
+      [
+       "our",
+       "nuestro coche, nuestra casa",
+       "nuestros coches, nuestras casas"
+      ],
+      [
+       "your (vosotros)",
+       "vuestro coche, vuestra casa",
+       "vuestros coches, vuestras casas"
+      ]
+     ]
+    },
+    {
+     "caption": "Demonstratives",
+     "head": [
+      "",
+      "Masc.",
+      "Fem.",
+      "Neuter (ideas, unknown things)"
+     ],
+     "rows": [
+      [
+       "this",
+       "este libro",
+       "esta mesa",
+       "esto"
+      ],
+      [
+       "that",
+       "ese libro",
+       "esa mesa",
+       "eso"
+      ],
+      [
+       "that over there",
+       "aquel libro",
+       "aquella mesa",
+       "aquello"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Esta es mi hermana.",
+     "translation": "This is my sister.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "¿Qué es eso?",
+     "translation": "What's that?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Es un amigo mío.",
+     "translation": "He's a friend of mine.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 12,
+   "id": "questions",
+   "title": "Questions & negation",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "question",
+    "questions",
+    "negation",
+    "False",
+    "nada",
+    "nadie",
+    "nunca"
+   ],
+   "rule": null,
+   "text": "Question words carry an accent, and questions open with **¿** (exclamations with **¡**). A yes/no question is just a rising tone. Negation: **no** before the verb and before any object pronoun (No lo sé). Double negatives are normal: **No veo a nadie** (I don't see anybody); also nada, nunca, tampoco, ninguno.",
+   "tables": [
+    {
+     "head": [
+      "Spanish",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "qué",
+       "what",
+       "¿Qué quieres? | What do you want?"
+      ],
+      [
+       "quién / quiénes",
+       "who",
+       "¿Quién es? | Who is it?"
+      ],
+      [
+       "dónde",
+       "where",
+       "¿Dónde está el baño? | Where's the bathroom?"
+      ],
+      [
+       "adónde",
+       "where to",
+       "¿Adónde vas? | Where are you going?"
+      ],
+      [
+       "de dónde",
+       "where from",
+       "¿De dónde eres? | Where are you from?"
+      ],
+      [
+       "cuándo",
+       "when",
+       "¿Cuándo empieza? | When does it start?"
+      ],
+      [
+       "por qué",
+       "why",
+       "¿Por qué lo dices? | Why do you say that?"
+      ],
+      [
+       "cómo",
+       "how",
+       "¿Cómo te llamas? | What's your name?"
+      ],
+      [
+       "cuál / cuáles",
+       "which",
+       "¿Cuál prefieres? | Which do you prefer?"
+      ],
+      [
+       "cuánto / cuánta / cuántos / cuántas",
+       "how much / how many",
+       "¿Cuántos años tienes? | How old are you?"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "No quiero nada.",
+     "translation": "I don't want anything.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Nunca como carne.",
+     "translation": "I never eat meat.",
+     "note": "or: No como carne nunca.",
+     "reading": null
+    },
+    {
+     "text": "—No me gusta. —A mí tampoco.",
+     "translation": "'I don't like it.' 'Me neither.'",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 13,
+   "id": "future",
+   "title": "ir a + infinitive & the future",
+   "kind": "verbs",
+   "level": "A1–A2",
+   "tags": [
+    "future",
+    "futuro",
+    "ir a"
+   ],
+   "rule": null,
+   "text": "**ir a + infinitive** is the everyday way to talk about plans. The future tense adds endings to the whole infinitive, and is used for predictions, promises and guesses about now. Irregular stems: tener → **tendr-**, hacer → **har-**, poder → **podr-**, salir → **saldr-**, decir → **dir-**, venir → **vendr-**, poner → **pondr-**, saber → **sabr-**.",
+   "tables": [
+    {
+     "head": [
+      "Person",
+      "ir a + infinitive",
+      "Future: hablar",
+      "Irregular: tener"
+     ],
+     "rows": [
+      [
+       "yo",
+       "voy a hablar",
+       "hablar{é}",
+       "tendr{é}"
+      ],
+      [
+       "tú",
+       "vas a hablar",
+       "hablar{ás}",
+       "tendr{ás}"
+      ],
+      [
+       "él / usted",
+       "va a hablar",
+       "hablar{á}",
+       "tendr{á}"
+      ],
+      [
+       "nosotros",
+       "vamos a hablar",
+       "hablar{emos}",
+       "tendr{emos}"
+      ],
+      [
+       "vosotros",
+       "vais a hablar",
+       "hablar{éis}",
+       "tendr{éis}"
+      ],
+      [
+       "ellos / ustedes",
+       "van a hablar",
+       "hablar{án}",
+       "tendr{án}"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Voy a estudiar esta noche.",
+     "translation": "I'm going to study tonight.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Mañana lloverá.",
+     "translation": "It will rain tomorrow.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Serán las diez.",
+     "translation": "It must be about ten o'clock.",
+     "note": "the future for a guess",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 14,
+   "id": "preterite",
+   "title": "Pretérito indefinido (finished past)",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "preterite",
+    "pretérito",
+    "indefinido",
+    "past"
+   ],
+   "rule": null,
+   "text": "For completed actions at a specific time: ayer, anoche, el lunes, en 2019. **ser** and **ir** share the same forms; context tells them apart. More irregulars: estar → estuve, poder → pude, poner → puse, venir → vine, decir → dije, querer → quise, saber → supe, dar → di.",
+   "tables": [
+    {
+     "head": [
+      "Person",
+      "hablar",
+      "comer / vivir",
+      "ser / ir",
+      "tener",
+      "hacer"
+     ],
+     "rows": [
+      [
+       "yo",
+       "habl{é}",
+       "com{í}",
+       "fui",
+       "tuve",
+       "hice"
+      ],
+      [
+       "tú",
+       "habl{aste}",
+       "com{iste}",
+       "fuiste",
+       "tuviste",
+       "hiciste"
+      ],
+      [
+       "él / usted",
+       "habl{ó}",
+       "com{ió}",
+       "fue",
+       "tuvo",
+       "hizo"
+      ],
+      [
+       "nosotros",
+       "habl{amos}",
+       "com{imos}",
+       "fuimos",
+       "tuvimos",
+       "hicimos"
+      ],
+      [
+       "vosotros",
+       "habl{asteis}",
+       "com{isteis}",
+       "fuisteis",
+       "tuvisteis",
+       "hicisteis"
+      ],
+      [
+       "ellos / ustedes",
+       "habl{aron}",
+       "com{ieron}",
+       "fueron",
+       "tuvieron",
+       "hicieron"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Ayer hablé con mi jefe.",
+     "translation": "Yesterday I spoke to my boss.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Fuimos a la playa el domingo.",
+     "translation": "We went to the beach on Sunday.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "¿Qué hiciste el fin de semana?",
+     "translation": "What did you do at the weekend?",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 15,
+   "id": "imperfect",
+   "title": "Pretérito imperfecto (background past)",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "imperfect",
+    "imperfecto",
+    "past",
+    "used to"
+   ],
+   "rule": null,
+   "text": "Only three irregular verbs: **ser, ir, ver**. Use it for habits (\"used to\"), descriptions, background, age and time in the past, and actions in progress that get interrupted.",
+   "tables": [
+    {
+     "head": [
+      "Person",
+      "hablar",
+      "comer / vivir",
+      "ser",
+      "ir",
+      "ver"
+     ],
+     "rows": [
+      [
+       "yo",
+       "habl{aba}",
+       "com{ía}",
+       "era",
+       "iba",
+       "veía"
+      ],
+      [
+       "tú",
+       "habl{abas}",
+       "com{ías}",
+       "eras",
+       "ibas",
+       "veías"
+      ],
+      [
+       "él / usted",
+       "habl{aba}",
+       "com{ía}",
+       "era",
+       "iba",
+       "veía"
+      ],
+      [
+       "nosotros",
+       "habl{ábamos}",
+       "com{íamos}",
+       "éramos",
+       "íbamos",
+       "veíamos"
+      ],
+      [
+       "vosotros",
+       "habl{abais}",
+       "com{íais}",
+       "erais",
+       "ibais",
+       "veíais"
+      ],
+      [
+       "ellos / ustedes",
+       "habl{aban}",
+       "com{ían}",
+       "eran",
+       "iban",
+       "veían"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "De niño vivía en Lima.",
+     "translation": "As a child I lived in Lima.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Era tarde y llovía.",
+     "translation": "It was late and it was raining.",
+     "note": "background",
+     "reading": null
+    },
+    {
+     "text": "Siempre íbamos al pueblo en verano.",
+     "translation": "We always used to go to the village in summer.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 16,
+   "id": "pret-vs-imp",
+   "title": "Indefinido vs. imperfecto",
+   "kind": "contrast",
+   "level": "A2–B1",
+   "tags": [
+    "preterite",
+    "imperfect",
+    "past tenses"
+   ],
+   "rule": null,
+   "text": "Together: **Leía** un libro cuando **sonó** el teléfono (I was reading when the phone rang). Some verbs shift meaning: **conocí** (I met) / **conocía** (I knew); **supe** (I found out) / **sabía** (I knew); **quise** (I tried) / **quería** (I wanted).",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Indefinido",
+      "Imperfecto"
+     ],
+     "rows": [
+      [
+       "Role in a story",
+       "what happened: a finished event, the next step",
+       "how things were: background, description, habit, something in progress"
+      ],
+      [
+       "Signal words",
+       "ayer, anoche, el lunes, en 2019, de repente, una vez",
+       "siempre, a menudo, todos los días, mientras, de niño"
+      ],
+      [
+       "Example",
+       "Sonó el teléfono. | The phone rang.",
+       "Leía un libro. | I was reading a book."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Cuando llegué, todos dormían.",
+     "translation": "When I arrived, everyone was asleep.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Conocí a Marta en 2018.",
+     "translation": "I met Marta in 2018.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Antes fumaba, pero lo dejé hace un año.",
+     "translation": "I used to smoke, but I quit a year ago.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 17,
+   "id": "perfect",
+   "title": "Pretérito perfecto (he hablado)",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "present perfect",
+    "perfecto",
+    "haber",
+    "participle"
+   ],
+   "rule": null,
+   "text": "Participles: -ar → **-ado**, -er / -ir → **-ido**. Irregular: hecho, dicho, visto, escrito, puesto, vuelto, abierto, roto, muerto. In Spain it's used for today, this week and \"ever\"; much of Latin America uses the indefinido instead.",
+   "tables": [
+    {
+     "head": [
+      "Person",
+      "haber",
+      "+ participle"
+     ],
+     "rows": [
+      [
+       "yo",
+       "he",
+       "hablado | spoken"
+      ],
+      [
+       "tú",
+       "has",
+       "comido | eaten"
+      ],
+      [
+       "él / usted",
+       "ha",
+       "vivido | lived"
+      ],
+      [
+       "nosotros",
+       "hemos",
+       "hecho | done"
+      ],
+      [
+       "vosotros",
+       "habéis",
+       "visto | seen"
+      ],
+      [
+       "ellos / ustedes",
+       "han",
+       "dicho | said"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "¿Has visto mis llaves?",
+     "translation": "Have you seen my keys?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Todavía no he terminado.",
+     "translation": "I haven't finished yet.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Nunca he estado en Japón.",
+     "translation": "I've never been to Japan.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 18,
+   "id": "por-para",
+   "title": "por vs. para",
+   "kind": "contrast",
+   "level": "A2",
+   "tags": [
+    "por",
+    "para",
+    "prepositions"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [
+    {
+     "head": [
+      "",
+      "por",
+      "para"
+     ],
+     "rows": [
+      [
+       "Core idea",
+       "cause, means, through, exchange, duration",
+       "purpose, destination, recipient, deadline, opinion"
+      ],
+      [
+       "Examples",
+       "Gracias por la ayuda. | Thanks for the help. ;; Paseamos por el parque. | We walk through the park.",
+       "Esto es para ti. | This is for you. ;; Estudio para aprender. | I study in order to learn."
+      ],
+      [
+       "Time",
+       "por la mañana | in the morning",
+       "para el lunes | by Monday"
+      ],
+      [
+       "Fixed phrases",
+       "por favor, por fin, por ejemplo, por eso",
+       "para siempre, para nada"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Te llamo por teléfono.",
+     "translation": "I'll call you on the phone.",
+     "note": "means",
+     "reading": null
+    },
+    {
+     "text": "Salimos para Madrid mañana.",
+     "translation": "We're leaving for Madrid tomorrow.",
+     "note": "destination",
+     "reading": null
+    },
+    {
+     "text": "Lo compré por diez euros.",
+     "translation": "I bought it for ten euros.",
+     "note": "exchange",
+     "reading": null
+    },
+    {
+     "text": "Para mí, es demasiado caro.",
+     "translation": "For me, it's too expensive.",
+     "note": "opinion",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 19,
+   "id": "commands",
+   "title": "Commands (imperative)",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "imperative",
+    "commands",
+    "imperativo"
+   ],
+   "rule": null,
+   "text": "Irregular tú commands: **di, haz, ve, pon, sal, sé, ten, ven**. Pronouns attach to positive commands (¡Dímelo!) and go before negative ones (¡No me lo digas!). A question is often softer: ¿Me pasas la sal?",
+   "tables": [
+    {
+     "head": [
+      "",
+      "hablar",
+      "comer",
+      "Negative"
+     ],
+     "rows": [
+      [
+       "tú",
+       "¡Habla!",
+       "¡Come!",
+       "¡No hables! ;; ¡No comas!"
+      ],
+      [
+       "usted",
+       "¡Hable!",
+       "¡Coma!",
+       "¡No hable!"
+      ],
+      [
+       "vosotros",
+       "¡Hablad!",
+       "¡Comed!",
+       "¡No habléis!"
+      ],
+      [
+       "ustedes",
+       "¡Hablen!",
+       "¡Coman!",
+       "¡No hablen!"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Ven aquí, por favor.",
+     "translation": "Come here, please.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "No te preocupes.",
+     "translation": "Don't worry.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Pásame el agua.",
+     "translation": "Pass me the water.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 20,
+   "id": "subjunctive",
+   "title": "Present subjunctive",
+   "kind": "verbs",
+   "level": "B1",
+   "tags": [
+    "subjunctive",
+    "subjuntivo",
+    "que",
+    "ojalá",
+    "wishes",
+    "doubt"
+   ],
+   "rule": "Take the yo form of the present, drop -o and swap the vowel (-ar → e, -er / -ir → a).",
+   "text": "Irregular: ser → **sea**, ir → **vaya**, estar → **esté**, saber → **sepa**, haber → **haya**, dar → **dé**. It appears in a **que** clause after wishes, requests, feelings and doubt (quiero que…, espero que…, es importante que…, no creo que…), after **cuando** about the future, and after **para que, antes de que, ojalá**.",
+   "tables": [
+    {
+     "head": [
+      "Person",
+      "hablar",
+      "comer",
+      "tener",
+      "ser"
+     ],
+     "rows": [
+      [
+       "yo",
+       "habl{e}",
+       "com{a}",
+       "teng{a}",
+       "sea"
+      ],
+      [
+       "tú",
+       "habl{es}",
+       "com{as}",
+       "teng{as}",
+       "seas"
+      ],
+      [
+       "él / usted",
+       "habl{e}",
+       "com{a}",
+       "teng{a}",
+       "sea"
+      ],
+      [
+       "nosotros",
+       "habl{emos}",
+       "com{amos}",
+       "teng{amos}",
+       "seamos"
+      ],
+      [
+       "vosotros",
+       "habl{éis}",
+       "com{áis}",
+       "teng{áis}",
+       "seáis"
+      ],
+      [
+       "ellos / ustedes",
+       "habl{en}",
+       "com{an}",
+       "teng{an}",
+       "sean"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Espero que te guste.",
+     "translation": "I hope you like it.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Quiero que vengas a la fiesta.",
+     "translation": "I want you to come to the party.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Cuando tengas tiempo, llámame.",
+     "translation": "When you have time, call me.",
+     "note": "cuando about the future → subjunctive",
+     "reading": null
+    },
+    {
+     "text": "Ojalá haga sol mañana.",
+     "translation": "Hopefully it'll be sunny tomorrow.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 21,
+   "id": "conditional",
+   "title": "Conditional & si clauses",
+   "kind": "verbs",
+   "level": "B1",
+   "tags": [
+    "conditional",
+    "condicional",
+    "si",
+    "would",
+    "if"
+   ],
+   "rule": null,
+   "text": "The conditional adds **-ía, -ías, -ía, -íamos, -íais, -ían** to the infinitive, with the same irregular stems as the future (tendría, haría, podría). It also makes requests polite: ¿Podrías ayudarme? Me gustaría un café.",
+   "tables": [
+    {
+     "head": [
+      "Type",
+      "si clause",
+      "Main clause",
+      "Example"
+     ],
+     "rows": [
+      [
+       "likely",
+       "si + present",
+       "present, future or command",
+       "Si llueve, me quedo en casa. | If it rains, I stay at home."
+      ],
+      [
+       "unlikely or unreal",
+       "si + imperfect subjunctive",
+       "conditional",
+       "Si tuviera dinero, viajaría. | If I had money, I would travel."
+      ],
+      [
+       "unreal past",
+       "si + pluperfect subjunctive",
+       "conditional perfect",
+       "Si lo hubiera sabido, habría venido. | If I had known, I would have come."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Me gustaría ir a Perú.",
+     "translation": "I'd like to go to Peru.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "¿Podría repetirlo, por favor?",
+     "translation": "Could you repeat that, please?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Si fuera tú, no lo haría.",
+     "translation": "If I were you, I wouldn't do it.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 22,
+   "id": "comparison",
+   "title": "Comparisons",
+   "kind": "structure",
+   "level": "A2",
+   "tags": [
+    "comparative",
+    "superlative",
+    "más",
+    "menos",
+    "tan",
+    "mejor"
+   ],
+   "rule": null,
+   "text": "Irregular: bueno → **mejor**, malo → **peor**, grande → **mayor** (older), pequeño → **menor** (younger). Before numbers, \"more than\" is **más de**: más de cien.",
+   "tables": [
+    {
+     "head": [
+      "Meaning",
+      "Spanish",
+      "Example"
+     ],
+     "rows": [
+      [
+       "more … than",
+       "más … que",
+       "Ana es más alta que yo. | Ana is taller than me."
+      ],
+      [
+       "less … than",
+       "menos … que",
+       "Este es menos caro. | This one is less expensive."
+      ],
+      [
+       "as … as",
+       "tan … como",
+       "Es tan rápido como tú. | He's as fast as you."
+      ],
+      [
+       "as much / many as",
+       "tanto / tanta / tantos / tantas … como",
+       "Tengo tantos libros como tú. | I have as many books as you."
+      ],
+      [
+       "the most",
+       "el / la / los / las más … (de)",
+       "Es la ciudad más bonita de España. | It's the prettiest city in Spain."
+      ],
+      [
+       "very, extremely",
+       "-ísimo",
+       "La comida está riquísima. | The food is delicious."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "Este café es mejor que el otro.",
+     "translation": "This coffee is better than the other one.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Mi hermano mayor vive en Chile.",
+     "translation": "My older brother lives in Chile.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Hay más de cien personas.",
+     "translation": "There are more than a hundred people.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 23,
+   "id": "connectors",
+   "title": "Connectors",
+   "kind": "structure",
+   "level": "A2–B1",
+   "tags": [
+    "connectors",
+    "conjunctions",
+    "porque",
+    "aunque",
+    "así que",
+    "sino"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [
+    {
+     "head": [
+      "Meaning",
+      "Spanish",
+      "Example"
+     ],
+     "rows": [
+      [
+       "and / or / but",
+       "y (e before i-), o (u before o-), pero, sino",
+       "No es rojo, sino azul. | It's not red, it's blue."
+      ],
+      [
+       "because",
+       "porque; como (at the start)",
+       "Como llovía, no salimos. | As it was raining, we didn't go out."
+      ],
+      [
+       "so",
+       "así que, por eso, entonces",
+       "Estaba cansado, así que me fui. | I was tired, so I left."
+      ],
+      [
+       "although",
+       "aunque",
+       "Aunque es caro, lo compro. | Although it's expensive, I'll buy it."
+      ],
+      [
+       "while, when",
+       "mientras, cuando",
+       "Mientras cocino, escucho la radio. | While I cook, I listen to the radio."
+      ],
+      [
+       "first, then, finally",
+       "primero, luego, después, al final",
+       "Primero desayuno y luego salgo. | First I have breakfast and then I go out."
+      ],
+      [
+       "however, also",
+       "sin embargo, además, también",
+       "Es caro; sin embargo, vale la pena. | It's expensive; however, it's worth it."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 24,
+   "id": "numbers-time",
+   "title": "Numbers, days & time",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "numbers",
+    "números",
+    "time",
+    "hora",
+    "days",
+    "months",
+    "date"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [
+    {
+     "caption": "Numbers",
+     "head": [
+      "",
+      "Spanish"
+     ],
+     "rows": [
+      [
+       "1–10",
+       "uno, dos, tres, cuatro, cinco, seis, siete, ocho, nueve, diez"
+      ],
+      [
+       "11–20",
+       "once, doce, trece, catorce, quince, dieciséis, diecisiete, dieciocho, diecinueve, veinte"
+      ],
+      [
+       "tens",
+       "treinta, cuarenta, cincuenta, sesenta, setenta, ochenta, noventa, cien"
+      ],
+      [
+       "21, 35, 99",
+       "veintiuno, treinta y cinco, noventa y nueve"
+      ],
+      [
+       "hundreds",
+       "ciento uno, doscientos, quinientos, setecientos, novecientos, mil"
+      ],
+      [
+       "days",
+       "lunes, martes, miércoles, jueves, viernes, sábado, domingo | el lunes = on Monday; los lunes = on Mondays"
+      ],
+      [
+       "months",
+       "enero, febrero, marzo, abril, mayo, junio, julio, agosto, septiembre, octubre, noviembre, diciembre | no capital letters"
+      ]
+     ]
+    },
+    {
+     "caption": "Telling the time",
+     "head": [
+      "Clock",
+      "Spanish",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "1:00",
+       "Es la una.",
+       "It's one o'clock."
+      ],
+      [
+       "3:00",
+       "Son las tres.",
+       "It's three o'clock."
+      ],
+      [
+       "3:15",
+       "Son las tres y cuarto.",
+       "It's quarter past three."
+      ],
+      [
+       "3:30",
+       "Son las tres y media.",
+       "It's half past three."
+      ],
+      [
+       "3:45",
+       "Son las cuatro menos cuarto.",
+       "It's quarter to four."
+      ],
+      [
+       "at 3",
+       "a las tres",
+       "at three o'clock"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "¿Qué hora es? —Son las dos y media.",
+     "translation": "'What time is it?' 'It's half past two.'",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "La clase empieza a las nueve.",
+     "translation": "The class starts at nine.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "Mi cumpleaños es el cinco de mayo.",
+     "translation": "My birthday is on 5 May.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 25,
+   "id": "confusions",
+   "title": "High-value confusions",
+   "kind": "contrast",
+   "level": "A2–B1",
+   "tags": [
+    "confusions",
+    "saber",
+    "conocer",
+    "pedir",
+    "preguntar",
+    "hay",
+    "llevar",
+    "traer"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [
+    {
+     "head": [
+      "Don't confuse",
+      "Difference",
+      "Example"
+     ],
+     "rows": [
+      [
+       "saber / conocer",
+       "know facts, know how to vs. be familiar with people and places",
+       "Sé nadar. | I can swim. ;; Conozco Madrid. | I know Madrid."
+      ],
+      [
+       "pedir / preguntar",
+       "ask for something vs. ask a question",
+       "Pido la cuenta. | I ask for the bill. ;; Pregunto la hora. | I ask the time."
+      ],
+      [
+       "llevar / traer",
+       "take (away from here) vs. bring (to here)",
+       "Llevo el pastel a la fiesta. | I'm taking the cake to the party. ;; Trae el pastel. | Bring the cake."
+      ],
+      [
+       "hay / está",
+       "there is (exists) vs. is located (a known thing)",
+       "Hay un banco cerca. | There's a bank nearby. ;; El banco está cerca. | The bank is nearby."
+      ],
+      [
+       "tener que / hay que",
+       "someone has to vs. one has to",
+       "Tengo que irme. | I have to go. ;; Hay que reservar. | You need to book."
+      ],
+      [
+       "porque / por qué",
+       "because vs. why",
+       "¿Por qué? —Porque sí. | 'Why?' 'Just because.'"
+      ],
+      [
+       "sino / pero",
+       "sino corrects a negation; pero adds a contrast",
+       "No es caro, sino barato. | It isn't expensive, it's cheap. ;; Es caro, pero bueno. | It's expensive but good."
+      ],
+      [
+       "embarazada / avergonzada",
+       "false friend: pregnant vs. embarrassed",
+       "Estoy embarazada. | I'm pregnant. ;; Estoy avergonzada. | I'm embarrassed."
+      ],
+      [
+       "quedar / quedarse",
+       "meet up, be left vs. stay",
+       "Quedamos a las ocho. | Let's meet at eight. ;; Me quedo en casa. | I'm staying at home."
+      ],
+      [
+       "tú / usted",
+       "informal vs. formal 'you'",
+       "¿Cómo estás? | How are you? ;; ¿Cómo está usted? | How are you? (formal)"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 26,
+   "id": "memory-map",
+   "title": "One-page memory map",
+   "kind": "summary",
+   "level": "all",
+   "tags": [
+    "summary",
+    "overview"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [],
+   "after": null,
+   "examples": [],
+   "points": [
+    "Learn el or la with every noun; -o and -a are a guide, not a rule.",
+    "The verb ending says who's acting, so the subject pronoun is usually dropped.",
+    "ser for what something is; estar for how and where it is.",
+    "gustar agrees with the thing you like: me gusta el libro, me gustan los libros.",
+    "Object pronouns go before a conjugated verb and attach to infinitives, gerunds and positive commands.",
+    "ir a + infinitive is the everyday future.",
+    "Indefinido tells what happened; imperfecto paints the background.",
+    "por looks back at a cause or a route; para looks forward to a purpose or destination.",
+    "The subjunctive follows que after wishes, feelings and doubt, and cuando about the future.",
+    "Double negatives are correct in Spanish (no … nada, no … nadie)."
+   ],
+   "tip": "Listening strategy: catch the verb ending first: it tells you who and when. Then listen for the small words before the verb (lo, le, se, me): they tell you to whom."
+  }
+ ]
+}

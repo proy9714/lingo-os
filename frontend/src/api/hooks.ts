@@ -2,7 +2,7 @@ import { type InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryCli
 import { useEffect, useRef } from "react";
 
 import { ApiError, api } from "./client";
-import type { FeedPage, FeedShelf, Language, Settings, Shelf, UpNext } from "./types";
+import type { FeedPage, FeedShelf, GrammarReference, Language, Settings, Shelf, UpNext } from "./types";
 import { useSyncState } from "../sync/remote";
 
 /** Polling stops while the laptop or server is out of reach (it starts again once it answers). */
@@ -511,11 +511,37 @@ export function useRateDifficulty() {
 
 export const useTaste = (lang: string) => useQuery({ queryKey: ["taste", lang], queryFn: () => api.taste(lang), staleTime: 60_000 });
 
-export const useGrammarReference = (lang: string) =>
-  useQuery({
-    queryKey: ["grammar", lang],
-    queryFn: () => api.grammarReference(lang),
+// The grammar reference ships inside the app (frontend/src/generated/grammar, written by `lingo grammar export`), one
+// small file per language loaded when its page opens: instant, and it works offline on the computer and the phone.
+// Only the part about you (what the tutor noticed you still slip on) comes from the laptop or server.
+const GRAMMAR_FILES = import.meta.glob<{ default: Omit<GrammarReference, "weak_spots"> }>("../generated/grammar/*.json");
+
+export type GrammarState =
+  | { isPending: true; isError: false; data: undefined; error: null }
+  | { isPending: false; isError: true; data: undefined; error: Error }
+  | { isPending: false; isError: false; data: GrammarReference; error: null };
+
+export function useGrammarReference(lang: string): GrammarState {
+  const base = useQuery({
+    queryKey: ["grammar-static", lang],
+    queryFn: async () => {
+      const load = GRAMMAR_FILES[`../generated/grammar/${lang}.json`];
+      if (!load) throw new ApiError(404, `no grammar reference for '${lang}' yet`);
+      return (await load()).default;
+    },
     staleTime: Infinity,
+    gcTime: Infinity,
     enabled: Boolean(lang),
-    retry: (count, error) => !(error instanceof ApiError && error.status === 404) && count < 2, // not written yet
+    retry: false,
   });
+  const weak = useQuery({
+    queryKey: ["grammar-weak", lang],
+    queryFn: () => api.grammarWeakSpots(lang),
+    staleTime: 5 * 60_000,
+    enabled: Boolean(lang) && base.isSuccess,
+    retry: false, // offline: the page simply shows no weak spots
+  });
+  if (base.isError) return { isPending: false, isError: true, data: undefined, error: base.error };
+  if (!base.data) return { isPending: true, isError: false, data: undefined, error: null };
+  return { isPending: false, isError: false, data: { ...base.data, weak_spots: weak.data?.weak_spots ?? [] }, error: null };
+}

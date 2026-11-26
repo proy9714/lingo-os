@@ -26,6 +26,7 @@ from app.db import migrate
 from app.db.engine import make_engine
 from app.db import settings_store
 from app.db.seed import seed
+from app.etag import ETagMiddleware
 from app.sync.hub import SYNC_PORT
 from app.sync.server import Listener
 from app.engine.profile import sync_baselines
@@ -87,6 +88,9 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
     for module in (system, settings, stats, activity, imports, nlp, vocab, level, content, ai, manga, tutor, shadowing, automation, devices, tts, languages_api, search_api, data):
         app.include_router(module.router)
 
+    # an unchanged answer is "304 Not Modified" instead of the whole body (app/etag.py); added first, so it sees the
+    # answer before it's compressed
+    app.add_middleware(ETagMiddleware)
     # compress JSON, scripts and styles (often 70-90% smaller); audio and pictures are already compressed
     app.add_middleware(GZipMiddleware, minimum_size=1024, compresslevel=5)
     _serve_frontend(app, cfg.frontend_dist)

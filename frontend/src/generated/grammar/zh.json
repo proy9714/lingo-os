@@ -1,0 +1,821 @@
+{
+ "language": "zh",
+ "title": "Mandarin grammar",
+ "intro": "A working reference for beginners to intermediate learners. Chinese words never change their form: grammar lives in word order and in small particles. Read a section, notice the shape, then listen for it in what you watch and read.",
+ "sections": [
+  {
+   "number": 1,
+   "id": "word-order",
+   "title": "Basic word order",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "word order",
+    "SVO",
+    "time",
+    "place",
+    "是"
+   ],
+   "rule": null,
+   "text": "Verbs don't change for person or tense: **我去 / 他去 / 我们去**. Time and place come **before** the verb, unlike English. **是** links two nouns (**我是老师**), but adjectives don't need it: **天气很好** (the weather is good), where **很** is often just a link, not \"very\".",
+   "tables": [
+    {
+     "head": [
+      "Slot",
+      "Order",
+      "Example"
+     ],
+     "rows": [
+      [
+       "basic",
+       "subject + verb + object",
+       "我喝咖啡。 | I drink coffee."
+      ],
+      [
+       "time",
+       "subject + time + verb",
+       "我明天去北京。 | I'm going to Beijing tomorrow."
+      ],
+      [
+       "place",
+       "subject + 在 + place + verb",
+       "我在家工作。 | I work at home."
+      ],
+      [
+       "full",
+       "subject + time + place + verb + object",
+       "我每天在公司吃午饭。 | I eat lunch at the office every day."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "我是学生。",
+     "translation": "I'm a student.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "这个菜很好吃。",
+     "translation": "This dish is delicious.",
+     "note": "no 是 before an adjective",
+     "reading": null
+    },
+    {
+     "text": "他晚上在图书馆看书。",
+     "translation": "He reads at the library in the evening.",
+     "note": "time and place before the verb",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 2,
+   "id": "questions",
+   "title": "Questions (吗, 呢, question words, A不A)",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "questions",
+    "吗",
+    "呢",
+    "什么",
+    "谁",
+    "哪儿",
+    "几",
+    "多少",
+    "怎么",
+    "为什么"
+   ],
+   "rule": null,
+   "text": "The question word stays where the answer would go: **你去哪儿？ → 我去学校。** Use **几** for small numbers you expect (几个人？) and **多少** for larger or unknown amounts (多少钱？ how much?).",
+   "tables": [
+    {
+     "head": [
+      "Type",
+      "Example"
+     ],
+     "rows": [
+      [
+       "yes / no with 吗",
+       "你忙吗？ | Are you busy?"
+      ],
+      [
+       "verb-not-verb",
+       "你忙不忙？ | Are you busy (or not)?"
+      ],
+      [
+       "question word in place",
+       "你叫什么名字？ | What's your name?"
+      ],
+      [
+       "and you? with 呢",
+       "我很好，你呢？ | I'm fine, and you?"
+      ],
+      [
+       "question words",
+       "什么 | what ;; 谁 | who ;; 哪儿 / 哪里 | where ;; 几 / 多少 | how many ;; 怎么 | how ;; 为什么 | why"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "你是中国人吗？",
+     "translation": "Are you Chinese?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "这个多少钱？",
+     "translation": "How much is this?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "你为什么学中文？",
+     "translation": "Why are you learning Chinese?",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 3,
+   "id": "negation",
+   "title": "Negation (不 vs. 没)",
+   "kind": "contrast",
+   "level": "A1",
+   "tags": [
+    "negation",
+    "不",
+    "没",
+    "没有",
+    "not"
+   ],
+   "rule": null,
+   "text": "**不** changes to the second tone before a fourth tone: **不是 búshì, 不对 búduì**. With 没 the 了 of a completed action disappears: **我吃了 → 我没吃**.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "不 bù",
+      "没 (有) méi (yǒu)"
+     ],
+     "rows": [
+      [
+       "Use",
+       "present, habits, future, wishes; adjectives",
+       "past (didn't), and 'not have'"
+      ],
+      [
+       "Examples",
+       "我不喝酒。 | I don't drink alcohol. ;; 明天不去。 | (I) won't go tomorrow.",
+       "我没去。 | I didn't go. ;; 我没有钱。 | I have no money."
+      ],
+      [
+       "Never with",
+       "有 (say 没有)",
+       "是, adjectives in the present (say 不是, 不好)"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "他不是老师。",
+     "translation": "He isn't a teacher.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "我昨天没上班。",
+     "translation": "I didn't go to work yesterday.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "这里没有地铁站。",
+     "translation": "There's no metro station here.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 4,
+   "id": "measure-words",
+   "title": "Measure words (个, 本, 张…)",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "measure word",
+    "classifier",
+    "个",
+    "本",
+    "张",
+    "只",
+    "杯",
+    "这",
+    "那"
+   ],
+   "rule": null,
+   "text": "A number or **这 / 那** (this / that) needs a measure word before the noun: **这个人, 那本书**. Two of something is **两**, not 二: **两个苹果**. When unsure, **个** is usually understood.",
+   "tables": [
+    {
+     "head": [
+      "Measure word",
+      "Used for",
+      "Example"
+     ],
+     "rows": [
+      [
+       "个 gè",
+       "people, general (default)",
+       "三个人 | three people"
+      ],
+      [
+       "本 běn",
+       "books",
+       "一本书 | a book"
+      ],
+      [
+       "张 zhāng",
+       "flat things: tables, tickets, paper",
+       "两张票 | two tickets"
+      ],
+      [
+       "杯 bēi",
+       "cups / glasses of",
+       "一杯咖啡 | a cup of coffee"
+      ],
+      [
+       "只 zhī",
+       "many animals",
+       "一只猫 | a cat"
+      ],
+      [
+       "件 jiàn",
+       "clothes, matters",
+       "一件事 | a matter"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "我要两杯茶。",
+     "translation": "I'd like two cups of tea.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "这本书很有意思。",
+     "translation": "This book is very interesting.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "你有几个兄弟姐妹？",
+     "translation": "How many siblings do you have?",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 5,
+   "id": "le",
+   "title": "了 (completion and change)",
+   "kind": "structure",
+   "level": "A2",
+   "tags": [
+    "了",
+    "completed",
+    "change of state",
+    "past",
+    "aspect"
+   ],
+   "rule": null,
+   "text": "了 is not a past tense: habits and states in the past don't take it (**我以前住在上海** I used to live in Shanghai), and the future can: **你到了给我打电话** (call me when you've arrived).",
+   "tables": [
+    {
+     "head": [
+      "Position",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "after the verb",
+       "the action is completed",
+       "我买了一本书。 | I bought a book."
+      ],
+      [
+       "end of the sentence",
+       "a new situation, a change",
+       "下雨了。 | It's started raining. ;; 我饿了。 | I'm hungry (now)."
+      ],
+      [
+       "both",
+       "completed, up to now",
+       "我学了两年中文了。 | I've been learning Chinese for two years (and still am)."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "我吃了饭就走。",
+     "translation": "I'll leave once I've eaten.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "他已经回家了。",
+     "translation": "He has already gone home.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "天冷了。",
+     "translation": "It's got cold.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 6,
+   "id": "guo-zhe-zai",
+   "title": "过, 在, 着 (experience and ongoing actions)",
+   "kind": "contrast",
+   "level": "B1",
+   "tags": [
+    "过",
+    "在",
+    "正在",
+    "着",
+    "experience",
+    "progressive",
+    "aspect"
+   ],
+   "rule": null,
+   "text": "The negative of 过 is **没 … 过**: **我没吃过北京烤鸭** (I've never had Peking duck). 在 + verb can take 呢 at the end in speech: **他在睡觉呢**.",
+   "tables": [
+    {
+     "head": [
+      "Marker",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "verb + 过",
+       "have done before (experience)",
+       "我去过中国。 | I've been to China."
+      ],
+      [
+       "(正)在 + verb",
+       "in the middle of doing",
+       "我在做饭。 | I'm cooking."
+      ],
+      [
+       "verb + 着",
+       "a lasting state, or doing while",
+       "门开着。 | The door is open. ;; 他笑着说。 | He said with a smile."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "你看过这部电影吗？",
+     "translation": "Have you seen this film?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "别打扰他，他正在开会。",
+     "translation": "Don't disturb him, he's in a meeting.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "她穿着一件红裙子。",
+     "translation": "She's wearing a red dress.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 7,
+   "id": "de",
+   "title": "的, 得, 地 (all pronounced \"de\")",
+   "kind": "contrast",
+   "level": "A2",
+   "tags": [
+    "的",
+    "得",
+    "地",
+    "possession",
+    "modifier",
+    "complement"
+   ],
+   "rule": null,
+   "text": "Everything describing a noun comes **before** it, linked with 的, even whole clauses: **在银行工作的朋友** (a friend who works at a bank). With close relationships 的 is often dropped: **我妈妈, 我们公司**.",
+   "tables": [
+    {
+     "head": [
+      "Character",
+      "Links",
+      "Example"
+     ],
+     "rows": [
+      [
+       "的",
+       "describer + noun; possession",
+       "我的书 | my book ;; 很贵的手机 | a very expensive phone ;; 我昨天买的衣服 | the clothes I bought yesterday"
+      ],
+      [
+       "得",
+       "verb + how well (complement)",
+       "他说得很快。 | He speaks very fast."
+      ],
+      [
+       "地",
+       "adverb + verb",
+       "她慢慢地走。 | She walks slowly."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "这是谁的手机？",
+     "translation": "Whose phone is this?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "你中文说得很好！",
+     "translation": "You speak Chinese very well!",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "他高兴地笑了。",
+     "translation": "He laughed happily.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 8,
+   "id": "modal-verbs",
+   "title": "Want, can, should (想, 要, 会, 能, 可以, 应该)",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "想",
+    "要",
+    "会",
+    "能",
+    "可以",
+    "应该",
+    "得",
+    "modal"
+   ],
+   "rule": null,
+   "text": "会, 能 and 可以 all translate as \"can\": 会 for skills you learned, 能 for ability or circumstances, 可以 for permission. Negate with 不: **不会, 不能, 不可以**; but \"don't have to\" is **不用**.",
+   "tables": [
+    {
+     "head": [
+      "Verb",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "想",
+       "would like to",
+       "我想喝水。 | I'd like to drink some water."
+      ],
+      [
+       "要",
+       "want to, will, must",
+       "我要去银行。 | I need to go to the bank."
+      ],
+      [
+       "会",
+       "can (learned skill); will (likely)",
+       "我会游泳。 | I can swim. ;; 明天会下雨。 | It will rain tomorrow."
+      ],
+      [
+       "能",
+       "can (able, possible)",
+       "你能帮我吗？ | Can you help me?"
+      ],
+      [
+       "可以",
+       "may, be allowed",
+       "这里可以拍照吗？ | Can I take photos here?"
+      ],
+      [
+       "应该 / 得 děi",
+       "should / have to",
+       "你应该休息。 ;; 我得走了。 | I have to go."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "我不会说日语。",
+     "translation": "I can't speak Japanese.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "今天我不能去，我很忙。",
+     "translation": "I can't go today, I'm busy.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "你不用担心。",
+     "translation": "You don't need to worry.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 9,
+   "id": "ba",
+   "title": "The 把 construction",
+   "kind": "structure",
+   "level": "B1",
+   "tags": [
+    "把",
+    "ba",
+    "disposal",
+    "object before verb"
+   ],
+   "rule": "subject + 把 + object + verb + something more (result, direction, 了…).",
+   "text": "**把** moves a specific object before the verb to say what you do *to* it, especially when it ends up somewhere or in some state. The verb can't stand alone: it needs a result, direction or 了 after it.",
+   "tables": [
+    {
+     "head": [
+      "Normal order",
+      "With 把"
+     ],
+     "rows": [
+      [
+       "我关了门。 | I closed the door.",
+       "我把门关上了。 | I closed the door (shut)."
+      ],
+      [
+       "请给我那本书。",
+       "请把那本书给我。 | Please give me that book."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "我把手机忘在家里了。",
+     "translation": "I left my phone at home.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "请把窗户打开。",
+     "translation": "Please open the window.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "他把作业做完了。",
+     "translation": "He finished his homework.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 10,
+   "id": "comparison",
+   "title": "Comparing (比, 没有…那么, 一样)",
+   "kind": "structure",
+   "level": "A2",
+   "tags": [
+    "comparison",
+    "比",
+    "一样",
+    "没有",
+    "最",
+    "更"
+   ],
+   "rule": null,
+   "text": "Never put 很 in a 比 sentence (北京比上海很冷 is wrong); use 更 or an amount instead: **比上海更冷, 冷一点儿**.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Pattern",
+      "Example"
+     ],
+     "rows": [
+      [
+       "more than",
+       "A 比 B + adjective",
+       "北京比上海冷。 | Beijing is colder than Shanghai."
+      ],
+      [
+       "how much more",
+       "A 比 B + adj + amount",
+       "他比我高五厘米。 | He's 5 cm taller than me."
+      ],
+      [
+       "not as",
+       "A 没有 B (那么) + adj",
+       "我没有他那么忙。 | I'm not as busy as him."
+      ],
+      [
+       "the same",
+       "A 跟 B 一样 (+ adj)",
+       "我跟你一样大。 | I'm the same age as you."
+      ],
+      [
+       "the most / even more",
+       "最 + adj ;; 更 + adj",
+       "最好 | the best ;; 更好 | even better"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "坐地铁比打车快。",
+     "translation": "Taking the metro is faster than a taxi.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "这个比那个便宜一点儿。",
+     "translation": "This one is a bit cheaper than that one.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "这是我吃过的最好吃的饺子。",
+     "translation": "These are the best dumplings I've ever had.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 11,
+   "id": "connectors",
+   "title": "Linking ideas",
+   "kind": "structure",
+   "level": "B1",
+   "tags": [
+    "connectors",
+    "因为",
+    "所以",
+    "虽然",
+    "但是",
+    "如果",
+    "就",
+    "还是",
+    "或者",
+    "一边"
+   ],
+   "rule": null,
+   "text": "Chinese often uses both halves of a pair where English uses one word. **还是** is \"or\" in questions, **或者** in statements.",
+   "tables": [
+    {
+     "head": [
+      "Pair",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "因为 … 所以 …",
+       "because … so …",
+       "因为下雨，所以我们没去。"
+      ],
+      [
+       "虽然 … 但是 / 可是 …",
+       "although … (but) …",
+       "虽然很累，但是很开心。"
+      ],
+      [
+       "如果 … (的话)，就 …",
+       "if … then …",
+       "如果有时间，我就去。"
+      ],
+      [
+       "一 … 就 …",
+       "as soon as …",
+       "我一到家就睡觉了。"
+      ],
+      [
+       "还是 / 或者",
+       "or (question / statement)",
+       "茶还是咖啡？ ;; 周六或者周日都可以。"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "虽然中文很难，但是很有意思。",
+     "translation": "Although Chinese is hard, it's very interesting.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "如果明天下雨，我们就在家吧。",
+     "translation": "If it rains tomorrow, let's stay home.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "他一下课就回家了。",
+     "translation": "He went home as soon as class ended.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 12,
+   "id": "memory-map",
+   "title": "One-page memory map",
+   "kind": "summary",
+   "level": "all",
+   "tags": [
+    "summary",
+    "overview"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [],
+   "after": null,
+   "examples": [],
+   "points": [
+    "Words never change form; meaning lives in order and particles.",
+    "Subject + time + place + verb + object.",
+    "No 是 before adjectives: 天气很好.",
+    "吗 makes a yes / no question; question words stay where the answer goes.",
+    "不 for present, habits and the future; 没 for the past and with 有.",
+    "Numbers and 这 / 那 need a measure word: 一本书, 这个人.",
+    "了 marks completion or change, not simply the past; 过 = have done before.",
+    "Describers come before the noun with 的: 我昨天买的书.",
+    "比 compares (no 很); 把 puts the object before the verb to say what happens to it."
+   ],
+   "tip": "Listening strategy: tones carry meaning (mǎi buy, mài sell), but context does most of the work. Listen for the small words that frame a sentence: 了 and 过 at the end, 吗 and 呢 for questions, and 不 / 没 for negation."
+  }
+ ]
+}

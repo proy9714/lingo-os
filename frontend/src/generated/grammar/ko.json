@@ -1,0 +1,770 @@
+{
+ "language": "ko",
+ "title": "Korean grammar",
+ "intro": "A working reference for beginners to intermediate learners. Korean puts the verb last and marks each word's role with a particle after it. Read a section, notice the shape, then listen for it in what you watch and read.",
+ "sections": [
+  {
+   "number": 1,
+   "id": "word-order",
+   "title": "Word order & particles",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "word order",
+    "SOV",
+    "particle",
+    "은",
+    "는",
+    "이",
+    "가",
+    "을",
+    "를"
+   ],
+   "rule": null,
+   "text": "The basic order is **subject – object – verb**, and the verb always comes last. Because particles show the roles, the other words can move, and anything obvious from context is left out: **먹었어요?** (Did [you] eat?) is a full sentence. **은/는** marks the topic or a contrast; **이/가** marks the subject, often new information.",
+   "tables": [
+    {
+     "head": [
+      "Particle",
+      "After a vowel / consonant",
+      "Role",
+      "Example"
+     ],
+     "rows": [
+      [
+       "topic",
+       "는 / 은",
+       "as for…, contrast",
+       "저는 학생이에요. | I'm a student."
+      ],
+      [
+       "subject",
+       "가 / 이",
+       "who does it, new information",
+       "비가 와요. | It's raining."
+      ],
+      [
+       "object",
+       "를 / 을",
+       "what is done",
+       "밥을 먹어요. | I eat (a meal)."
+      ],
+      [
+       "place / time / to",
+       "에",
+       "at a time, to a place, existence",
+       "학교에 가요. | I go to school."
+      ],
+      [
+       "place of action",
+       "에서",
+       "where something happens",
+       "도서관에서 공부해요. | I study at the library."
+      ],
+      [
+       "with / and",
+       "하고, (이)랑, 와 / 과",
+       "with, and",
+       "친구하고 영화를 봤어요."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "저는 커피를 좋아해요.",
+     "translation": "I like coffee.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "누가 왔어요? 민수가 왔어요.",
+     "translation": "Who came? Minsu came.",
+     "note": "이/가 for the new information",
+     "reading": null
+    },
+    {
+     "text": "주말에 공원에서 운동해요.",
+     "translation": "At the weekend I exercise in the park.",
+     "note": "에 for time, 에서 for the place of action",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 2,
+   "id": "copula",
+   "title": "To be (이다, 아니다, 있다, 없다)",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "이에요",
+    "예요",
+    "아니에요",
+    "있어요",
+    "없어요",
+    "to be",
+    "to have"
+   ],
+   "rule": null,
+   "text": "**이다** links two nouns and attaches to the noun: 예요 after a vowel, 이에요 after a consonant. **있다 / 없다** mean both \"there is / isn't\" and \"to have / not have\", and also location: **화장실이 어디에 있어요?** (Where is the toilet?).",
+   "tables": [
+    {
+     "head": [
+      "Meaning",
+      "Form",
+      "Example"
+     ],
+     "rows": [
+      [
+       "X is Y",
+       "noun + 예요 / 이에요",
+       "의사예요. | (I'm) a doctor. ;; 학생이에요. | (I'm) a student."
+      ],
+      [
+       "X is not Y",
+       "noun + 이 / 가 아니에요",
+       "학생이 아니에요. | (I'm) not a student."
+      ],
+      [
+       "there is, to have",
+       "있어요",
+       "시간이 있어요. | I have time."
+      ],
+      [
+       "there isn't, not to have",
+       "없어요",
+       "돈이 없어요. | I have no money."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "이거 뭐예요?",
+     "translation": "What is this?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "저는 한국 사람이 아니에요.",
+     "translation": "I'm not Korean.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "동생이 있어요?",
+     "translation": "Do you have a younger sibling?",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 3,
+   "id": "politeness",
+   "title": "Speech levels (해요, 합니다, 해)",
+   "kind": "contrast",
+   "level": "A1",
+   "tags": [
+    "politeness",
+    "해요체",
+    "합니다체",
+    "반말",
+    "honorific",
+    "존댓말"
+   ],
+   "rule": null,
+   "text": "Start with **해요체**: it's polite and safe almost everywhere. You'll hear **합니다체** on the news and in shops (**감사합니다**), and **반말** among friends in dramas. The honorific **-(으)시-** raises the person you talk about: **선생님이 오세요** (The teacher is coming).",
+   "tables": [
+    {
+     "head": [
+      "Level",
+      "Ending",
+      "When",
+      "Example: 가다 (to go)"
+     ],
+     "rows": [
+      [
+       "polite (해요체)",
+       "-아요 / -어요",
+       "everyday polite speech: strangers, colleagues",
+       "가요"
+      ],
+      [
+       "formal (합니다체)",
+       "-ㅂ니다 / -습니다",
+       "news, presentations, announcements, the army",
+       "갑니다"
+      ],
+      [
+       "casual (반말)",
+       "-아 / -어",
+       "close friends, younger people, family",
+       "가"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "어디 가요?",
+     "translation": "Where are you going?",
+     "note": "polite",
+     "reading": null
+    },
+    {
+     "text": "감사합니다.",
+     "translation": "Thank you.",
+     "note": "formal",
+     "reading": null
+    },
+    {
+     "text": "밥 먹었어?",
+     "translation": "Did you eat?",
+     "note": "casual",
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 4,
+   "id": "present",
+   "title": "Present tense (-아요 / -어요)",
+   "kind": "verbs",
+   "level": "A1",
+   "tags": [
+    "present",
+    "conjugation",
+    "아요",
+    "어요",
+    "해요",
+    "stem"
+   ],
+   "rule": "Drop -다. If the last vowel is ㅏ or ㅗ add -아요; otherwise -어요; 하다 becomes 해요.",
+   "text": "Verbs don't change for person: **가요** = I / you / he / they go. Vowels merge: 가 + 아 → 가, 보 + 아 → 봐, 마시 + 어 → 마셔. Adjectives conjugate like verbs: **좋다 → 좋아요** (it's good), **맛있다 → 맛있어요** (it's tasty). A rising voice turns any statement into a question.",
+   "tables": [
+    {
+     "head": [
+      "Dictionary form",
+      "Stem",
+      "Polite present"
+     ],
+     "rows": [
+      [
+       "가다 | to go",
+       "가",
+       "가{요} (가 + 아요)"
+      ],
+      [
+       "보다 | to see",
+       "보",
+       "봐{요}"
+      ],
+      [
+       "먹다 | to eat",
+       "먹",
+       "먹{어요}"
+      ],
+      [
+       "마시다 | to drink",
+       "마시",
+       "마셔{요}"
+      ],
+      [
+       "공부하다 | to study",
+       "공부하",
+       "공부{해요}"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "저는 매일 커피를 마셔요.",
+     "translation": "I drink coffee every day.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "이 음식이 정말 맛있어요.",
+     "translation": "This food is really tasty.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "지금 뭐 해요?",
+     "translation": "What are you doing now?",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 5,
+   "id": "past-future",
+   "title": "Past (-았/었-) & future (-ㄹ 거예요)",
+   "kind": "verbs",
+   "level": "A1",
+   "tags": [
+    "past",
+    "았어요",
+    "었어요",
+    "했어요",
+    "future",
+    "거예요"
+   ],
+   "rule": null,
+   "text": "**-(으)ㄹ 거예요** is the general future and also a guess (**비가 올 거예요**, it'll probably rain). **-(으)ㄹ게요** is a promise to the listener.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Rule",
+      "Examples"
+     ],
+     "rows": [
+      [
+       "past",
+       "stem + 았어요 / 었어요 / 했어요 (same vowel rule)",
+       "갔어요 | went ;; 먹었어요 | ate ;; 공부했어요 | studied"
+      ],
+      [
+       "future / plan",
+       "stem + (으)ㄹ 거예요",
+       "갈 거예요 | will go ;; 먹을 거예요 | will eat"
+      ],
+      [
+       "intention (I'll …)",
+       "stem + (으)ㄹ게요",
+       "전화할게요. | I'll call you."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "어제 친구를 만났어요.",
+     "translation": "I met a friend yesterday.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "내일 부산에 갈 거예요.",
+     "translation": "I'm going to Busan tomorrow.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "제가 할게요.",
+     "translation": "I'll do it.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 6,
+   "id": "negation",
+   "title": "Negation (안, 못, -지 않다)",
+   "kind": "contrast",
+   "level": "A2",
+   "tags": [
+    "negation",
+    "안",
+    "못",
+    "지 않아요",
+    "지 못해요",
+    "can't"
+   ],
+   "rule": null,
+   "text": "**안** goes right before the verb (inside 하다 verbs: 공부 안 해요); **못** means \"can't\". The long forms with **-지 않다 / -지 못하다** sound a little more formal and are common in writing.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Short form",
+      "Long form",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "don't / won't",
+       "안 가요",
+       "가지 않아요",
+       "I don't go (choice)"
+      ],
+      [
+       "can't",
+       "못 가요",
+       "가지 못해요",
+       "I can't go (unable)"
+      ],
+      [
+       "하다 verbs",
+       "공부 안 해요",
+       "공부하지 않아요",
+       "I don't study"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "저는 고기를 안 먹어요.",
+     "translation": "I don't eat meat.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "오늘은 못 가요.",
+     "translation": "I can't go today.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "별로 비싸지 않아요.",
+     "translation": "It's not very expensive.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 7,
+   "id": "connecting",
+   "title": "Linking clauses (-고, -지만, -아서, -(으)니까)",
+   "kind": "structure",
+   "level": "A2",
+   "tags": [
+    "connectors",
+    "고",
+    "지만",
+    "아서",
+    "어서",
+    "니까",
+    "because",
+    "and",
+    "but"
+   ],
+   "rule": null,
+   "text": "Korean links clauses by changing the ending of the first verb; only the last verb carries tense and politeness. With -아서/어서 don't add past tense to the first verb: **늦어서 미안해요** (Sorry I'm / I was late).",
+   "tables": [
+    {
+     "head": [
+      "Ending",
+      "Meaning",
+      "Example"
+     ],
+     "rows": [
+      [
+       "-고",
+       "and (then)",
+       "밥을 먹고 학교에 가요. | I eat and go to school."
+      ],
+      [
+       "-지만",
+       "but",
+       "비싸지만 맛있어요. | It's expensive but tasty."
+      ],
+      [
+       "-아서 / -어서",
+       "because; and then (sequence)",
+       "피곤해서 일찍 잤어요. | I was tired so I slept early."
+      ],
+      [
+       "-(으)니까",
+       "because (with commands / suggestions)",
+       "비가 오니까 우산을 가져가세요."
+      ],
+      [
+       "-(으)면",
+       "if, when",
+       "시간이 있으면 같이 가요. | If you have time, let's go together."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "배가 고파서 라면을 끓였어요.",
+     "translation": "I was hungry, so I made ramen.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "한국어는 어렵지만 재미있어요.",
+     "translation": "Korean is hard but fun.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "피곤하면 좀 쉬세요.",
+     "translation": "If you're tired, rest a bit.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 8,
+   "id": "wanting-ability",
+   "title": "Want, can, have to, try",
+   "kind": "verbs",
+   "level": "A2",
+   "tags": [
+    "고 싶다",
+    "수 있다",
+    "아야 하다",
+    "아 보다",
+    "want",
+    "can",
+    "must",
+    "try"
+   ],
+   "rule": null,
+   "text": "These are some of the most frequent endings in speech: learn them as chunks. **-(으)세요** is the polite request you hear constantly (**잠깐만 기다리세요**, please wait a moment).",
+   "tables": [
+    {
+     "head": [
+      "Meaning",
+      "Pattern",
+      "Example"
+     ],
+     "rows": [
+      [
+       "want to",
+       "-고 싶어요",
+       "한국에 가고 싶어요. | I want to go to Korea."
+      ],
+      [
+       "can / can't",
+       "-(으)ㄹ 수 있어요 / 없어요",
+       "수영할 수 있어요. | I can swim."
+      ],
+      [
+       "have to",
+       "-아야 / -어야 해요",
+       "일찍 일어나야 해요. | I have to get up early."
+      ],
+      [
+       "try (out)",
+       "-아 / -어 보세요",
+       "이거 먹어 보세요. | Try this."
+      ],
+      [
+       "please (do)",
+       "-(으)세요",
+       "앉으세요. | Please sit down."
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "뭐 먹고 싶어요?",
+     "translation": "What do you want to eat?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "내일까지 끝내야 해요.",
+     "translation": "I have to finish by tomorrow.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "한번 해 보세요.",
+     "translation": "Give it a try.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 9,
+   "id": "modifiers",
+   "title": "Describing nouns (-(으)ㄴ, -는, -(으)ㄹ)",
+   "kind": "structure",
+   "level": "B1",
+   "tags": [
+    "modifier",
+    "relative clause",
+    "은",
+    "는",
+    "을",
+    "adjective before noun"
+   ],
+   "rule": null,
+   "text": "Everything describing a noun comes **before** it, including whole clauses, so \"the book that I read yesterday\" is **어제 읽은 책** (yesterday read book). Listen for the ending just before the noun: it tells you the time.",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Ending",
+      "Example"
+     ],
+     "rows": [
+      [
+       "adjective",
+       "-(으)ㄴ",
+       "큰 집 | a big house ;; 좋은 사람 | a good person"
+      ],
+      [
+       "verb, present",
+       "-는",
+       "먹는 음식 | food (people) eat ;; 일하는 사람 | a person who works"
+      ],
+      [
+       "verb, past",
+       "-(으)ㄴ",
+       "어제 본 영화 | the film (I) saw yesterday"
+      ],
+      [
+       "verb, future",
+       "-(으)ㄹ",
+       "내일 할 일 | the work to do tomorrow"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "제가 좋아하는 가수예요.",
+     "translation": "It's a singer I like.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "어제 만난 사람 이름이 뭐예요?",
+     "translation": "What's the name of the person you met yesterday?",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "먹을 것 좀 있어요?",
+     "translation": "Is there anything to eat?",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 10,
+   "id": "numbers",
+   "title": "Two number systems",
+   "kind": "structure",
+   "level": "A1",
+   "tags": [
+    "numbers",
+    "하나",
+    "일",
+    "native",
+    "sino-korean",
+    "counters",
+    "시",
+    "분"
+   ],
+   "rule": null,
+   "text": "Time mixes both: **세 시 이십 분** (3:20, native hours + Sino minutes). Counted things take a counter: **사과 두 개** (two apples), **사람 세 명** (three people), **책 한 권** (one book).",
+   "tables": [
+    {
+     "head": [
+      "",
+      "Native Korean",
+      "Sino-Korean"
+     ],
+     "rows": [
+      [
+       "1–5",
+       "하나 (한), 둘 (두), 셋 (세), 넷 (네), 다섯",
+       "일, 이, 삼, 사, 오"
+      ],
+      [
+       "6–10",
+       "여섯, 일곱, 여덟, 아홉, 열",
+       "육, 칠, 팔, 구, 십"
+      ],
+      [
+       "used for",
+       "counting things and people, hours, age",
+       "dates, money, minutes, phone numbers, floors"
+      ]
+     ]
+    }
+   ],
+   "after": null,
+   "examples": [
+    {
+     "text": "지금 몇 시예요? 두 시 반이에요.",
+     "translation": "What time is it? It's half past two.",
+     "note": null,
+     "reading": null
+    },
+    {
+     "text": "이거 얼마예요? 만 오천 원이에요.",
+     "translation": "How much is this? It's 15,000 won.",
+     "note": null,
+     "reading": null
+    }
+   ],
+   "points": [],
+   "tip": null
+  },
+  {
+   "number": 11,
+   "id": "memory-map",
+   "title": "One-page memory map",
+   "kind": "summary",
+   "level": "all",
+   "tags": [
+    "summary",
+    "overview"
+   ],
+   "rule": null,
+   "text": null,
+   "tables": [],
+   "after": null,
+   "examples": [],
+   "points": [
+    "The verb comes last; particles after each word show its role.",
+    "은/는 = topic or contrast; 이/가 = subject; 을/를 = object.",
+    "에 = to / at (time, destination); 에서 = where the action happens.",
+    "Polite present: stem + 아요 / 어요 / 해요; the form doesn't change for person.",
+    "Past: 았어요 / 었어요 / 했어요; future: (으)ㄹ 거예요.",
+    "안 = don't; 못 = can't.",
+    "Clauses link through endings: -고 (and), -지만 (but), -아서 (because).",
+    "Describing words and clauses go before the noun: 어제 본 영화.",
+    "Native numbers count things and hours; Sino numbers for money, dates, minutes."
+   ],
+   "tip": "Listening strategy: wait for the end of the sentence: the final verb carries the meaning, the tense and the politeness. Particles are short and often dropped in speech, so lean on word order and context."
+  }
+ ]
+}

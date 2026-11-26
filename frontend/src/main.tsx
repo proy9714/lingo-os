@@ -63,7 +63,7 @@ if (native) {
 // screens; each is refreshed in the background as it shows (when it's older than its staleTime). A new version of the
 // app starts afresh. Settings and languages are saved too, so the app can open before the laptop or server answers;
 // they are always asked again right after opening, and pairing with another laptop clears everything saved.
-const NOT_SAVED = new Set(["language-catalog", "search", "search-suggest", "ai-models", "annotate", "transcript", "manga-page", "shadow-clip"]);
+const NOT_SAVED = new Set(["grammar-static", "language-catalog", "search", "search-suggest", "ai-models", "annotate", "transcript", "manga-page", "shadow-clip"]);
 const ASK_AGAIN = new Set(["settings", "languages"]);
 const persister = createSyncStoragePersister({
   storage: typeof window === "undefined" ? undefined : window.localStorage,
