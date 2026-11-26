@@ -3,6 +3,10 @@ import { useEffect, useRef } from "react";
 
 import { ApiError, api } from "./client";
 import type { FeedPage, FeedShelf, Language, Settings, Shelf, UpNext } from "./types";
+import { useSyncState } from "../sync/remote";
+
+/** Polling stops while the laptop or server is out of reach (it starts again once it answers). */
+const offline = () => useSyncState.getState().online === false;
 
 export const keys = {
   settings: ["settings"] as const,
@@ -94,7 +98,7 @@ export const useToday = (lang: string | undefined) =>
     queryKey: keys.today(lang ?? ""),
     queryFn: () => api.today(lang as string),
     enabled: Boolean(lang),
-    refetchInterval: 60_000,
+    refetchInterval: () => (offline() ? false : 60_000),
   });
 
 export const useRecent = (lang: string | undefined) =>
@@ -366,7 +370,7 @@ export const usePool = (lang: string) =>
     queryKey: ["discover-pool", lang],
     queryFn: () => api.discoverPool(lang),
     enabled: Boolean(lang),
-    refetchInterval: (query) => (query.state.data?.searching ? 3000 : 60_000),
+    refetchInterval: (query) => (offline() ? false : query.state.data?.searching ? 3000 : 60_000),
   });
 
 export function useTopUp(lang: string) {
@@ -389,7 +393,8 @@ export function useAutoTopUp(lang: string) {
   const asked = useRef<string | null>(null);
   const topUp = useMutation({
     mutationFn: (code: string) => api.topUp(code, {}),
-    retry: 8,
+    // a cold start often loads the page before the API is up; never retried while the laptop or server is out of reach
+    retry: (failures, error) => failures < 5 && !(error instanceof ApiError && error.status === 0),
     retryDelay: (attempt) => Math.min(1500 * 2 ** attempt, 15_000),
     onSuccess: (data, code) => {
       qc.setQueryData(["discover-pool", code], data);

@@ -1,11 +1,11 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useActiveLanguage, useLanguages, useSearchWatcher, useSettings, useToday, useUpdateSettings, useVoices } from "../api/hooks";
 import { onSpeechUnavailable, setSpeechEngine, setSpeechLocales } from "../lib/speech";
 import { FirstRun } from "./FirstRun";
 import { PhoneWelcome } from "./PhoneWelcome";
-import { isNativeApp, remoteConfig, useSyncState } from "../sync/remote";
+import { checkReachability, isNativeApp, remoteConfig, useSyncState } from "../sync/remote";
 import { usePhoneSync } from "../sync/useSync";
 import { useLookupStore } from "../state/lookup";
 import { useTrackerStore } from "../state/tracker";
@@ -34,12 +34,106 @@ export function AppShell() {
   return <SetupGate />;
 }
 
+/**
+ * Settings and languages are saved on the device, so the app normally opens at once from them and refreshes in the
+ * background. Only the very first time (nothing saved yet) does it wait, with a splash, and if the laptop or server
+ * can't be reached then, it says so instead of loading forever.
+ */
 function SetupGate() {
   const settings = useSettings();
   const languages = useLanguages();
-  if (settings.isPending || languages.isPending) return <div className="min-h-dvh bg-canvas" aria-busy="true" />;
-  if (languages.isSuccess && languages.data.length === 0) return <FirstRun />;
-  return <Shell />;
+  const failed = settings.isError || languages.isError;
+  // the first seconds after `npm run dev` the API is still starting: keep the splash and quietly ask again
+  const [grace, setGrace] = useState(true);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setGrace(false), 12_000);
+    return () => window.clearTimeout(timer);
+  }, []);
+  const { refetch: refetchSettings } = settings;
+  const { refetch: refetchLanguages } = languages;
+  useEffect(() => {
+    if (!failed) return;
+    const timer = window.setTimeout(() => {
+      void refetchSettings();
+      void refetchLanguages();
+    }, 2_000);
+    return () => window.clearTimeout(timer);
+  }, [failed, settings.errorUpdatedAt, languages.errorUpdatedAt, refetchSettings, refetchLanguages]);
+  if (settings.data && languages.data) {
+    return languages.data.length === 0 ? <FirstRun /> : <Shell />;
+  }
+  if (failed && !grace) {
+    return (
+      <CantReach
+        onRetry={() => {
+          void checkReachability().finally(() => {
+            void settings.refetch();
+            void languages.refetch();
+          });
+        }}
+      />
+    );
+  }
+  return <Splash />;
+}
+
+function Splash() {
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSlow(true), 1500);
+    return () => window.clearTimeout(timer);
+  }, []);
+  return (
+    <div className="grid min-h-dvh place-items-center bg-canvas" aria-busy="true">
+      <div className="flex flex-col items-center gap-4 text-center">
+        <Logo size={56} className="animate-pulse" />
+        {slow && <p className="text-sm text-ink-2">{remoteConfig() ? "Connecting to your Lingo OS…" : "Starting Lingo OS…"}</p>}
+      </div>
+    </div>
+  );
+}
+
+function CantReach({ onRetry }: { onRetry: () => void }) {
+  const phone = Boolean(remoteConfig());
+  const checking = useSyncState((s) => s.checking);
+  return (
+    <div className="grid min-h-dvh place-items-center bg-canvas px-6">
+      <div className="flex max-w-sm flex-col items-center gap-4 text-center">
+        <Logo size={48} />
+        <h1 className="text-lg font-semibold text-ink">{phone ? "Can't reach your Lingo OS" : "The Lingo OS server isn't answering"}</h1>
+        <p className="text-sm text-ink-2">
+          {phone
+            ? "Your laptop or server is out of reach or turned off. Texts, manga and episodes you saved for offline still work."
+            : "Start it with npm run start (or npm run dev) in the Lingo OS folder, or check the server it runs on. This page picks up by itself once it answers."}
+        </p>
+        <div className="flex gap-2">
+          <Button variant="primary" onClick={onRetry} disabled={checking}>
+            {checking ? "Checking…" : "Try again"}
+          </Button>
+          {phone && (
+            <Link to="/connect" className="rounded-full px-4 py-2 text-sm font-semibold text-ink ring-1 ring-white/15">
+              Saved for offline
+            </Link>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** A thin bar while the laptop or server is out of reach, so nothing looks like it's loading forever. */
+function OfflineBar() {
+  const online = useSyncState((s) => s.online);
+  const pending = useSyncState((s) => s.pending);
+  if (online !== false) return null;
+  const phone = Boolean(remoteConfig());
+  return (
+    <div role="status" className="bg-orange-400/15 px-4 py-1.5 text-center text-xs font-medium text-warn">
+      {phone
+        ? `Offline: showing what's saved on this phone.${pending ? ` ${pending} ${pending === 1 ? "change" : "changes"} will sync when you're back in reach.` : ""}`
+        : "Can't reach the Lingo OS server: showing what's saved in this browser. It reconnects by itself."}
+    </div>
+  );
 }
 
 function Shell() {
@@ -96,6 +190,7 @@ function Shell() {
         <SideRail />
         <div className={cx("flex min-w-0 flex-1 flex-col gap-4 transition-[margin]", lookupOpen && "md:mr-[396px]")}>
           <TopBar />
+          <OfflineBar />
           <main id="main" className="min-w-0">
             <div key={pathname} className="anim-page">
               <Outlet />

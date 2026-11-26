@@ -68,7 +68,7 @@ import { flush } from "../sync/outbox";
 import { offlineAnswer, remember } from "../sync/offline";
 import type { Pack } from "../sync/packs";
 import { getPageImage } from "../sync/packs";
-import { blobUrl, OfflineError, remoteConfig, rpc } from "../sync/remote";
+import { blobUrl, OfflineError, remoteConfig, reportReachable, rpc, useSyncState, withTimeout } from "../sync/remote";
 
 export class ApiError extends Error {
   readonly status: number;
@@ -79,12 +79,55 @@ export class ApiError extends Error {
   }
 }
 
+// On the computer the API is this browser's own server. When it can't be reached (stopped, or a remote server out of
+// reach) requests fail fast with ApiError(0) instead of hanging, saved answers are shown where there are some, and
+// the server is checked every 15 seconds so the app picks up again by itself once it answers.
+const REQUEST_MS = 20_000;
+const SLOW_REQUEST_MS = 120_000; // things that legitimately take long: packs, AI answers, searches, imports
+const SERVER_RECHECK_MS = 15_000;
+let serverRecheck: number | null = null;
+
+function serverLost() {
+  reportReachable(false);
+  if (serverRecheck !== null) return;
+  serverRecheck = window.setInterval(() => {
+    void fetch("/api/health", { cache: "no-store" })
+      .then((r) => {
+        if (!r.ok) return;
+        if (serverRecheck !== null) window.clearInterval(serverRecheck);
+        serverRecheck = null;
+        reportReachable(true);
+      })
+      .catch(() => undefined);
+  }, SERVER_RECHECK_MS);
+}
+
+function timeoutFor(path: string, method: string): number {
+  if (/^\/api\/(packs|ai|tutor|search|imports|data|discover|level)/.test(path)) return SLOW_REQUEST_MS;
+  return method === "GET" ? REQUEST_MS : SLOW_REQUEST_MS;
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   if (remoteConfig()) return remoteRequest<T>(path, init);
-  const response = await fetch(path, {
-    ...init,
-    headers: { "Content-Type": "application/json", ...init?.headers },
-  });
+  const method = (init?.method ?? "GET").toUpperCase();
+  const controller = new AbortController();
+  const outer = init?.signal;
+  if (outer) outer.addEventListener("abort", () => controller.abort(), { once: true });
+  let response: Response;
+  try {
+    response = await withTimeout(
+      fetch(path, { ...init, signal: controller.signal, headers: { "Content-Type": "application/json", ...init?.headers } }),
+      timeoutFor(path, method),
+      () => controller.abort(),
+    );
+  } catch (error) {
+    if (outer?.aborted) throw error; // cancelled by the page, not a connection problem
+    return unreachable<T>(method, path);
+  }
+  // the dev server's proxy answers 502/503/504 (or a bare 500) while the API isn't running
+  const proxied = response.status >= 502 || (response.status === 500 && !response.headers.get("content-type")?.includes("json"));
+  if (proxied) return unreachable<T>(method, path);
+  if (useSyncState.getState().online === false) reportReachable(true);
   if (!response.ok) {
     let detail = response.statusText;
     try {
@@ -98,7 +141,23 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     }
     throw new ApiError(response.status, detail);
   }
-  return (await response.json()) as T;
+  const data = (await response.json()) as T;
+  if (method === "GET") remember(path, data);
+  return data;
+}
+
+/** The server can't be reached: answer from what's saved in this browser when possible, else fail at once. */
+async function unreachable<T>(method: string, path: string): Promise<T> {
+  serverLost();
+  if (method === "GET") {
+    const url = new URL(path, window.location.origin);
+    try {
+      return (await offlineAnswer(method, url.pathname, url.searchParams, null)) as T;
+    } catch {
+      // nothing saved for this
+    }
+  }
+  throw new ApiError(0, "Can't reach the Lingo OS server. Is it running?");
 }
 
 const json = (body: unknown): RequestInit["body"] => JSON.stringify(body);

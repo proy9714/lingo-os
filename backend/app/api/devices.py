@@ -112,6 +112,9 @@ def pair(body: PairRequest, request: Request, conn: Connection = Depends(get_con
 @router.delete("/devices/{device_id}")
 def remove(device_id: str, conn: Connection = Depends(get_conn)) -> dict[str, bool]:
     hub.revoke(conn, device_id)
+    from app.sync.server import forget_device
+
+    forget_device(device_id)
     return {"removed": True}
 
 

@@ -81,6 +81,24 @@ def test_bad_key_old_requests_and_removed_phones_are_refused(client, paired) -> 
     assert status == 403 and "pair it again" in error["error"]
 
 
+def test_a_trusted_phone_is_still_checked_and_removing_it_takes_effect_at_once(client, paired) -> None:
+    assert paired.rpc("GET", "/api/settings")["status"] == 200  # now trusted for a minute
+    with client.app.state.engine.connect() as conn:
+        seen = conn.execute(text("SELECT last_seen_at FROM devices WHERE id = :d"), {"d": paired.device}).scalar()
+    assert paired.rpc("GET", "/api/settings")["status"] == 200
+    with client.app.state.engine.connect() as conn:  # a trusted phone's requests don't write to the database
+        assert conn.execute(text("SELECT last_seen_at FROM devices WHERE id = :d"), {"d": paired.device}).scalar() == seen
+    real = paired.token
+    paired.token = "wrong"
+    status, error = paired.call("/sync/rpc", {"method": "GET", "path": "/api/settings"})
+    assert status == 403 and "pair it again" in error["error"]
+    paired.token = real
+    assert paired.rpc("GET", "/api/settings")["status"] == 200
+    client.delete(f"/api/devices/{paired.device}")
+    status, error = paired.call("/sync/rpc", {"method": "GET", "path": "/api/settings"})
+    assert status == 403 and "pair it again" in error["error"]
+
+
 def test_outbox_is_applied_once_with_last_writer_wins(client, paired) -> None:
     session = new_ulid()
     events = [
