@@ -2,7 +2,7 @@ import { type InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryCli
 import { useEffect, useRef } from "react";
 
 import { ApiError, api } from "./client";
-import type { FeedPage, Language, Settings, UpNext } from "./types";
+import type { FeedPage, FeedShelf, Language, Settings, Shelf, UpNext } from "./types";
 
 export const keys = {
   settings: ["settings"] as const,
@@ -191,7 +191,7 @@ export const useLevelMutation = <TVars, TData>(fn: (vars: TVars) => Promise<TDat
 
 // ---------------------------------------------------------------- Phase 2
 
-export const useContentList = (lang: string, q: string, shelf: "watch" | "read" | "manga" = "watch") =>
+export const useContentList = (lang: string, q: string, shelf: Shelf = "watch") =>
   useQuery({
     queryKey: ["content", lang, q, shelf],
     queryFn: () => api.content(lang, q, shelf),
@@ -334,7 +334,7 @@ const FEED_PAGE = 24;
 const LIBRARY_PAGE = 36;
 
 /** A shelf's suggestions, best first, loaded a page at a time as you scroll. */
-export const useFeed = (lang: string, shelf: "watch" | "read") =>
+export const useFeed = (lang: string, shelf: FeedShelf) =>
   useInfiniteQuery({
     queryKey: ["feed", lang, shelf],
     queryFn: ({ pageParam }) => api.feed(lang, shelf, pageParam, FEED_PAGE),
@@ -344,7 +344,7 @@ export const useFeed = (lang: string, shelf: "watch" | "read") =>
   });
 
 /** The library (watched videos, your shelf), a page at a time. */
-export const useLibrary = (lang: string, shelf: "watch" | "read", state: "all" | "watched" | "mine", q: string) =>
+export const useLibrary = (lang: string, shelf: FeedShelf, state: "all" | "watched" | "mine", q: string) =>
   useInfiniteQuery({
     queryKey: ["content", lang, q, shelf, state, "paged"],
     queryFn: ({ pageParam }) => api.content(lang, q, shelf, { state, offset: pageParam, limit: LIBRARY_PAGE }),
@@ -372,7 +372,7 @@ export const usePool = (lang: string) =>
 export function useTopUp(lang: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (opts: { force?: boolean; shelf?: "watch" | "read"; atEnd?: boolean }) => api.topUp(lang, opts),
+    mutationFn: (opts: { force?: boolean; shelf?: FeedShelf; atEnd?: boolean }) => api.topUp(lang, opts),
     onSuccess: (data) => {
       qc.setQueryData(["discover-pool", lang], data);
       void qc.invalidateQueries({ queryKey: ["discover-status"] });

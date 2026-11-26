@@ -537,10 +537,15 @@ export interface SystemStatus {
 
 // ---------------------------------------------------------------- Phase 3: reading, Up Next
 
+/** Suggestion shelves: Watch (videos, local audio), Listen (podcasts), Read, and Manga (library only). */
+export type FeedShelf = "watch" | "listen" | "read";
+export type Shelf = FeedShelf | "manga";
+export type PickKind = "video" | "podcast" | "reading" | "manga";
+
 export interface UpNextPick {
   id: number;
   type: string;
-  kind: "video" | "reading" | "manga";
+  kind: PickKind;
   title: string;
   creator: string | null;
   source: string;

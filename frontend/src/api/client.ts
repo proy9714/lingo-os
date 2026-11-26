@@ -60,6 +60,8 @@ import type {
   TodayStats,
   TrackerFlag,
   TrackerImportSummary,
+  FeedShelf,
+  Shelf,
 } from "./types";
 
 import { flush } from "../sync/outbox";
@@ -225,14 +227,14 @@ export const api = {
   content: (
     lang: string,
     q = "",
-    shelf: "watch" | "read" | "manga" = "watch",
+    shelf: Shelf = "watch",
     opts: { state?: "all" | "watched" | "mine"; offset?: number; limit?: number } = {},
   ) =>
     request<{ total: number; items: ContentItem[] }>(
       `/api/content?lang=${encodeURIComponent(lang)}&shelf=${shelf}&state=${opts.state ?? "all"}&limit=${opts.limit ?? 120}` +
         `&offset=${opts.offset ?? 0}${q ? `&q=${encodeURIComponent(q)}` : ""}`,
     ),
-  feed: (lang: string, shelf: "watch" | "read", offset = 0, limit = 24) =>
+  feed: (lang: string, shelf: FeedShelf, offset = 0, limit = 24) =>
     request<FeedPage>(`/api/feed?lang=${encodeURIComponent(lang)}&shelf=${shelf}&offset=${offset}&limit=${limit}`),
   contentItem: (id: number) => request<ContentItem>(`/api/content/${id}`),
   addYouTube: (lang: string, url: string) =>
@@ -428,7 +430,7 @@ export const api = {
   discoverPool: (lang: string) => request<PoolStatus>(`/api/discover/pool?lang=${encodeURIComponent(lang)}`),
   dailyRefresh: (lang: string) =>
     request<{ language: string; ran: boolean; date: string }>("/api/discover/daily", { method: "POST", body: json({ lang }) }),
-  topUp: (lang: string, opts: { force?: boolean; shelf?: "watch" | "read"; atEnd?: boolean } = {}) =>
+  topUp: (lang: string, opts: { force?: boolean; shelf?: FeedShelf; atEnd?: boolean } = {}) =>
     request<PoolStatus>("/api/discover/top-up", {
       method: "POST",
       body: json({ lang, force: Boolean(opts.force), shelf: opts.shelf, at_end: Boolean(opts.atEnd) }),

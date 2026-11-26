@@ -130,10 +130,13 @@ def get_item(conn: Connection, item_id: int) -> dict[str, Any]:
     return _item(row)
 
 
-WATCH_TYPES = ("youtube", "video", "audio", "podcast_episode")
+VIDEO_TYPES = ("youtube", "video", "audio")
+PODCAST_TYPES = ("podcast_episode",)
+WATCH_TYPES = VIDEO_TYPES + PODCAST_TYPES  # everything you listen to (the listening modality)
 READ_TYPES = ("epub", "pdf", "article", "text")
 MANGA_TYPES = ("manga_volume",)
-SHELVES = {"watch": WATCH_TYPES, "read": READ_TYPES, "manga": MANGA_TYPES}
+# shelves: Watch (videos and local audio), Listen (podcasts), Read, Manga
+SHELVES = {"watch": VIDEO_TYPES, "listen": PODCAST_TYPES, "read": READ_TYPES, "manga": MANGA_TYPES}
 
 
 def list_items(

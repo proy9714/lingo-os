@@ -31,7 +31,7 @@ from sqlalchemy import Connection, text
 
 from app.services import content, ranker, taste
 from app.services.catalog import CONFIDENCE
-from app.services.content import MANGA_TYPES, READ_TYPES, SHELVES, WATCH_TYPES
+from app.services.content import MANGA_TYPES, PODCAST_TYPES, READ_TYPES, SHELVES, WATCH_TYPES
 
 WATCHED_TYPES = ", ".join(f"'{t}'" for t in WATCH_TYPES)
 
@@ -84,6 +84,8 @@ def candidates(conn: Connection, lang: str, shelf: str | None = None) -> list[di
 def kind_of(item: dict[str, Any]) -> str:
     if item["type"] in MANGA_TYPES:
         return "manga"
+    if item["type"] in PODCAST_TYPES:
+        return "podcast"
     return "reading" if item["type"] in READ_TYPES else "video"
 
 

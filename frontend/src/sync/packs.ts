@@ -64,3 +64,18 @@ export const deletePack = async (id: number) => {
 export const savePageImage = (id: number, page: number, image: Blob) => run("readwrite", (s) => s.put(image, `${id}/${page}`), IMAGES);
 export const getPageImage = (id: number, page: number) => run<Blob | undefined>("readonly", (s) => s.get(`${id}/${page}`), IMAGES);
 export const allPacks = () => run<Pack[]>("readonly", (s) => s.getAll());
+
+// ---------------------------------------------------------------- offline media (contract; implemented by the downloads work)
+
+/** A downloaded audio/video file, kept on this device for offline playback. */
+export interface OfflineMedia {
+  id: number;
+  mime: string;
+  bytes: number;
+  saved_at: string;
+}
+
+/** The downloaded media for an item, if it was saved for offline (null otherwise). */
+export async function getMedia(_id: number): Promise<Blob | null> {
+  return null;
+}
