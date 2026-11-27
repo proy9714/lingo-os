@@ -35,6 +35,7 @@ REGISTER = {
     "ru": "Address the learner with ты.",
     "ko": "Use the polite 해요 style (존댓말).",
     "it": "Address the learner with tu.",
+    "ro": "Address the learner with tu; always write ș and ț with a comma below, and â / î as in current spelling.",
     "hi": "Address the learner with आप; write in Devanagari, with everyday words rather than Sanskritised ones.",
     "bn": "Address the learner with আপনি; write in Bengali script, in standard colloquial Bengali (চলিত ভাষা).",
     "ar": "Use Modern Standard Arabic (فصحى) without vowel marks except where a word would be ambiguous; if the learner "
@@ -135,6 +136,16 @@ SCENARIOS: dict[str, list[dict[str, str]]] = {
          "setting": "a flat in Bologna", "you": "the landlord", "learner": "a student"},
         {"id": "farmacia", "title": "At the pharmacy",
          "setting": "a pharmacy in Naples", "you": "the pharmacist", "learner": "a customer with a sore throat"},
+    ],
+    "ro": [
+        {"id": "piata", "title": "Shopping at the market",
+         "setting": "Piața Obor in Bucharest on a Saturday morning", "you": "a vegetable seller", "learner": "a customer"},
+        {"id": "tren", "title": "Buying a train ticket",
+         "setting": "the ticket office at Gara de Nord", "you": "the clerk", "learner": "a traveller going to Brașov"},
+        {"id": "chirie", "title": "Viewing a flat to rent",
+         "setting": "a flat in Cluj-Napoca", "you": "the landlady", "learner": "a student"},
+        {"id": "farmacie", "title": "At the pharmacy",
+         "setting": "a pharmacy in Iași", "you": "the pharmacist", "learner": "a customer with a cough"},
     ],
     "hi": [
         {"id": "sabzi", "title": "Buying vegetables at the market",

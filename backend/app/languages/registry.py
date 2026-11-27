@@ -149,11 +149,17 @@ CATALOG: tuple[LanguageSpec, ...] = (
         dictionary_lemmas=True,
         names=("italian", "italiano", "italienisch", "italien", "итальянский", "이탈리아어", "イタリア語", "意大利语"),
     ),
+    LanguageSpec(
+        "ro", "Romanian", "Română", 25, "#fde047", "#231d02", "latin", 1.0, "spacy",
+        (Variant("ro", "Romania", "ro-RO"),), _wty("ro", 12), Model("ro_core_news_sm", "3.8.0", 13), wiki_page="Romanian",
+        dictionary_lemmas=True,
+        names=("romanian", "română", "rumänisch", "rumano", "roumain", "rumeno", "romeno", "румынский", "루마니아어", "ルーマニア語", "罗马尼亚语"),
+    ),
 )
 
 BY_CODE: dict[str, LanguageSpec] = {spec.code: spec for spec in CATALOG}
 # Languages whose word splitter is built (the rest are listed as "coming soon").
-AVAILABLE = frozenset({"zh", "hi", "es", "ar", "fr", "bn", "pt", "ru", "de", "ja", "ko", "it"})
+AVAILABLE = frozenset({"zh", "hi", "es", "ar", "fr", "bn", "pt", "ru", "de", "ja", "ko", "it", "ro"})
 
 
 def spec(code: str) -> LanguageSpec:

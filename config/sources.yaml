@@ -143,3 +143,15 @@ languages:
       - { name: DW عربية, url: "https://rss.dw.com/xml/rss-ar-all" }
       - { name: فرانس 24, url: "https://www.france24.com/ar/rss" }
       - { name: CNN بالعربية, url: "https://arabic.cnn.com/api/v1/rss/rss.xml" }
+  ro:
+    searches:
+      - "română ușoară {level} {topic}"
+      - "comprehensible input Romanian {topic}"
+      - "învață limba română {level} {topic}"
+    topics: [viața de zi cu zi, călătorii, mâncare, istorie, cultură, știință, muncă]
+    feeds:
+      - { name: Digi24, url: "https://www.digi24.ro/rss" }
+      - { name: HotNews, url: "https://hotnews.ro/feed" }
+      - { name: G4Media, url: "https://www.g4media.ro/feed" }
+      - { name: Mediafax, url: "https://www.mediafax.ro/feed" }
+      - { name: Descoperă (știință), url: "https://www.descopera.ro/feed" }

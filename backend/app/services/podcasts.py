@@ -38,11 +38,11 @@ MIN_MINUTES, MAX_MINUTES = 2, 120
 MAX_AUDIO_BYTES = 400 * 1024 * 1024
 # Apple's directory is searched per country: the main ones for each language
 COUNTRIES = {
-    "de": ("de", "at", "ch"), "es": ("es", "mx", "ar"), "fr": ("fr", "ca", "be"), "it": ("it",), "pt": ("br", "pt"),
+    "de": ("de", "at", "ch"), "es": ("es", "mx", "ar"), "fr": ("fr", "ca", "be"), "it": ("it",), "ro": ("ro", "md"), "pt": ("br", "pt"),
     "ru": ("ru",), "ja": ("jp",), "ko": ("kr",), "zh": ("tw", "hk", "cn"), "hi": ("in",), "bn": ("in", "bd"), "ar": ("eg", "sa", "ae"),
 }
 LEARNER_QUERIES = {
-    "de": "Deutsch lernen", "es": "español para extranjeros", "fr": "français facile", "it": "italiano per stranieri",
+    "de": "Deutsch lernen", "es": "español para extranjeros", "fr": "français facile", "it": "italiano per stranieri", "ro": "limba română pentru străini",
     "pt": "português para estrangeiros", "ru": "русский язык для иностранцев", "ja": "日本語 学習者", "ko": "한국어 학습",
     "zh": "中文 学习", "hi": "हिंदी सीखें", "bn": "বাংলা শিখুন", "ar": "تعلم العربية",
 }

@@ -12,7 +12,7 @@ import { isNativeApp } from "../sync/remote";
 
 export const LOCALES: Record<string, string> = {
   zh: "zh-CN", hi: "hi-IN", es: "es-ES", ar: "ar-SA", fr: "fr-FR", bn: "bn-BD", pt: "pt-BR",
-  ru: "ru-RU", de: "de-DE", ja: "ja-JP", ko: "ko-KR", it: "it-IT",
+  ru: "ru-RU", de: "de-DE", ja: "ja-JP", ko: "ko-KR", it: "it-IT", ro: "ro-RO",
 };
 
 /** The regional variety each language was added with (pt-PT, fr-CA…): voices and speech recognition follow it. */

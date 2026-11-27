@@ -221,12 +221,12 @@ const TOPICS: Topic[] = [
     id: "languages",
     title: "Languages",
     summary: "Add, switch and remove the languages you learn.",
-    keywords: "language add remove switch french italian portuguese russian korean chinese mandarin variety download dictionary",
+    keywords: "language add remove switch french italian romanian portuguese russian korean chinese mandarin variety download dictionary",
     body: (
       <>
         <p>
-          Lingo OS teaches Mandarin Chinese, Hindi, Spanish, Arabic, French, Bengali, Portuguese, Russian, German, Japanese, Korean and
-          Italian. <Go to="/settings">Settings</Go> → Languages lists them by number of speakers. Arabic reads right to left, and its
+          Lingo OS teaches Mandarin Chinese, Hindi, Spanish, Arabic, French, Bengali, Portuguese, Russian, German, Japanese, Korean,
+          Italian and Romanian. <Go to="/settings">Settings</Go> → Languages lists them by number of speakers. Arabic reads right to left, and its
           words are looked up without vowel marks and without the article or pronoun endings glued to them (والناس → ناس).
         </p>
         <Steps>

@@ -44,6 +44,10 @@ EXAMS: dict[str, list[dict[str, Any]]] = {
         {"id": "cils", "name": "CILS", "levels": _cefr_levels()},
         {"id": "plida", "name": "PLIDA", "levels": _cefr_levels()},
     ],
+    "ro": [
+        {"id": "ecl", "name": "ECL", "levels": _cefr_levels(levels=("A2", "B1", "B2", "C1"))},
+        {"id": "ub", "name": "Certificat de competență lingvistică (Universitatea din București)", "levels": _cefr_levels()},
+    ],
     "pt": [
         {"id": "caple", "name": "CAPLE", "levels": _cefr_levels()},
         {"id": "celpe", "name": "Celpe-Bras", "levels": [

@@ -1,0 +1,366 @@
+# Romanian grammar reference, beginner to intermediate. Shown on the Grammar page.
+# Cells: "target | translation"; several in one cell are separated by " ;; "; {…} marks an ending to highlight.
+# Examples: [sentence, translation, optional note].  kind: structure | verbs | contrast | summary
+
+language: ro
+title: Romanian grammar
+intro: >-
+  A working reference for beginners to intermediate learners. Every pattern comes with real sentences and a translation:
+  read a section, notice the shape, then listen for it in what you watch and read.
+
+sections:
+  - id: nouns
+    title: Nouns, gender & the article on the end
+    kind: structure
+    level: A1
+    tags: [gender, article, neuter, -ul, -a, -le, plural, noun, un, o]
+    tables:
+      - head: ["", "a / an", "the (singular)", "the (plural)"]
+        rows:
+          - ["masculine", "un băiat | a boy", "băiat{ul}", "băieț{ii}"]
+          - ["masculine in -e", "un frate", "frate{le}", "fraț{ii}"]
+          - ["feminine", "o casă | a house", "cas{a}", "case{le}"]
+          - ["neuter (masc. sing., fem. pl.)", "un tren | a train", "tren{ul}", "trenuri{le}"]
+    text: >-
+      Romanian has three genders. **Neuter** nouns behave as masculine in the singular and feminine in the plural: **un
+      tren, două trenuri**. The definite article is glued to the **end** of the noun: **casa** (the house), **orașul**
+      (the city). Feminine nouns in **-ă** swap it for **-a**: casă → casa. After a preposition with no adjective, the
+      article usually drops: **în oraș** (in the city), but **în orașul meu**.
+    examples:
+      - ["Orașul e foarte frumos.", "The city is very beautiful.", "oraș + -ul"]
+      - ["Am cumpărat o mașină nouă.", "I bought a new car."]
+      - ["Trenurile sunt pline dimineața.", "The trains are full in the morning.", "neuter: fem. plural"]
+      - ["Locuiesc în centru.", "I live in the centre.", "no article after în"]
+
+  - id: cases
+    title: Genitive & dative (of / to)
+    kind: structure
+    level: A2
+    tags: [case, genitive, dative, -ului, -ei, -lor, al, a, ai, ale, lui]
+    tables:
+      - head: ["", "the (nominative)", "of / to the (genitive-dative)"]
+        rows:
+          - ["masculine & neuter", "băiatul, orașul", "băiat{ului}, oraș{ului}"]
+          - ["feminine", "fata, casa", "fet{ei}, cas{ei}"]
+          - ["plural", "băieții, fetele", "băieți{lor}, fete{lor}"]
+          - ["a / an", "un băiat, o fată", "{unui} băiat, {unei} fete"]
+          - ["names", "Ion, Maria", "{lui} Ion, {lui} Maria"]
+    text: >-
+      Nouns change their ending for "of" (genitive) and "to" (dative); the two look the same. When the owned thing has no
+      article right before the owner, Romanian adds **al / a / ai / ale** (agreeing with the thing owned): **o prietenă a
+      mamei**, **un prieten al meu**. The accusative and nominative look the same, so **pe** marks a person as the
+      object: **O văd pe Maria.**
+    examples:
+      - ["Mașina vecinului e în fața casei.", "The neighbour's car is in front of the house."]
+      - ["I-am dat cartea fetei.", "I gave the book to the girl.", "dative"]
+      - ["E un prieten al fratelui meu.", "He's a friend of my brother's.", "al agrees with prieten"]
+      - ["Casa lui Andrei e departe.", "Andrei's house is far away."]
+
+  - id: pronouns
+    title: Subject pronouns, tu & dumneavoastră
+    kind: structure
+    level: A1
+    tags: [pronoun, eu, tu, el, ea, noi, voi, ei, ele, dumneavoastră, politeness]
+    tables:
+      - head: ["Meaning", "Pronoun"]
+        rows:
+          - ["I", "eu"]
+          - ["you (friend)", "tu"]
+          - ["he / she", "el / ea"]
+          - ["we", "noi"]
+          - ["you (plural, or polite)", "voi ;; dumneavoastră"]
+          - ["they (masc. or mixed / fem.)", "ei / ele"]
+    text: >-
+      The verb ending already shows who is acting, so pronouns are usually dropped: **Vorbesc puțin românește.** The
+      polite **dumneavoastră** (written **dvs.**) takes the voi form of the verb: **Sunteți din București?** A milder
+      polite form, **dumneata**, is used with the tu form.
+    examples:
+      - ["Sunt din Anglia, dar locuiesc la Iași.", "I'm from England, but I live in Iași."]
+      - ["Dumneavoastră ce doriți?", "What would you like? (polite)", "voi verb form"]
+      - ["Ea lucrează, el nu.", "She works, he doesn't.", "pronouns for contrast"]
+
+  - id: present
+    title: Present tense (regular verbs)
+    kind: verbs
+    level: A1
+    tags: [present, conjugation, -a, -ea, -e, -i, -î, -ez, -esc]
+    rule: Many -a verbs add -ez- and many -i verbs add -esc-; learn each verb with its eu form.
+    tables:
+      - head: ["Person", "a cânta | to sing", "a lucra | to work", "a merge | to go", "a citi | to read"]
+        rows:
+          - ["eu", "cânt", "lucr{ez}", "merg", "cit{esc}"]
+          - ["tu", "cânț{i}", "lucr{ezi}", "merg{i}", "cit{ești}"]
+          - ["el / ea", "cânt{ă}", "lucr{ează}", "merg{e}", "cit{ește}"]
+          - ["noi", "cânt{ăm}", "lucr{ăm}", "merg{em}", "cit{im}"]
+          - ["voi", "cânt{ați}", "lucr{ați}", "merg{eți}", "cit{iți}"]
+          - ["ei / ele", "cânt{ă}", "lucr{ează}", "merg", "cit{esc}"]
+    text: >-
+      The present covers habits, facts, what's happening right now and the near future: **Ce faci?** (What are you
+      doing? / How are you?). The infinitive is quoted with **a**: a lucra, to work. Consonants often change before -i:
+      **cânt → cânți, pot → poți, scriu → scrii**.
+    examples:
+      - ["Lucrez de acasă azi.", "I'm working from home today."]
+      - ["Mâine plecăm devreme.", "Tomorrow we're leaving early.", "present for the near future"]
+      - ["Citește mult în tren.", "She reads a lot on the train."]
+
+  - id: irregular
+    title: Key irregular verbs
+    kind: verbs
+    level: A1
+    tags: [a fi, a avea, a vrea, a face, a da, a lua, irregular]
+    tables:
+      - head: ["Person", "a fi | to be", "a avea | to have", "a vrea | to want", "a face | to do"]
+        rows:
+          - ["eu", "sunt", "am", "vreau", "fac"]
+          - ["tu", "ești", "ai", "vrei", "faci"]
+          - ["el / ea", "este (e)", "are", "vrea", "face"]
+          - ["noi", "suntem", "avem", "vrem", "facem"]
+          - ["voi", "sunteți", "aveți", "vreți", "faceți"]
+          - ["ei / ele", "sunt", "au", "vor", "fac"]
+    text: >-
+      Also very common: **a da** (dau, dai, dă…), **a lua** (iau, iei, ia…), **a putea** (pot, poți, poate…), **a
+      veni** (vin, vii, vine…), **a ști** (știu, știi, știe…). In speech **este** is usually **e**. Hunger, thirst and
+      cold use **a-i fi** with a dative pronoun: **mi-e foame, mi-e sete, mi-e frig**.
+    examples:
+      - ["Mi-e foame, mergem să mâncăm?", "I'm hungry, shall we go and eat?"]
+      - ["Am doi frați și o soră.", "I have two brothers and a sister."]
+      - ["Ce vrei să faci diseară?", "What do you want to do tonight?"]
+
+  - id: negation
+    title: Negation
+    kind: structure
+    level: A1
+    tags: [negation, nu, nimic, nimeni, niciodată, nu mai, double negative]
+    tables:
+      - head: ["", "Pattern", "Example"]
+        rows:
+          - ["not", "nu + verb", "Nu știu. | I don't know."]
+          - ["never", "nu … niciodată", "Nu mănânc niciodată carne. | I never eat meat."]
+          - ["nothing", "nu … nimic", "Nu văd nimic. | I can't see anything."]
+          - ["nobody", "nu … nimeni", "Nu e nimeni acasă. | There's nobody home."]
+          - ["no longer", "nu mai + verb", "Nu mai fumează. | He doesn't smoke any more."]
+    text: >-
+      **nu** goes before the verb and its pronouns. Double negatives are required: **Nu am văzut pe nimeni.** Unlike
+      Italian or Spanish, **nu** stays even when nimeni or nimic comes first: **Nimeni nu știe.** In speech nu often
+      merges: **n-am, n-ai, n-a**.
+    examples:
+      - ["N-am înțeles.", "I didn't understand.", "nu + am"]
+      - ["Nu mai avem lapte.", "We're out of milk."]
+      - ["Nimic nu e imposibil.", "Nothing is impossible.", "nu stays"]
+
+  - id: adjectives
+    title: Adjectives & agreement
+    kind: structure
+    level: A1
+    tags: [adjective, agreement, position, frumos, mare, nou]
+    tables:
+      - head: ["", "masc. singular", "fem. singular", "masc. plural", "fem. plural"]
+        rows:
+          - ["frumos | beautiful", "frumos", "frumo{asă}", "frumo{și}", "frumo{ase}"]
+          - ["nou | new", "nou", "no{uă}", "no{i}", "no{i}"]
+          - ["mare | big", "mare", "mare", "mar{i}", "mar{i}"]
+    text: >-
+      Adjectives agree with the noun and normally come **after** it: **o casă mare**. Neuter nouns take the masculine
+      form in the singular and the feminine in the plural: **un tren nou, trenuri noi**. When an adjective goes first
+      for emphasis, it takes the article: **frumoasa ta casă**.
+    examples:
+      - ["E o idee interesantă.", "That's an interesting idea."]
+      - ["Ce vreme frumoasă!", "What lovely weather!"]
+      - ["Pantofii noi sunt comozi.", "The new shoes are comfortable."]
+
+  - id: perfect-compus
+    title: Perfect compus (what happened)
+    kind: verbs
+    level: A2
+    tags: [past, perfect compus, participle, am, ai, a, au, -at, -ut, -it]
+    rule: am / ai / a / am / ați / au + the past participle, which never changes.
+    tables:
+      - head: ["Person", "auxiliary", "a mânca → mâncat", "a vedea → văzut", "a pleca → plecat"]
+        rows:
+          - ["eu", "am", "am mâncat", "am văzut", "am plecat"]
+          - ["tu", "ai", "ai mâncat", "ai văzut", "ai plecat"]
+          - ["el / ea", "a", "a mâncat", "a văzut", "a plecat"]
+          - ["noi", "am", "am mâncat", "am văzut", "am plecat"]
+          - ["voi", "ați", "ați mâncat", "ați văzut", "ați plecat"]
+          - ["ei / ele", "au", "au mâncat", "au văzut", "au plecat"]
+    text: >-
+      This is the everyday past for finished events, and every verb uses **a avea**. Participles: **-a → -at** (lucrat),
+      **-ea / -e → -ut** (văzut, făcut, but scris, pus, spus), **-i → -it** (citit), **-î → -ât** (hotărât). Note
+      **a fi → fost**: **am fost** (I was / I've been).
+    examples:
+      - ["Ieri am fost la mare.", "Yesterday I went to the seaside."]
+      - ["Ai văzut filmul?", "Have you seen the film?"]
+      - ["Trenul a plecat deja.", "The train has already left."]
+
+  - id: imperfect
+    title: Imperfect (how things were)
+    kind: verbs
+    level: A2
+    tags: [imperfect, past, habit, background, -am, -eam]
+    tables:
+      - head: ["Person", "a lucra | to work", "a merge | to go", "a fi | to be"]
+        rows:
+          - ["eu", "lucr{am}", "merg{eam}", "eram"]
+          - ["tu", "lucr{ai}", "merg{eai}", "erai"]
+          - ["el / ea", "lucr{a}", "merg{ea}", "era"]
+          - ["noi", "lucr{am}", "merg{eam}", "eram"]
+          - ["voi", "lucr{ați}", "merg{eați}", "erați"]
+          - ["ei / ele", "lucr{au}", "merg{eau}", "erau"]
+    text: >-
+      The imperfect describes habits, background and what was going on: **Când eram mic, mergeam des la bunici.**
+      It also softens requests: **Voiam să vă întreb ceva** (I wanted to ask you something).
+    examples:
+      - ["Ploua și era frig.", "It was raining and it was cold."]
+      - ["Pe vremea aceea lucram într-o bancă.", "Back then I worked in a bank."]
+
+  - id: past-contrast
+    title: Perfect compus vs imperfect
+    kind: contrast
+    level: B1
+    tags: [perfect compus, imperfect, past, contrast, story]
+    tables:
+      - head: ["", "Perfect compus", "Imperfect"]
+        rows:
+          - ["use", "a finished event: what happened", "background, habit, what was going on"]
+          - ["in a story", "the events that move it forward", "the scene and the setting"]
+          - ["together", "a sunat telefonul | the phone rang", "când dormeam | while I was sleeping"]
+    text: >-
+      Ask: is it a single finished event (perfect compus) or the backdrop to one (imperfect)? Storytelling in writing
+      also uses the **perfect simplu** (cântai, merse), common in literature and in parts of Oltenia, but rare in
+      everyday speech elsewhere.
+    examples:
+      - ["Citeam când a sunat cineva la ușă.", "I was reading when someone rang the doorbell."]
+      - ["În fiecare vară mergeam la mare, dar anul trecut am rămas acasă.", "Every summer we went to the seaside, but last year we stayed home."]
+
+  - id: subjunctive
+    title: Conjunctiv (să + verb)
+    kind: verbs
+    level: A2
+    tags: [conjunctiv, subjunctive, să, vreau să, trebuie să, pot să, infinitive]
+    rule: să + present form, except the el / ea / ei / ele form, which changes (usually -e ↔ -ă).
+    tables:
+      - head: ["Person", "a lucra", "a merge", "a fi", "a avea"]
+        rows:
+          - ["eu", "să lucrez", "să merg", "să fiu", "să am"]
+          - ["tu", "să lucrezi", "să mergi", "să fii", "să ai"]
+          - ["el / ea", "să lucr{eze}", "să mearg{ă}", "să {fie}", "să {aibă}"]
+          - ["noi", "să lucrăm", "să mergem", "să fim", "să avem"]
+          - ["voi", "să lucrați", "să mergeți", "să fiți", "să aveți"]
+          - ["ei / ele", "să lucr{eze}", "să mearg{ă}", "să {fie}", "să {aibă}"]
+    text: >-
+      Where English uses "to + verb", Romanian usually uses **să** + a conjugated verb: **Vreau să plec** (I want to
+      leave), **Trebuie să învăț** (I have to study), **Pot să intru?** (Can I come in?). It also follows wishes and
+      suggestions: **Să mergem!** (Let's go!).
+    examples:
+      - ["Vreau să învăț românește.", "I want to learn Romanian."]
+      - ["Trebuie să plece la șase.", "He has to leave at six.", "a pleca → să plece"]
+      - ["Să-mi spui când ajungi.", "Tell me when you arrive."]
+
+  - id: future
+    title: "The future: voi, o să, am să"
+    kind: verbs
+    level: A2
+    tags: [future, voi, vei, va, vom, veți, vor, o să, am să]
+    tables:
+      - head: ["Person", "formal (voi + infinitive)", "spoken (o să + conjunctiv)"]
+        rows:
+          - ["eu", "voi merge", "o să merg"]
+          - ["tu", "vei merge", "o să mergi"]
+          - ["el / ea", "va merge", "o să meargă"]
+          - ["noi", "vom merge", "o să mergem"]
+          - ["voi", "veți merge", "o să mergeți"]
+          - ["ei / ele", "vor merge", "o să meargă"]
+    text: >-
+      News and writing use **voi / vei / va … + infinitive**; conversation prefers **o să** (unchanging) + the
+      conjunctiv. **am să / ai să …** is another spoken form. The present also works for plans: **Mâine plec.**
+    examples:
+      - ["O să vedem.", "We'll see."]
+      - ["Guvernul va anunța noile măsuri mâine.", "The government will announce the new measures tomorrow."]
+
+  - id: object-pronouns
+    title: Object pronouns & the hyphen
+    kind: structure
+    level: A2
+    tags: [pronoun, clitic, mă, te, îl, o, îmi, îți, îi, le, hyphen, pe, doubling]
+    tables:
+      - head: ["", "me", "you", "him / it", "her / it", "us", "you (pl.)", "them"]
+        rows:
+          - ["direct (accusative)", "mă", "te", "îl", "o", "ne", "vă", "îi (m.) / le (f.)"]
+          - ["indirect (dative)", "îmi", "îți", "îi", "îi", "ne", "vă", "le"]
+          - ["before a vowel", "m-, mi-", "te-, ți-", "l-, i-", "o (a-o)", "ne-, ni-", "v-, vi-", "i-, le-"]
+    text: >-
+      Pronouns go before the verb and lose a vowel before another vowel, joined with a hyphen: **m-am trezit, l-am
+      văzut, mi-a spus, i-am dat**. With the perfect compus, feminine **o** goes after the participle: **am văzut-o**.
+      Known people as objects are usually doubled: **Îl cunosc pe Andrei. Îi dau Mariei o carte.**
+    examples:
+      - ["Te sun mâine.", "I'll call you tomorrow."]
+      - ["L-am întâlnit ieri pe stradă.", "I met him on the street yesterday."]
+      - ["Mi-a plăcut foarte mult.", "I liked it a lot.", "a-i plăcea: literally it pleased me"]
+
+  - id: reflexive
+    title: Reflexive verbs & se
+    kind: verbs
+    level: A2
+    tags: [reflexive, se, mă, te, ne, vă, impersonal, passive]
+    tables:
+      - head: ["Person", "a se trezi | to wake up", "a se numi | to be called"]
+        rows:
+          - ["eu", "mă trezesc", "mă numesc"]
+          - ["tu", "te trezești", "te numești"]
+          - ["el / ea", "se trezește", "se numește"]
+          - ["noi", "ne trezim", "ne numim"]
+          - ["voi", "vă treziți", "vă numiți"]
+          - ["ei / ele", "se trezesc", "se numesc"]
+    text: >-
+      Many everyday verbs are reflexive in Romanian: **a se duce** (to go), **a se uita** (to look), **a-și aminti** (to
+      remember, with a dative pronoun: îmi amintesc). **se** also makes impersonal and passive sentences: **Aici se
+      vorbește engleză. Nu se știe.**
+    examples:
+      - ["Mă numesc Ana.", "My name is Ana."]
+      - ["Ne vedem mâine!", "See you tomorrow!", "a se vedea: to see each other"]
+      - ["Cum se spune asta în română?", "How do you say this in Romanian?"]
+
+  - id: conditional
+    title: Conditional (would)
+    kind: verbs
+    level: B1
+    tags: [conditional, aș, ar, dacă, if, polite, aș fi]
+    tables:
+      - head: ["Person", "aux.", "present: aș vrea", "past: aș fi vrut"]
+        rows:
+          - ["eu", "aș", "aș merge", "aș fi mers"]
+          - ["tu", "ai", "ai merge", "ai fi mers"]
+          - ["el / ea", "ar", "ar merge", "ar fi mers"]
+          - ["noi", "am", "am merge", "am fi mers"]
+          - ["voi", "ați", "ați merge", "ați fi mers"]
+          - ["ei / ele", "ar", "ar merge", "ar fi mers"]
+    text: >-
+      **aș / ai / ar / am / ați / ar + infinitive** gives "would". Unlike most Romance languages, both halves of an
+      imagined "if" use it: **Dacă aș avea timp, aș călători.** For the past: **Dacă aș fi știut, aș fi venit.** **Aș
+      vrea** is the polite "I'd like".
+    examples:
+      - ["Aș vrea o cafea, vă rog.", "I'd like a coffee, please."]
+      - ["Dacă ar ploua, am rămâne acasă.", "If it rained, we'd stay home."]
+      - ["Ar fi trebuit să plecăm mai devreme.", "We should have left earlier."]
+
+  - id: memory-map
+    title: One-page memory map
+    kind: summary
+    level: all
+    tags: [summary, overview]
+    points:
+      - "The article sits on the end of the noun: un oraș → orașul, o casă → casa."
+      - "Neuter nouns: masculine in the singular, feminine in the plural (un tren, două trenuri)."
+      - "-ului, -ei, -lor mean of / to the; al, a, ai, ale link an owner after a gap."
+      - "pe marks a person as the object, and the pronoun doubles it: îl văd pe Ion."
+      - The verb ending says who's acting, so subject pronouns are usually dropped.
+      - "Perfect compus (am făcut) tells what happened; imperfect (făceam) paints the background."
+      - "Where English says to + verb, Romanian says să + verb: vreau să plec."
+      - "Future: o să merg in speech, voi merge in writing."
+      - "Pronouns join the next word with a hyphen: l-am văzut, mi-a spus."
+      - "Double negatives are required, and nu stays: nimeni nu știe."
+      - "Conditional on both sides of an imagined if: dacă aș avea, aș face."
+    tip: >-
+      Listening strategy: the ending of the noun tells you whether it's "a", "the" or "of the" (oraș, orașul,
+      orașului), so listen to the last syllable. ă, â and î are real vowels, not ornaments: fată (a girl) vs fata (the
+      girl), peste (over) vs pește (fish).

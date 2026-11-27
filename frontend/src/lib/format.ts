@@ -91,6 +91,11 @@ const GREETINGS: Record<string, [number, string][]> = {
     [18, "Buon pomeriggio"],
     [24, "Buonasera"],
   ],
+  ro: [
+    [12, "Bună dimineața"],
+    [18, "Bună ziua"],
+    [24, "Bună seara"],
+  ],
 };
 
 export function greeting(lang: string, hour = new Date().getHours()): string {

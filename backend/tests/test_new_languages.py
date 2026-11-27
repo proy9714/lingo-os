@@ -28,7 +28,7 @@ def test_catalog_is_ordered_by_speakers(client) -> None:
     catalog = client.get("/api/languages/catalog").json()
     assert [c["code"] for c in catalog][:4] == ["zh", "hi", "es", "ar"]
     speakers = [c["speakers_millions"] for c in catalog]
-    assert speakers == sorted(speakers, reverse=True) and len(catalog) == 12
+    assert speakers == sorted(speakers, reverse=True) and len(catalog) == 13
     by_code = {c["code"]: c for c in catalog}
     assert by_code["de"]["added"] and not by_code["fr"]["added"]
     assert all(c["available"] for c in catalog)  # Hindi, Arabic and Bengali too, since 0.5
@@ -115,6 +115,7 @@ def models():
         ("fr", "fr_core_news_sm", "Je t'appellerai demain.", {"appellerai": "appeler"}),
         ("ru", "ru_core_news_sm", "Я позвоню тебе завтра.", {"позвоню": "позвонить"}),
         ("pt", "pt_core_news_sm", "Fizeram-no ontem.", {"Fizeram-no": "fazer"}),
+        ("ro", "ro_core_news_sm", "Copiii s-au jucat în parc.", {"jucat": "juca"}),
         ("ko", "ko_core_news_sm", "우리는 밥을 먹었습니다.", {"먹었습니다": "먹다", "밥을": "밥"}),
     ],
 )

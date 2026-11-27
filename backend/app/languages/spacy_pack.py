@@ -1,6 +1,6 @@
 """Word splitters built on spaCy models that are downloaded when a language is added (data/models/<name>).
 
-SpacyPack   French, Italian, Portuguese, Russian: lemmas and parts of speech from the model, pronouns attached
+SpacyPack   French, Italian, Portuguese, Romanian, Russian: lemmas and parts of speech from the model, pronouns attached
             with a hyphen or apostrophe looked up through the word they hang on (Portuguese "fizeram-no" → fazer).
 KoreanPack  spaCy's Korean model writes lemmas as morphemes ("먹+었+습니다"): a verb or adjective becomes its
             dictionary form (먹다), a noun loses its particle (밥을 → 밥).
@@ -40,6 +40,9 @@ def load_model(name: str):
 
 
 # Pronouns written onto the verb with a hyphen (Portuguese, some French) or an apostrophe (Italian gliel', French l').
+# Romanian ș and ț are often typed with a cedilla (ş, ţ, from old keyboards); the model and Wiktionary use the comma.
+# One character for one, so token offsets still match the text.
+COMMA_BELOW = str.maketrans("şţŞŢ", "șțȘȚ")
 HYPHEN_CLITIC = re.compile(r"^(?P<word>[^\W\d_]{2,})-(?:[^\W\d_]{1,5})(?:-[^\W\d_]{1,5})?$")
 
 
@@ -59,7 +62,7 @@ class SpacyPack:
         return lemma, pos
 
     def analyze(self, text: str) -> tuple[list[Token], list[Sentence]]:
-        doc = self.nlp(text)
+        doc = self.nlp(text.translate(COMMA_BELOW) if self.code == "ro" else text)
         tokens: list[Token] = []
         for tok in doc:
             if tok.is_space:

@@ -213,6 +213,40 @@ TEXTS: dict[str, dict[str, str]] = {
             "Одно ясно наверняка: дискуссия только начинается."
         ),
     },
+    "ro": {
+        "A2": (
+            "Sâmbăta merg de obicei la piață. "
+            "Acolo cumpăr fructe și legume proaspete pentru toată săptămâna. "
+            "Vânzătorii sunt foarte amabili și uneori îmi dau un măr gratis. "
+            "După cumpărături beau o cafea într-o cafenea mică de pe colț. "
+            "Când e soare, stau afară și mă uit la oamenii care trec. "
+            "După-amiaza gătesc ceva bun pentru prietenii mei."
+        ),
+        "B1": (
+            "În România, mulți oameni fac naveta zilnic între oraș și satul în care locuiesc. "
+            "Cei mai mulți merg cu mașina, deși drumurile sunt adesea aglomerate dimineața. "
+            "Alții preferă trenul sau autobuzul, pentru că pot citi sau asculta muzică în timpul călătoriei. "
+            "Din păcate, trenurile nu sunt întotdeauna punctuale, iar unele curse au fost anulate în ultimii ani. "
+            "Cu toate acestea, tot mai mulți tineri aleg să rămână la țară și să lucreze de acasă. "
+            "Pentru mediu, transportul în comun rămâne cea mai bună alegere."
+        ),
+        "B2": (
+            "Tot mai multe firme le permit angajaților să lucreze de acasă o parte din săptămână. "
+            "Această schimbare, accelerată de pandemie, are avantaje evidente: mai puțin timp pierdut în trafic și mai multă libertate în organizarea zilei. "
+            "Totuși, unii angajați simt lipsa contactului zilnic cu colegii și le este greu să separe viața profesională de cea privată. "
+            "Managerii, la rândul lor, trebuie să învețe să evalueze munca după rezultate, nu după prezența la birou. "
+            "Potrivit mai multor studii, modelul hibrid este astăzi cel mai apreciat. "
+            "Rămâne de văzut dacă această organizare va rezista în timp."
+        ),
+        "C1": (
+            "Inteligența artificială pătrunde în domenii despre care se credea că aparțin exclusiv omului, de la traducere până la creația artistică. "
+            "Susținătorii ei văd în ea un instrument extraordinar, capabil să elibereze oamenii de sarcinile repetitive și să democratizeze accesul la cunoaștere. "
+            "Criticii, în schimb, se tem de o concentrare fără precedent a puterii în mâinile câtorva giganți tehnologici, precum și de dispariția multor meserii. "
+            "Între aceste două viziuni, legiuitorii încearcă să elaboreze un cadru care să încurajeze inovația fără a sacrifica protecția cetățenilor. "
+            "Sarcina este cu atât mai dificilă cu cât tehnologia evoluează mult mai repede decât legislația. "
+            "Un lucru e sigur: dezbaterea abia începe."
+        ),
+    },
 }
 
 LEVELS = ("A2", "B1", "B2", "C1")

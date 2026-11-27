@@ -10,7 +10,7 @@ import importlib
 import re
 from functools import lru_cache
 
-LATIN = ("de", "es", "fr", "pt", "it", "en")
+LATIN = ("de", "es", "fr", "pt", "it", "ro", "en")
 # languages sharing a script, told apart by their common words
 SAME_SCRIPT = {"hi": ("hi", "mr", "ne"), "ar": ("ar", "fa", "ur")}
 SCRIPTS = {

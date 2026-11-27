@@ -447,4 +447,41 @@ SENTENCES: dict[str, dict[str, list[str]]] = {
             "ليس من السهل على أحد أن يتوقع العواقب البعيدة لهذا القرار في الوقت الراهن.",
         ],
     },
+    "ro": {
+        "A1": [
+            "Beau o cafea în fiecare dimineață.",
+            "Fratele meu locuiește la Cluj.",
+            "Diseară mergem la cinema.",
+            "Astăzi e foarte frumos afară.",
+            "Unde este cea mai apropiată stație?",
+        ],
+        "A2": [
+            "Ieri am vorbit o oră la telefon cu sora mea.",
+            "Îmi dai sarea, te rog?",
+            "Weekendul acesta mergem la bunici.",
+            "Din păcate, trenul a avut douăzeci de minute întârziere.",
+            "Caut un apartament aproape de centru.",
+        ],
+        "B1": [
+            "Dacă aș avea mai mult timp, aș face sport mai des.",
+            "A hotărât să studieze în străinătate anul viitor.",
+            "Deși ploua, am ieșit la o plimbare.",
+            "Apartamentul e mic, dar chiria e foarte convenabilă.",
+            "Am uitat să anulez programarea la medic.",
+        ],
+        "B2": [
+            "Guvernul intenționează să reducă considerabil taxele pentru firmele mici.",
+            "Dacă aș fi știut mai devreme, nici n-aș fi mers acolo.",
+            "Mulți oameni subestimează câtă energie se risipește în casă.",
+            "În ciuda costurilor ridicate, majoritatea experților consideră proiectul util.",
+            "Se estimează că chiriile vor continua să crească în orașele mari.",
+        ],
+        "C1": [
+            "Având în vedere situația tensionată, organizatorii au fost nevoiți să anuleze evenimentul.",
+            "Studiul sugerează că relațiile sociale influențează considerabil durata vieții.",
+            "În pofida tuturor rezervelor, legea a fost adoptată cu o majoritate strânsă.",
+            "Cine aprofundează subiectul dă repede peste date contradictorii.",
+            "Dezbaterea despre viitorul muncii este tot mai marcată de poziții ideologice.",
+        ],
+    },
 }

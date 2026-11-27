@@ -13,6 +13,7 @@ const SAMPLES: Record<string, string> = {
   fr: "Je t'appelle demain, et on en parlera tranquillement.",
   pt: "Eu te ligo amanhã e a gente conversa com calma.",
   it: "Ti chiamo domani e ne parliamo con calma.",
+  ro: "Te sun mâine și vorbim pe îndelete.",
   ru: "Я позвоню тебе завтра, и мы спокойно всё обсудим.",
   ko: "내일 전화할게, 그때 천천히 이야기하자.",
   zh: "我明天给你打电话，到时候我们慢慢聊。",
