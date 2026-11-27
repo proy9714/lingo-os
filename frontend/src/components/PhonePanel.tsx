@@ -6,12 +6,19 @@ import { useEffect, useState } from "react";
 import { syncApi } from "../api/client";
 import type { SyncStatus } from "../api/types";
 import { formatDay, localDayOf } from "../lib/format";
+import { isNativeApp } from "../sync/remote";
+import { hostingQuery } from "./HostingPanel";
 import { Button, Chip, Panel, PanelTitle, Skeleton } from "./ui";
 
-/** Settings on the laptop: let a phone sync over the home Wi-Fi, pair it with a QR code, remove phones. */
+/**
+ * Settings → Phone, on whichever Lingo OS the phone pairs with: a laptop (the phone syncs over the home Wi-Fi, or
+ * Tailscale) or a cloud server (the phone syncs through the server's address). A laptop set to use the cloud server
+ * doesn't pair phones at all: it says to pair from the server.
+ */
 export function PhonePanel() {
   const qc = useQueryClient();
   const status = useQuery({ queryKey: ["sync-status"], queryFn: syncApi.status, refetchInterval: 15_000 });
+  const hosting = useQuery({ ...hostingQuery, enabled: !isNativeApp() });
   const toggle = useMutation({
     mutationFn: (enabled: boolean) => syncApi.enable(enabled),
     onSuccess: (data) => qc.setQueryData(["sync-status"], data),
@@ -31,21 +38,40 @@ export function PhonePanel() {
   const data = status.data;
   const phones = data?.devices.filter((d) => d.kind === "android" && !d.revoked_at) ?? [];
   const hub = data?.devices.find((d) => d.kind === "hub");
+  const server = Boolean(data?.server);
+  const cloudUrl = hosting.data?.role === "laptop" && hosting.data.mode === "cloud" ? hosting.data.cloud_url : null;
+  const where = server ? "this server" : "this laptop";
+  const chip = !data ? null : cloudUrl ? (
+    <Chip>pairs with the server</Chip>
+  ) : server ? (
+    data.enabled ? <Chip tone="good">phones can sync</Chip> : <Chip>off</Chip>
+  ) : data.running ? (
+    <Chip tone="good">listening on Wi-Fi</Chip>
+  ) : (
+    <Chip>off</Chip>
+  );
   return (
     <Panel aria-labelledby="t-phone">
-      <PanelTitle
-        id="t-phone"
-        aside={data && (data.running ? <Chip tone="good">listening on Wi-Fi</Chip> : <Chip>off</Chip>)}
-      >
+      <PanelTitle id="t-phone" aside={chip}>
         Phone
       </PanelTitle>
       {!data ? (
         <Skeleton className="h-28" />
+      ) : cloudUrl ? (
+        <p className="text-sm leading-relaxed text-ink-2">
+          This laptop uses your cloud server, so your phone pairs with the server, not with this laptop. Open{" "}
+          <a href={cloudUrl} className="font-semibold text-accent hover:underline">
+            {cloudUrl.replace(/^https?:\/\//, "")}
+          </a>
+          , go to Settings → Phone there and press <strong>Pair a phone</strong>.
+        </p>
       ) : (
         <div className="flex flex-col gap-3 text-sm">
           <p className="leading-relaxed text-ink-2">
-            Your Android phone uses this laptop over your home Wi-Fi, and keeps working offline with saved texts; changes
-            sync when it's back. Only paired phones can connect, and everything they send is encrypted.
+            {server
+              ? "Your Android phone uses this server from anywhere (with Tailscale on the phone), and keeps working offline with saved texts; changes sync when it's back in reach."
+              : "Your Android phone uses this laptop over your home Wi-Fi (or anywhere with Tailscale), and keeps working offline with saved texts; changes sync when it's back."}{" "}
+            Only paired phones can connect, and everything they send is encrypted.
           </p>
           {data.data_dir && (
             <p className="text-xs text-ink-3">
@@ -67,10 +93,16 @@ export function PhonePanel() {
               onChange={(e) => toggle.mutate(e.target.checked)}
               className="size-4 accent-[var(--accent)]"
             />
-            Let a phone sync over this Wi-Fi
+            {server ? "Let phones sync with this server" : "Let a phone sync over this Wi-Fi"}
           </label>
           {data.enabled && data.error && <p className="text-xs text-red-200">The listener couldn't start: {data.error}</p>}
-          {data.enabled && data.running && (
+          {data.enabled && server && data.public_url && (
+            <p className="text-xs text-ink-3">
+              Phones reach it at <code className="text-ink-2">{data.public_url}</code>. Install Tailscale on the phone and
+              sign in to the same account.
+            </p>
+          )}
+          {data.enabled && !server && data.running && (
             <p className="text-xs text-ink-3">
               Address: {data.addresses.join(", ") || "unknown"}. If Windows asks whether Python may use the network, allow
               it on <strong>private</strong> networks only.
@@ -82,8 +114,9 @@ export function PhonePanel() {
                 <div className="flex flex-col items-center gap-2 text-center">
                   <img src={qr} alt="Pairing code for the phone app" className="size-56 rounded-lg bg-white p-1" />
                   <p className="text-xs text-ink-2">
-                    In the Lingo OS app on your phone, choose <strong>Connect to your laptop</strong> and scan this. It works
-                    once and expires at {new Date(pair.data.expires).toLocaleTimeString()}.
+                    In the Lingo OS app on your phone, open <strong>Connect</strong> (it's the first screen until the phone is
+                    paired; once paired, Disconnect first) and scan this. It works once and expires at{" "}
+                    {new Date(pair.data.expires).toLocaleTimeString()}.
                   </p>
                   <Button variant="ghost" onClick={() => (setQr(null), pair.reset())}>
                     Done
@@ -99,7 +132,9 @@ export function PhonePanel() {
           )}
           <ul className="flex flex-col gap-1.5">
             <li className="flex items-center justify-between gap-2 text-xs text-ink-3">
-              <span>{hub?.name ?? "This laptop"} · hub</span>
+              <span>
+                {hub?.name ?? (server ? "This server" : "This laptop")} · hub ({where})
+              </span>
             </li>
             {phones.map((phone) => (
               <li key={phone.id} className="well flex items-center justify-between gap-2 rounded-xl px-3 py-2">
@@ -121,7 +156,7 @@ export function PhonePanel() {
               </li>
             ))}
           </ul>
-          {data.enabled && <AwayFromHome data={data} onSaved={(next) => qc.setQueryData(["sync-status"], next)} />}
+          {data.enabled && !server && <AwayFromHome data={data} onSaved={(next) => qc.setQueryData(["sync-status"], next)} />}
           <p className="text-xs text-ink-3">
             Install the phone app from GitHub releases (Obtainium keeps it updated).{" "}
             <Link to="/help" hash="phone" className="font-semibold text-accent hover:underline">

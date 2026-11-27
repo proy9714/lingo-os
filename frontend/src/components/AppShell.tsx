@@ -1,5 +1,8 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+
+import { CloudNotice, hostingQuery } from "./HostingPanel";
 
 import { useActiveLanguage, useLanguages, useSearchWatcher, useSettings, useToday, useUpdateSettings, useVoices } from "../api/hooks";
 import { onSpeechUnavailable, setSpeechEngine, setSpeechLocales } from "../lib/speech";
@@ -150,6 +153,10 @@ function Shell() {
   }, [engine]);
   useEffect(() => onSpeechUnavailable((_lang, reason) => showToast(reason)), [showToast]);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  // a laptop set to use the cloud server shows a way there instead of its own (stale) pages; the phone app follows
+  // whatever it's paired with, so it never asks
+  const hosting = useQuery({ ...hostingQuery, enabled: !isNativeApp() });
+  const cloudUrl = hosting.data?.role === "laptop" && hosting.data.mode === "cloud" ? hosting.data.cloud_url : null;
 
   useEffect(() => {
     const root = document.documentElement;
@@ -193,7 +200,7 @@ function Shell() {
           <OfflineBar />
           <main id="main" className="min-w-0">
             <div key={pathname} className="anim-page">
-              <Outlet />
+              {cloudUrl && pathname !== "/settings" ? <CloudNotice url={cloudUrl} /> : <Outlet />}
             </div>
           </main>
         </div>

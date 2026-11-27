@@ -780,7 +780,7 @@ const TOPICS: Topic[] = [
               expires after 10 minutes.
             </>,
             <>
-              On the phone: open Lingo OS. It starts on <strong className="text-ink">Connect to your laptop</strong>. Name the phone, tap{" "}
+              On the phone: open Lingo OS. It starts on <strong className="text-ink">Connect to your Lingo OS</strong>. Name the phone, tap{" "}
               <em>Scan the code</em> and point the camera at the QR code. If scanning isn't available, copy the code's text and paste
               it instead.
             </>,
@@ -860,6 +860,41 @@ const TOPICS: Topic[] = [
             </p>
           </Faq>
         </div>
+      </>
+    ),
+  },
+  {
+    id: "server",
+    title: "On this laptop, or on a cloud server",
+    summary: "Run Lingo OS here (the phone syncs with this laptop) or on an always-on server (laptop and phone both use it).",
+    keywords: "server cloud oracle vps tailscale always on hosting local laptop mode switch push pull data ssh key update",
+    body: (
+      <>
+        <p>
+          Lingo OS can run in one of two places, and you choose which in <Go to="/settings">Settings</Go> →{" "}
+          <strong className="text-ink">Where Lingo OS runs</strong>:
+        </p>
+        <Bullets>
+          {[
+            <>
+              <strong className="text-ink">On this laptop</strong> (how it starts): you use it here, and your phone pairs with this
+              laptop and syncs with it, over the home Wi-Fi or anywhere with Tailscale. The laptop has to be on.
+            </>,
+            <>
+              <strong className="text-ink">On my cloud server</strong>: an always-on server runs Lingo OS. This laptop opens it in a
+              browser and your phone pairs with it, so both always show the same thing. The laptop's own copy steps aside.
+            </>,
+          ]}
+        </Bullets>
+        <Tip>
+          Switching doesn't copy your data. Going to the server: <code>deploy\push-data.ps1</code> copies this laptop's data there.
+          Coming back: <code>deploy\pull-data.ps1</code> brings the server's data here. Then pair the phone again with whichever one
+          you use.
+        </Tip>
+        <p>
+          Setting up the server (a free Oracle Cloud VM, an SSH key, Tailscale, updates from GitHub) is described step by step in{" "}
+          <code>docs/DEPLOY.md</code> in the Lingo OS folder.
+        </p>
       </>
     ),
   },

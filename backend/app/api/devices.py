@@ -14,10 +14,12 @@ from sqlalchemy import Connection
 from app.api.deps import get_cfg, get_conn, get_dict_conn
 from app.config import AppConfig
 from app.db import settings_store
-from app.services import content
+from app.services import content, hosting
 from app.sync import hub, packs
 
 router = APIRouter(prefix="/api", tags=["devices"])
+
+CLOUD_PHONES = "This laptop uses your cloud server: pair the phone from the server (open it, Settings → Phone)."
 
 
 class EnableRequest(BaseModel):
@@ -60,6 +62,9 @@ def _status(request: Request, conn: Connection) -> dict[str, Any]:
         "data_dir": str(data_dir) if data_dir else None,
         "temporary": bool(data_dir and _temporary(Path(data_dir))),
         "allowed": phone_sync_allowed(),
+        # a server: phones sync through its public address, not a Wi-Fi listener (the panel words it that way)
+        "server": bool(request.app.state.cfg.sync_on_main) if hasattr(request.app.state, "cfg") else False,
+        "public_url": hub.public_url(),
         "enabled": bool(settings_store.get(conn, "sync.enabled", False)),
         "running": listener.running,
         "error": listener.error,
@@ -82,6 +87,8 @@ def enable(body: EnableRequest, request: Request, conn: Connection = Depends(get
         settings_store.put(conn, "sync.port", body.port)
     if body.enabled and not phone_sync_allowed():
         raise HTTPException(status_code=409, detail="Phone sync is turned off for this server (LINGO_PHONE_SYNC=off).")
+    if body.enabled and hosting.uses_cloud(conn, cfg):
+        raise HTTPException(status_code=409, detail=CLOUD_PHONES)
     settings_store.put(conn, "sync.enabled", body.enabled)
     listener = request.app.state.sync_listener
     if body.enabled:
@@ -107,6 +114,8 @@ def set_addresses(body: AddressesRequest, request: Request, conn: Connection = D
 
 @router.post("/sync/pair")
 def pair(body: PairRequest, request: Request, conn: Connection = Depends(get_conn), cfg: AppConfig = Depends(get_cfg)) -> dict[str, Any]:
+    if hosting.uses_cloud(conn, cfg):
+        raise HTTPException(status_code=409, detail=CLOUD_PHONES)
     if not settings_store.get(conn, "sync.enabled", False):
         raise HTTPException(status_code=409, detail="Turn on phone sync first.")
     return hub.start_pairing(conn, cfg, body.name)

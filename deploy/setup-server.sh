@@ -6,7 +6,7 @@
 #   bash setup-server.sh
 #
 # It installs ffmpeg, Node, uv and Tailscale, clones the app into ~/lingo-os, builds it, and runs it as a service
-# that starts with the machine. The app listens only on this machine (127.0.0.1); `tailscale serve` publishes it over
+# that starts with the machine and updates itself from GitHub (deploy/update-server.sh). The app listens only on this machine (127.0.0.1); `tailscale serve` publishes it over
 # HTTPS to your own Tailscale devices (your PC and phone) and to nobody else.
 set -euo pipefail
 
@@ -19,6 +19,26 @@ say() { printf '\n\033[1m==> %s\033[0m\n' "$*"; }
 say "System packages (ffmpeg for audio, git, build tools)"
 sudo apt-get update -y
 sudo apt-get install -y ffmpeg git curl ca-certificates build-essential
+
+RAM_MB="$(awk '/MemTotal/ {print int($2/1024)}' /proc/meminfo)"
+if [ "$RAM_MB" -lt 3000 ]; then
+  say "Low memory ($RAM_MB MB): compressed swap in RAM (zram), a 4 GB swap file, and earlyoom"
+  # zram is used first (fast), the swap file is the backstop; earlyoom stops the biggest process before the machine
+  # freezes (systemd then restarts Lingo OS). docs/DEPLOY.md, "A 1 GB VM".
+  if ! swapon --show | grep -q /swapfile; then
+    sudo fallocate -l 4G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile >/dev/null
+    sudo swapon --priority 10 /swapfile
+    grep -q '^/swapfile' /etc/fstab || echo '/swapfile none swap sw,pri=10 0 0' | sudo tee -a /etc/fstab >/dev/null
+  fi
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y zram-tools earlyoom
+  printf 'ALGO=zstd\nPERCENT=50\nPRIORITY=100\n' | sudo tee /etc/default/zramswap >/dev/null
+  sudo systemctl restart zramswap
+  printf 'vm.swappiness=100\nvm.vfs_cache_pressure=50\nvm.page-cluster=0\n' | sudo tee /etc/sysctl.d/99-lingo-memory.conf >/dev/null
+  sudo sysctl -q --system
+  echo 'EARLYOOM_ARGS="-m 5 -s 10 -r 3600 --avoid (^|/)(sshd|systemd|tailscaled)$ --prefer (^|/)(node|npm)$"' \
+    | sudo tee /etc/default/earlyoom >/dev/null
+  sudo systemctl enable earlyoom >/dev/null 2>&1 && sudo systemctl restart earlyoom
+fi
 
 if ! command -v node >/dev/null || [ "$(node -p 'process.versions.node.split(".")[0]')" -lt 20 ]; then
   say "Node.js 22 (builds the web app; yt-dlp also uses it for YouTube)"
@@ -61,6 +81,8 @@ LINGO_DATA_DIR=$DATA_DIR
 LINGO_HOST=127.0.0.1
 LINGO_PORT=8787
 LINGO_ACCESS_TOKEN=$TOKEN
+# what the server updates itself to: main (every push), release (published releases only) or off
+LINGO_UPDATE_CHANNEL=main
 # LINGO_PUBLIC_URL is filled in below once Tailscale is connected
 EOF
   echo "Your access token (you type it once per browser): $TOKEN"
@@ -122,8 +144,39 @@ Persistent=true
 [Install]
 WantedBy=timers.target
 EOF
+say "Automatic updates: follows GitHub (LINGO_UPDATE_CHANNEL in $ENV_FILE), checked every 15 minutes"
+sudo tee /etc/systemd/system/lingo-update.service >/dev/null <<EOF
+[Unit]
+Description=Lingo OS: update from GitHub
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=$USER
+WorkingDirectory=$APP_DIR
+Environment=PATH=$(dirname "$UV_BIN"):/usr/local/bin:/usr/bin:/bin
+ExecStart=/bin/bash $APP_DIR/deploy/update-server.sh
+TimeoutStartSec=1h
+EOF
+sudo tee /etc/systemd/system/lingo-update.timer >/dev/null <<'EOF'
+[Unit]
+Description=Lingo OS: check GitHub for a new version every 15 minutes
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=15min
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target
+EOF
+# the updater may restart the app, and nothing else, without a password
+echo "$USER ALL=(root) NOPASSWD: /usr/bin/systemctl restart lingo.service" | sudo tee /etc/sudoers.d/lingo-update >/dev/null
+sudo chmod 440 /etc/sudoers.d/lingo-update
+
 sudo systemctl daemon-reload
-sudo systemctl enable --now lingo.service lingo-update-content.timer lingo-evolve-profile.timer
+sudo systemctl enable --now lingo.service lingo-update-content.timer lingo-evolve-profile.timer lingo-update.timer
 
 say "Tailscale: sign in with the same account as on your PC and phone"
 sudo tailscale up

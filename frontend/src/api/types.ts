@@ -960,10 +960,20 @@ export interface DeviceRow {
   packs: number;
 }
 
+/** Where Lingo OS runs for you (backend app/services/hosting.py, docs/DEPLOY.md "Two ways to run"). */
+export interface Hosting {
+  role: "laptop" | "server"; // a server is the hub itself and doesn't switch
+  mode: "local" | "cloud"; // local: this laptop is the hub; cloud: the laptop and phone both use the server
+  cloud_url: string | null;
+  public_url?: string | null; // on a server: its own address
+}
+
 export interface SyncStatus {
   data_dir: string | null; // the data a phone pairs with
   temporary: boolean; // a test copy in a temporary folder: don't pair a real phone with it
   allowed: boolean; // false on a test server (LINGO_PHONE_SYNC=off)
+  server: boolean; // a cloud server: phones sync through its public address (no Wi-Fi listener)
+  public_url: string | null; // the server's address, given to phones when they pair
   enabled: boolean;
   running: boolean;
   error: string | null;

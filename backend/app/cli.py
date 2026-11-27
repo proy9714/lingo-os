@@ -31,6 +31,22 @@ def _emit_json(data: object) -> None:
     sys.stdout.write(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
 
 
+def _cloud_runs_it(engine, cfg, as_json: bool) -> bool:  # noqa: ANN001
+    """A laptop set to use the cloud server leaves the scheduled work to the server (app/services/hosting.py)."""
+    from app.services import hosting
+
+    with engine.connect() as conn:
+        current = hosting.get(conn, cfg)
+        if not hosting.uses_cloud(conn, cfg):
+            return False
+    message = f"Skipped: this laptop uses your cloud server ({current['cloud_url']}), which runs this itself."
+    if as_json:
+        _emit_json({"skipped": message})
+    else:
+        console.print(message)
+    return True
+
+
 @db_app.command("migrate")
 def db_migrate() -> None:
     """Apply pending migrations to lingo.db and dictionaries.db."""
@@ -210,6 +226,8 @@ def update_content_cmd(
 
     cfg = load_config()
     engine = bootstrap(cfg)
+    if not dry_run and _cloud_runs_it(engine, cfg, as_json):
+        return
     result = update_content(
         engine, cfg, lang, per_run=limit, dry_run=dry_run,
         progress=None if as_json else (lambda fraction, message: console.print(f"  {round(fraction * 100):3d}%  {message}"[:110])),
@@ -299,6 +317,8 @@ def evolve_profile_cmd(
 
     cfg = load_config()
     engine = bootstrap(cfg)
+    if not dry_run and _cloud_runs_it(engine, cfg, as_json):
+        return
     proposals = None
     if apply is not None:
         data = json_lib.loads(apply.read_text(encoding="utf-8"))

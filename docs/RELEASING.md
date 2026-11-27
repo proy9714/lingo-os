@@ -2,7 +2,8 @@
 
 A release is a GitHub release with short notes and the signed Android APK (`lingo-os-vX.Y.Z.apk`). Phones install
 it from the release page or follow it with [Obtainium](https://github.com/ImranR98/Obtainium). The laptop app updates
-with `git pull`.
+with `git pull`. A cloud server updates itself within 15 minutes: on every push to `main`, or only on a release when
+its `LINGO_UPDATE_CHANNEL` is `release` ([DEPLOY.md](DEPLOY.md), section 7).
 
 ## Making a release
 

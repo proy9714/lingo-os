@@ -17,7 +17,7 @@ from app import __version__
 from app.ai.config import load_ai_config
 from app.ai.gateway import Gateway
 from app.api import activity, ai, automation, content, data, devices, imports, level, manga, nlp, settings, shadowing, stats, system, tts, tutor, vocab
-from app.api import offline_media, podcasts as podcasts_api
+from app.api import hosting as hosting_api, offline_media, podcasts as podcasts_api
 from app.api import languages as languages_api
 from app.api import search as search_api
 from app.jobs import languages as _language_jobs  # noqa: F401 - registers install_language
@@ -32,6 +32,7 @@ from app.etag import ETagMiddleware
 from app.sync.hub import SYNC_PORT
 from app.sync.server import Listener
 from app.engine.profile import sync_baselines
+from app.services import hosting
 
 
 def bootstrap(cfg: AppConfig) -> Engine:
@@ -68,11 +69,13 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
         if runner:
             runner.start()
         with engine.connect() as conn:  # phone sync listens on the Wi-Fi only when turned on in Settings
-            sync_on = run_jobs and devices.phone_sync_allowed() and bool(settings_store.get(conn, "sync.enabled", False))
+            # a laptop set to use the cloud server steps aside: the phone syncs with the server (app/services/hosting.py)
+            cloud = hosting.uses_cloud(conn, cfg)
+            sync_on = run_jobs and not cloud and devices.phone_sync_allowed() and bool(settings_store.get(conn, "sync.enabled", False))
             port = int(settings_store.get(conn, "sync.port", SYNC_PORT))
         if sync_on:
             devices.start_listener(app_, cfg, port)
-        if runner:
+        if runner and not cloud:
             # in a thread: ranking a big catalogue the first time takes a few seconds, the server shouldn't wait
             threading.Thread(target=_top_up_on_start, args=(engine, cfg.default_language), daemon=True).start()
         yield
@@ -87,7 +90,7 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
     app.state.ai = Gateway(load_ai_config(cfg.root), engine)
     app.state.sync_listener = Listener()
 
-    for module in (system, settings, stats, activity, imports, nlp, vocab, level, content, ai, manga, tutor, shadowing, automation, devices, tts, languages_api, search_api, data, offline_media, podcasts_api):
+    for module in (system, settings, stats, activity, imports, nlp, vocab, level, content, ai, manga, tutor, shadowing, automation, devices, tts, languages_api, search_api, data, offline_media, podcasts_api, hosting_api):
         app.include_router(module.router)
 
     # an unchanged answer is "304 Not Modified" instead of the whole body (app/etag.py); added first, so it sees the

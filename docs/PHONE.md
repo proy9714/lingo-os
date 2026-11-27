@@ -1,10 +1,25 @@
 # Lingo OS on your Android phone
 
-The phone runs the same app as the laptop, packaged as an Android app with Capacitor. At home it uses the laptop
-over your Wi-Fi; away from home it keeps working with the texts you saved for offline, and everything you do there
+The phone runs the same app as the laptop, packaged as an Android app with Capacitor. It pairs with **one** Lingo OS,
+whichever you chose under the laptop's **Settings → Where Lingo OS runs** ([DEPLOY.md](DEPLOY.md), "Two ways to run"):
+
+- **On this laptop:** the phone pairs with the laptop and syncs with it over your Wi-Fi (or anywhere with Tailscale).
+  The laptop has to be on. This guide describes this case.
+- **On my cloud server:** the phone pairs with the server instead, the same way: open the server's address on the PC,
+  Settings → Phone → *Pair a phone*, and scan. The laptop and the phone then both use the server and always show the
+  same thing; Tailscale on the phone lets it reach the server from anywhere. A laptop set to the cloud server refuses
+  to pair phones itself.
+
+To move the phone from one to the other: on the phone open the sync screen, press **Disconnect**, then scan a code from
+the one you use now. Either way it keeps working with the texts you saved for offline, and everything you do there
 (lookups, word statuses, reading time, progress) syncs when it's back in reach.
 
-## 1. On the laptop: let a phone connect
+## 1. Let a phone connect
+
+**With a cloud server:** open the server's address on the PC, Settings → **Phone** → tick **Let phones sync with this
+server**. That's all (no firewall question: phones reach it through its HTTPS address over Tailscale). Go on to step 2.
+
+**With the laptop:**
 
 1. Settings → **Phone** → tick **Let a phone sync over this Wi-Fi**.
 2. The first time, Windows may ask whether Python may use the network. Allow it on **private networks** only.
@@ -41,24 +56,31 @@ switching to the release APK (and the other way round).
 
 ## 3. Pair
 
-1. On the laptop: Settings → Phone → **Pair a phone**. A QR code appears (valid for ten minutes, works once).
-2. On the phone: the app opens on **Connect to your laptop**. Tap **Scan the code** (or paste its text) and connect.
-   Both devices must be on the same Wi-Fi.
+1. Where Lingo OS runs for you (the laptop, or the server's page on the PC): Settings → Phone → **Pair a phone**. A QR
+   code appears (valid for ten minutes, works once).
+2. On the phone: the app opens on **Connect to your Lingo OS**. Tap **Scan the code** (or paste its text) and connect.
+   With a laptop, both devices must be on the same Wi-Fi (or Tailscale on both); with a cloud server, Tailscale must be
+   connected on the phone ([DEPLOY.md](DEPLOY.md), section 3.4).
+3. Already paired with the other one? Open the sync screen (tap the status badge, or go to `/connect`), press
+   **Disconnect**, then scan.
 
 ## 4. Use it
 
-- **At home**: the whole app works as on the laptop, through the laptop.
+- **In reach** (the laptop on the same Wi-Fi, or the server over Tailscale): the whole app works as on the PC,
+  through the Lingo OS it's paired with.
 - **Save texts for offline**: on the phone, open the sync screen (tap the status badge, or go to `/connect`) and
   press **Save offline** next to books, articles or texts. A saved text carries its words, your word statuses and
   the dictionary entries it needs.
 - **Away from home**: the Read shelf shows what you saved. Reading, lookups, word statuses, the timer and manual
-  logs work; changes wait in an outbox and sync automatically when the laptop is back in reach (or press
+  logs work; changes wait in an outbox and sync automatically when the laptop or server is back in reach (or press
   **Sync now**). Each change is applied exactly once; if a word was changed on both devices, the later change wins.
 
 ## Away from home
 
-Install [Tailscale](https://tailscale.com/) (free) on the laptop and on the phone and sign in to the same account on
-both. Lingo OS finds the laptop's Tailscale address by itself, and paired phones learn it on their next sync at home,
+With a **cloud server** there's nothing more to do: the phone reaches it anywhere while Tailscale is connected on it.
+
+With the **laptop**: install [Tailscale](https://tailscale.com/) (free) on the laptop and on the phone and sign in to
+the same account on both ([DEPLOY.md](DEPLOY.md), section 3 explains Tailscale). Lingo OS finds the laptop's Tailscale address by itself, and paired phones learn it on their next sync at home,
 so the phone then reaches the laptop over mobile data too (still encrypted end to end). Settings → Phone → **Sync away
 from home** shows it, and takes other addresses, such as the laptop's Tailscale name (`laptop.tail1234.ts.net`).
 
@@ -72,13 +94,15 @@ temporary test copy. Test servers can refuse phones altogether with `LINGO_PHONE
 
 ## Limits for now
 
-- Videos stream from YouTube or the laptop; they can't be saved offline. Manga volumes can: **Save offline** stores
-  their page images on the phone too (it takes a moment per page, at home).
+- Videos stream from YouTube or the laptop/server; they can't be saved offline. Manga volumes can: **Save offline**
+  stores their page images on the phone too (it takes a moment per page, while in reach).
 - Speech recognition (the tutor's microphone, the speaking check, shadowing) uses Android's own recogniser; the
   first time, Android asks to allow the microphone.
-- AI explanations and the tutor go through the laptop (at home, or anywhere over Tailscale): API keys stay on the
-  laptop and are never sent to the phone.
+- AI explanations and the tutor go through the laptop or server it's paired with: API keys stay there and are never
+  sent to the phone.
+- The words on the phone's own screens ("Connect to your Lingo OS") arrive with the next app release; until then an
+  installed app may still say "laptop" where it means whichever Lingo OS it pairs with.
 
 ## Remove a phone
 
-Settings → Phone → **Remove**. It can no longer connect until paired again.
+On the laptop or server it's paired with: Settings → Phone → **Remove**. It can no longer connect until paired again.

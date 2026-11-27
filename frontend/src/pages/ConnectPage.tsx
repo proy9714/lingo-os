@@ -101,11 +101,12 @@ export function Pairing({
       {intro && (
         <header className="px-1 pt-1">
           <h1 className="text-[28px] font-bold tracking-tight">
-            Connect to your laptop
+            Connect to your Lingo OS
           </h1>
           <p className="mt-1.5 text-sm text-ink-2">
-            On the laptop, open Settings → Phone, turn on syncing and press{" "}
-            <strong>Pair a phone</strong>. Both need to be on the same Wi-Fi.
+            Open Lingo OS where it runs for you, your laptop or your cloud server, go to Settings → Phone, turn on syncing and
+            press <strong>Pair a phone</strong>. A laptop needs the same Wi-Fi as the phone (or Tailscale on both); a cloud
+            server needs Tailscale on the phone.
           </p>
         </header>
       )}
@@ -201,7 +202,7 @@ function Connected({ onDisconnect }: { onDisconnect: () => void }) {
       );
       void qc.invalidateQueries();
     } catch (e) {
-      setMessage(e instanceof Error ? e.message : "Couldn't reach the laptop.");
+      setMessage(e instanceof Error ? e.message : "Couldn't reach your Lingo OS.");
     }
   };
 
@@ -226,7 +227,7 @@ function Connected({ onDisconnect }: { onDisconnect: () => void }) {
       <header className="px-1 pt-1">
         <h1 className="text-[28px] font-bold tracking-tight">Phone sync</h1>
         <p className="mt-1.5 text-sm text-ink-2">
-          Connected to {config?.hubName ?? "your laptop"}.
+          Connected to {config?.hubName ?? "your Lingo OS"}.
         </p>
       </header>
       <Panel>
@@ -235,7 +236,7 @@ function Connected({ onDisconnect }: { onDisconnect: () => void }) {
             sync.online === false ? (
               <Chip tone="warn">offline</Chip>
             ) : sync.online ? (
-              <Chip tone="good">laptop in reach</Chip>
+              <Chip tone="good">in reach</Chip>
             ) : null
           }
         >

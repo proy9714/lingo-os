@@ -15,6 +15,7 @@ import { useUi } from "../state/ui";
 import { AiPanel } from "../components/AiPanel";
 import { DataPanel } from "../components/DataPanel";
 import { isNativeApp } from "../sync/remote";
+import { HostingPanel } from "../components/HostingPanel";
 import { PhonePanel } from "../components/PhonePanel";
 import { SourcesPanel } from "../components/SourcesPanel";
 import { LanguagesPanel } from "../components/LanguagesPanel";
@@ -39,6 +40,7 @@ export function SettingsPage() {
         {!isNativeApp() && <WhisperPanel />}
         <SourcesSection />
         <SystemPanel />
+        {!isNativeApp() && <HostingPanel />}
         <PhonePanel />
         {!isNativeApp() && <DataPanel />}
       </div>

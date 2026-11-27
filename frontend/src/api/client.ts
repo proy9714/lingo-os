@@ -21,6 +21,7 @@ import type {
   TranscriptData,
   AddedDocument,
   SyncStatus,
+  Hosting,
   ContentSource,
   Job,
   ReportRow,
@@ -564,6 +565,18 @@ export function mediaUrl(path: string): Promise<string> {
   }
   return pending;
 }
+
+// Where Lingo OS runs: this laptop, or your cloud server
+export const hostingApi = {
+  get: () => request<Hosting>("/api/hosting"),
+  set: (mode: Hosting["mode"], cloudUrl: string | null) =>
+    request<Hosting>("/api/hosting", { method: "PUT", body: json({ mode, cloud_url: cloudUrl }) }),
+  check: (cloudUrl: string) =>
+    request<{ url: string; reachable: boolean; version?: string; error?: string }>("/api/hosting/check", {
+      method: "POST",
+      body: json({ mode: "cloud", cloud_url: cloudUrl }),
+    }),
+};
 
 // Phase 9: phone sync (laptop side)
 export const syncApi = {

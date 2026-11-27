@@ -210,8 +210,9 @@ modes/     /lingo playbooks for AI terminals data/      your personal data (git-
 
 The design and data model are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/schema.sql](docs/schema.sql).
 How suggestions are picked: [docs/RECOMMENDATION.md](docs/RECOMMENDATION.md). How words move from learning to known:
-[docs/WORD_PROMOTION.md](docs/WORD_PROMOTION.md). Running Lingo OS on a free server so your laptop can stay off:
-[docs/DEPLOY.md](docs/DEPLOY.md).
+[docs/WORD_PROMOTION.md](docs/WORD_PROMOTION.md). Lingo OS runs either **on this laptop** (the phone syncs with
+the laptop) or **on a cloud server** (laptop and phone both use the server, which updates itself from GitHub); you
+choose in Settings → Where Lingo OS runs. Setting up a free server, SSH key included: [docs/DEPLOY.md](docs/DEPLOY.md).
 AI terminals follow [AGENTS.md](AGENTS.md) and read and change data only through the `lingo` command line.
 On Windows, `npm run dev` starts the API through `backend/app/devserver.py`, which keeps uvicorn's auto-reload from
 stopping Vite.
