@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import type { ContentItem } from "../api/types";
 import { YT_EMBED_BLOCKED, YT_PLAYING, loadYouTubeApi, type YTPlayer } from "../lib/youtube";
 import { getMedia } from "../sync/packs";
+import * as audioPlayer from "../state/audio";
+import { useAudio } from "../state/audio";
 
 export interface PlayerControls {
   play(): void;
@@ -23,6 +25,9 @@ interface Props {
 
 /** One interface over the YouTube IFrame player and the browser's own <video>/<audio>. */
 export function MediaPlayer({ item, startMs, onReady, onTime, onPlaying }: Props) {
+  if (item.type === "podcast_episode") {
+    return <EpisodeAudio item={item} startMs={startMs} onReady={onReady} onTime={onTime} onPlaying={onPlaying} />;
+  }
   return item.source === "youtube" && item.external_id ? (
     <YouTube videoId={item.external_id} startMs={startMs} onReady={onReady} onTime={onTime} onPlaying={onPlaying} />
   ) : (
@@ -179,5 +184,102 @@ function LocalMedia({ item, startMs, onReady, onTime, onPlaying }: Props) {
     </div>
   ) : (
     <video ref={ref} {...common} className="aspect-video w-full rounded-[18px] border border-white/10 bg-black" />
+  );
+}
+
+/**
+ * A podcast episode plays in the app's own audio player (state/audio.ts), so it carries on in the floating mini player
+ * when you leave this page.
+ */
+function EpisodeAudio({ item, startMs, onReady, onTime, onPlaying }: Props) {
+  const callbacks = useRef({ onTime, onPlaying });
+  callbacks.current = { onTime, onPlaying };
+  const playing = useAudio((s) => s.item?.id === item.id && s.playing);
+  const time = useAudio((s) => (s.item?.id === item.id ? s.time : 0));
+  const duration = useAudio((s) => (s.item?.id === item.id ? s.duration : 0)) || (item.duration_sec ?? 0) * 1000;
+  const error = useAudio((s) => (s.item?.id === item.id ? s.error : null));
+  const image = (item.metadata as { image?: string } | null)?.image;
+
+  useEffect(() => {
+    // already playing in the mini player: carry on from where it is; otherwise load it, ready to play
+    void audioPlayer.load(item, { startMs });
+    onReady(audioPlayer.controls());
+    useAudio.setState({ onPage: item.id }); // this page plays it: the floating player steps aside
+    const poll = window.setInterval(() => {
+      const state = useAudio.getState();
+      if (state.item?.id === item.id) callbacks.current.onTime(audioPlayer.controls().time());
+    }, 200);
+    return () => {
+      window.clearInterval(poll);
+      if (useAudio.getState().onPage === item.id) useAudio.setState({ onPage: null });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item.id]);
+
+  useEffect(() => callbacks.current.onPlaying(playing), [playing]);
+
+  return (
+    <div className="flex items-center gap-4 rounded-[18px] border border-white/10 bg-black/40 p-4 sm:p-5">
+      {image ? (
+        <img src={image} alt="" className="size-20 shrink-0 rounded-xl object-cover sm:size-24" />
+      ) : null}
+      <div className="flex min-w-0 flex-1 flex-col gap-2">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => audioPlayer.skip(-15_000)}
+            aria-label="Back 15 seconds"
+            className="flex size-10 items-center justify-center rounded-full text-xs font-semibold text-ink-2 hover:bg-white/10"
+          >
+            −15
+          </button>
+          <button
+            type="button"
+            onClick={() => (useAudio.getState().item?.id === item.id ? audioPlayer.toggle() : void audioPlayer.load(item, { autoplay: true }))}
+            aria-label={playing ? "Pause" : "Play"}
+            className="flex size-12 items-center justify-center rounded-full bg-accent text-lg text-black shadow-lg shadow-accent/25 transition hover:scale-105"
+          >
+            {playing ? "❚❚" : "▶"}
+          </button>
+          <button
+            type="button"
+            onClick={() => audioPlayer.skip(15_000)}
+            aria-label="Forward 15 seconds"
+            className="flex size-10 items-center justify-center rounded-full text-xs font-semibold text-ink-2 hover:bg-white/10"
+          >
+            +15
+          </button>
+        </div>
+        <SeekBar time={time} duration={duration} />
+        {error && <p role="alert" className="text-xs text-red-200">{error}</p>}
+      </div>
+    </div>
+  );
+}
+
+export function clockOf(ms: number): string {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return h ? `${h}:${pad(m)}:${pad(s % 60)}` : `${pad(m)}:${pad(s % 60)}`;
+}
+
+/** A thin position bar for the app's audio player. */
+export function SeekBar({ time, duration, compact = false }: { time: number; duration: number; compact?: boolean }) {
+  return (
+    <div className="flex items-center gap-2 text-[11px] text-ink-3 tabular-nums">
+      {!compact && <span>{clockOf(time)}</span>}
+      <input
+        type="range"
+        min={0}
+        max={Math.max(1, Math.round(duration / 1000))}
+        value={Math.min(Math.round(time / 1000), Math.max(1, Math.round(duration / 1000)))}
+        onChange={(e) => audioPlayer.seek(Number(e.target.value) * 1000)}
+        aria-label="Position"
+        className="h-1 min-w-0 flex-1 cursor-pointer accent-[var(--accent)]"
+      />
+      {!compact && <span>{duration ? clockOf(duration) : "--:--"}</span>}
+    </div>
   );
 }

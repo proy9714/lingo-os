@@ -239,3 +239,20 @@ def test_window_covers_today() -> None:
 
     start, end, first, last = _window(7)
     assert last == local_today() and (last - first) == timedelta(days=6) and start < end
+
+
+def test_each_lane_has_its_own_worker(client) -> None:
+    """Fetching new content isn't queued behind a long transcription or a re-score (issue #8)."""
+    from app.jobs.runner import Runner, enqueue
+
+    engine = client.app.state.engine
+    with engine.begin() as conn:
+        slow = enqueue(conn, "transcribe", {"item_id": 1}, dedupe=False)
+        rescore = enqueue(conn, "rescore", {"lang": "de"})
+        fetch = enqueue(conn, "update_content", {"lang": "de"})
+        lanes = dict(conn.execute(text("SELECT id, lane FROM jobs WHERE id IN (:a, :b, :c)"), {"a": slow, "b": rescore, "c": fetch}).all())
+    assert lanes == {slow: "gpu", rescore: "cpu", fetch: "net"}
+    cfg = client.app.state.cfg
+    assert Runner(engine, cfg, lane="net")._claim()[0] == fetch
+    assert Runner(engine, cfg, lane="gpu")._claim()[0] == slow
+    assert Runner(engine, cfg, lane="cpu")._claim()[0] == rescore

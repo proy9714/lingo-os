@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 
-import { useDismiss, useMarkWatched } from "../api/hooks";
+import { useDismiss, useLater, useMarkWatched } from "../api/hooks";
 import type { UpNextPick } from "../api/types";
 import { displayTitle } from "../lib/nav";
 import { useSeen } from "../lib/seen";
@@ -212,10 +212,76 @@ export function WatchedButton({ pick, className, labelled }: { pick: UpNextPick;
   );
 }
 
-/** The two quick actions in a card's top-right corner, shown on hover (always on touch screens). */
+export type LaterKind = "video" | "podcast" | "reading" | "manga";
+
+/** Which "later" list an item goes to, in words. */
+export function laterList(kind: LaterKind | string): string {
+  return kind === "video" ? "Watch later" : kind === "podcast" ? "Listen later" : "Read later";
+}
+
+/** Save for later (watch, read or listen), or take it off that list; the bookmark is filled while it's saved. */
+export function LaterButton({
+  id,
+  title,
+  later,
+  kind,
+  variant = "icon",
+  className,
+}: {
+  id: number;
+  title: string;
+  later: boolean;
+  kind: LaterKind | string;
+  variant?: "icon" | "labelled" | "plain";
+  className?: string;
+}) {
+  const save = useLater();
+  const showToast = useUi((s) => s.showToast);
+  const list = laterList(kind);
+  const toggle = (value: boolean, undo = true) =>
+    save.mutate(
+      { id, later: value },
+      {
+        onSuccess: () =>
+          showToast(value ? `Saved to ${list}.` : `Removed from ${list}.`, undo ? { label: "Undo", run: () => toggle(!value, false) } : undefined),
+        onError: (error) => showToast(`Couldn't save it: ${error.message}`),
+      },
+    );
+  const label = later ? `Saved to ${list}` : list;
+  return (
+    <button
+      type="button"
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        toggle(!later);
+      }}
+      disabled={save.isPending}
+      aria-pressed={later}
+      aria-label={variant === "icon" ? `${later ? "Remove from" : "Save to"} ${list}: ${title}` : undefined}
+      title={later ? `Saved: remove it from ${list}` : `Save it to ${list}`}
+      className={cx(
+        "z-10 flex items-center justify-center gap-1.5 transition",
+        variant === "labelled"
+          ? "min-h-11 rounded-xl bg-white/10 px-4 text-sm font-semibold text-white/85 backdrop-blur-md hover:bg-white/16 hover:text-white"
+          : variant === "plain"
+            ? "min-h-10 rounded-xl border border-white/14 px-3 text-sm font-semibold text-ink-2 hover:bg-white/8 hover:text-ink"
+            : cx(HOVER_ICON, "text-white/85 backdrop-blur-md hover:text-white", later && "text-accent opacity-100!"),
+        later && variant !== "icon" && "text-accent",
+        className,
+      )}
+    >
+      <Icon name="bookmark" size={variant === "icon" ? 15 : 16} className={later ? "fill-current" : undefined} />
+      {variant !== "icon" && label}
+    </button>
+  );
+}
+
+/** The quick actions in a card's top-right corner, shown on hover (always on touch screens). */
 function CardActions({ pick }: { pick: UpNextPick }) {
   return (
     <div className="absolute top-2 right-2 z-10 flex gap-1.5">
+      <LaterButton id={pick.id} title={pick.title} later={Boolean(pick.later)} kind={pick.kind} />
       {pick.kind !== "manga" && <WatchedButton pick={pick} />}
       <DismissButton pick={pick} />
     </div>
@@ -307,6 +373,7 @@ export function FeaturedCard({ pick }: { pick: UpNextPick }) {
           >
             {(pick.kind === "video" || pick.kind === "podcast") && <span aria-hidden="true">▶</span>} {verb}
           </Link>
+          <LaterButton id={pick.id} title={pick.title} later={Boolean(pick.later)} kind={pick.kind} variant="labelled" />
           {pick.kind !== "manga" && <WatchedButton pick={pick} labelled />}
           <DismissButton pick={pick} labelled />
         </div>
@@ -340,6 +407,7 @@ export function PickRow({ pick }: { pick: UpNextPick }) {
         </div>
       </div>
       <div className="absolute top-3 left-3 z-10 flex gap-1">
+        <LaterButton id={pick.id} title={pick.title} later={Boolean(pick.later)} kind={pick.kind} className="size-7" />
         {pick.kind !== "manga" && <WatchedButton pick={pick} className="size-7" />}
         <DismissButton pick={pick} className="size-7" />
       </div>

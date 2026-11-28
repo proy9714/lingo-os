@@ -10,7 +10,6 @@ from sqlalchemy import Connection, text
 
 from app.config import AppConfig
 from app.db import settings_store
-from app.services.estimate import hours_estimate
 from app.timeutil import hours, local_day, local_midnight_utc, local_month, local_today, minutes, to_iso
 
 
@@ -79,6 +78,8 @@ def today_stats(conn: Connection, cfg: AppConfig, language: str, today: date | N
 
 
 def language_overview(conn: Connection, cfg: AppConfig, language: str) -> dict[str, Any]:
+    from app.engine.profile import starting_estimate
+
     totals = conn.execute(
         text(
             "SELECT COALESCE(SUM(active_seconds), 0), "
@@ -119,7 +120,7 @@ def language_overview(conn: Connection, cfg: AppConfig, language: str) -> dict[s
         "last_session_date": local_day(rows[-1][0]).isoformat() if rows else None,
         "monthly": [{"month": month, "hours": hours(secs)} for month, secs in sorted(monthly.items())],
         "by_modality_hours": {key: hours(secs) for key, secs in sorted(by_modality.items())},
-        "estimate": hours_estimate(language, total_s / 3600, cfg.baselines),
+        "estimate": starting_estimate(conn, cfg, language),
     }
 
 

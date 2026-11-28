@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { FuriganaToggle } from "../lib/furigana";
 import { CompletedButton } from "../components/CompletedButton";
+import { LaterButton } from "../components/cards";
 import { BackLink } from "../lib/nav";
 import { api } from "../api/client";
 import { useContentItem, usePageList, useReaderPage } from "../api/hooks";
@@ -116,6 +117,9 @@ export function ReaderPage() {
         </div>
         <div className="flex items-center gap-1.5">
           {item.data && <DownloadButton item={item.data} compact />}
+          {item.data && (
+            <LaterButton id={item.data.id} title={item.data.title} later={Boolean(item.data.metadata?.saved_at)} kind="reading" variant="plain" />
+          )}
           {item.data && <CompletedButton id={item.data.id} kind="text" finished={item.data.status === "finished"} />}
           {lang === "ja" && (
             <FuriganaToggle className="min-h-10 rounded-xl px-3 text-xs font-semibold text-ink-2 transition hover:bg-white/8 hover:text-ink" />

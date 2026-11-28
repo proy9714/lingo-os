@@ -4,7 +4,8 @@ from pathlib import Path
 
 from sqlalchemy import Engine, create_engine, event
 
-PRAGMAS = ("foreign_keys=ON", "journal_mode=WAL", "synchronous=NORMAL", "busy_timeout=5000")
+# busy_timeout: a job lane may hold the write lock for a few seconds while it scores a text; others wait for it
+PRAGMAS = ("foreign_keys=ON", "journal_mode=WAL", "synchronous=NORMAL", "busy_timeout=15000")
 
 
 def make_engine(path: Path) -> Engine:

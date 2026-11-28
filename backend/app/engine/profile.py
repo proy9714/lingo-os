@@ -85,6 +85,27 @@ def exam_result(conn: Connection, lang: str) -> dict[str, Any] | None:
     return value if isinstance(value, dict) and value.get("level") in SELF_LEVEL_WORDS else None
 
 
+def chosen_start(conn: Connection, lang: str) -> tuple[int, str] | None:
+    """The words implied by a passed (recent) exam or else the level you chose, with a label; None if neither."""
+    exam = exam_result(conn, lang)
+    if exam and exams.weight(exam.get("passed_on")) > 0:
+        return SELF_LEVEL_WORDS[exam["level"]], f"{exam.get('name') or 'exam'} {exam.get('label') or exam['level']}"
+    chosen = self_level(conn, lang)
+    return (SELF_LEVEL_WORDS[chosen], chosen) if chosen else None
+
+
+def starting_estimate(conn: Connection, cfg: AppConfig, lang: str) -> dict[str, Any]:
+    """The roadmap estimate from your hours, moved up to the level you chose (or passed) when that is further."""
+    start = chosen_start(conn, lang)
+    return hours_estimate(
+        lang,
+        total_seconds(conn, lang) / 3600,
+        cfg.baselines,
+        start_words=start[0] if start else None,
+        start_label=start[1] if start else None,
+    )
+
+
 def sync_baselines(conn: Connection, cfg: AppConfig) -> None:
     """Create missing profiles; refresh untested ones from current hours (after an import, say)."""
     for lang in cfg.language_codes:

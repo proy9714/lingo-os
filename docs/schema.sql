@@ -771,7 +771,7 @@ CREATE TABLE jobs (
                  'extract_clip','import_dictionary','rescore','tutor_postprocess','backup',
                  'fetch_history_captions','update_content','evolve_profile','build_offline_pack',
                  'verify_candidates','install_language')),
-  lane          TEXT NOT NULL DEFAULT 'cpu' CHECK (lane IN ('cpu','gpu')),
+  lane          TEXT NOT NULL DEFAULT 'cpu' CHECK (lane IN ('cpu','gpu','net')),   -- one worker per lane
   status        TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued','running','done','failed','cancelled')),
   priority      INTEGER NOT NULL DEFAULT 5,              -- lower runs first
   payload_json  TEXT NOT NULL DEFAULT '{}' CHECK (json_valid(payload_json)),

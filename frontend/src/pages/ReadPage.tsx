@@ -2,6 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useTabParam } from "../lib/nav";
+import { LaterList } from "../components/Later";
 import { api } from "../api/client";
 import { useActiveLanguage, useContentMutation, useLibrary, usePool } from "../api/hooks";
 import type { ContentItem } from "../api/types";
@@ -21,15 +22,16 @@ const SAMPLES: Record<string, string> = {
 
 const TYPE_LABELS: Record<string, string> = { epub: "Book", pdf: "PDF", article: "Article", text: "Text" };
 
-type ReadTab = "for-you" | "shelf";
+type ReadTab = "for-you" | "later" | "shelf";
 
 export function ReadPage() {
   const { code, language } = useActiveLanguage();
-  const [tab, setTab] = useTabParam<ReadTab>(["for-you", "shelf"]);
+  const [tab, setTab] = useTabParam<ReadTab>(["for-you", "later", "shelf"]);
   const [adding, setAdding] = useState(false);
   const [searching, setSearching] = useState(false);
   const pool = usePool(code).data;
   const shelfCount = useLibrary(code, "read", "mine", "").data?.pages[0]?.total;
+  const later = useLibrary(code, "read", "later", "").data?.pages[0]?.total;
 
   return (
     <div className="flex flex-col gap-5">
@@ -58,12 +60,19 @@ export function ReadPage() {
             onChange={setTab}
             items={[
               { value: "for-you", label: "For you", count: pool?.pools.read ?? null },
+              { value: "later", label: "Read later", count: later || null },
               { value: "shelf", label: "Your shelf", count: shelfCount ?? null },
             ]}
           />
 
           <div key={tab} className="anim-fade">
-            {tab === "for-you" ? <SuggestionGrid key={code} lang={code} shelf="read" /> : <ShelfTab lang={code} />}
+            {tab === "for-you" ? (
+              <SuggestionGrid key={code} lang={code} shelf="read" />
+            ) : tab === "later" ? (
+              <LaterList lang={code} shelf="read" />
+            ) : (
+              <ShelfTab lang={code} />
+            )}
           </div>
         </>
       )}

@@ -22,6 +22,7 @@ import { Spinner, SuggestionRow, relativeTime } from "../components/Suggestions"
 import { LevelChips } from "../components/StartingPoint";
 import { TasteCard } from "../components/TasteCard";
 import { WordMovesCard } from "../components/WordMovesCard";
+import { useStableOrder } from "../lib/stableOrder";
 import { Button, Chip, Panel, PanelTitle, ProgressBar, Skeleton, cx } from "../components/ui";
 import {
   ACTIVITY_LABELS,
@@ -171,6 +172,9 @@ function Suggestions({ lang }: { lang: string }) {
   const heroIds = useMemo(() => new Set(picks.slice(0, 5).map((p) => p.id)), [picks]);
   const rest = (pages: { items: UpNextPick[] }[] | undefined) =>
     (pages?.[0]?.items ?? []).filter((p) => !heroIds.has(p.id)).slice(0, 16);
+  // new finds join the end of each row instead of reshuffling it (lib/stableOrder.ts)
+  const videoRow = useStableOrder(`today:${lang}:watch`, useMemo(() => rest(videos.data?.pages), [videos.data, heroIds]));
+  const readRow = useStableOrder(`today:${lang}:read`, useMemo(() => rest(reading.data?.pages), [reading.data, heroIds]));
 
   return (
     <>
@@ -207,7 +211,7 @@ function Suggestions({ lang }: { lang: string }) {
       <SuggestionRow
         title="Videos for you"
         subtitle="Never one you've already watched"
-        items={rest(videos.data?.pages)}
+        items={videoRow}
         to="/watch"
         loading={videos.isPending}
         empty={<RowEmpty lang={lang} pool={pool} noun="videos" />}
@@ -215,7 +219,7 @@ function Suggestions({ lang }: { lang: string }) {
       <SuggestionRow
         title="Articles & books for you"
         subtitle="From the web and your shelf, matched to your reading level"
-        items={rest(reading.data?.pages)}
+        items={readRow}
         to="/read"
         loading={reading.isPending}
         empty={<RowEmpty lang={lang} pool={pool} noun="articles" />}
@@ -413,9 +417,10 @@ function LevelCard({ data, languageName, lang }: { data: LanguageOverview | unde
     );
   }
   const est = data.estimate;
+  const fromChoice = est.basis === "chosen level";
   return (
     <Panel aria-labelledby="t-level">
-      <PanelTitle id="t-level" aside={<Chip tone="warn">low confidence · hours only</Chip>}>
+      <PanelTitle id="t-level" aside={<Chip tone="warn">{fromChoice ? `approximate · from ${est.start_label ?? "your level"}` : "low confidence · hours only"}</Chip>}>
         Your {languageName} level
       </PanelTitle>
       <div className="text-xl font-bold">
@@ -428,7 +433,7 @@ function LevelCard({ data, languageName, lang }: { data: LanguageOverview | unde
           <dd className="mt-1 font-semibold">{formatHours(data.total_hours)}</dd>
         </div>
         <div className="well rounded-xl p-3">
-          <dt className="text-xs text-ink-3">Vocabulary prior</dt>
+          <dt className="text-xs text-ink-3">{fromChoice ? "Vocabulary (approx.)" : "Vocabulary prior"}</dt>
           <dd className="mt-1 font-semibold">≈ {est.words_prior.toLocaleString("en")} words</dd>
         </div>
       </dl>
@@ -439,6 +444,11 @@ function LevelCard({ data, languageName, lang }: { data: LanguageOverview | unde
             {formatHours(est.hours_to_next_level)} to level {est.next_level}
             {est.divisor !== 1 && ` · hours count ÷${est.divisor} for difficulty (≈ ${formatHours(est.adjusted_hours)} Spanish-equivalent)`}
           </p>
+          {fromChoice && (
+            <p className="mt-1 text-xs text-ink-3">
+              Placed from the level you chose ({est.start_label}), not measured yet. Your logged hours take over once they go further.
+            </p>
+          )}
         </div>
       )}
       <Link to="/level" className="mt-4 inline-block text-sm font-semibold text-accent hover:underline">

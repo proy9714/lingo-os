@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from sqlalchemy import Connection, Engine, text
+from sqlalchemy.exc import OperationalError
 
 from app.config import AppConfig
 from app.timeutil import to_iso, utc_now
@@ -26,11 +27,14 @@ class JobContext:
             self.on_progress(fraction, message)
         if self.job_id is None:
             return
-        with self.engine.begin() as conn:
-            conn.execute(
-                text("UPDATE jobs SET progress = :p, result_json = :r WHERE id = :id"),
-                {"p": round(max(0.0, min(1.0, fraction)), 4), "r": json.dumps({"message": message}), "id": self.job_id},
-            )
+        try:
+            with self.engine.begin() as conn:
+                conn.execute(
+                    text("UPDATE jobs SET progress = :p, result_json = :r WHERE id = :id"),
+                    {"p": round(max(0.0, min(1.0, fraction)), 4), "r": json.dumps({"message": message}), "id": self.job_id},
+                )
+        except OperationalError:
+            pass  # the database is busy with the job's own work: the next progress report will get through
 
     def cancelled(self) -> bool:
         if self.job_id is None:
@@ -51,7 +55,20 @@ def register(kind: str) -> Callable[[Handler], Handler]:
     return wrap
 
 
-def enqueue(conn: Connection, kind: str, payload: dict[str, Any], lane: str = "cpu", dedupe: bool = True) -> int:
+# Each lane has its own worker thread, so slow work of one sort never holds up another: fetching new content waits for
+# the network, not for Whisper transcribing a podcast or a whole language being re-scored.
+LANES = ("cpu", "net", "gpu")
+DEFAULT_LANE = {
+    "update_content": "net",
+    "verify_candidates": "net",
+    "fetch_history_captions": "net",
+    "transcribe": "gpu",
+    "ocr_manga": "gpu",
+}
+
+
+def enqueue(conn: Connection, kind: str, payload: dict[str, Any], lane: str | None = None, dedupe: bool = True) -> int:
+    lane = lane or DEFAULT_LANE.get(kind, "cpu")
     if dedupe:
         existing = conn.execute(
             text("SELECT id FROM jobs WHERE kind = :k AND status IN ('queued', 'running') ORDER BY id LIMIT 1"), {"k": kind}
@@ -82,14 +99,16 @@ def latest_job(conn: Connection, kind: str) -> dict[str, Any] | None:
 
 
 class Runner(threading.Thread):
-    def __init__(self, engine: Engine, cfg: AppConfig, poll_seconds: float = 1.0) -> None:
-        super().__init__(name="lingo-jobs", daemon=True)
-        self.engine, self.cfg, self.poll = engine, cfg, poll_seconds
+    """The worker for one lane of the jobs table (LANES)."""
+
+    def __init__(self, engine: Engine, cfg: AppConfig, poll_seconds: float = 1.0, lane: str = "cpu") -> None:
+        super().__init__(name=f"lingo-jobs-{lane}", daemon=True)
+        self.engine, self.cfg, self.poll, self.lane = engine, cfg, poll_seconds, lane
         self.stopping = threading.Event()
 
     def run(self) -> None:
-        with self.engine.begin() as conn:  # jobs left 'running' by a crash start over
-            conn.execute(text("UPDATE jobs SET status = 'queued' WHERE status = 'running'"))
+        with self.engine.begin() as conn:  # this lane's jobs left 'running' by a crash start over
+            conn.execute(text("UPDATE jobs SET status = 'queued' WHERE status = 'running' AND lane = :lane"), {"lane": self.lane})
         while not self.stopping.is_set():
             job = self._claim()
             if job is None:
@@ -102,9 +121,10 @@ class Runner(threading.Thread):
             row = conn.execute(
                 text(
                     "UPDATE jobs SET status = 'running', started_at = :now, attempts = attempts + 1 WHERE id = "
-                    "(SELECT id FROM jobs WHERE status = 'queued' ORDER BY priority, id LIMIT 1) RETURNING id, kind, payload_json"
+                    "(SELECT id FROM jobs WHERE status = 'queued' AND lane = :lane ORDER BY priority, id LIMIT 1) "
+                    "RETURNING id, kind, payload_json"
                 ),
-                {"now": to_iso(utc_now())},
+                {"now": to_iso(utc_now()), "lane": self.lane},
             ).first()
         return (row[0], row[1], json.loads(row[2] or "{}")) if row else None
 
@@ -132,3 +152,10 @@ class Runner(threading.Thread):
 
     def stop(self) -> None:
         self.stopping.set()
+
+
+def start_runners(engine: Engine, cfg: AppConfig) -> list[Runner]:
+    runners = [Runner(engine, cfg, lane=lane) for lane in LANES]
+    for runner in runners:
+        runner.start()
+    return runners

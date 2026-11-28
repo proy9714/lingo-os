@@ -163,3 +163,21 @@ def test_searching_the_directory_lists_shows_with_their_feeds(monkeypatch) -> No
     results = podcasts.search("de", "", http=Http())
     assert results == [{"title": "Easy German", "author": "Easy German", "feed_url": "https://example.org/eg.xml",
                         "image": "https://example.org/eg.jpg", "genre": None, "episodes": 500}]
+
+
+def test_two_shows_numbering_their_episodes_alike_both_keep_them(client) -> None:
+    """Feeds often use "1", "2"… as guids; a second show with the same guids must not lose its episodes (issue #3)."""
+    other = FEED.replace("Langsam gesprochen", "Ein anderer Podcast").replace("example.org/ep", "example.net/ep")
+    pages = {
+        "https://example.org/feed.xml": FEED,
+        "https://example.net/feed.xml": other,
+        "https://example.org/ep2.vtt": VTT,
+        "https://example.net/ep2.vtt": VTT,
+    }
+    with client.app.state.engine.begin() as conn:
+        first = podcasts.subscribe(conn, "de", "https://example.org/feed.xml", fetch=pages.__getitem__)
+        second = podcasts.subscribe(conn, "de", "https://example.net/feed.xml", fetch=pages.__getitem__)
+        assert first["added"] == 2 and second["added"] == 2
+        assert podcasts.episodes(conn, second["collection_id"])["total"] == 2
+        # checking the feeds again adds nothing twice
+        assert podcasts.refresh(conn, "de", force=True, fetch=pages.__getitem__)["added"] == 0

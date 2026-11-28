@@ -7,8 +7,8 @@ import threading
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.gzip import GZipMiddleware
 from sqlalchemy import Engine
@@ -21,7 +21,7 @@ from app.api import hosting as hosting_api, offline_media, podcasts as podcasts_
 from app.api import languages as languages_api
 from app.api import search as search_api
 from app.jobs import languages as _language_jobs  # noqa: F401 - registers install_language
-from app.jobs.runner import Runner
+from app.jobs.runner import start_runners
 from app.config import AppConfig, load_config
 from app.db import migrate
 from app.db.engine import make_engine
@@ -65,9 +65,7 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
 
     @asynccontextmanager
     async def lifespan(app_: FastAPI):
-        runner = Runner(engine, cfg) if run_jobs else None
-        if runner:
-            runner.start()
+        runners = start_runners(engine, cfg) if run_jobs else []
         with engine.connect() as conn:  # phone sync listens on the Wi-Fi only when turned on in Settings
             # a laptop set to use the cloud server steps aside: the phone syncs with the server (app/services/hosting.py)
             cloud = hosting.uses_cloud(conn, cfg)
@@ -75,12 +73,12 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
             port = int(settings_store.get(conn, "sync.port", SYNC_PORT))
         if sync_on:
             devices.start_listener(app_, cfg, port)
-        if runner and not cloud:
+        if runners and not cloud:
             # in a thread: ranking a big catalogue the first time takes a few seconds, the server shouldn't wait
             threading.Thread(target=_top_up_on_start, args=(engine, cfg.default_language), daemon=True).start()
         yield
         app_.state.sync_listener.stop()
-        if runner:
+        for runner in runners:
             runner.stop()
 
     app = FastAPI(title="Lingo OS", version=__version__, lifespan=lifespan)
@@ -92,6 +90,12 @@ def create_app(cfg: AppConfig | None = None, *, run_jobs: bool = True) -> FastAP
 
     for module in (system, settings, stats, activity, imports, nlp, vocab, level, content, ai, manga, tutor, shadowing, automation, devices, tts, languages_api, search_api, data, offline_media, podcasts_api, hosting_api):
         app.include_router(module.router)
+
+    @app.exception_handler(Exception)
+    async def _unexpected(request: Request, exc: Exception) -> JSONResponse:
+        # JSON, so the app shows what went wrong instead of reading a bare 500 as "can't reach the server"
+        logging.getLogger("lingo").exception("%s %s failed", request.method, request.url.path, exc_info=exc)
+        return JSONResponse(status_code=500, content={"detail": f"Something went wrong on the server ({type(exc).__name__})."})
 
     # an unchanged answer is "304 Not Modified" instead of the whole body (app/etag.py); added first, so it sees the
     # answer before it's compressed

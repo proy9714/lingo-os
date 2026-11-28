@@ -2,7 +2,8 @@ import { type InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryCli
 import { useEffect, useRef } from "react";
 
 import { ApiError, api } from "./client";
-import type { FeedPage, FeedShelf, GrammarReference, Language, Settings, Shelf, UpNext } from "./types";
+import { forget, resetOrders } from "../lib/stableOrder";
+import type { FeedPage, FeedShelf, GrammarReference, LevelFilter, Language, LibraryState, Settings, Shelf, UpNext } from "./types";
 import { useSyncState } from "../sync/remote";
 
 /** Polling stops while the laptop or server is out of reach (it starts again once it answers). */
@@ -72,6 +73,7 @@ function useStartMutation<TVars, TData>(fn: (vars: TVars) => Promise<TData>) {
   return useMutation({
     mutationFn: fn,
     onSuccess: () => {
+      resetOrders(); // a new starting level re-ranks everything: show the new best first
       for (const key of [["starting-point"], ["import-history"], ["level"], ["today"], ["overview"], ["recent"], ["feed"], ["recommend"], ["discover-pool"], ["evidence"]]) {
         void qc.invalidateQueries({ queryKey: key });
       }
@@ -211,8 +213,15 @@ export const usePodcastSearch = (lang: string, q: string, enabled: boolean) =>
     retry: false,
   });
 
+/** A show and its episodes, newest first, a page at a time (infinite scroll). */
 export const usePodcastEpisodes = (id: number | null) =>
-  useQuery({ queryKey: ["podcast-episodes", id], queryFn: () => api.podcastEpisodes(id as number), enabled: id !== null });
+  useInfiniteQuery({
+    queryKey: ["podcast-episodes", id],
+    queryFn: ({ pageParam }) => api.podcastEpisodes(id as number, pageParam),
+    initialPageParam: 0,
+    getNextPageParam: (last) => last.next_offset ?? undefined,
+    enabled: id !== null,
+  });
 
 /** Following or unfollowing a show changes the shows, their episodes and the Listen suggestions. */
 export function usePodcastMutation<TVars, TData>(fn: (vars: TVars) => Promise<TData>) {
@@ -302,6 +311,7 @@ const SUGGESTION_KEYS = [["feed"], ["recommend"], ["content"], ["content-item"],
 
 /** Take an item off every suggestion list in the cache at once, before the server answers. */
 async function removeFromSuggestions(qc: ReturnType<typeof useQueryClient>, id: number) {
+  forget(id);
   await Promise.all([qc.cancelQueries({ queryKey: ["feed"] }), qc.cancelQueries({ queryKey: ["recommend"] })]);
   qc.setQueriesData<InfiniteData<FeedPage>>({ queryKey: ["feed"] }, (data) =>
     data ? { ...data, pages: data.pages.map((p) => ({ ...p, items: p.items.filter((i) => i.id !== id) })) } : data,
@@ -317,6 +327,25 @@ export function useDismiss() {
     onMutate: (id) => removeFromSuggestions(qc, id),
     onSettled: () => {
       for (const key of SUGGESTION_KEYS) void qc.invalidateQueries({ queryKey: key });
+    },
+  });
+}
+
+/** Watch later / read later / listen later: the card shows it at once, the Later tabs catch up from the server. */
+export function useLater() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (v: { id: number; later: boolean }) => api.saveForLater(v.id, v.later),
+    onMutate: async ({ id, later }) => {
+      await Promise.all([qc.cancelQueries({ queryKey: ["feed"] }), qc.cancelQueries({ queryKey: ["recommend"] })]);
+      const mark = <T extends { id: number }>(i: T) => (i.id === id ? { ...i, later } : i);
+      qc.setQueriesData<InfiniteData<FeedPage>>({ queryKey: ["feed"] }, (data) =>
+        data ? { ...data, pages: data.pages.map((p) => ({ ...p, items: p.items.map(mark) })) } : data,
+      );
+      qc.setQueriesData<UpNext>({ queryKey: ["recommend"] }, (data) => (data ? { ...data, picks: data.picks.map(mark) } : data));
+    },
+    onSettled: () => {
+      for (const key of [["content"], ["content-item"], ["podcast-episodes"]]) void qc.invalidateQueries({ queryKey: key });
     },
   });
 }
@@ -373,6 +402,12 @@ export const useTutorOptions = (lang: string) => useQuery({ queryKey: ["tutor-op
 export const useTutorSessions = (lang: string) => useQuery({ queryKey: ["tutor-sessions", lang], queryFn: () => api.tutorSessions(lang) });
 export const useTutorGrammar = (lang: string) => useQuery({ queryKey: ["tutor-grammar", lang], queryFn: () => api.tutorGrammar(lang) });
 export const useShadowClips = (lang: string) => useQuery({ queryKey: ["shadow-clips", lang], queryFn: () => api.shadowClips(lang) });
+/** Videos and episodes with a transcript, to pick one to shadow. */
+export const useShadowSources = (lang: string, q: string) =>
+  useQuery({ queryKey: ["shadow-sources", lang, q], queryFn: () => api.shadowSources(lang, q), placeholderData: (previous) => previous });
+/** Your best score on each line of one video or episode you're shadowing. */
+export const useShadowItemProgress = (itemId: number | null) =>
+  useQuery({ queryKey: ["shadow-item", itemId], queryFn: () => api.shadowItemProgress(itemId as number), enabled: itemId !== null });
 export const useShadowClip = (id: number | null) =>
   useQuery({ queryKey: ["shadow-clip", id], queryFn: () => api.shadowClip(id as number), enabled: id !== null });
 
@@ -405,17 +440,17 @@ const FEED_PAGE = 24;
 const LIBRARY_PAGE = 36;
 
 /** A shelf's suggestions, best first, loaded a page at a time as you scroll. */
-export const useFeed = (lang: string, shelf: FeedShelf) =>
+export const useFeed = (lang: string, shelf: FeedShelf, level?: LevelFilter) =>
   useInfiniteQuery({
-    queryKey: ["feed", lang, shelf],
-    queryFn: ({ pageParam }) => api.feed(lang, shelf, pageParam, FEED_PAGE),
+    queryKey: ["feed", lang, shelf, level ?? "all"],
+    queryFn: ({ pageParam }) => api.feed(lang, shelf, pageParam, FEED_PAGE, level),
     initialPageParam: 0,
     getNextPageParam: (last) => last.next_offset ?? undefined,
     staleTime: 60_000,
   });
 
 /** The library (watched videos, your shelf), a page at a time. */
-export const useLibrary = (lang: string, shelf: FeedShelf, state: "all" | "watched" | "mine", q: string) =>
+export const useLibrary = (lang: string, shelf: FeedShelf, state: LibraryState, q: string) =>
   useInfiniteQuery({
     queryKey: ["content", lang, q, shelf, state, "paged"],
     queryFn: ({ pageParam }) => api.content(lang, q, shelf, { state, offset: pageParam, limit: LIBRARY_PAGE }),
@@ -539,13 +574,14 @@ export function useSearchWatcher(lang: string) {
     was.current = searching;
   }, [searching, qc]);
 
-  // While it runs: each time the pool grows, show the new finds (at most every 8 s, so lists don't jump constantly).
+  // While it runs: each time the pool grows, show the new finds. Lists keep the order you've seen and only append
+  // (lib/stableOrder.ts), so finds can arrive one by one without the cards you're looking at moving.
   useEffect(() => {
     if (!searching || !sizes) {
       seen.current = sizes;
       return;
     }
-    if (sizes === seen.current || Date.now() - lastPull.current < 8000) return;
+    if (sizes === seen.current || Date.now() - lastPull.current < 2500) return;
     seen.current = sizes;
     lastPull.current = Date.now();
     void qc.invalidateQueries({ queryKey: ["feed", lang] });

@@ -80,3 +80,17 @@ def test_the_daily_refresh_runs_once_a_day_per_language(client) -> None:
     with client.app.state.engine.connect() as conn:
         kinds = {r[0] for r in conn.execute(text("SELECT kind FROM jobs")).all()}
     assert "rescore" in kinds
+
+
+def test_a_chosen_level_moves_the_roadmap_estimate(client) -> None:
+    """Choosing B1 in a new language should not show "level 1, starting from zero" (issue #1)."""
+    before = client.get("/api/level/es/overview").json()["hours_estimate"]
+    assert before["basis"] == "hours only"
+    client.put("/api/languages/es/level", json={"level": "B1"})
+    est = client.get("/api/level/es/overview").json()["hours_estimate"]
+    assert est["basis"] == "chosen level" and est["start_label"] == "B1"
+    assert est["level"] > before["level"] and est["words_prior"] == 2700
+    overview = next(e for e in client.get("/api/stats/overview").json()["languages"] if e["language"] == "es")
+    assert overview["estimate"]["basis"] == "chosen level"
+    client.put("/api/languages/es/level", json={"level": None})
+    assert client.get("/api/level/es/overview").json()["hours_estimate"]["basis"] == "hours only"

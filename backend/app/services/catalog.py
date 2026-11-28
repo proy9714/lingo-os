@@ -24,6 +24,7 @@ from sqlalchemy import Connection, Engine, text
 from app.db import settings_store
 from app.ingest import youtube
 from app.services import calibration, content
+from app.services.pacing import Pacer, Stopped, fan_out, writing
 from app.timeutil import from_iso, to_iso, utc_now
 
 if TYPE_CHECKING:
@@ -33,8 +34,11 @@ LIST_PAGE = 60  # uploads listed per channel per run
 MAX_DEPTH = 420  # how far back into a channel's uploads the listing goes
 CHANNELS_PER_RUN = 10
 RESOLVE_PER_RUN = 4  # history channels whose address is looked up per run (one request each)
-PAUSE = 1.5
+PAUSE = 1.5  # between YouTube requests when they run one at a time
 VERIFY_PAUSE = 2.5
+# With requests running side by side (Fetchers.parallel), their starts are spaced by this many seconds instead:
+# about the same request rate as before, without the run waiting on each answer in turn.
+PARALLEL_GAP = 0.75
 STOP_AFTER_FAILURES = 3
 REFUSAL_KEY = "youtube.refused_at"
 
@@ -103,14 +107,14 @@ def youtube_refused_recently(conn: Connection, hours: float | None = None) -> bo
 
 
 def _mark_refused(engine: Engine) -> None:
-    with engine.begin() as conn:
+    with writing(engine) as conn:
         settings_store.put(conn, REFUSAL_KEY, to_iso(utc_now()))
         settings_store.put(conn, REFUSALS_KEY, int(settings_store.get(conn, REFUSALS_KEY, 0) or 0) + 1)
 
 
 def _mark_answered(engine: Engine) -> None:
     """YouTube answered normally again: the next refusal starts with a short pause."""
-    with engine.begin() as conn:
+    with writing(engine) as conn:
         if settings_store.get(conn, REFUSALS_KEY):
             settings_store.put(conn, REFUSALS_KEY, 0)
 
@@ -218,6 +222,16 @@ def add_channel(conn: Connection, lang: str, name: str, url: str, via: str) -> b
     return True
 
 
+def youtube_pacer(fetchers: Fetchers) -> Pacer:
+    """Request pacing for YouTube: a gap between starts when requests overlap, the old pause when they don't."""
+    parallel = max(1, int(getattr(fetchers, "parallel", 1) or 1))
+    return Pacer(PARALLEL_GAP if parallel > 1 else 0.0, fetchers.pause)
+
+
+def _workers(fetchers: Fetchers) -> int:
+    return max(1, int(getattr(fetchers, "parallel", 1) or 1))
+
+
 def resolve_history_channels(engine: Engine, lang: str, fetchers: Fetchers, limit: int = RESOLVE_PER_RUN) -> list[str]:
     """Add the channels you watch (that aren't sources yet): one request each, to read the channel's address."""
     with engine.connect() as conn:
@@ -225,21 +239,26 @@ def resolve_history_channels(engine: Engine, lang: str, fetchers: Fetchers, limi
         tried = set(settings_store.get(conn, f"catalog.resolved.{lang}", []) or [])
         todo = [(n, c, v) for n, c, v in history_channels(conn, lang) if name_key(n) not in known and name_key(n) not in tried]
     added = []
-    for name, _count, video_id in todo[:limit]:
-        try:
-            info = fetchers.info(video_id)
-        except youtube.YouTubeError as exc:
-            if _is_refusal(exc):
+    workers = _workers(fetchers)
+    pacer = youtube_pacer(fetchers)
+    for (name, _count, _video), info, error in fan_out(
+        todo[:limit], lambda t: fetchers.info(t[2]), workers=workers, pacer=pacer, name="yt-info"
+    ):
+        if error is not None:
+            if isinstance(error, youtube.YouTubeError) and _is_refusal(error):
                 _mark_refused(engine)
                 break
-            continue
+            if isinstance(error, (youtube.YouTubeError, Stopped)):
+                continue
+            raise error
         url = (info.raw or {}).get("channel_url") or (info.raw or {}).get("uploader_url")
-        with engine.begin() as conn:
+        with writing(engine) as conn:
             tried.add(name_key(name))
             settings_store.put(conn, f"catalog.resolved.{lang}", sorted(tried))
             if url and add_channel(conn, lang, name, url, "history"):
                 added.append(name)
-        fetchers.pause(PAUSE)
+        if workers == 1:
+            fetchers.pause(PAUSE)
     return added
 
 
@@ -270,26 +289,37 @@ def list_channels(
         order = _channel_order(channel_sources(conn, lang), affinity)[:channels]
         seen_titles = watched_titles(conn, lang)
     lo, hi = float(cfg_settings["min_minutes"]) * 60, float(cfg_settings["max_minutes"]) * 60
-    for number, source in enumerate(order):
-        say(span[0] + (span[1] - span[0]) * number / max(1, len(order)), f"listing {source['name'][:50]}")
+
+    def listing(source: dict[str, Any]) -> list[youtube.Listing]:
+        count = min(MAX_DEPTH, int(source["config"].get("depth", 0)) + LIST_PAGE)
+        if fetchers.channel_uploads is youtube.channel_uploads:  # the real one: titles as shown in this language
+            return youtube.channel_uploads(source["target"], count, 1, lang=lang)
+        return fetchers.channel_uploads(source["target"], count, 1)
+
+    workers = _workers(fetchers)
+    say(span[0], f"listing {len(order)} channels")
+    for number, (source, result, error) in enumerate(
+        fan_out(order, listing, workers=workers, pacer=youtube_pacer(fetchers), name="yt-list")
+    ):
+        say(span[0] + (span[1] - span[0]) * (number + 1) / max(1, len(order)), f"listed {source['name'][:50]}")
         depth = int(source["config"].get("depth", 0))
-        try:
-            count = min(MAX_DEPTH, depth + LIST_PAGE)
-            if fetchers.channel_uploads is youtube.channel_uploads:  # the real one: titles as shown in this language
-                found = youtube.channel_uploads(source["target"], count, 1, lang=lang)
-            else:
-                found = fetchers.channel_uploads(source["target"], count, 1)
+        if isinstance(error, Stopped):
+            continue
+        if error is not None and not isinstance(error, youtube.YouTubeError):
+            raise error
+        if error is None:
+            found = result or []
             status = f"ok, {len(found)} listed"
-        except youtube.YouTubeError as exc:
-            found, status = [], f"error: {exc}"[:200]
-            stats["errors"].append(f"{source['name']}: {exc}"[:200])
-            if _is_refusal(exc):
+        else:
+            found, status = [], f"error: {error}"[:200]
+            stats["errors"].append(f"{source['name']}: {error}"[:200])
+            if _is_refusal(error):
                 stats["refused"] = True
                 _mark_refused(engine)
         stats["channels"] += 1
         stats["listed"] += len(found)
         fresh = [v for v in found if not v.duration or lo <= v.duration <= hi]
-        with engine.begin() as conn:
+        with writing(engine) as conn:
             known = known_ids(conn, "youtube", [v.video_id for v in fresh])
             new = 0
             added: list[int] = []
@@ -314,14 +344,15 @@ def list_channels(
             )
         if stats["refused"]:
             break
-        fetchers.pause(PAUSE)
+        if workers == 1:
+            fetchers.pause(PAUSE)
     return stats
 
 
 def add_listings(engine: Engine, lang: str, listings: list[tuple[youtube.Listing, str]], cfg_settings: dict[str, Any]) -> int:
     """Search results become candidates too (estimated if their channel is known, else measured first)."""
     lo, hi = float(cfg_settings["min_minutes"]) * 60, float(cfg_settings["max_minutes"]) * 60
-    with engine.begin() as conn:
+    with writing(engine) as conn:
         known = known_ids(conn, "youtube", [v.video_id for v, _ in listings])
         seen_titles = watched_titles(conn, lang)
         new = 0
@@ -505,30 +536,38 @@ def verify(
             return stats
         batch = to_measure(conn, lang, limit)
     consecutive = 0
-    for number, (item_id, video_id, title) in enumerate(batch):
+    workers = _workers(fetchers)
+    for number, ((item_id, video_id, title), captions, error) in enumerate(
+        fan_out(batch, lambda row: fetchers.captions(row[1], lang), workers=workers, pacer=youtube_pacer(fetchers), name="yt-captions")
+    ):
         say(span[0] + (span[1] - span[0]) * number / max(1, len(batch)), f"checking video {number + 1} of {len(batch)}: {title[:60]}")
+        if isinstance(error, Stopped):
+            continue
+        if error is not None and not isinstance(error, youtube.YouTubeError):
+            raise error
         stats["checked"] += 1
-        try:
-            captions = fetchers.captions(video_id, lang)
-            if stats["checked"] == 1:  # the first request of a run went through
-                _mark_answered(engine)
-            consecutive = 0
-        except youtube.YouTubeError as exc:
-            stats["errors"].append(f"{video_id}: {exc}"[:200])
+        if error is not None:
+            stats["errors"].append(f"{video_id}: {error}"[:200])
             consecutive += 1
-            if _is_refusal(exc) or consecutive >= STOP_AFTER_FAILURES:
+            if _is_refusal(error) or consecutive >= STOP_AFTER_FAILURES:
                 stats["refused"] = True
                 _mark_refused(engine)
                 break
-            fetchers.pause(VERIFY_PAUSE)
+            if workers == 1:
+                fetchers.pause(VERIFY_PAUSE)
             continue
-        with engine.begin() as conn:
+        if stats["checked"] == 1:  # the first request of a run went through
+            _mark_answered(engine)
+        consecutive = 0
+        # measuring (analysis and a database write) stays one at a time, while the next captions download
+        with writing(engine) as conn:
             outcome = measure(conn, item_id, lang, captions, keep_bands)
         stats[outcome] += 1
         if outcome == "kept":
             stats["kept_titles"].append(title)
-        fetchers.pause(VERIFY_PAUSE)
-    with engine.begin() as conn:
+        if workers == 1:
+            fetchers.pause(VERIFY_PAUSE)
+    with writing(engine) as conn:
         promote_channels(conn, lang)
         estimate_scores(conn, lang)
     return stats

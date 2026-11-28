@@ -29,6 +29,8 @@ import type {
   GrammarRow,
   ShadowAttempt,
   ShadowClip,
+  ShadowLineProgress,
+  ShadowSource,
   TutorMessage,
   TutorMode,
   TutorOptions,
@@ -62,6 +64,8 @@ import type {
   TrackerFlag,
   TrackerImportSummary,
   FeedShelf,
+  LevelFilter,
+  LibraryState,
   Shelf,
   WordModel,
   WordProgress,
@@ -129,8 +133,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     if (outer?.aborted) throw error; // cancelled by the page, not a connection problem
     return unreachable<T>(method, path, init?.body);
   }
-  // the dev server's proxy answers 502/503/504 (or a bare 500) while the API isn't running
-  const proxied = response.status >= 502 || (response.status === 500 && !response.headers.get("content-type")?.includes("json"));
+  // The dev server's proxy (or nginx in front of a server) answers 500/502/503/504 without JSON while the API isn't
+  // running. The API's own 5xx answers are JSON ({"detail": ...}): YouTube, a podcast feed or the AI provider failed,
+  // not the connection, so they're shown as that error and never flip the app into "can't reach the server".
+  const proxied = response.status >= 500 && !response.headers.get("content-type")?.includes("json");
   if (proxied) return unreachable<T>(method, path, init?.body);
   if (useSyncState.getState().online === false) reportReachable(true);
   if (response.status === 401 && !path.startsWith("/api/health")) {
@@ -311,14 +317,16 @@ export const api = {
     lang: string,
     q = "",
     shelf: Shelf = "watch",
-    opts: { state?: "all" | "watched" | "mine"; offset?: number; limit?: number } = {},
+    opts: { state?: LibraryState; offset?: number; limit?: number } = {},
   ) =>
     request<{ total: number; items: ContentItem[] }>(
       `/api/content?lang=${encodeURIComponent(lang)}&shelf=${shelf}&state=${opts.state ?? "all"}&limit=${opts.limit ?? 120}` +
         `&offset=${opts.offset ?? 0}${q ? `&q=${encodeURIComponent(q)}` : ""}`,
     ),
-  feed: (lang: string, shelf: FeedShelf, offset = 0, limit = 24) =>
-    request<FeedPage>(`/api/feed?lang=${encodeURIComponent(lang)}&shelf=${shelf}&offset=${offset}&limit=${limit}`),
+  feed: (lang: string, shelf: FeedShelf, offset = 0, limit = 24, level?: LevelFilter) =>
+    request<FeedPage>(
+      `/api/feed?lang=${encodeURIComponent(lang)}&shelf=${shelf}&offset=${offset}&limit=${limit}${level ? `&level=${level}` : ""}`,
+    ),
   contentItem: (id: number) => request<ContentItem>(`/api/content/${id}`),
   addYouTube: (lang: string, url: string) =>
     request<ContentItem>("/api/content/youtube", { method: "POST", body: json({ lang, url }) }),
@@ -394,6 +402,8 @@ export const api = {
   ttsVoices: (lang: string) => request<VoiceList>(`/api/tts/voices?lang=${encodeURIComponent(lang)}`),
   saveTts: (body: { engine?: "neural" | "device"; lang?: string; voice?: string }) =>
     request<{ engine: "neural" | "device" }>("/api/tts/settings", { method: "PUT", body: json(body) }),
+  saveForLater: (id: number, later = true) =>
+    request<ContentItem>(`/api/content/${id}/later`, { method: "POST", body: json({ later }) }),
   markWatched: (id: number, watched = true) =>
     request<ContentItem>(`/api/content/${id}/watched`, { method: "POST", body: json({ watched }) }),
 
@@ -486,6 +496,9 @@ export const api = {
   tutorEnd: (id: number) => request<{ ended: boolean; review_job: number | null }>(`/api/tutor/sessions/${id}/end`, { method: "POST" }),
   tutorGrammar: (lang: string) => request<GrammarRow[]>(`/api/tutor/grammar?lang=${encodeURIComponent(lang)}`),
   shadowClips: (lang: string) => request<ShadowClip[]>(`/api/shadow/clips?lang=${encodeURIComponent(lang)}`),
+  shadowSources: (lang: string, q = "") =>
+    request<ShadowSource[]>(`/api/shadow/sources?lang=${encodeURIComponent(lang)}${q ? `&q=${encodeURIComponent(q)}` : ""}`),
+  shadowItemProgress: (itemId: number) => request<ShadowLineProgress[]>(`/api/shadow/items/${itemId}`),
   shadowClip: (id: number) => request<ShadowClip>(`/api/shadow/clips/${id}`),
   shadowCreate: (body: { lang: string; text: string; content_item_id?: number; cue_id?: number; start_ms?: number; end_ms?: number }) =>
     request<ShadowClip>("/api/shadow/clips", { method: "POST", body: json(body) }),

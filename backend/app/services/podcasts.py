@@ -33,8 +33,8 @@ from app.timeutil import from_iso, to_iso, utc_now
 
 SEARCH_URL = "https://itunes.apple.com/search"
 REFRESH_HOURS = 12
-KEEP_EPISODES = 40  # newest episodes taken from a feed each time
-MIN_MINUTES, MAX_MINUTES = 2, 120
+TRANSCRIPT_EPISODES = 40  # the newest episodes get their publisher's transcript fetched; older ones are estimated
+MIN_MINUTES, MAX_MINUTES = 2, 300
 MAX_AUDIO_BYTES = 400 * 1024 * 1024
 # Apple's directory is searched per country: the main ones for each language
 COUNTRIES = {
@@ -125,6 +125,7 @@ def unsubscribe(conn: Connection, collection_id: int) -> bool:
     conn.execute(
         text(
             "DELETE FROM content_items WHERE collection_id = :id AND type = 'podcast_episode' AND last_opened_at IS NULL "
+            "AND json_extract(metadata_json, '$.saved_at') IS NULL "
             "AND NOT EXISTS (SELECT 1 FROM activity_sessions s WHERE s.content_item_id = content_items.id)"
         ),
         {"id": collection_id},
@@ -174,17 +175,39 @@ def _published(value: str | None) -> str | None:
             return None
 
 
+def _episode_key(conn: Connection, collection_id: int, guid: str) -> str | None:
+    """The external_id to store an episode under, or None when this show has it already. Many feeds number their
+    episodes ("1", "2", …) as guids, and those collide between shows: the second show's copy is stored as
+    "<show id>:<guid>" instead of being dropped."""
+    owner = conn.execute(
+        text("SELECT collection_id FROM content_items WHERE source = 'podcast' AND external_id = :g"), {"g": guid}
+    ).first()
+    if owner is None:
+        return guid
+    if owner[0] == collection_id:
+        return None
+    scoped = f"{collection_id}:{guid}"
+    taken = conn.execute(
+        text("SELECT 1 FROM content_items WHERE source = 'podcast' AND external_id = :g"), {"g": scoped}
+    ).first()
+    return None if taken else scoped
+
+
 def _store_episodes(conn: Connection, lang: str, collection_id: int, show: feeds.Podcast, *, origin: str, fetch) -> int:  # noqa: ANN001
+    """Every episode in the feed (newest first), skipping ones already stored for this show."""
     added = 0
-    for ep in show.episodes[:KEEP_EPISODES]:
+    for index, ep in enumerate(show.episodes):
         if ep.duration_sec and not (MIN_MINUTES * 60 <= ep.duration_sec <= MAX_MINUTES * 60):
+            continue
+        key = _episode_key(conn, collection_id, ep.guid)
+        if key is None:
             continue
         meta = {
             "enclosure_url": ep.audio_url, "enclosure_type": ep.audio_type, "enclosure_bytes": ep.audio_bytes,
             "image": ep.image, "description": ep.description, "link": ep.link,
             "transcript_urls": [u for u, _ in ep.transcripts],
         }
-        inserted = conn.execute(
+        result = conn.execute(
             text(
                 "INSERT OR IGNORE INTO content_items (language_code, type, title, creator, collection_id, collection_index, origin, "
                 "source, source_url, external_id, duration_sec, published_at, status, metadata_json, analysis_status) "
@@ -192,17 +215,15 @@ def _store_episodes(conn: Connection, lang: str, collection_id: int, show: feeds
             ),
             {
                 "l": lang, "t": ep.title, "c": show.title, "coll": collection_id, "n": ep.number, "o": origin,
-                "url": ep.link or ep.audio_url, "guid": ep.guid, "d": ep.duration_sec, "p": _published(ep.published),
+                "url": ep.link or ep.audio_url, "guid": key, "d": ep.duration_sec, "p": _published(ep.published),
                 "s": "library" if origin == "user_added" else "candidate", "m": json.dumps(meta),
             },
-        ).rowcount
-        if not inserted:
+        )
+        if not result.rowcount:
             continue
         added += 1
-        item_id = conn.execute(
-            text("SELECT id FROM content_items WHERE source = 'podcast' AND external_id = :g"), {"g": ep.guid}
-        ).scalar_one()
-        if not _publisher_transcript(conn, lang, item_id, ep, fetch):
+        item_id = result.lastrowid
+        if index >= TRANSCRIPT_EPISODES or not _publisher_transcript(conn, lang, item_id, ep, fetch):
             estimate(conn, lang, [item_id])
     return added
 
@@ -293,8 +314,8 @@ def show_of(conn: Connection, collection_id: int) -> dict[str, Any]:
     meta = json.loads(row[4] or "{}")
     return {
         "id": row[0], "title": row[1], "author": row[2], "feed_url": row[3], "image": meta.get("image"),
-        "description": meta.get("description"), "subscribed": bool(row[5]), "episodes": row[6], "listened": row[7],
-        "latest": row[8],
+        "description": meta.get("description"), "link": meta.get("link"), "subscribed": bool(row[5]), "episodes": row[6],
+        "listened": row[7], "latest": row[8],
     }
 
 

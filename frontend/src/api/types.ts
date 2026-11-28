@@ -171,7 +171,10 @@ export interface TodayStats {
 }
 
 export interface HoursEstimate {
+  /** "hours only", or "chosen level" when the level you picked (or an exam) puts you further than your hours. */
   basis: string;
+  start_label?: string | null;
+  position_hours?: number;
   confidence: string;
   divisor: number;
   adjusted_hours: number;
@@ -578,6 +581,7 @@ export interface PodcastShow {
   feed_url: string;
   image: string | null;
   description: string | null;
+  link?: string | null;
   subscribed: boolean;
   episodes: number;
   listened: number;
@@ -632,7 +636,15 @@ export interface UpNextPick {
   origin?: string;
   image?: string | null;
   site?: string | null;
+  /** saved to watch, read or listen to later */
+  later?: boolean;
 }
+
+/** Which part of the library: everything, watched, what you added or opened, saved for later. */
+export type LibraryState = "all" | "watched" | "mine" | "later";
+
+/** The level filter on the suggestion pages (backend recommend.LEVEL_FILTER). */
+export type LevelFilter = "easy" | "right" | "hard";
 
 /** One page of a shelf's suggestions (infinite scroll). */
 export interface FeedPage {
@@ -887,6 +899,35 @@ export interface ShadowAttempt {
   diff: { text: string; ok: boolean }[];
   self_rating: number | null;
   created_at: string;
+}
+
+/** A video or podcast episode with a transcript, to shadow line by line (GET /api/shadow/sources). */
+export interface ShadowSource {
+  id: number;
+  type: string;
+  title: string;
+  creator: string | null;
+  source: string;
+  external_id: string | null;
+  duration_sec: number | null;
+  status: string;
+  progress: number;
+  image: string | null;
+  saved_at: string | null;
+  band: string | null;
+  coverage: number | null;
+  lines: number;
+  shadowed: number;
+  last_shadowed: string | null;
+  why: "in progress" | "saved for later" | "watched" | "suggested";
+}
+
+/** One shadowed line of a video or episode (GET /api/shadow/items/{id}). */
+export interface ShadowLineProgress {
+  cue_id: number;
+  clip_id: number;
+  attempts: number;
+  best: number | null;
 }
 
 export interface ShadowClip {

@@ -73,3 +73,26 @@ def test_speaking_check_uses_spoken_answers(client) -> None:
     assert step["done"] is True
     skills = client.get("/api/level/de/overview").json()["skills"]
     assert skills["speaking"]["band"] == step["result"]["band"] and "listening" not in skills
+
+
+def test_videos_with_a_transcript_can_be_picked_and_shadowed_line_by_line(client) -> None:
+    item_id, cue_id = _video_with_line(client)
+    with client.app.state.engine.begin() as conn:
+        bare = content.upsert_youtube(conn, "de", "zyxwvutsrqp", title="Ohne Text", channel="Kanal", duration=60)
+    found = client.get("/api/shadow/sources", params={"lang": "de"}).json()
+    ids = [s["id"] for s in found]
+    assert item_id in ids and bare not in ids  # nothing to shadow without a transcript
+    mine = next(s for s in found if s["id"] == item_id)
+    assert mine["lines"] == 2 and mine["shadowed"] == 0
+    assert client.get("/api/shadow/sources", params={"lang": "de", "q": "nothing like it"}).json() == []
+
+    clip = client.post("/api/shadow/clips", json={"lang": "de", "text": "Ich rufe dich morgen an.", "content_item_id": item_id, "cue_id": cue_id}).json()
+    client.post(
+        f"/api/shadow/clips/{clip['id']}/attempts",
+        data={"duration_ms": "2400", "heard": "ich rufe dich morgen an"},
+        files={"audio": ("a.webm", b"\x1a\x45\xdf\xa3fake", "audio/webm")},
+    )
+    progress = client.get(f"/api/shadow/items/{item_id}").json()
+    assert progress == [{"cue_id": cue_id, "clip_id": clip["id"], "attempts": 1, "best": 1.0}]
+    first = client.get("/api/shadow/sources", params={"lang": "de"}).json()[0]
+    assert first["id"] == item_id and first["shadowed"] == 1  # what you've been shadowing comes first

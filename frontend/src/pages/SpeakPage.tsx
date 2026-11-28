@@ -11,18 +11,21 @@ type Tab = "tutor" | "shadowing";
 export function SpeakPage() {
   const { code, language } = useActiveLanguage();
   const target = useShadowTarget((s) => s.clipId);
+  const targetItem = useShadowTarget((s) => s.itemId);
   const clear = useShadowTarget((s) => s.clear);
-  const [tab, setTab] = useState<Tab>(target !== null ? "shadowing" : "tutor");
+  const [tab, setTab] = useState<Tab>(target !== null || targetItem !== null ? "shadowing" : "tutor");
   const [clip, setClip] = useState<number | null>(target);
+  const [item, setItem] = useState<number | null>(targetItem);
 
-  // "Shadow this line" in the player lands here with that clip open.
+  // "Shadow this line" in the player lands here with that clip open; "Shadow this" with the whole video or episode.
   useEffect(() => {
-    if (target !== null) {
+    if (target !== null || targetItem !== null) {
       setTab("shadowing");
       setClip(target);
+      setItem(targetItem);
       clear();
     }
-  }, [target, clear]);
+  }, [target, targetItem, clear]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -30,7 +33,7 @@ export function SpeakPage() {
         <div>
           <h1 className="text-[28px] font-bold tracking-tight">Speak</h1>
           <p className="mt-1.5 max-w-2xl text-sm text-ink-2">
-            Talk with a tutor that stays at your level, or shadow lines from what you watch. Both count as speaking time.
+            Talk with a tutor that stays at your level, or shadow what you watch and listen to, line by line. Both count as speaking time.
           </p>
         </div>
         <div role="tablist" aria-label="Speaking practice" className="glass flex gap-1 rounded-2xl p-1">
@@ -52,7 +55,7 @@ export function SpeakPage() {
         </div>
       </header>
       <div key={tab} className="anim-fade">
-        {tab === "tutor" ? <TutorPanel lang={code} /> : <ShadowStudio key={code} lang={code} initialClip={clip} />}
+        {tab === "tutor" ? <TutorPanel lang={code} /> : <ShadowStudio key={`${code}:${item ?? ""}`} lang={code} initialClip={clip} initialItem={item} />}
       </div>
       <span className="sr-only">{language?.name}</span>
     </div>

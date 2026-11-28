@@ -83,6 +83,7 @@ def candidates(conn: Connection, lang: str, shelf: str | None = None, *, shown_o
         meta = json.loads(item.pop("metadata") or "{}")
         item["image"] = meta.get("image")
         item["site"] = meta.get("site")
+        item["later"] = bool(meta.get("saved_at"))  # saved to watch, read or listen to later
         item["estimated"] = bool(item["estimated"])
         item["level_basis"] = meta.get("level_basis") if item["estimated"] else None
         item["kind"] = kind_of(item)
@@ -246,11 +247,23 @@ def ranked(conn: Connection, lang: str, shelf: str | None) -> list[dict[str, Any
     varied = ranker.diversify(near, _score, vectors, ctx)
     result = varied[: ranker.MMR_TOP] + spread_creators(varied[ranker.MMR_TOP :])
     _RANKED[key] = (time.monotonic(), version, result)
+    _EVERYTHING[key] = items
     _CONTEXT[key] = (vectors, ctx)
     return result
 
 
 _CONTEXT: dict[tuple[str, str], tuple[dict[int, dict[int, float]], dict[str, Any]]] = {}
+# every candidate, best first, including the ones far from your level that the lists above leave out
+_EVERYTHING: dict[tuple[str, str], list[dict[str, Any]]] = {}
+
+
+def ranked_all(conn: Connection, lang: str, shelf: str | None) -> list[dict[str, Any]]:
+    """Every candidate for a shelf, best first: ranked() plus the items too far from your level for the default
+    lists (the level filter can ask for them)."""
+    shown = ranked(conn, lang, shelf)
+    everything = _EVERYTHING.get((lang, shelf or "all"), [])
+    ids = {i["id"] for i in shown}
+    return shown + [i for i in everything if i["id"] not in ids]
 
 
 def learn_weights(conn: Connection, lang: str, *, force: bool = False) -> dict[str, Any]:
@@ -272,6 +285,7 @@ def learn_weights(conn: Connection, lang: str, *, force: bool = False) -> dict[s
 
 def invalidate() -> None:
     _RANKED.clear()
+    _EVERYTHING.clear()
 
 
 def _minutes_left(conn: Connection, lang: str) -> float | None:
@@ -341,9 +355,23 @@ def up_next(conn: Connection, lang: str, n: int = 12) -> dict[str, Any]:
     return {"language": lang, "available": len(everything), "picks": [_present(item) for item in picks[:n]]}
 
 
-def feed(conn: Connection, lang: str, shelf: str, offset: int = 0, limit: int = 24) -> dict[str, Any]:
-    """One shelf's suggestions, best first, paged. The order is stable between pages while nothing changes."""
-    ordered = ranked(conn, lang, shelf)
+# The level filter on the suggestion pages: which bands each choice shows.
+LEVEL_FILTER = {
+    "easy": frozenset({"too_easy", "comfortable"}),
+    "right": frozenset({"i_plus_1"}),
+    "hard": frozenset({"stretch", "too_hard"}),
+}
+
+
+def feed(
+    conn: Connection, lang: str, shelf: str, offset: int = 0, limit: int = 24, level: str | None = None
+) -> dict[str, Any]:
+    """One shelf's suggestions, best first, paged. The order is stable between pages while nothing changes.
+    `level` ("easy", "right" or "hard") keeps only the items in those bands."""
+    if level in LEVEL_FILTER:
+        ordered = [i for i in ranked_all(conn, lang, shelf) if i.get("band") in LEVEL_FILTER[level]]
+    else:
+        ordered = ranked(conn, lang, shelf)
     page = ordered[offset : offset + limit]
     end = offset + len(page)
     return {

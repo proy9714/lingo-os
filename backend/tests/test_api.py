@@ -79,3 +79,21 @@ def test_hours_estimate_matches_your_csv_totals(cfg) -> None:
     assert (ja["level"], ja["words_prior"]) == (3, 1670)
     top = hours_estimate("es", 5000, cfg.baselines)
     assert top["level"] == 7 and top["next_level"] is None
+
+
+def test_an_unexpected_error_answers_json(client) -> None:
+    """A crash in one endpoint is shown as an error, not read by the app as "can't reach the server" (issue #6)."""
+    from fastapi.testclient import TestClient
+
+    app = client.app
+
+    def _boom() -> None:
+        raise RuntimeError("boom")
+
+    app.add_api_route("/api/__boom", _boom)
+    app.router.routes.insert(0, app.router.routes.pop())  # ahead of the web app's catch-all
+
+    with TestClient(app, raise_server_exceptions=False) as quiet:
+        response = quiet.get("/api/__boom")
+    assert response.status_code == 500
+    assert response.headers["content-type"].startswith("application/json") and "RuntimeError" in response.json()["detail"]

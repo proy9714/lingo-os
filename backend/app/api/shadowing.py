@@ -64,6 +64,21 @@ def create(body: NewClip, conn: Connection = Depends(get_conn)) -> dict[str, Any
         raise _fail(exc, 422) from exc
 
 
+@router.get("/sources")
+def sources(
+    lang: str = Query(..., min_length=2, max_length=8), q: str = Query("", max_length=100), conn: Connection = Depends(get_conn)
+) -> list[dict[str, Any]]:
+    """Videos and podcast episodes with a transcript, to shadow line by line."""
+    require_language(conn, lang)
+    return shadowing.sources(conn, lang, q)
+
+
+@router.get("/items/{item_id}")
+def item_progress(item_id: int, conn: Connection = Depends(get_conn)) -> list[dict[str, Any]]:
+    """The lines of one video or episode you've shadowed, with your best score on each."""
+    return shadowing.item_progress(conn, item_id)
+
+
 @router.get("/clips/{clip_id}")
 def clip(clip_id: int, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
     try:

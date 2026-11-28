@@ -15,6 +15,7 @@ import { useTrackerStore } from "../state/tracker";
 import { useUi } from "../state/ui";
 import { Icon } from "./Icon";
 import { LookupPanel } from "./LookupPanel";
+import { MiniPlayer } from "./MiniPlayer";
 import { Logo } from "./Logo";
 import { navFor } from "./nav";
 import { QuickLogModal } from "./QuickLogModal";
@@ -206,6 +207,7 @@ function Shell() {
         </div>
       </div>
       <BottomNav />
+      <MiniPlayer />
       <QuickLogModal />
       <LookupPanel />
       <Toast />

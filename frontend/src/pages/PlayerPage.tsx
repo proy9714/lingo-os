@@ -7,7 +7,7 @@ import { useContentItem, useContentMutation, useTranscript } from "../api/hooks"
 import type { TranscriptCue } from "../api/types";
 import { FuriganaToggle } from "../lib/furigana";
 import { TranscribeButton } from "../components/Whisper";
-import { BANDS } from "../components/cards";
+import { BANDS, LaterButton } from "../components/cards";
 import { CompletedButton } from "../components/CompletedButton";
 import { DifficultyRating } from "../components/DifficultyRating";
 import { MediaPlayer, type PlayerControls } from "../components/MediaPlayer";
@@ -69,6 +69,7 @@ export function PlayerPage() {
 
   const navigate = useNavigate();
   const openClip = useShadowTarget((s) => s.open);
+  const openShadowItem = useShadowTarget((s) => s.openItem);
   const shadow = useMutation({
     mutationFn: (cue: TranscriptCue) =>
       api.shadowCreate({ lang: item.data?.language ?? "de", text: cue.text, content_item_id: id, cue_id: cue.id }),
@@ -105,6 +106,15 @@ export function PlayerPage() {
       controls.current?.pause();
     }
   }, [time, pauseEachLine, playing, activeIndex, cues]);
+
+  // Replaying one line from the transcript: it plays from its start and pauses at its end.
+  const stopAt = useRef<number | null>(null);
+  useEffect(() => {
+    if (stopAt.current !== null && playing && time >= stopAt.current) {
+      stopAt.current = null;
+      controls.current?.pause();
+    }
+  }, [time, playing]);
 
   // Loop: back to A whenever B is reached.
   useEffect(() => {
@@ -231,6 +241,27 @@ export function PlayerPage() {
             </>
           )}
           {(transcript.data?.cues.length ?? 0) > 0 && <DownloadButton item={data} compact />}
+          {(transcript.data?.cues.length ?? 0) > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                controls.current?.pause();
+                openShadowItem(id);
+                void navigate({ to: "/speak" });
+              }}
+              title="Repeat it after the speaker, line by line, and compare"
+              className="min-h-10 rounded-xl border border-white/14 px-3 text-sm font-semibold text-ink-2 transition hover:bg-white/8 hover:text-ink"
+            >
+              🎙 Shadow this
+            </button>
+          )}
+          <LaterButton
+            id={id}
+            title={data.title}
+            later={Boolean(data.metadata?.saved_at)}
+            kind={data.type === "podcast_episode" ? "podcast" : "video"}
+            variant="plain"
+          />
           <CompletedButton id={id} kind="video" finished={data.status === "finished"} onDone={() => controls.current?.pause()} />
         </div>
       </header>
@@ -381,6 +412,12 @@ export function PlayerPage() {
                   active={index === activeIndex}
                   translation={translated.get(cue.seq)}
                   onSeek={() => {
+                    stopAt.current = null;
+                    seekTo(cue.start_ms);
+                    controls.current?.play();
+                  }}
+                  onReplay={() => {
+                    stopAt.current = cue.end_ms - 40;
                     seekTo(cue.start_ms);
                     controls.current?.play();
                   }}
@@ -396,7 +433,7 @@ export function PlayerPage() {
           )}
         </section>
       </div>
-      <p className="px-1 text-xs text-ink-3">Space play/pause · ← → previous/next line · R replay line · L loop line. Watching time counts only while playing.</p>
+      <p className="px-1 text-xs text-ink-3">Space play/pause · ← → previous/next line · R replay line · L loop line · ↻ beside a line plays just that line. Watching time counts only while playing.</p>
     </div>
   );
 }
@@ -408,19 +445,31 @@ function CueRow(props: {
   active: boolean;
   translation?: string;
   onSeek: () => void;
+  onReplay: () => void;
   onWord: () => void;
 }) {
-  const { cue, lang, itemId, active, translation, onSeek, onWord } = props;
+  const { cue, lang, itemId, active, translation, onSeek, onReplay, onWord } = props;
   return (
-    <li data-seq={cue.seq} className={cx("flex gap-2 rounded-xl px-2 py-1.5", active && "bg-accent/10")}>
-      <button
-        type="button"
-        onClick={onSeek}
-        className={cx("h-7 shrink-0 rounded-md px-1.5 text-xs tabular-nums", active ? "bg-accent/25 text-accent" : "bg-white/6 text-ink-3 hover:text-ink")}
-        aria-label={`Play from ${clock(cue.start_ms)}`}
-      >
-        {clock(cue.start_ms)}
-      </button>
+    <li data-seq={cue.seq} className={cx("group flex gap-2 rounded-xl px-2 py-1.5", active && "bg-accent/10")}>
+      <div className="flex shrink-0 flex-col items-stretch gap-1">
+        <button
+          type="button"
+          onClick={onSeek}
+          className={cx("h-7 rounded-md px-1.5 text-xs tabular-nums", active ? "bg-accent/25 text-accent" : "bg-white/6 text-ink-3 hover:text-ink")}
+          aria-label={`Play from ${clock(cue.start_ms)}`}
+        >
+          {clock(cue.start_ms)}
+        </button>
+        <button
+          type="button"
+          onClick={onReplay}
+          title="Play just this line"
+          aria-label={`Play just the line at ${clock(cue.start_ms)}`}
+          className="h-6 rounded-md text-xs text-ink-3 opacity-60 hover:bg-white/8 hover:text-ink group-hover:opacity-100 focus-visible:opacity-100"
+        >
+          ↻
+        </button>
+      </div>
       <p className={cx("text-[16px] leading-relaxed", active ? "text-ink" : "text-ink-2")}>
         <TokenLine
           lang={lang}

@@ -139,6 +139,29 @@ MANGA_TYPES = ("manga_volume",)
 SHELVES = {"watch": VIDEO_TYPES, "listen": PODCAST_TYPES, "read": READ_TYPES, "manga": MANGA_TYPES}
 
 
+# saved to watch, read or listen to later (metadata saved_at); never pruned, kept when you unfollow a podcast
+LATER_SQL = "json_extract(ci.metadata_json, '$.saved_at') IS NOT NULL"
+
+
+def set_later(conn: Connection, item_id: int, later: bool) -> dict[str, Any]:
+    """Save an item to watch, read or listen to later (or take it off that list)."""
+    get_item(conn, item_id)  # ContentError when there's no such item
+    if later:
+        conn.execute(
+            text(
+                "UPDATE content_items SET metadata_json = json_set(metadata_json, '$.saved_at', :t), "
+                "status = CASE WHEN status = 'candidate' THEN 'library' ELSE status END WHERE id = :id"
+            ),
+            {"t": to_iso(utc_now()), "id": item_id},
+        )
+    else:
+        conn.execute(
+            text("UPDATE content_items SET metadata_json = json_remove(metadata_json, '$.saved_at') WHERE id = :id"),
+            {"id": item_id},
+        )
+    return get_item(conn, item_id)
+
+
 def list_items(
     conn: Connection,
     lang: str,
@@ -161,6 +184,11 @@ def list_items(
             "MAX(COALESCE(ci.finished_at, ''), COALESCE(ci.last_opened_at, ''), "
             "COALESCE((SELECT MAX(s.started_at) FROM activity_sessions s WHERE s.content_item_id = ci.id), ''), ci.added_at)"
         )
+    elif state == "later":  # saved for later and not finished yet, most recently saved first
+        where.append(LATER_SQL)
+        where.append("ci.status != 'finished'")
+        where.append(f"NOT {WATCHED_SQL}")
+        order = "json_extract(ci.metadata_json, '$.saved_at')"
     elif state == "mine":  # leave out suggestions you haven't opened yet
         where.append(
             "(ci.origin != 'scraper' OR ci.last_opened_at IS NOT NULL "

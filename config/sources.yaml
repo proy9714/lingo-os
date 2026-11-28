@@ -3,6 +3,7 @@
 
 defaults:
   per_run: 10          # new videos to check per language per run (each one is a request to YouTube)
+  youtube_parallel: 3  # YouTube requests at once, their starts spaced (1 = one at a time, the slowest and gentlest)
   articles_per_run: 8  # new articles per language per run (taken from the feeds in turn)
   per_feed: 3          # at most this many from one feed per run
   min_minutes: 3

@@ -6,6 +6,7 @@ import { useActiveLanguage, useContentMutation, useEvidence, useLibrary, useMark
 import type { ContentItem } from "../api/types";
 import { DifficultyRating } from "../components/DifficultyRating";
 import { ContentSearch } from "../components/ContentSearch";
+import { LaterList } from "../components/Later";
 import { GRID, SuggestionGrid } from "../components/Suggestions";
 import { Button, Chip, Panel, PanelTitle, ProgressBar, Skeleton, Tabs } from "../components/ui";
 import { formatDay, localDayOf } from "../lib/format";
@@ -13,15 +14,16 @@ import { displayTitle, useTabParam } from "../lib/nav";
 import { useUi } from "../state/ui";
 import { useInfiniteSentinel } from "../lib/useInfiniteSentinel";
 
-type WatchTab = "for-you" | "watched";
+type WatchTab = "for-you" | "later" | "watched";
 
 export function WatchPage() {
   const { code, language } = useActiveLanguage();
-  const [tab, setTab] = useTabParam<WatchTab>(["for-you", "watched"]);
+  const [tab, setTab] = useTabParam<WatchTab>(["for-you", "later", "watched"]);
   const [adding, setAdding] = useState(false);
   const [searching, setSearching] = useState(false);
   const pool = usePool(code).data;
   const watched = useLibrary(code, "watch", "watched", "").data?.pages[0]?.total;
+  const later = useLibrary(code, "watch", "later", "").data?.pages[0]?.total;
 
   return (
     <div className="flex flex-col gap-5">
@@ -54,12 +56,19 @@ export function WatchPage() {
             onChange={setTab}
             items={[
               { value: "for-you", label: "For you", count: pool?.pools.watch ?? null },
+              { value: "later", label: "Watch later", count: later || null },
               { value: "watched", label: "Watched", count: watched ?? null },
             ]}
           />
 
           <div key={tab} className="anim-fade">
-            {tab === "for-you" ? <SuggestionGrid key={code} lang={code} shelf="watch" /> : <WatchedTab lang={code} />}
+            {tab === "for-you" ? (
+              <SuggestionGrid key={code} lang={code} shelf="watch" />
+            ) : tab === "later" ? (
+              <LaterList lang={code} shelf="watch" />
+            ) : (
+              <WatchedTab lang={code} />
+            )}
           </div>
         </>
       )}

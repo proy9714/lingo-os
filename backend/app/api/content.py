@@ -57,12 +57,13 @@ def list_content(
     q: str | None = Query(None, max_length=100),
     kind: str | None = Query(None, pattern="^(youtube|local)$"),
     shelf: str = Query("watch", pattern="^(watch|listen|read|manga)$"),
-    state: str = Query("all", pattern="^(all|watched|mine)$"),
+    state: str = Query("all", pattern="^(all|watched|mine|later)$"),
     limit: int = Query(60, ge=1, le=300),
     offset: int = Query(0, ge=0),
     conn: Connection = Depends(get_conn),
 ) -> dict[str, Any]:
-    """The library. `state`: watched = videos you've watched; mine = what you added or opened (not untouched suggestions)."""
+    """The library. `state`: watched = videos you've watched; mine = what you added or opened (not untouched
+    suggestions); later = saved to watch, read or listen to later."""
     require_language(conn, lang)
     return content.list_items(conn, lang, q=q, kind=kind, shelf=shelf, state=state, limit=limit, offset=offset)
 
@@ -73,11 +74,12 @@ def suggestions(
     shelf: str = Query("watch", pattern="^(watch|listen|read)$"),
     offset: int = Query(0, ge=0),
     limit: int = Query(24, ge=1, le=60),
+    level: str | None = Query(None, pattern="^(easy|right|hard)$"),
     conn: Connection = Depends(get_conn),
 ) -> dict[str, Any]:
     """Suggestions for one shelf, best first, paged for infinite scrolling. Never anything you've watched or finished."""
     require_language(conn, lang)
-    return feed(conn, lang, shelf, offset, limit)
+    return feed(conn, lang, shelf, offset, limit, level)
 
 
 @router.get("/recommend")
@@ -263,7 +265,7 @@ def start_transcription(item_id: int, conn: Connection = Depends(get_conn)) -> d
     ).scalar()
     if running:
         return {"job_id": running}
-    return {"job_id": enqueue(conn, "transcribe", {"item_id": item_id}, dedupe=False)}
+    return {"job_id": enqueue(conn, "transcribe", {"item_id": item_id}, lane="gpu", dedupe=False)}
 
 
 @router.get("/whisper")
@@ -381,6 +383,21 @@ def mark_watched(item_id: int, body: Watched, conn: Connection = Depends(get_con
     except content.ContentError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     taste.invalidate(item["language"])
+    ranking.invalidate()
+    return item
+
+
+class Later(BaseModel):
+    later: bool = True
+
+
+@router.post("/content/{item_id}/later")
+def save_for_later(item_id: int, body: Later, conn: Connection = Depends(get_conn)) -> dict[str, Any]:
+    """Watch later / read later / listen later (`later: false` takes it off the list)."""
+    try:
+        item = content.set_later(conn, item_id, body.later)
+    except content.ContentError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     ranking.invalidate()
     return item
 

@@ -300,3 +300,27 @@ def test_youtube_refusals_pause_longer_each_time_and_reset(client, monkeypatch) 
     catalog._mark_answered(engine)
     catalog._mark_refused(engine)
     assert not refused_ago(1.5)  # answered in between: back to one hour
+
+
+def test_watch_later_keeps_a_list_until_it_is_watched(client) -> None:
+    engine = client.app.state.engine
+    with engine.begin() as conn:
+        a = _video(conn, "Später 1", "Kanal A", coverage=0.93, status="candidate", origin="scraper")
+        b = _video(conn, "Später 2", "Kanal B", coverage=0.93, status="candidate", origin="scraper")
+
+    def later_ids() -> list[int]:
+        params = {"lang": "de", "shelf": "watch", "state": "later"}
+        return [i["id"] for i in client.get("/api/content", params=params).json()["items"]]
+
+    assert later_ids() == []
+    saved = client.post(f"/api/content/{a}/later", json={"later": True}).json()
+    assert saved["metadata"]["saved_at"] and saved["status"] == "library"  # kept: never pruned as a stale suggestion
+    client.post(f"/api/content/{b}/later", json={"later": True})
+    assert later_ids() == [b, a]  # most recently saved first
+    pick = next(i for i in client.get("/api/feed", params={"lang": "de", "shelf": "watch"}).json()["items"] if i["id"] == a)
+    assert pick["later"] is True
+    client.post(f"/api/content/{b}/watched", json={"watched": True})
+    assert later_ids() == [a]  # watched: off the list
+    client.post(f"/api/content/{a}/later", json={"later": False})
+    assert later_ids() == []
+    assert client.post("/api/content/999999/later", json={"later": True}).status_code == 404

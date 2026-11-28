@@ -9,9 +9,8 @@ from sqlalchemy import Connection, text
 
 from app.api.deps import get_cfg, get_conn, get_dict_conn, require_language
 from app.config import AppConfig
-from app.engine.profile import get_profile, total_seconds
+from app.engine.profile import get_profile, starting_estimate
 from app.level import ctest, dictation, vocab_test
-from app.services.estimate import hours_estimate
 
 router = APIRouter(prefix="/api/level", tags=["level"])
 
@@ -89,7 +88,7 @@ def overview(lang: str, conn: Connection = Depends(get_conn), cfg: AppConfig = D
     return {
         "language": lang,
         "profile": get_profile(conn, lang),
-        "hours_estimate": hours_estimate(lang, total_seconds(conn, lang) / 3600, cfg.baselines),
+        "hours_estimate": starting_estimate(conn, cfg, lang),
         "skills": skills,
         "history": history,
         "ctest_available": ctest.available(lang),

@@ -186,3 +186,62 @@ def delete_clip(conn: Connection, cfg: AppConfig, clip_id: int) -> None:
         except OSError:
             pass
     conn.execute(text("DELETE FROM shadow_clips WHERE id = :c"), {"c": clip_id})
+
+
+# ------------------------------------------------------------------ shadowing a whole video or podcast episode
+
+SHADOWABLE_TYPES = ("youtube", "video", "audio", "podcast_episode")
+
+
+def sources(conn: Connection, lang: str, q: str | None = None, limit: int = 40) -> list[dict[str, Any]]:
+    """Videos and podcast episodes with a transcript, to shadow line by line: the ones you're in the middle of, have
+    saved for later or shadowed already first, then the ones you watched, then suggestions closest to your level."""
+    types = ", ".join(f"'{t}'" for t in SHADOWABLE_TYPES)
+    params: dict[str, Any] = {"l": lang, "n": limit}
+    where = [
+        "ci.language_code = :l", f"ci.type IN ({types})", "ci.status NOT IN ('dismissed', 'archived')",
+        "EXISTS (SELECT 1 FROM transcripts t JOIN transcript_cues tc ON tc.transcript_id = t.id "
+        "WHERE t.content_item_id = ci.id AND t.is_primary = 1)",
+    ]
+    if q and q.strip():
+        where.append("(ci.title LIKE :q OR ci.creator LIKE :q)")
+        params["q"] = f"%{q.strip()}%"
+    rows = conn.execute(
+        text(
+            "SELECT ci.id, ci.type, ci.title, ci.creator, ci.source, ci.external_id, ci.duration_sec, ci.status, ci.progress, "
+            "json_extract(ci.metadata_json, '$.image'), json_extract(ci.metadata_json, '$.saved_at'), cs.band, cs.coverage, "
+            "(SELECT COUNT(*) FROM transcripts t JOIN transcript_cues tc ON tc.transcript_id = t.id "
+            " WHERE t.content_item_id = ci.id AND t.is_primary = 1) AS lines, "
+            "(SELECT COUNT(DISTINCT sc.id) FROM shadow_clips sc JOIN shadow_attempts sa ON sa.clip_id = sc.id "
+            " WHERE sc.content_item_id = ci.id) AS shadowed, "
+            "(SELECT MAX(sa.created_at) FROM shadow_clips sc JOIN shadow_attempts sa ON sa.clip_id = sc.id "
+            " WHERE sc.content_item_id = ci.id) AS last_shadowed, "
+            "CASE WHEN ci.status = 'in_progress' THEN 'in progress' "
+            " WHEN json_extract(ci.metadata_json, '$.saved_at') IS NOT NULL THEN 'saved for later' "
+            " WHEN ci.status = 'finished' OR ci.last_opened_at IS NOT NULL THEN 'watched' ELSE 'suggested' END AS why "
+            f"FROM content_items ci LEFT JOIN content_scores cs ON cs.content_item_id = ci.id WHERE {' AND '.join(where)} "
+            "ORDER BY (last_shadowed IS NULL), last_shadowed DESC, "
+            " CASE why WHEN 'in progress' THEN 0 WHEN 'saved for later' THEN 1 WHEN 'watched' THEN 2 ELSE 3 END, "
+            " COALESCE(ci.last_opened_at, json_extract(ci.metadata_json, '$.saved_at'), '') DESC, "
+            " ABS(COALESCE(cs.coverage, 0.9) - 0.95), ci.id DESC LIMIT :n"
+        ),
+        params,
+    ).all()
+    keys = (
+        "id", "type", "title", "creator", "source", "external_id", "duration_sec", "status", "progress", "image", "saved_at",
+        "band", "coverage", "lines", "shadowed", "last_shadowed", "why",
+    )
+    return [dict(zip(keys, r)) for r in rows]
+
+
+def item_progress(conn: Connection, item_id: int) -> list[dict[str, Any]]:
+    """For each line of an item you've shadowed: its clip, how many tries and your best score."""
+    rows = conn.execute(
+        text(
+            "SELECT sc.cue_id, sc.id, COUNT(sa.id), MAX(sa.text_similarity) FROM shadow_clips sc "
+            "LEFT JOIN shadow_attempts sa ON sa.clip_id = sc.id WHERE sc.content_item_id = :i AND sc.cue_id IS NOT NULL "
+            "GROUP BY sc.id"
+        ),
+        {"i": item_id},
+    ).all()
+    return [{"cue_id": r[0], "clip_id": r[1], "attempts": r[2], "best": r[3]} for r in rows]
